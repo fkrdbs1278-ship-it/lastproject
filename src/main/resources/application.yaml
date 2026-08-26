@@ -1,32 +1,56 @@
 spring:
   application:
     name: lastproject
+
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@localhost:1521:xe
+    url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
   jpa:
-    show-sql: true
+    show-sql: false
+
     hibernate:
-      ddl-auto: update #테이블 만들때 시작하자 마자 새롭게 만들겠느냐
+      ddl-auto: validate
+
       naming:
-        #physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
     properties:
       hibernate:
         format_sql: true
         highlight_sql: true
 
+    open-in-view: false
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 30MB
+
+
+# P6Spy를 사용하는 경우
 decorator:
   datasource:
-    enabled:  true
+    enabled: true
+
     p6spy:
       enable-logging: true
-      logging:  slf4j
-      multiline:  true
+      logging: slf4j
+      multiline: true
+
+
 logging:
   level:
-    p6spy:  info  # off - error - warn - info - debug - trace
+    root: info
+
+    # 개발 중 SQL 확인용
+    p6spy: info
+
+    # 우리 프로젝트 코드
+    com.example.lastproject: debug
+
+
 file:
-  upload-dir: C:/upload
+  upload-dir: ${FILE_UPLOAD_DIR:uploads}
