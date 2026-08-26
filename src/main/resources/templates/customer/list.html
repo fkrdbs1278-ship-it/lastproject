@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>고객 CRM QA 테스트</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f7f7f7;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            padding: 20px;
+            margin-bottom: 20px;
+
+            background: white;
+
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .search-box input,
+        .search-box select {
+            padding: 8px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        button {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 10px;
+
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        .empty {
+            padding: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>고객 CRM QA 테스트</h1>
+
+
+<!-- 검색 -->
+<div class="search-box">
+
+    <form method="get"
+          th:action="@{/admin/customers}">
+
+        <!-- 이름 / 전화번호 -->
+        <input
+                type="text"
+                name="keyword"
+                placeholder="이름 또는 전화번호"
+                th:value="${condition.keyword}"
+        >
+
+
+        <!-- 회원 유형 -->
+        <select name="customerType">
+
+            <option value="">
+                전체 고객
+            </option>
+
+            <option
+                    value="MEMBER"
+                    th:selected="${condition.customerType == 'MEMBER'}">
+                회원
+            </option>
+
+            <option
+                    value="GUEST"
+                    th:selected="${condition.customerType == 'GUEST'}">
+                비회원
+            </option>
+
+        </select>
+
+
+        <!-- 고객 등급 -->
+        <select name="gradeCode">
+
+            <option value="">
+                전체 등급
+            </option>
+
+            <option
+                    value="NORMAL"
+                    th:selected="${condition.gradeCode == 'NORMAL'}">
+                일반
+            </option>
+
+            <option
+                    value="REGULAR"
+                    th:selected="${condition.gradeCode == 'REGULAR'}">
+                단골
+            </option>
+
+            <option
+                    value="VIP"
+                    th:selected="${condition.gradeCode == 'VIP'}">
+                VIP
+            </option>
+
+        </select>
+
+
+        <!-- 활성 여부 -->
+        <select name="activeYn">
+
+            <option value="">
+                전체 상태
+            </option>
+
+            <option
+                    value="Y"
+                    th:selected="${condition.activeYn == 'Y'}">
+                활성
+            </option>
+
+            <option
+                    value="N"
+                    th:selected="${condition.activeYn == 'N'}">
+                비활성
+            </option>
+
+        </select>
+
+
+        <!-- 미방문 기간 -->
+        <select name="inactiveDays">
+
+            <option value="">
+                미방문 기간 전체
+            </option>
+
+            <option
+                    value="30"
+                    th:selected="${condition.inactiveDays == 30}">
+                30일 이상 미방문
+            </option>
+
+            <option
+                    value="60"
+                    th:selected="${condition.inactiveDays == 60}">
+                60일 이상 미방문
+            </option>
+
+        </select>
+
+
+        <button type="submit">
+            검색
+        </button>
+
+        <a th:href="@{/admin/customers}">
+            초기화
+        </a>
+
+    </form>
+
+</div>
+
+
+<!-- 고객 목록 -->
+<table>
+
+    <thead>
+
+    <tr>
+        <th>고객번호</th>
+        <th>이름</th>
+        <th>전화번호</th>
+        <th>유형</th>
+        <th>등급</th>
+        <th>최근 방문일</th>
+        <th>방문횟수</th>
+        <th>누적 결제금액</th>
+        <th>재방문 권장일</th>
+        <th>활성</th>
+    </tr>
+
+    </thead>
+
+
+    <tbody>
+
+    <tr th:each="customer : ${customers}">
+
+        <td th:text="${customer.customerId}">
+            1
+        </td>
+
+        <td th:text="${customer.customerName}">
+            홍길동
+        </td>
+
+        <td th:text="${customer.phone}">
+            01000000000
+        </td>
+
+        <td th:text="${customer.customerType}">
+            GUEST
+        </td>
+
+        <td>
+            <span th:text="${customer.gradeName}">
+                일반
+            </span>
+
+            <span>
+                (
+                <span th:text="${customer.gradeCode}">
+                    NORMAL
+                </span>
+                )
+            </span>
+        </td>
+
+        <td th:text="${customer.lastVisitDate}">
+            2026-08-20
+        </td>
+
+        <td th:text="${customer.visitCount}">
+            1
+        </td>
+
+        <td th:text="${customer.totalPayment}">
+            30000
+        </td>
+
+        <td th:text="${customer.revisitRecommendedDate}">
+            2026-09-20
+        </td>
+
+        <td th:text="${customer.activeYn}">
+            Y
+        </td>
+
+    </tr>
+
+
+    <!-- 데이터 없음 -->
+    <tr th:if="${#lists.isEmpty(customers)}">
+
+        <td colspan="10"
+            class="empty">
+
+            조회된 고객이 없습니다.
+
+        </td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+</body>
+</html>
