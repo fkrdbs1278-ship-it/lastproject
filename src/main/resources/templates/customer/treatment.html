@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>고객 시술 이력 QA</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .customer-info {
+            margin-bottom: 25px;
+        }
+
+        .box {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #f0f0f0;
+        }
+
+        .memo {
+            text-align: left;
+            white-space: pre-wrap;
+        }
+
+        .empty {
+            padding: 40px;
+            text-align: center;
+            color: #777;
+        }
+
+        a {
+            color: #1565c0;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+
+<body>
+
+<h1>고객 시술 이력 QA 테스트</h1>
+
+
+<div class="customer-info">
+
+    고객번호:
+    <strong th:text="${customerId}">
+        0
+    </strong>
+
+    &nbsp; | &nbsp;
+
+    <a th:href="@{/admin/customers}">
+        고객 목록으로
+    </a>
+
+    <a th:href="@{/admin/customers/{customerId}/memos(customerId=${customerId})}">
+        상담 메모 보기
+    </a>
+
+</div>
+
+
+<div class="box">
+
+    <h2>시술 이력</h2>
+
+    <table th:if="${!#lists.isEmpty(treatments)}">
+
+        <thead>
+
+        <tr>
+            <th>시술번호</th>
+            <th>예약번호</th>
+            <th>메뉴번호</th>
+            <th>시술명</th>
+            <th>시술일</th>
+            <th>시술금액</th>
+            <th>시술메모</th>
+            <th>다음 추천일</th>
+        </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        <tr th:each="treatment : ${treatments}">
+
+            <td th:text="${treatment.treatmentId}">
+                1
+            </td>
+
+            <td th:text="${treatment.reservationNo != null
+                            ? treatment.reservationNo
+                            : '-'}">
+                -
+            </td>
+
+            <td th:text="${treatment.serviceMenuNo != null
+                            ? treatment.serviceMenuNo
+                            : '-'}">
+                -
+            </td>
+
+            <td th:text="${treatment.treatmentName}">
+                여성 커트
+            </td>
+
+            <td th:text="${treatment.treatmentDate}">
+                2026-08-26
+            </td>
+
+            <td th:text="${treatment.treatmentPrice}">
+                35000
+            </td>
+
+            <td
+                    class="memo"
+                    th:text="${treatment.treatmentMemo != null
+                                ? treatment.treatmentMemo
+                                : '-'}"
+            >
+                손상모 주의
+            </td>
+
+            <td th:text="${treatment.nextRecommendedDate != null
+                            ? treatment.nextRecommendedDate
+                            : '-'}">
+                2026-09-26
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <div
+            class="empty"
+            th:if="${#lists.isEmpty(treatments)}"
+    >
+        등록된 시술 이력이 없습니다.
+    </div>
+
+</div>
+
+
+</body>
+</html>
