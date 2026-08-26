@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>재고 변동 이력</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/stockhistory.css}">
+</head>
+
+<body>
+<main class="stockhistory-page">
+
+    <section class="page-header">
+        <div>
+            <p class="page-category">매장 운영 관리</p>
+            <h1>재고 변동 이력</h1>
+            <p class="page-description">
+                자재의 입고, 사용, 폐기 및 수동 조정 내역을 확인합니다.
+            </p>
+        </div>
+
+        <a class="material-link"
+           th:href="@{/material}">
+            자재 목록
+        </a>
+    </section>
+
+    <section class="filter-card">
+        <form class="filter-form"
+              th:action="@{/stockhistory}"
+              method="get">
+
+            <div class="filter-field">
+                <label for="materialNo">자재 번호</label>
+
+                <input type="number"
+                       id="materialNo"
+                       name="materialNo"
+                       min="1"
+                       placeholder="자재 번호 입력"
+                       th:value="${selectedMaterialNo}">
+            </div>
+
+            <div class="filter-buttons">
+                <button type="submit" class="search-button">
+                    조회
+                </button>
+
+                <a class="reset-button"
+                   th:href="@{/stockhistory}">
+                    초기화
+                </a>
+            </div>
+        </form>
+    </section>
+
+    <section class="history-card">
+        <div class="table-header">
+            <h2>변동 내역</h2>
+
+            <span class="history-count"
+                  th:text="|총 ${#lists.size(histories)}건|">
+                총 0건
+            </span>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>자재 번호</th>
+                    <th>변동 유형</th>
+                    <th>변동 수량</th>
+                    <th>변경 전</th>
+                    <th>변경 후</th>
+                    <th>관련 유형</th>
+                    <th>관련 번호</th>
+                    <th>메모</th>
+                    <th>기록 일시</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:if="${#lists.isEmpty(histories)}">
+                    <td colspan="10" class="empty-message">
+                        등록된 재고 변동 이력이 없습니다.
+                    </td>
+                </tr>
+
+                <tr th:each="history : ${histories}">
+                    <td th:text="${history.stockHistoryNo}">1</td>
+
+                    <td th:text="${history.materialNo}">1</td>
+
+                    <td>
+                        <span class="movement-badge"
+                              th:classappend="${#strings.toLowerCase(history.movementType)}">
+                            <th:block th:switch="${history.movementType}">
+                                <span th:case="'PURCHASE_IN'">입고</span>
+                                <span th:case="'USE'">사용</span>
+                                <span th:case="'DISCARD'">폐기</span>
+                                <span th:case="'MANUAL_IN'">수동 입고</span>
+                                <span th:case="'MANUAL_OUT'">수동 출고</span>
+                                <span th:case="*"
+                                      th:text="${history.movementType}">
+                                    기타
+                                </span>
+                            </th:block>
+                        </span>
+                    </td>
+
+                    <td th:text="${history.quantity}">10</td>
+
+                    <td th:text="${history.beforeStock}">20</td>
+
+                    <td th:text="${history.afterStock}">30</td>
+
+                    <td th:text="${history.referenceType != null
+                                  ? history.referenceType
+                                  : '-'}">
+                        -
+                    </td>
+
+                    <td th:text="${history.referenceNo != null
+                                  ? history.referenceNo
+                                  : '-'}">
+                        -
+                    </td>
+
+                    <td class="memo-cell"
+                        th:text="${history.memo != null
+                                  and !#strings.isEmpty(history.memo)
+                                  ? history.memo
+                                  : '-'}">
+                        -
+                    </td>
+
+                    <td th:text="${#temporals.format(
+                            history.regdate,
+                            'yyyy-MM-dd HH:mm'
+                        )}">
+                        2026-08-26 15:30
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+</body>
+</html>

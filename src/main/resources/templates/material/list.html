@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자재 관리</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/material.css}">
+</head>
+
+<body>
+<main class="material-page">
+
+    <section class="material-header">
+        <div>
+            <h1>자재 관리</h1>
+            <p>매장에서 사용하는 자재와 현재 재고를 관리합니다.</p>
+        </div>
+
+        <div class="material-header-actions">
+            <a class="history-button"
+               th:href="@{/stockhistory}">
+                재고 변동 이력
+            </a>
+
+            <a class="primary-button"
+               th:href="@{/material/new}">
+                자재 등록
+            </a>
+        </div>
+    </section>
+
+    <div class="message"
+         th:if="${message != null}"
+         th:text="${message}">
+    </div>
+
+    <section class="material-summary">
+        <a class="summary-card"
+           th:href="@{/materials(lowStock=true)}">
+            <span>재고 부족</span>
+
+            <strong th:text="${lowStockCount}">0</strong>
+
+            <small>안전 재고 이하</small>
+        </a>
+    </section>
+
+    <section class="material-filter">
+
+        <form class="search-form"
+              th:action="@{/material}"
+              method="get">
+
+            <input type="text"
+                   name="keyword"
+                   th:value="${keyword}"
+                   placeholder="자재명을 입력해 주세요.">
+
+            <button type="submit">검색</button>
+        </form>
+
+        <nav class="filter-buttons">
+            <a th:href="@{/material}"
+               th:classappend="${keyword == null and useYn == null and !lowStock}
+                       ? 'active'">
+                전체
+            </a>
+
+            <a th:href="@{/material(useYn='Y')}"
+               th:classappend="${useYn == 'Y'} ? 'active'">
+                사용 중
+            </a>
+
+            <a th:href="@{/material(useYn='N')}"
+               th:classappend="${useYn == 'N'} ? 'active'">
+                사용 중지
+            </a>
+
+            <a th:href="@{/material(lowStock=true)}"
+               th:classappend="${lowStock} ? 'active'">
+                재고 부족
+            </a>
+        </nav>
+    </section>
+
+    <section class="material-table-wrap">
+        <table class="material-table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>자재명</th>
+                <th>카테고리</th>
+                <th>현재 재고</th>
+                <th>안전 재고</th>
+                <th>단위</th>
+                <th>단가</th>
+                <th>공급업체</th>
+                <th>상태</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <!-- 재고 부족 자재는 행 색상을 변경 -->
+            <tr th:each="material : ${materials}"
+                th:classappend="${material.lowStock}
+                        ? 'low-stock-row'">
+
+                <td th:text="${material.materialNo}">1</td>
+
+                <td>
+                    <a class="material-name"
+                       th:href="@{/material/{no}
+                       (no=${material.materialNo})}"
+                       th:text="${material.materialName}">
+                        자재명
+                    </a>
+
+                    <span class="low-stock-badge"
+                          th:if="${material.lowStock}">
+                        부족
+                    </span>
+                </td>
+
+                <td th:text="${material.categoryCode != null
+                        ? material.categoryCode : '-'}">
+                    -
+                </td>
+
+                <td th:text="${#numbers.formatDecimal(
+                        material.currentStock, 1, 2
+                )}">
+                    0.00
+                </td>
+
+                <td th:text="${#numbers.formatDecimal(
+                        material.safetyStock, 1, 2
+                )}">
+                    0.00
+                </td>
+
+                <td th:text="${material.unitCode}">개</td>
+
+                <td th:text="${#numbers.formatInteger(
+                        material.unitPrice, 1, 'COMMA'
+                ) + '원'}">
+                    0원
+                </td>
+
+                <td th:text="${material.supplierName != null
+                        ? material.supplierName : '-'}">
+                    -
+                </td>
+
+                <td>
+                    <span class="status-badge active"
+                          th:if="${material.useYn == 'Y'}">
+                        사용 중
+                    </span>
+
+                    <span class="status-badge inactive"
+                          th:if="${material.useYn == 'N'}">
+                        사용 중지
+                    </span>
+                </td>
+
+                <td>
+                    <a class="edit-button"
+                       th:href="@{/material/{no}/edit
+                       (no=${material.materialNo})}">
+                        수정
+                    </a>
+                </td>
+            </tr>
+
+            <!-- 조회된 자재가 없을 때 표시 -->
+            <tr th:if="${#lists.isEmpty(materials)}">
+                <td class="empty-message" colspan="10">
+                    조회된 자재가 없습니다.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+</main>
+</body>
+</html>

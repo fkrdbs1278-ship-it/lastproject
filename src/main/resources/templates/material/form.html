@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <title th:text="${editMode}
+            ? '자재 수정'
+            : '자재 등록'">
+        자재 등록
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/material.css}">
+</head>
+
+<body>
+<main class="material-page material-form-page">
+
+    <section class="form-header">
+        <div>
+            <h1 th:text="${editMode}
+                    ? '자재 수정'
+                    : '자재 등록'">
+                자재 등록
+            </h1>
+
+            <p>자재의 기본 정보와 재고 기준을 입력합니다.</p>
+        </div>
+
+        <a class="back-button"
+           th:href="@{/material}">
+            목록으로
+        </a>
+    </section>
+
+    <section class="material-form-wrap">
+
+        <!-- 등록과 수정 여부에 따라 전송 주소 변경 -->
+        <form class="material-form"
+              method="post"
+              th:object="${materialRequest}"
+              th:action="${editMode}
+                    ? @{/material/{no}/edit(no=${materialNo})}
+                    : @{/material}">
+
+            <div class="form-grid">
+
+                <div class="form-group full">
+                    <label for="materialName">
+                        자재명 <span>*</span>
+                    </label>
+
+                    <input id="materialName"
+                           type="text"
+                           th:field="*{materialName}"
+                           th:classappend="${#fields.hasErrors('materialName')}
+                                   ? 'input-error'"
+                           placeholder="예: 염색약 브라운">
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('materialName')}"
+                       th:errors="*{materialName}">
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoryCode">카테고리 코드</label>
+
+                    <input id="categoryCode"
+                           type="text"
+                           th:field="*{categoryCode}"
+                           th:classappend="${#fields.hasErrors('categoryCode')}
+                                   ? 'input-error'"
+                           placeholder="예: HAIR_COLOR">
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('categoryCode')}"
+                       th:errors="*{categoryCode}">
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="unitCode">
+                        단위 코드 <span>*</span>
+                    </label>
+
+                    <input id="unitCode"
+                           type="text"
+                           th:field="*{unitCode}"
+                           th:classappend="${#fields.hasErrors('unitCode')}
+                                   ? 'input-error'"
+                           placeholder="예: EA, ML, G">
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('unitCode')}"
+                       th:errors="*{unitCode}">
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="currentStock">
+                        현재 재고 <span>*</span>
+                    </label>
+
+                    <!-- 수정 화면에서는 재고 이력 없이 변경하지 못하도록 제한 -->
+                    <input id="currentStock"
+                           type="number"
+                           min="0"
+                           step="0.01"
+                           th:field="*{currentStock}"
+                           th:readonly="${editMode}"
+                           th:classappend="${#fields.hasErrors('currentStock')}
+                                   ? 'input-error'">
+
+                    <small th:if="${editMode}">
+                        현재 재고는 재고 조정 화면에서 변경할 수 있습니다.
+                    </small>
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('currentStock')}"
+                       th:errors="*{currentStock}">
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="safetyStock">
+                        안전 재고 <span>*</span>
+                    </label>
+
+                    <input id="safetyStock"
+                           type="number"
+                           min="0"
+                           step="0.01"
+                           th:field="*{safetyStock}"
+                           th:classappend="${#fields.hasErrors('safetyStock')}
+                                   ? 'input-error'">
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('safetyStock')}"
+                       th:errors="*{safetyStock}">
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="unitPrice">
+                        단가 <span>*</span>
+                    </label>
+
+                    <input id="unitPrice"
+                           type="number"
+                           min="0"
+                           step="1"
+                           th:field="*{unitPrice}"
+                           th:classappend="${#fields.hasErrors('unitPrice')}
+                                   ? 'input-error'"
+                           placeholder="0">
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('unitPrice')}"
+                       th:errors="*{unitPrice}">
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="supplierName">공급업체명</label>
+
+                    <input id="supplierName"
+                           type="text"
+                           th:field="*{supplierName}"
+                           th:classappend="${#fields.hasErrors('supplierName')}
+                                   ? 'input-error'"
+                           placeholder="공급업체명을 입력해 주세요.">
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('supplierName')}"
+                       th:errors="*{supplierName}">
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="useYn">
+                        사용 여부 <span>*</span>
+                    </label>
+
+                    <select id="useYn"
+                            th:field="*{useYn}"
+                            th:classappend="${#fields.hasErrors('useYn')}
+                                    ? 'input-error'">
+
+                        <option value="Y">사용 중</option>
+                        <option value="N">사용 중지</option>
+                    </select>
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('useYn')}"
+                       th:errors="*{useYn}">
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <a class="cancel-button"
+                   th:href="${editMode}
+                        ? @{/material/{no}(no=${materialNo})}
+                        : @{/material}">
+                    취소
+                </a>
+
+                <button class="save-button"
+                        type="submit"
+                        th:text="${editMode}
+                                ? '수정 완료'
+                                : '등록하기'">
+                    등록하기
+                </button>
+            </div>
+
+        </form>
+    </section>
+
+</main>
+</body>
+</html>

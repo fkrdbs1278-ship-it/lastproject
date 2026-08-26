@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>발주 관리</title>
+
+    <!-- 발주 관리 화면 전용 CSS 연결 -->
+    <link rel="stylesheet"
+          th:href="@{/css/operation/purchaseorder.css}">
+</head>
+
+<body>
+<main class="purchaseorder-page">
+
+    <!-- 발주 관리 화면 제목과 상단 버튼 -->
+    <section class="purchaseorder-header">
+        <div>
+            <p class="page-category">매장 운영 관리</p>
+            <h1>발주 관리</h1>
+            <p>공급업체별 발주서와 입고 상태를 관리합니다.</p>
+        </div>
+
+        <div class="header-actions">
+            <!-- 자재 관리 화면 이동 -->
+            <a class="sub-button"
+               th:href="@{/material}">
+                자재 관리
+            </a>
+
+            <!-- 발주서 등록 화면 이동 -->
+            <a class="primary-button"
+               th:href="@{/purchaseorder/new}">
+                발주서 등록
+            </a>
+        </div>
+    </section>
+
+    <!-- 발주서 등록 완료 메시지 -->
+    <div class="message"
+         th:if="${message != null}"
+         th:text="${message}">
+    </div>
+
+    <!-- 공급업체 검색과 발주 상태 필터 -->
+    <section class="purchaseorder-filter">
+
+        <!-- 공급업체명 검색 -->
+        <form class="search-form"
+              th:action="@{/purchaseorder}"
+              method="get">
+
+            <input type="text"
+                   name="supplierName"
+                   th:value="${supplierName}"
+                   placeholder="공급업체명을 입력해 주세요.">
+
+            <button type="submit">검색</button>
+        </form>
+
+        <!-- 발주 상태 선택 -->
+        <nav class="filter-buttons">
+
+            <!-- 전체 발주서 조회 -->
+            <a th:href="@{/purchaseorder}"
+               th:classappend="${orderStatus == null
+                       or #strings.isEmpty(orderStatus)}
+                       ? 'active'">
+                전체
+            </a>
+
+            <!-- 발주 요청 상태 조회 -->
+            <a th:href="@{/purchaseorder(orderStatus='REQUESTED')}"
+               th:classappend="${orderStatus == 'REQUESTED'}
+                       ? 'active'">
+                발주 요청
+            </a>
+
+            <!-- 발주 완료 상태 조회 -->
+            <a th:href="@{/purchaseorder(orderStatus='ORDERED')}"
+               th:classappend="${orderStatus == 'ORDERED'}
+                       ? 'active'">
+                발주 완료
+            </a>
+
+            <!-- 입고 완료 상태 조회 -->
+            <a th:href="@{/purchaseorder(orderStatus='RECEIVED')}"
+               th:classappend="${orderStatus == 'RECEIVED'}
+                       ? 'active'">
+                입고 완료
+            </a>
+
+            <!-- 발주 취소 상태 조회 -->
+            <a th:href="@{/purchaseorder(orderStatus='CANCELED')}"
+               th:classappend="${orderStatus == 'CANCELED'}
+                       ? 'active'">
+                발주 취소
+            </a>
+        </nav>
+    </section>
+
+    <!-- 발주서 목록 테이블 -->
+    <section class="purchaseorder-table-wrap">
+        <table class="purchaseorder-table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>공급업체</th>
+                <th>발주 상태</th>
+                <th>발주일</th>
+                <th>입고 예정일</th>
+                <th>실제 입고일</th>
+                <th>총금액</th>
+                <th>메모</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <!-- 발주서 목록 반복 출력 -->
+            <tr th:each="order : ${orders}">
+
+                <!-- 발주서 번호 -->
+                <td th:text="${order.purchaseOrderNo}">
+                    1
+                </td>
+
+                <!-- 공급업체 이름과 상세 화면 링크 -->
+                <td>
+                    <a class="supplier-name"
+                       th:href="@{/purchaseorder/{no}
+                       (no=${order.purchaseOrderNo})}"
+                       th:text="${order.supplierName}">
+                        공급업체
+                    </a>
+                </td>
+
+                <!-- 발주 상태 -->
+                <td>
+                    <span class="order-status-badge"
+                          th:classappend="${#strings.toLowerCase(
+                                  order.orderStatus
+                          )}"
+                          th:text="${order.orderStatusName}">
+                        발주 요청
+                    </span>
+                </td>
+
+                <!-- 발주 날짜 -->
+                <td th:text="${#temporals.format(
+                        order.orderDate,
+                        'yyyy-MM-dd HH:mm'
+                )}">
+                    2026-08-26 15:30
+                </td>
+
+                <!-- 입고 예정일 -->
+                <td th:text="${order.expectedDate != null
+                        ? #temporals.format(
+                                order.expectedDate,
+                                'yyyy-MM-dd'
+                          )
+                        : '-'}">
+                    -
+                </td>
+
+                <!-- 실제 입고일 -->
+                <td th:text="${order.receivedDate != null
+                        ? #temporals.format(
+                                order.receivedDate,
+                                'yyyy-MM-dd HH:mm'
+                          )
+                        : '-'}">
+                    -
+                </td>
+
+                <!-- 발주 총금액 -->
+                <td th:text="${#numbers.formatInteger(
+                        order.totalAmount,
+                        1,
+                        'COMMA'
+                ) + '원'}">
+                    0원
+                </td>
+
+                <!-- 발주 메모 -->
+                <td class="memo-cell"
+                    th:text="${order.memo != null
+                            and !#strings.isEmpty(order.memo)
+                            ? order.memo
+                            : '-'}">
+                    -
+                </td>
+
+                <!-- 상세 화면 이동 -->
+                <td>
+                    <a class="detail-button"
+                       th:href="@{/purchaseorder/{no}
+                       (no=${order.purchaseOrderNo})}">
+                        상세
+                    </a>
+                </td>
+            </tr>
+
+            <!-- 조회된 발주서가 없을 때 표시 -->
+            <tr th:if="${#lists.isEmpty(orders)}">
+                <td class="empty-message" colspan="9">
+                    조회된 발주서가 없습니다.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+</main>
+</body>
+</html>
