@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>고객 상담 메모 QA</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f7f7f7;
+            color: #222;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .customer-info {
+            margin-bottom: 25px;
+        }
+
+        .box {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 9px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        .save-button {
+            background: #222;
+            color: white;
+            border: none;
+        }
+
+        .update-button {
+            background: #1976d2;
+            color: white;
+            border: none;
+        }
+
+        .delete-button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+        }
+
+        .memo {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .important {
+            color: red;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .meta {
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .button-area {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .empty {
+            padding: 30px;
+            text-align: center;
+            color: #777;
+        }
+
+        a {
+            color: #1565c0;
+        }
+    </style>
+</head>
+
+
+<body>
+
+<h1>고객 상담 메모 QA 테스트</h1>
+
+<div class="customer-info">
+
+    고객번호:
+    <strong th:text="${customerId}">
+        0
+    </strong>
+
+    &nbsp; | &nbsp;
+
+    <a th:href="@{/admin/customers}">
+        고객 목록으로
+    </a>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- 메모 등록 -->
+<!-- ================================================= -->
+
+<div class="box">
+
+    <h2>새 상담 메모 등록</h2>
+
+    <form
+            method="post"
+            th:action="@{/admin/customers/{customerId}/memos(customerId=${customerId})}"
+            th:object="${memoRequest}"
+    >
+
+        <!-- Spring Security CSRF -->
+        <input
+                type="hidden"
+                th:if="${_csrf != null}"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+        >
+
+
+        <div class="form-row">
+
+            <label for="memoType">
+                메모 유형
+            </label>
+
+            <select
+                    id="memoType"
+                    th:field="*{memoType}"
+            >
+
+                <option value="">
+                    선택
+                </option>
+
+                <option value="COUNSELING">
+                    상담
+                </option>
+
+                <option value="ALLERGY">
+                    알레르기
+                </option>
+
+                <option value="SCALP">
+                    두피
+                </option>
+
+                <option value="HAIR">
+                    모발
+                </option>
+
+                <option value="GENERAL">
+                    일반
+                </option>
+
+            </select>
+
+            <div
+                    class="error"
+                    th:if="${#fields.hasErrors('memoType')}"
+                    th:errors="*{memoType}"
+            ></div>
+
+        </div>
+
+
+        <div class="form-row">
+
+            <label for="memoContent">
+                메모 내용
+            </label>
+
+            <textarea
+                    id="memoContent"
+                    th:field="*{memoContent}"
+                    placeholder="상담 내용 또는 고객 특이사항을 입력하세요."
+            ></textarea>
+
+            <div
+                    class="error"
+                    th:if="${#fields.hasErrors('memoContent')}"
+                    th:errors="*{memoContent}"
+            ></div>
+
+        </div>
+
+
+        <div class="form-row">
+
+            <label for="importantYn">
+                중요 여부
+            </label>
+
+            <select
+                    id="importantYn"
+                    th:field="*{importantYn}"
+            >
+
+                <option value="">
+                    선택
+                </option>
+
+                <option value="N">
+                    일반
+                </option>
+
+                <option value="Y">
+                    중요
+                </option>
+
+            </select>
+
+            <div
+                    class="error"
+                    th:if="${#fields.hasErrors('importantYn')}"
+                    th:errors="*{importantYn}"
+            ></div>
+
+        </div>
+
+
+        <button
+                type="submit"
+                class="save-button"
+        >
+            메모 등록
+        </button>
+
+    </form>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- 등록된 메모 목록 -->
+<!-- ================================================= -->
+
+<h2>등록된 상담 메모</h2>
+
+
+<div
+        class="memo"
+        th:each="memo : ${memos}"
+>
+
+    <div class="meta">
+
+        메모번호:
+        <span th:text="${memo.memoId}">
+            1
+        </span>
+
+        &nbsp; | &nbsp;
+
+        작성일:
+        <span th:text="${memo.createdAt}">
+            2026-08-26
+        </span>
+
+        &nbsp;
+
+        <span
+                class="important"
+                th:if="${memo.importantYn == 'Y'}"
+        >
+            ★ 중요
+        </span>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- 메모 수정 -->
+    <!-- ================================================= -->
+
+    <form
+            method="post"
+            th:action="@{/admin/customers/{customerId}/memos/{memoId}/update(
+                        customerId=${customerId},
+                        memoId=${memo.memoId}
+                       )}"
+    >
+
+        <!-- Spring Security CSRF -->
+        <input
+                type="hidden"
+                th:if="${_csrf != null}"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+        >
+
+
+        <div class="form-row">
+
+            <label>
+                메모 유형
+            </label>
+
+            <select name="memoType">
+
+                <option
+                        value="COUNSELING"
+                        th:selected="${memo.memoType == 'COUNSELING'}"
+                >
+                    상담
+                </option>
+
+                <option
+                        value="ALLERGY"
+                        th:selected="${memo.memoType == 'ALLERGY'}"
+                >
+                    알레르기
+                </option>
+
+                <option
+                        value="SCALP"
+                        th:selected="${memo.memoType == 'SCALP'}"
+                >
+                    두피
+                </option>
+
+                <option
+                        value="HAIR"
+                        th:selected="${memo.memoType == 'HAIR'}"
+                >
+                    모발
+                </option>
+
+                <option
+                        value="GENERAL"
+                        th:selected="${memo.memoType == 'GENERAL'}"
+                >
+                    일반
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-row">
+
+            <label>
+                메모 내용
+            </label>
+
+            <textarea
+                    name="memoContent"
+                    th:text="${memo.memoContent}"
+            ></textarea>
+
+        </div>
+
+
+        <div class="form-row">
+
+            <label>
+                중요 여부
+            </label>
+
+            <select name="importantYn">
+
+                <option
+                        value="N"
+                        th:selected="${memo.importantYn == 'N'}"
+                >
+                    일반
+                </option>
+
+                <option
+                        value="Y"
+                        th:selected="${memo.importantYn == 'Y'}"
+                >
+                    중요
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+                type="submit"
+                class="update-button"
+        >
+            수정
+        </button>
+
+    </form>
+
+
+    <!-- ================================================= -->
+    <!-- 메모 삭제 -->
+    <!-- ================================================= -->
+
+    <form
+            method="post"
+            th:action="@{/admin/customers/{customerId}/memos/{memoId}/delete(
+                        customerId=${customerId},
+                        memoId=${memo.memoId}
+                       )}"
+            style="margin-top: 10px;"
+    >
+
+        <!-- Spring Security CSRF -->
+        <input
+                type="hidden"
+                th:if="${_csrf != null}"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+        >
+
+        <button
+                type="submit"
+                class="delete-button"
+                onclick="return confirm('이 메모를 삭제하시겠습니까?');"
+        >
+            삭제
+        </button>
+
+    </form>
+
+</div>
+
+
+<div
+        class="box empty"
+        th:if="${#lists.isEmpty(memos)}"
+>
+    등록된 상담 메모가 없습니다.
+</div>
+
+
+</body>
+</html>
