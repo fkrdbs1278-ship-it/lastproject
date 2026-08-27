@@ -129,6 +129,71 @@ public class CustomerProfile {
             updatable = false
     )
     private LocalDateTime updatedAt;
+
+
+    // =====================================================
+    // 전화예약 / 비회원 고객 생성
+    // =====================================================
+
+    /**
+     * 관리자 전화예약으로 처음 등록하는
+     * 비회원 고객을 생성합니다.
+     *
+     * 초기값:
+     *
+     * MEMBER_NO       = null
+     * CUSTOMER_TYPE   = GUEST
+     * GRADE_CODE      = NORMAL
+     * GRADE_MANUAL_YN = N
+     * VISIT_COUNT     = 0
+     * TOTAL_PAYMENT   = 0
+     * ACTIVE_YN       = Y
+     */
+    public static CustomerProfile createGuestCustomer(
+            String customerName,
+            String phone,
+            CustomerGrade normalGrade
+    ) {
+
+        CustomerProfile customer =
+                new CustomerProfile();
+
+        customer.memberNo = null;
+
+        customer.customerName =
+                customerName;
+
+        customer.phone =
+                phone;
+
+        customer.customerType =
+                "GUEST";
+
+        customer.customerGrade =
+                normalGrade;
+
+        customer.gradeManualYn =
+                "N";
+
+        customer.lastVisitDate =
+                null;
+
+        customer.visitCount =
+                0;
+
+        customer.totalPayment =
+                BigDecimal.ZERO;
+
+        customer.revisitRecommendedDate =
+                null;
+
+        customer.activeYn =
+                "Y";
+
+        return customer;
+    }
+
+
     // =====================================================
     // 고객 등급 관리
     // =====================================================
@@ -139,13 +204,16 @@ public class CustomerProfile {
      * 관리자가 수동으로 등급을 지정한 고객은
      * 자동 계산 결과가 기존 등급을 덮어쓰지 않습니다.
      */
-    public void applyAutomaticGrade(CustomerGrade customerGrade) {
+    public void applyAutomaticGrade(
+            CustomerGrade customerGrade
+    ) {
 
         if ("Y".equals(this.gradeManualYn)) {
             return;
         }
 
-        this.customerGrade = customerGrade;
+        this.customerGrade =
+                customerGrade;
     }
 
 
@@ -155,10 +223,15 @@ public class CustomerProfile {
      * 수동 변경 여부를 Y로 설정하여
      * 이후 자동 등급 계산에서 제외합니다.
      */
-    public void changeGradeManually(CustomerGrade customerGrade) {
+    public void changeGradeManually(
+            CustomerGrade customerGrade
+    ) {
 
-        this.customerGrade = customerGrade;
-        this.gradeManualYn = "Y";
+        this.customerGrade =
+                customerGrade;
+
+        this.gradeManualYn =
+                "Y";
     }
 
 
@@ -166,9 +239,14 @@ public class CustomerProfile {
      * 수동 등급 설정을 해제하고
      * 다시 자동 등급 관리 상태로 변경합니다.
      */
-    public void changeGradeAutomatically(CustomerGrade customerGrade) {
+    public void changeGradeAutomatically(
+            CustomerGrade customerGrade
+    ) {
 
-        this.customerGrade = customerGrade;
-        this.gradeManualYn = "N";
+        this.customerGrade =
+                customerGrade;
+
+        this.gradeManualYn =
+                "N";
     }
 }

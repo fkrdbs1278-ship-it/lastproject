@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>전화예약 고객 등록</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f5f7;
+            color: #222;
+        }
+
+
+        /* =====================================================
+           전체 관리자 레이아웃
+        ===================================================== */
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           왼쪽 사이드바
+           4번 작업자 대시보드 디자인 참고
+        ===================================================== */
+
+        .sidebar {
+            width: 230px;
+            background: #17191d;
+            color: white;
+            padding: 24px 18px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 35px;
+        }
+
+        .menu-title {
+            color: #888;
+            font-size: 12px;
+            margin: 22px 10px 10px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .menu a {
+            display: block;
+            padding: 12px 14px;
+            border-radius: 7px;
+            color: #c8c8c8;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .menu a:hover {
+            background: #292c32;
+            color: white;
+        }
+
+        .menu a.active {
+            background: #333740;
+            color: white;
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           오른쪽 메인 영역
+        ===================================================== */
+
+        .main {
+            flex: 1;
+            padding: 30px 40px;
+        }
+
+
+        /* =====================================================
+           상단 헤더
+        ===================================================== */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .header-title p {
+            margin: 8px 0 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .back-button {
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            background: white;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background: #f1f1f1;
+        }
+
+
+        /* =====================================================
+           알림 메시지
+        ===================================================== */
+
+        .error-message {
+            max-width: 760px;
+            margin-bottom: 20px;
+            padding: 14px 16px;
+            border: 1px solid #ef9a9a;
+            border-radius: 8px;
+            background: #ffebee;
+            color: #c62828;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           등록 카드
+        ===================================================== */
+
+        .card {
+            max-width: 760px;
+            background: white;
+            border: 1px solid #e3e3e3;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-header {
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header h2 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .card-header p {
+            margin: 0;
+            font-size: 14px;
+            color: #777;
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           입력 폼
+        ===================================================== */
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .required {
+            color: #d32f2f;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 44px;
+            padding: 0 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #333;
+        }
+
+        .guide {
+            margin-top: 7px;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .field-error {
+            margin-top: 7px;
+            color: #d32f2f;
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           신규 고객 기본값 안내
+        ===================================================== */
+
+        .default-info {
+            padding: 18px;
+            margin: 25px 0;
+            background: #f7f8fa;
+            border-radius: 8px;
+        }
+
+        .default-info h3 {
+            margin: 0 0 12px;
+            font-size: 15px;
+        }
+
+        .default-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .default-item {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .default-item strong {
+            color: #222;
+        }
+
+
+        /* =====================================================
+           버튼
+        ===================================================== */
+
+        .button-area {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding-top: 5px;
+        }
+
+        .cancel-button,
+        .submit-button {
+            min-width: 110px;
+            padding: 11px 18px;
+            border-radius: 7px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .cancel-button {
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .cancel-button:hover {
+            background: #f5f5f5;
+        }
+
+        .submit-button {
+            border: none;
+            background: #22252a;
+            color: white;
+        }
+
+        .submit-button:hover {
+            background: #000;
+        }
+
+
+        /* =====================================================
+           반응형
+        ===================================================== */
+
+        @media (max-width: 850px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                padding: 20px;
+            }
+
+            .default-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<div class="admin-layout">
+
+
+    <!-- =====================================================
+         관리자 사이드바
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Salon Admin
+        </div>
+
+
+        <div class="menu-title">
+            MANAGEMENT
+        </div>
+
+
+        <nav class="menu">
+
+            <!--
+                대시보드 실제 URL이 팀에서 확정되면
+                나중에 경로만 연결합니다.
+            -->
+            <a href="#">
+                대시보드
+            </a>
+
+            <a href="#">
+                예약 관리
+            </a>
+
+            <a
+                    th:href="@{/admin/customers}"
+                    class="active">
+                고객 관리
+            </a>
+
+            <a href="#">
+                시술 메뉴 관리
+            </a>
+
+            <a href="#">
+                재고 관리
+            </a>
+
+            <a href="#">
+                매출 관리
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- =====================================================
+         메인
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- =================================================
+             상단
+        ================================================== -->
+
+        <div class="header">
+
+            <div class="header-title">
+
+                <h1>
+                    전화예약 고객 등록
+                </h1>
+
+                <p>
+                    전화로 예약한 신규 고객을 CRM에 직접 등록합니다.
+                </p>
+
+            </div>
+
+
+            <a
+                    class="back-button"
+                    th:href="@{/admin/customers}">
+                고객 목록
+            </a>
+
+        </div>
+
+
+        <!-- =================================================
+             Advice에서 전달된 중복 전화번호 오류
+        ================================================== -->
+
+        <div
+                class="error-message"
+                th:if="${errorMessage != null}"
+                th:text="${errorMessage}">
+
+            이미 등록된 전화번호입니다.
+
+        </div>
+
+
+        <!-- =================================================
+             고객 등록 카드
+        ================================================== -->
+
+        <section class="card">
+
+
+            <div class="card-header">
+
+                <h2>
+                    신규 고객 정보
+                </h2>
+
+                <p>
+                    고객명과 전화번호를 입력하면 비회원 고객으로
+                    CRM에 등록됩니다.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 등록 FORM
+            ================================================== -->
+
+            <form
+                    method="post"
+                    th:action="@{/admin/customers/new}"
+                    th:object="${customerCreateRequest}">
+
+
+                <!-- =============================================
+                     Spring Security CSRF
+                ============================================== -->
+
+                <input
+                        type="hidden"
+                        th:if="${_csrf != null}"
+                        th:name="${_csrf.parameterName}"
+                        th:value="${_csrf.token}">
+
+
+                <!-- =============================================
+                     고객명
+                ============================================== -->
+
+                <div class="form-group">
+
+                    <label for="customerName">
+
+                        고객명
+                        <span class="required">*</span>
+
+                    </label>
+
+
+                    <input
+                            class="form-control"
+                            type="text"
+                            id="customerName"
+                            th:field="*{customerName}"
+                            maxlength="50"
+                            placeholder="고객명을 입력해 주세요">
+
+
+                    <!-- Validation 오류 -->
+
+                    <div
+                            class="field-error"
+                            th:if="${#fields.hasErrors('customerName')}"
+                            th:errors="*{customerName}">
+
+                        고객명을 입력해 주세요.
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     전화번호
+                ============================================== -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+
+                        전화번호
+                        <span class="required">*</span>
+
+                    </label>
+
+
+                    <input
+                            class="form-control"
+                            type="text"
+                            id="phone"
+                            th:field="*{phone}"
+                            maxlength="20"
+                            placeholder="010-1234-5678">
+
+
+                    <div class="guide">
+
+                        하이픈(-)을 포함해서 입력해도 저장할 때
+                        숫자만 자동으로 정리됩니다.
+
+                    </div>
+
+
+                    <!-- Validation 오류 -->
+
+                    <div
+                            class="field-error"
+                            th:if="${#fields.hasErrors('phone')}"
+                            th:errors="*{phone}">
+
+                        올바른 전화번호를 입력해 주세요.
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     신규 전화예약 고객 기본값 안내
+                ============================================== -->
+
+                <div class="default-info">
+
+                    <h3>
+                        신규 고객 기본 설정
+                    </h3>
+
+
+                    <div class="default-grid">
+
+
+                        <div class="default-item">
+
+                            고객유형:
+                            <strong>GUEST</strong>
+
+                        </div>
+
+
+                        <div class="default-item">
+
+                            고객등급:
+                            <strong>NORMAL</strong>
+
+                        </div>
+
+
+                        <div class="default-item">
+
+                            등급관리:
+                            <strong>자동</strong>
+
+                        </div>
+
+
+                        <div class="default-item">
+
+                            방문횟수:
+                            <strong>0회</strong>
+
+                        </div>
+
+
+                        <div class="default-item">
+
+                            누적결제:
+                            <strong>0원</strong>
+
+                        </div>
+
+
+                        <div class="default-item">
+
+                            활성여부:
+                            <strong>활성</strong>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =============================================
+                     버튼
+                ============================================== -->
+
+                <div class="button-area">
+
+
+                    <a
+                            class="cancel-button"
+                            th:href="@{/admin/customers}">
+                        취소
+                    </a>
+
+
+                    <button
+                            class="submit-button"
+                            type="submit">
+                        고객 등록
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+</body>
+
+</html>
