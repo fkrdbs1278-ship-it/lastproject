@@ -64,14 +64,23 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="categoryCode">카테고리 코드</label>
+                    <label for="categoryCode">
+                        카테고리 코드 <span>*</span>
+                    </label>
 
-                    <input id="categoryCode"
-                           type="text"
-                           th:field="*{categoryCode}"
-                           th:classappend="${#fields.hasErrors('categoryCode')}
-                                   ? 'input-error'"
-                           placeholder="예: HAIR_COLOR">
+                    <select id="categoryCode"
+                            th:field="*{categoryCode}"
+                            th:classappend="${#fields.hasErrors('categoryCode')}
+	                                    ? 'input-error'">
+                        <option value="">카테고리를 선택해 주세요.</option>
+                        <option value="HAIR_COLOR">염모제 (HAIR_COLOR)</option>
+                        <option value="PERM">펌제 (PERM)</option>
+                        <option value="TREATMENT">클리닉·케어제 (TREATMENT)</option>
+                        <option value="SHAMPOO">샴푸·두피 제품 (SHAMPOO)</option>
+                        <option value="STYLING">스타일링 제품 (STYLING)</option>
+                        <option value="SUPPLIES">소모품 (SUPPLIES)</option>
+                        <option value="ETC">기타 (ETC)</option>
+                    </select>
 
                     <p class="field-error"
                        th:if="${#fields.hasErrors('categoryCode')}"
@@ -84,12 +93,19 @@
                         단위 코드 <span>*</span>
                     </label>
 
-                    <input id="unitCode"
-                           type="text"
-                           th:field="*{unitCode}"
-                           th:classappend="${#fields.hasErrors('unitCode')}
-                                   ? 'input-error'"
-                           placeholder="예: EA, ML, G">
+                    <select id="unitCode"
+                            th:field="*{unitCode}"
+                            th:classappend="${#fields.hasErrors('unitCode')}
+	                                    ? 'input-error'">
+                        <option value="">단위를 선택해 주세요.</option>
+                        <option value="EA">개 (EA)</option>
+                        <option value="BTL">병 (BTL)</option>
+                        <option value="TUB">통 (TUB)</option>
+                        <option value="PACK">팩 (PACK)</option>
+                        <option value="ROLL">롤 (ROLL)</option>
+                        <option value="BOX">박스 (BOX)</option>
+                        <option value="SET">세트 (SET)</option>
+                    </select>
 
                     <p class="field-error"
                        th:if="${#fields.hasErrors('unitCode')}"
