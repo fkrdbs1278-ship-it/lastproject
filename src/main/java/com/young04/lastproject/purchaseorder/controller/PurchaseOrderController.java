@@ -21,7 +21,7 @@ import java.util.List;
 // 발주서 화면 요청과 응답을 처리하는 Controller
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/purchaseorder")
+@RequestMapping("/admin/purchaseorder")
 public class PurchaseOrderController {
 
     // 발주서 업무 처리를 담당하는 Service
@@ -102,7 +102,7 @@ public class PurchaseOrderController {
         );
 
         // 등록된 발주서 상세 화면으로 이동
-        return "redirect:/purchaseorder/" + purchaseOrderNo;
+        return "redirect:/admin/purchaseorder/" + purchaseOrderNo;
     }
 
     // 발주서 상세 화면 조회

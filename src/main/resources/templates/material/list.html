@@ -19,12 +19,12 @@
 
         <div class="material-header-actions">
             <a class="history-button"
-               th:href="@{/stockhistory}">
+               th:href="@{/admin/stockhistory}">
                 재고 변동 이력
             </a>
 
             <a class="primary-button"
-               th:href="@{/material/new}">
+               th:href="@{/admin/material/new}">
                 자재 등록
             </a>
         </div>
@@ -37,7 +37,7 @@
 
     <section class="material-summary">
         <a class="summary-card"
-           th:href="@{/materials(lowStock=true)}">
+           th:href="@{/admin/material(lowStock=true)}">
             <span>재고 부족</span>
 
             <strong th:text="${lowStockCount}">0</strong>
@@ -49,7 +49,7 @@
     <section class="material-filter">
 
         <form class="search-form"
-              th:action="@{/material}"
+              th:action="@{/admin/material}"
               method="get">
 
             <input type="text"
@@ -61,23 +61,23 @@
         </form>
 
         <nav class="filter-buttons">
-            <a th:href="@{/material}"
+            <a th:href="@{/admin/material}"
                th:classappend="${keyword == null and useYn == null and !lowStock}
                        ? 'active'">
                 전체
             </a>
 
-            <a th:href="@{/material(useYn='Y')}"
+            <a th:href="@{/admin/material(useYn='Y')}"
                th:classappend="${useYn == 'Y'} ? 'active'">
                 사용 중
             </a>
 
-            <a th:href="@{/material(useYn='N')}"
+            <a th:href="@{/admin/material(useYn='N')}"
                th:classappend="${useYn == 'N'} ? 'active'">
                 사용 중지
             </a>
 
-            <a th:href="@{/material(lowStock=true)}"
+            <a th:href="@{/admin/material(lowStock=true)}"
                th:classappend="${lowStock} ? 'active'">
                 재고 부족
             </a>
@@ -111,7 +111,7 @@
 
                 <td>
                     <a class="material-name"
-                       th:href="@{/material/{no}
+                       th:href="@{/admin/material/{no}
                        (no=${material.materialNo})}"
                        th:text="${material.materialName}">
                         자재명
@@ -167,7 +167,7 @@
 
                 <td>
                     <a class="edit-button"
-                       th:href="@{/material/{no}/edit
+                       th:href="@{/admin/material/{no}/edit
                        (no=${material.materialNo})}">
                         수정
                     </a>

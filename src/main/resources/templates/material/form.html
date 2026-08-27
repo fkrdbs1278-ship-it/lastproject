@@ -28,7 +28,7 @@
         </div>
 
         <a class="back-button"
-           th:href="@{/material}">
+           th:href="@{/admin/material}">
             목록으로
         </a>
     </section>
@@ -40,8 +40,8 @@
               method="post"
               th:object="${materialRequest}"
               th:action="${editMode}
-                    ? @{/material/{no}/edit(no=${materialNo})}
-                    : @{/material}">
+                    ? @{/admin/material/{no}/edit(no=${materialNo})}
+                    : @{/admin/material}">
 
             <div class="form-grid">
 
@@ -122,7 +122,7 @@
                     <input id="currentStock"
                            type="number"
                            min="0"
-                           step="0.01"
+                           step="1"
                            th:field="*{currentStock}"
                            th:readonly="${editMode}"
                            th:classappend="${#fields.hasErrors('currentStock')}
@@ -146,7 +146,7 @@
                     <input id="safetyStock"
                            type="number"
                            min="0"
-                           step="0.01"
+                           step="1"
                            th:field="*{safetyStock}"
                            th:classappend="${#fields.hasErrors('safetyStock')}
                                    ? 'input-error'">
@@ -159,7 +159,7 @@
 
                 <div class="form-group">
                     <label for="unitPrice">
-                        단가 <span>*</span>
+                        공급가 <span>*</span>
                     </label>
 
                     <input id="unitPrice"
@@ -218,8 +218,8 @@
             <div class="form-actions">
                 <a class="cancel-button"
                    th:href="${editMode}
-                        ? @{/material/{no}(no=${materialNo})}
-                        : @{/material}">
+                        ? @{/admin/material/{no}(no=${materialNo})}
+                        : @{/admin/material}">
                     취소
                 </a>
 

@@ -23,13 +23,13 @@
         <div class="header-actions">
             <!-- 자재 관리 화면 이동 -->
             <a class="sub-button"
-               th:href="@{/material}">
+               th:href="@{/admin/material}">
                 자재 관리
             </a>
 
             <!-- 발주서 등록 화면 이동 -->
             <a class="primary-button"
-               th:href="@{/purchaseorder/new}">
+               th:href="@{/admin/purchaseorder/new}">
                 발주서 등록
             </a>
         </div>
@@ -46,7 +46,7 @@
 
         <!-- 공급업체명 검색 -->
         <form class="search-form"
-              th:action="@{/purchaseorder}"
+              th:action="@{/admin/purchaseorder}"
               method="get">
 
             <input type="text"
@@ -61,7 +61,7 @@
         <nav class="filter-buttons">
 
             <!-- 전체 발주서 조회 -->
-            <a th:href="@{/purchaseorder}"
+            <a th:href="@{/admin/purchaseorder}"
                th:classappend="${orderStatus == null
                        or #strings.isEmpty(orderStatus)}
                        ? 'active'">
@@ -69,28 +69,28 @@
             </a>
 
             <!-- 발주 요청 상태 조회 -->
-            <a th:href="@{/purchaseorder(orderStatus='REQUESTED')}"
+            <a th:href="@{/admin/purchaseorder(orderStatus='REQUESTED')}"
                th:classappend="${orderStatus == 'REQUESTED'}
                        ? 'active'">
                 발주 요청
             </a>
 
             <!-- 발주 완료 상태 조회 -->
-            <a th:href="@{/purchaseorder(orderStatus='ORDERED')}"
+            <a th:href="@{/admin/purchaseorder(orderStatus='ORDERED')}"
                th:classappend="${orderStatus == 'ORDERED'}
                        ? 'active'">
                 발주 완료
             </a>
 
             <!-- 입고 완료 상태 조회 -->
-            <a th:href="@{/purchaseorder(orderStatus='RECEIVED')}"
+            <a th:href="@{/admin/purchaseorder(orderStatus='RECEIVED')}"
                th:classappend="${orderStatus == 'RECEIVED'}
                        ? 'active'">
                 입고 완료
             </a>
 
             <!-- 발주 취소 상태 조회 -->
-            <a th:href="@{/purchaseorder(orderStatus='CANCELED')}"
+            <a th:href="@{/admin/purchaseorder(orderStatus='CANCELED')}"
                th:classappend="${orderStatus == 'CANCELED'}
                        ? 'active'">
                 발주 취소
@@ -127,7 +127,7 @@
                 <!-- 공급업체 이름과 상세 화면 링크 -->
                 <td>
                     <a class="supplier-name"
-                       th:href="@{/purchaseorder/{no}
+                       th:href="@{/admin/purchaseorder/{no}
                        (no=${order.purchaseOrderNo})}"
                        th:text="${order.supplierName}">
                         공급업체
@@ -194,7 +194,7 @@
                 <!-- 상세 화면 이동 -->
                 <td>
                     <a class="detail-button"
-                       th:href="@{/purchaseorder/{no}
+                       th:href="@{/admin/purchaseorder/{no}
                        (no=${order.purchaseOrderNo})}">
                         상세
                     </a>

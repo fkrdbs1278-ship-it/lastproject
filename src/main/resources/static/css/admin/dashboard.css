@@ -337,7 +337,7 @@ a {
     padding: 25px;
 }
 
-/* 달력 제목과 주간 이동 버튼 */
+/* 달력 제목 영역 */
 .calendar-panel-header {
     display: flex;
     align-items: flex-start;
@@ -355,11 +355,29 @@ a {
     letter-spacing: -0.5px;
 }
 
-.calendar-description {
-    color: #959aa3;
-    font-size: 12px;
+/* 이번 주 예약 요약 */
+.calendar-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    color: #8b9099;
+    font-size: 11px;
 }
 
+.calendar-summary strong {
+    color: #3f434a;
+}
+
+.calendar-summary span {
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+    background-color: #c7cad0;
+}
+
+/* 달력 이동 영역 */
 .calendar-controller {
     display: flex;
     flex-direction: column;
@@ -379,7 +397,12 @@ a {
 }
 
 .calendar-move-button,
-.calendar-today-button {
+.calendar-today-button,
+.calendar-all-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     height: 32px;
 
     border: 1px solid #dde1e7;
@@ -400,6 +423,7 @@ a {
     width: 32px;
 
     border-radius: 9px;
+
     font-size: 20px;
     line-height: 1;
 }
@@ -412,8 +436,22 @@ a {
     font-size: 12px;
 }
 
+.calendar-all-button {
+    gap: 7px;
+
+    min-width: 112px;
+    padding: 0 12px;
+
+    border-radius: 9px;
+
+    color: var(--rose-dark);
+    font-size: 11px;
+    text-decoration: none;
+}
+
 .calendar-move-button:hover,
-.calendar-today-button:hover {
+.calendar-today-button:hover,
+.calendar-all-button:hover {
     border-color: var(--rose);
     background-color: #fcf5f8;
     color: var(--rose-dark);
@@ -428,15 +466,15 @@ a {
     background-color: #ffffff;
 }
 
-/* 요일 제목 */
+/* 날짜 제목과 시간 행 */
 .schedule-header,
 .schedule-row {
     display: grid;
-    grid-template-columns: 66px repeat(7, minmax(80px, 1fr));
+    grid-template-columns: 66px repeat(7, minmax(86px, 1fr));
 }
 
 .schedule-header {
-    min-height: 60px;
+    min-height: 70px;
 
     border-bottom: 1px solid #e1e5eb;
     background-color: #f8f9fb;
@@ -453,13 +491,14 @@ a {
 
 .time-heading {
     color: #8c919a;
+
     font-size: 11px;
     font-weight: 700;
 }
 
 .day-heading {
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
 
     color: #686d76;
 }
@@ -469,7 +508,7 @@ a {
 }
 
 .day-heading span {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
 }
 
@@ -484,10 +523,22 @@ a {
     border-radius: 50%;
 
     color: #2d3036;
+
     font-size: 14px;
 }
 
-/* 오늘 날짜 강조 */
+.day-heading small {
+    color: #989da5;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+/* 오늘 날짜 */
+.day-heading.today {
+    background-color: #fcf7f9;
+}
+
 .day-heading.today strong {
     background-color: var(--rose);
     color: #ffffff;
@@ -495,19 +546,25 @@ a {
     box-shadow: 0 4px 10px rgba(176, 111, 141, 0.25);
 }
 
+.day-heading.today small {
+    color: var(--rose-dark);
+}
+
+/* 토요일과 일요일 */
 .day-heading.saturday span,
 .day-heading.saturday strong {
     color: #6687b3;
 }
 
 .day-heading.sunday span,
-.day-heading.sunday strong {
+.day-heading.sunday strong,
+.day-heading.sunday small {
     color: #d2676c;
 }
 
-/* 시간별 한 줄 */
+/* 시간별 행 */
 .schedule-row {
-    min-height: 72px;
+    min-height: 82px;
 
     border-bottom: 1px solid #e6e9ee;
 }
@@ -518,20 +575,23 @@ a {
 
 .schedule-time {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
 
-    padding-top: 13px;
+    padding: 0;
 
     border-right: 1px solid #e6e9ee;
     background-color: #fafbfc;
 
     color: #777c85;
+
     font-size: 11px;
     font-weight: 700;
 }
 
 .schedule-cell {
+    position: relative;
+
     min-width: 0;
     padding: 5px;
 
@@ -543,9 +603,17 @@ a {
     border-right: 0;
 }
 
-/* 마우스를 올린 빈 시간 */
 .schedule-cell:empty:hover {
-    background-color: #faf5f8;
+    background-color: #f8fafc;
+}
+
+/* 오늘 날짜 열 */
+.schedule-cell.today-column {
+    background-color: #fdf9fb;
+}
+
+.schedule-cell.today-column:empty:hover {
+    background-color: #faeff4;
 }
 
 /* 예약 카드 */
@@ -556,23 +624,28 @@ a {
     gap: 4px;
 
     width: 100%;
-    min-height: 60px;
-    padding: 9px 8px;
+    min-height: 70px;
+    padding: 8px 8px;
 
     border: 0;
     border-left: 3px solid transparent;
     border-radius: 8px;
 
     text-align: left;
+
     cursor: pointer;
 
     transition:
             filter 0.2s ease,
-            transform 0.2s ease;
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
 }
 
 .reservation-block:hover {
-    filter: brightness(0.97);
+    filter: brightness(0.98);
+
+    box-shadow: 0 4px 10px rgba(31, 34, 40, 0.08);
+
     transform: translateY(-1px);
 }
 
@@ -582,8 +655,8 @@ a {
     width: 100%;
 
     color: #34373e;
-    font-size: 11px;
 
+    font-size: 11px;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
@@ -594,47 +667,61 @@ a {
     width: 100%;
 
     color: #777c85;
-    font-size: 10px;
 
+    font-size: 10px;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-/* 예약 확정 */
-.confirmed-reservation {
+.reservation-block small {
+    overflow: hidden;
+
+    width: 100%;
+
+    margin-top: 1px;
+
+    color: #9a9fa8;
+
+    font-size: 9px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* 예약 상태 */
+.reserved-reservation {
     border-left-color: #6f91bf;
     background-color: #edf3fa;
 }
 
-/* 방문 대기 */
-.waiting-reservation {
-    border-left-color: var(--rose);
-    background-color: var(--rose-light);
-}
-
-/* 방문 완료 */
 .completed-reservation {
     border-left-color: #65a084;
     background-color: #e9f2ed;
 }
 
-/* 점심시간 */
-.break-row .schedule-cell {
-    background-color: #fafbfc;
+.no-show-reservation {
+    border-left-color: #d86771;
+    background-color: #fbe9eb;
 }
 
-.break-block {
+/* 점심시간 */
+.lunch-row {
+    min-height: 62px;
+}
+
+.lunch-cell {
+    grid-column: 2 / 8;
+
     display: flex;
     align-items: center;
     justify-content: center;
 
-    width: 100%;
-    min-height: 60px;
+    margin: 6px;
 
     border-radius: 8px;
     background-color: #f0f1f4;
 
-    color: #a0a4ab;
+    color: #989ca4;
+
     font-size: 10px;
     font-weight: 700;
 }
@@ -645,23 +732,46 @@ a {
     align-items: center;
     justify-content: center;
 
-    background-color: #fafafa;
-
-    color: #c3c5ca;
-    font-size: 10px;
-    font-weight: 700;
+    background:
+            repeating-linear-gradient(
+                    -45deg,
+                    #fafafa,
+                    #fafafa 6px,
+                    #f6f6f7 6px,
+                    #f6f6f7 12px
+            );
 }
 
-/* 달력 아래 상태 안내 */
+.holiday-text {
+    color: #b0b3ba;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    writing-mode: vertical-rl;
+}
+
+/* 달력 하단 */
+.calendar-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    width: 100%;
+    margin-top: 14px;
+}
+
 .calendar-legend {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 18px;
 
-    margin-top: 14px;
+    width: fit-content;
+    margin-left: auto;
 
     color: #777c85;
+
     font-size: 11px;
     font-weight: 700;
 }
@@ -681,16 +791,16 @@ a {
     border-radius: 50%;
 }
 
-.confirmed-color {
+.reserved-color {
     background-color: #6f91bf;
-}
-
-.waiting-color {
-    background-color: var(--rose);
 }
 
 .completed-color {
     background-color: #65a084;
+}
+
+.no-show-color {
+    background-color: #d86771;
 }
 
 /* 재고 요약 */

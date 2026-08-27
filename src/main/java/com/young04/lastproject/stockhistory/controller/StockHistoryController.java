@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/stockhistory")
+@RequestMapping("/admin/stockhistory")
 public class StockHistoryController {
 
     private final StockHistoryService stockHistoryService;

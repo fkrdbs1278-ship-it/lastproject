@@ -19,7 +19,7 @@ import java.util.List;
 @Controller
 
 // 자재 관리의 공통 주소 설정
-@RequestMapping("/material")
+@RequestMapping("/admin/material")
 public class MaterialController {
 
     private final MaterialService materialService;
@@ -100,7 +100,7 @@ public class MaterialController {
                 "자재가 등록되었습니다."
         );
 
-        return "redirect:/material";
+        return "redirect:/admin/material";
     }
 
     // 기존 자재 정보를 수정 화면에 전달
@@ -145,7 +145,7 @@ public class MaterialController {
                 "자재 정보가 수정되었습니다."
         );
 
-        return "redirect:/material/" + materialNo;
+        return "redirect:/admin/material/" + materialNo;
     }
 
     // 조회 DTO를 수정 화면용 DTO로 변환

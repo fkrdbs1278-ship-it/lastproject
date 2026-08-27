@@ -23,14 +23,14 @@
         </div>
 
         <a class="material-link"
-           th:href="@{/material}">
+           th:href="@{/admin/material}">
             자재 목록
         </a>
     </section>
 
     <section class="filter-card">
         <form class="filter-form"
-              th:action="@{/stockhistory}"
+              th:action="@{/admin/stockhistory}"
               method="get">
 
             <div class="filter-field">
@@ -50,7 +50,7 @@
                 </button>
 
                 <a class="reset-button"
-                   th:href="@{/stockhistory}">
+                   th:href="@{/admin/stockhistory}">
                     초기화
                 </a>
             </div>
