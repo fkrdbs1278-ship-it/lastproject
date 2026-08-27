@@ -18,11 +18,19 @@
         </div>
 
         <div class="material-header-actions">
+            <!-- 발주 관리 페이지로 이동 -->
+            <a class="history-button"
+               th:href="@{/admin/purchaseorder}">
+                발주 관리
+            </a>
+
+            <!-- 재고 변동 이력 페이지로 이동 -->
             <a class="history-button"
                th:href="@{/admin/stockhistory}">
                 재고 변동 이력
             </a>
 
+            <!-- 자재 등록 페이지로 이동 -->
             <a class="primary-button"
                th:href="@{/admin/material/new}">
                 자재 등록

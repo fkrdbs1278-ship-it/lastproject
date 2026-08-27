@@ -1,8 +1,12 @@
 package com.young04.lastproject.purchaseorder.controller;
 
+import com.young04.lastproject.material.service.MaterialService;
 import com.young04.lastproject.purchaseorder.dto.PurchaseOrderRequest;
 import com.young04.lastproject.purchaseorder.dto.PurchaseOrderResponse;
 import com.young04.lastproject.purchaseorder.service.PurchaseOrderService;
+import com.young04.lastproject.purchaseorderitem.dto.PurchaseOrderItemCreateRequest;
+import com.young04.lastproject.purchaseorderitem.dto.PurchaseOrderItemResponse;
+import com.young04.lastproject.purchaseorderitem.service.PurchaseOrderItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,6 +30,12 @@ public class PurchaseOrderController {
 
     // 발주서 업무 처리를 담당하는 Service
     private final PurchaseOrderService purchaseOrderService;
+
+    // 발주 품목 등록과 조회를 담당하는 Service
+    private final PurchaseOrderItemService purchaseOrderItemService;
+
+    // 발주할 자재 목록 조회를 담당하는 Service
+    private final MaterialService materialService;
 
     // 전체·상태별·공급업체별 발주서 목록 조회
     @GetMapping
@@ -111,14 +121,80 @@ public class PurchaseOrderController {
             @PathVariable Long purchaseOrderNo,
             Model model
     ) {
-        // 발주서 번호로 상세 정보를 조회
+        // 발주서 번호로 기본 정보를 조회
         PurchaseOrderResponse order =
                 purchaseOrderService.getOrder(purchaseOrderNo);
 
-        // 조회한 발주서 정보를 화면으로 전달
+        // 해당 발주서에 포함된 품목 조회
+        List<PurchaseOrderItemResponse> items =
+                purchaseOrderItemService.getItems(purchaseOrderNo);
+
+        // 조회한 발주서 기본 정보를 화면으로 전달
         model.addAttribute("order", order);
+
+        // 발주 품목 목록을 화면으로 전달
+        model.addAttribute("items", items);
+
+        // 사용 중인 자재 목록을 품목 선택란으로 전달
+        model.addAttribute(
+                "materials",
+                materialService.getMaterialsByUseYn("Y")
+        );
+
+        // 품목 등록에 사용할 빈 입력 DTO를 화면으로 전달
+        model.addAttribute(
+                "purchaseOrderItemRequest",
+                new PurchaseOrderItemCreateRequest()
+        );
 
         // 발주서 상세 HTML로 이동
         return "purchaseorder/detail";
+    }
+
+    // 기존 발주서에 새로운 자재 품목 등록
+    @PostMapping("/{purchaseOrderNo}/items")
+    public String createItem(
+            @PathVariable Long purchaseOrderNo,
+            @Valid
+            @ModelAttribute("purchaseOrderItemRequest")
+            PurchaseOrderItemCreateRequest request,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        // 입력값 검증 실패 시 필요한 상세 정보를 다시 전달
+        if (bindingResult.hasErrors()) {
+            model.addAttribute(
+                    "order",
+                    purchaseOrderService.getOrder(purchaseOrderNo)
+            );
+
+            model.addAttribute(
+                    "items",
+                    purchaseOrderItemService.getItems(purchaseOrderNo)
+            );
+
+            model.addAttribute(
+                    "materials",
+                    materialService.getMaterialsByUseYn("Y")
+            );
+
+            return "purchaseorder/detail";
+        }
+
+        // 선택한 자재를 발주 품목으로 등록
+        purchaseOrderItemService.createItem(
+                purchaseOrderNo,
+                request
+        );
+
+        // 등록 완료 메시지를 한 번만 전달
+        redirectAttributes.addFlashAttribute(
+                "message",
+                "발주 품목이 추가되었습니다."
+        );
+
+        // 해당 발주서 상세 화면으로 다시 이동
+        return "redirect:/admin/purchaseorder/" + purchaseOrderNo;
     }
 }

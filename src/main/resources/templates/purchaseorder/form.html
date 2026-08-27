@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>발주서 등록</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/purchaseorder.css}">
+</head>
+
+<body>
+<main class="purchaseorder-page purchaseorder-form-page">
+
+    <section class="purchaseorder-header">
+        <div>
+            <p class="page-category">매장 운영 관리</p>
+            <h1>발주서 등록</h1>
+            <p>공급업체와 입고 예정일을 입력해 발주서를 생성합니다.</p>
+        </div>
+
+        <div class="header-actions">
+            <a class="sub-button"
+               th:href="@{/admin/purchaseorder}">
+                목록으로
+            </a>
+        </div>
+    </section>
+
+    <!-- 발주서 기본 정보 입력 -->
+    <section class="purchaseorder-form-card">
+        <form class="purchaseorder-form"
+              th:action="@{/admin/purchaseorder}"
+              th:object="${purchaseOrderRequest}"
+              method="post">
+
+            <div class="form-section-title">
+                <h2>발주 기본 정보</h2>
+                <p>발주서를 만든 후 상세 화면에서 발주 품목을 추가할 수 있습니다.</p>
+            </div>
+
+            <div class="purchaseorder-form-grid">
+                <div class="purchaseorder-form-field">
+                    <label for="supplierName">
+                        공급업체명 <span class="required-mark">*</span>
+                    </label>
+
+                    <input id="supplierName"
+                           type="text"
+                           maxlength="100"
+                           th:field="*{supplierName}"
+                           placeholder="공급업체명을 입력해 주세요.">
+
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('supplierName')}"
+                           th:errors="*{supplierName}">
+                        공급업체명 오류
+                    </small>
+                </div>
+
+                <div class="purchaseorder-form-field">
+                    <label for="expectedDate">입고 예정일</label>
+
+                    <input id="expectedDate"
+                           type="date"
+                           th:field="*{expectedDate}">
+
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('expectedDate')}"
+                           th:errors="*{expectedDate}">
+                        입고 예정일 오류
+                    </small>
+                </div>
+
+                <div class="purchaseorder-form-field form-field-wide">
+                    <label for="memo">메모</label>
+
+                    <textarea id="memo"
+                              maxlength="500"
+                              rows="6"
+                              th:field="*{memo}"
+                              placeholder="발주와 관련된 내용을 입력해 주세요."></textarea>
+
+                    <small class="field-help">최대 500자까지 입력할 수 있습니다.</small>
+
+                    <small class="field-error"
+                           th:if="${#fields.hasErrors('memo')}"
+                           th:errors="*{memo}">
+                        메모 오류
+                    </small>
+                </div>
+            </div>
+
+            <div class="purchaseorder-form-actions">
+                <a class="sub-button"
+                   th:href="@{/admin/purchaseorder}">
+                    취소
+                </a>
+
+                <button class="primary-button"
+                        type="submit">
+                    발주서 등록
+                </button>
+            </div>
+        </form>
+    </section>
+
+</main>
+</body>
+</html>
