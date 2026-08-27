@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>회원정보 수정</title>
+
+</head>
+
+<body>
+
+
+<h1>회원정보 수정</h1>
+
+
+<!-- 수정 성공 -->
+
+<div th:if="${param.updated}">
+
+    <p>
+        회원정보가 수정되었습니다.
+    </p>
+
+</div>
+
+
+<form
+        th:action="@{/member/edit}"
+        th:object="${memberUpdateRequest}"
+        method="post"
+>
+
+
+    <!-- 이름 -->
+
+    <div>
+
+        <label for="name">
+            이름
+        </label>
+
+        <input
+                type="text"
+                id="name"
+                th:field="*{name}"
+        >
+
+        <p
+                th:if="${#fields.hasErrors('name')}"
+                th:errors="*{name}"
+        ></p>
+
+    </div>
+
+
+    <!-- 닉네임 -->
+
+    <div>
+
+        <label for="nickname">
+            닉네임
+        </label>
+
+        <input
+                type="text"
+                id="nickname"
+                th:field="*{nickname}"
+        >
+
+    </div>
+
+
+    <!-- 이메일 -->
+
+    <div>
+
+        <label for="email">
+            이메일
+        </label>
+
+        <input
+                type="email"
+                id="email"
+                th:field="*{email}"
+        >
+
+        <p
+                th:if="${#fields.hasErrors('email')}"
+                th:errors="*{email}"
+        ></p>
+
+    </div>
+
+
+    <!-- 전화번호 -->
+
+    <div>
+
+        <label for="phone">
+            전화번호
+        </label>
+
+        <input
+                type="text"
+                id="phone"
+                th:field="*{phone}"
+        >
+
+        <p
+                th:if="${#fields.hasErrors('phone')}"
+                th:errors="*{phone}"
+        ></p>
+
+    </div>
+
+
+    <!-- 생년월일 -->
+
+    <div>
+
+        <label for="birthDate">
+            생년월일
+        </label>
+
+        <input
+                type="date"
+                id="birthDate"
+                th:field="*{birthDate}"
+        >
+
+    </div>
+
+
+    <!-- 성별 -->
+
+    <div>
+
+        <span>성별</span>
+
+        <label>
+
+            <input
+                    type="radio"
+                    th:field="*{gender}"
+                    value="M"
+            >
+
+            남성
+
+        </label>
+
+
+        <label>
+
+            <input
+                    type="radio"
+                    th:field="*{gender}"
+                    value="F"
+            >
+
+            여성
+
+        </label>
+
+    </div>
+
+
+    <hr>
+
+
+    <!-- 현재 비밀번호 확인 -->
+
+    <div>
+
+        <label for="currentPassword">
+            현재 비밀번호
+        </label>
+
+        <input
+                type="password"
+                id="currentPassword"
+                th:field="*{currentPassword}"
+                autocomplete="current-password"
+        >
+
+        <p
+                th:if="${#fields.hasErrors('currentPassword')}"
+                th:errors="*{currentPassword}"
+        ></p>
+
+    </div>
+
+
+    <!-- CSRF -->
+
+    <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}"
+    >
+
+
+    <button type="submit">
+        수정하기
+    </button>
+
+</form>
+
+
+<hr>
+
+
+<a th:href="@{/member/withdraw}">
+    회원 탈퇴
+</a>
+
+
+</body>
+
+</html>

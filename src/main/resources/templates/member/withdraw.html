@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>회원 탈퇴</title>
+
+</head>
+
+<body>
+
+
+<h1>회원 탈퇴</h1>
+
+
+<p>
+    회원탈퇴를 진행하려면 현재 비밀번호를 입력해주세요.
+</p>
+
+
+<form
+        th:action="@{/member/withdraw}"
+        th:object="${passwordConfirmRequest}"
+        method="post"
+>
+
+
+    <div>
+
+        <label for="currentPassword">
+            현재 비밀번호
+        </label>
+
+        <input
+                type="password"
+                id="currentPassword"
+                th:field="*{currentPassword}"
+                autocomplete="current-password"
+        >
+
+        <p
+                th:if="${#fields.hasErrors('currentPassword')}"
+                th:errors="*{currentPassword}"
+        ></p>
+
+    </div>
+
+
+    <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}"
+    >
+
+
+    <button type="submit">
+        회원 탈퇴
+    </button>
+
+</form>
+
+
+<a th:href="@{/member/edit}">
+    취소
+</a>
+
+
+</body>
+
+</html>
