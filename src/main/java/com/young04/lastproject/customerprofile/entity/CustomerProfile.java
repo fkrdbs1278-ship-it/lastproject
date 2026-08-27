@@ -129,4 +129,46 @@ public class CustomerProfile {
             updatable = false
     )
     private LocalDateTime updatedAt;
+    // =====================================================
+    // 고객 등급 관리
+    // =====================================================
+
+    /**
+     * 자동으로 계산된 고객 등급을 적용합니다.
+     *
+     * 관리자가 수동으로 등급을 지정한 고객은
+     * 자동 계산 결과가 기존 등급을 덮어쓰지 않습니다.
+     */
+    public void applyAutomaticGrade(CustomerGrade customerGrade) {
+
+        if ("Y".equals(this.gradeManualYn)) {
+            return;
+        }
+
+        this.customerGrade = customerGrade;
+    }
+
+
+    /**
+     * 관리자가 고객 등급을 직접 변경합니다.
+     *
+     * 수동 변경 여부를 Y로 설정하여
+     * 이후 자동 등급 계산에서 제외합니다.
+     */
+    public void changeGradeManually(CustomerGrade customerGrade) {
+
+        this.customerGrade = customerGrade;
+        this.gradeManualYn = "Y";
+    }
+
+
+    /**
+     * 수동 등급 설정을 해제하고
+     * 다시 자동 등급 관리 상태로 변경합니다.
+     */
+    public void changeGradeAutomatically(CustomerGrade customerGrade) {
+
+        this.customerGrade = customerGrade;
+        this.gradeManualYn = "N";
+    }
 }

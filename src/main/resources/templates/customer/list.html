@@ -4,288 +4,404 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>고객 CRM 목록 QA 테스트</title>
 
-    <title>고객 CRM QA 테스트</title>
+    <!--
+        고객 CRM 기능 테스트용 임시 화면입니다.
 
+        현재는 기능 확인을 우선으로 하며,
+        팀 공통 CSS가 확정되면 나중에 디자인을 통일합니다.
+    -->
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 40px;
             background: #f7f7f7;
+            color: #222;
         }
 
         h1 {
             margin-bottom: 20px;
         }
 
-        .search-box {
-            padding: 20px;
-            margin-bottom: 20px;
-
+        .box {
             background: white;
-
             border: 1px solid #ddd;
             border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
-        .search-box input,
-        .search-box select {
-            padding: 8px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-        }
-
-        button {
-            padding: 8px 16px;
-            cursor: pointer;
+        .summary {
+            margin-bottom: 15px;
+            color: #555;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-
-            background: white;
         }
 
         th,
         td {
-            padding: 10px;
-
             border: 1px solid #ddd;
+            padding: 10px;
             text-align: center;
         }
 
         th {
-            background: #eee;
+            background: #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .grade-normal {
+            color: #555;
+            font-weight: bold;
+        }
+
+        .grade-regular {
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .grade-vip {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .manual {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .automatic {
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .active {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .inactive {
+            color: #777;
+            font-weight: bold;
+        }
+
+        a {
+            color: #1565c0;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .detail-button {
+            display: inline-block;
+            padding: 7px 12px;
+            border: 1px solid #1565c0;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .detail-button:hover {
+            background: #1565c0;
+            color: white;
+            text-decoration: none;
         }
 
         .empty {
             padding: 30px;
             text-align: center;
+            color: #777;
         }
     </style>
 </head>
 
 <body>
 
-<h1>고객 CRM QA 테스트</h1>
+
+<!-- ===================================================== -->
+<!-- 제목 -->
+<!-- ===================================================== -->
+
+<h1>고객 CRM 목록 QA 테스트</h1>
 
 
-<!-- 검색 -->
-<div class="search-box">
+<!-- ===================================================== -->
+<!-- 고객 목록 -->
+<!-- ===================================================== -->
 
-    <form method="get"
-          th:action="@{/admin/customers}">
+<div class="box">
 
-        <!-- 이름 / 전화번호 -->
-        <input
-                type="text"
-                name="keyword"
-                placeholder="이름 또는 전화번호"
-                th:value="${condition.keyword}"
-        >
+    <h2>전체 고객</h2>
 
 
-        <!-- 회원 유형 -->
-        <select name="customerType">
+    <!-- ================================================= -->
+    <!-- 고객 수 -->
+    <!-- ================================================= -->
 
-            <option value="">
-                전체 고객
-            </option>
+    <div class="summary">
 
-            <option
-                    value="MEMBER"
-                    th:selected="${condition.customerType == 'MEMBER'}">
-                회원
-            </option>
+        총 고객 수:
 
-            <option
-                    value="GUEST"
-                    th:selected="${condition.customerType == 'GUEST'}">
-                비회원
-            </option>
+        <strong th:text="${customers != null ? #lists.size(customers) : 0}">
+            0
+        </strong>
 
-        </select>
+        명
+
+    </div>
 
 
-        <!-- 고객 등급 -->
-        <select name="gradeCode">
+    <!-- ================================================= -->
+    <!-- 고객이 없는 경우 -->
+    <!-- ================================================= -->
 
-            <option value="">
-                전체 등급
-            </option>
+    <div
+            class="empty"
+            th:if="${customers == null or #lists.isEmpty(customers)}">
 
-            <option
-                    value="NORMAL"
-                    th:selected="${condition.gradeCode == 'NORMAL'}">
-                일반
-            </option>
+        등록된 고객이 없습니다.
 
-            <option
-                    value="REGULAR"
-                    th:selected="${condition.gradeCode == 'REGULAR'}">
-                단골
-            </option>
-
-            <option
-                    value="VIP"
-                    th:selected="${condition.gradeCode == 'VIP'}">
-                VIP
-            </option>
-
-        </select>
+    </div>
 
 
-        <!-- 활성 여부 -->
-        <select name="activeYn">
+    <!-- ================================================= -->
+    <!-- 고객 목록 테이블 -->
+    <!-- ================================================= -->
 
-            <option value="">
-                전체 상태
-            </option>
+    <table
+            th:if="${customers != null and !#lists.isEmpty(customers)}">
 
-            <option
-                    value="Y"
-                    th:selected="${condition.activeYn == 'Y'}">
-                활성
-            </option>
+        <thead>
 
-            <option
-                    value="N"
-                    th:selected="${condition.activeYn == 'N'}">
-                비활성
-            </option>
+        <tr>
+            <th>고객번호</th>
+            <th>고객명</th>
+            <th>전화번호</th>
+            <th>고객유형</th>
+            <th>현재등급</th>
+            <th>등급관리</th>
+            <th>최근방문일</th>
+            <th>방문횟수</th>
+            <th>누적결제</th>
+            <th>재방문 권장일</th>
+            <th>활성여부</th>
+            <th>상세</th>
+        </tr>
 
-        </select>
-
-
-        <!-- 미방문 기간 -->
-        <select name="inactiveDays">
-
-            <option value="">
-                미방문 기간 전체
-            </option>
-
-            <option
-                    value="30"
-                    th:selected="${condition.inactiveDays == 30}">
-                30일 이상 미방문
-            </option>
-
-            <option
-                    value="60"
-                    th:selected="${condition.inactiveDays == 60}">
-                60일 이상 미방문
-            </option>
-
-        </select>
+        </thead>
 
 
-        <button type="submit">
-            검색
-        </button>
+        <tbody>
 
-        <a th:href="@{/admin/customers}">
-            초기화
-        </a>
 
-    </form>
+        <!-- ============================================= -->
+        <!-- 고객 반복 -->
+        <!-- ============================================= -->
+
+        <tr th:each="customer : ${customers}">
+
+
+            <!-- 고객번호 -->
+            <td th:text="${customer.customerId}">
+                1
+            </td>
+
+
+            <!-- 고객명 -->
+            <td th:text="${customer.customerName}">
+                홍길동
+            </td>
+
+
+            <!-- 전화번호 -->
+            <td th:text="${customer.phone}">
+                01012345678
+            </td>
+
+
+            <!-- 고객유형 -->
+            <td th:text="${customer.customerType}">
+                GUEST
+            </td>
+
+
+            <!-- ========================================= -->
+            <!-- 고객 등급 -->
+            <!-- ========================================= -->
+
+            <td>
+
+                <!--
+                    CustomerProfile 안에 gradeName이 직접 있는 것이 아니라
+
+                    CustomerProfile
+                         ↓
+                    customerGrade
+                         ↓
+                    gradeName / gradeCode
+
+                    구조이므로 customer.customerGrade로 접근합니다.
+                -->
+
+                <span
+                        th:if="${customer.customerGrade != null}"
+                        th:classappend="${customer.customerGrade.gradeCode == 'VIP'
+                                        ? 'grade-vip'
+                                        : (customer.customerGrade.gradeCode == 'REGULAR'
+                                           ? 'grade-regular'
+                                           : 'grade-normal')}">
+
+                    <strong
+                            th:text="${customer.customerGrade.gradeName}">
+                        일반
+                    </strong>
+
+                    (
+
+                    <span
+                            th:text="${customer.customerGrade.gradeCode}">
+                        NORMAL
+                    </span>
+
+                    )
+
+                </span>
+
+
+                <!-- 혹시 등급 데이터가 없는 경우 -->
+                <span
+                        th:if="${customer.customerGrade == null}">
+                    -
+                </span>
+
+            </td>
+
+
+            <!-- ========================================= -->
+            <!-- 자동 / 수동 등급 여부 -->
+            <!-- ========================================= -->
+
+            <td>
+
+                <span
+                        class="manual"
+                        th:if="${customer.gradeManualYn == 'Y'}">
+                    수동
+                </span>
+
+
+                <span
+                        class="automatic"
+                        th:if="${customer.gradeManualYn == 'N'}">
+                    자동
+                </span>
+
+            </td>
+
+
+            <!-- 최근 방문일 -->
+            <td th:text="${customer.lastVisitDate != null
+                          ? customer.lastVisitDate
+                          : '-'}">
+                -
+            </td>
+
+
+            <!-- 방문횟수 -->
+            <td>
+
+                <span th:text="${customer.visitCount != null
+                               ? customer.visitCount
+                               : 0}">
+                    0
+                </span>
+
+                회
+
+            </td>
+
+
+            <!-- 누적 결제 금액 -->
+            <td>
+
+                <span
+                        th:text="${customer.totalPayment != null
+                                 ? #numbers.formatInteger(
+                                       customer.totalPayment,
+                                       0,
+                                       'COMMA'
+                                   )
+                                 : '0'}">
+                    0
+                </span>
+
+                원
+
+            </td>
+
+
+            <!-- 재방문 권장일 -->
+            <td th:text="${customer.revisitRecommendedDate != null
+                          ? customer.revisitRecommendedDate
+                          : '-'}">
+                -
+            </td>
+
+
+            <!-- 활성 여부 -->
+            <td>
+
+                <span
+                        class="active"
+                        th:if="${customer.activeYn == 'Y'}">
+                    활성
+                </span>
+
+
+                <span
+                        class="inactive"
+                        th:if="${customer.activeYn == 'N'}">
+                    비활성
+                </span>
+
+            </td>
+
+
+            <!-- ========================================= -->
+            <!-- 고객 상세 -->
+            <!-- ========================================= -->
+
+            <td>
+
+                <a
+                        class="detail-button"
+                        th:href="@{/admin/customers/{customerId}(
+                            customerId=${customer.customerId}
+                        )}">
+
+                    상세보기
+
+                </a>
+
+            </td>
+
+
+        </tr>
+
+        </tbody>
+
+    </table>
 
 </div>
 
-
-<!-- 고객 목록 -->
-<table>
-
-    <thead>
-
-    <tr>
-        <th>고객번호</th>
-        <th>이름</th>
-        <th>전화번호</th>
-        <th>유형</th>
-        <th>등급</th>
-        <th>최근 방문일</th>
-        <th>방문횟수</th>
-        <th>누적 결제금액</th>
-        <th>재방문 권장일</th>
-        <th>활성</th>
-    </tr>
-
-    </thead>
-
-
-    <tbody>
-
-    <tr th:each="customer : ${customers}">
-
-        <td th:text="${customer.customerId}">
-            1
-        </td>
-
-        <td th:text="${customer.customerName}">
-            홍길동
-        </td>
-
-        <td th:text="${customer.phone}">
-            01000000000
-        </td>
-
-        <td th:text="${customer.customerType}">
-            GUEST
-        </td>
-
-        <td>
-            <span th:text="${customer.gradeName}">
-                일반
-            </span>
-
-            <span>
-                (
-                <span th:text="${customer.gradeCode}">
-                    NORMAL
-                </span>
-                )
-            </span>
-        </td>
-
-        <td th:text="${customer.lastVisitDate}">
-            2026-08-20
-        </td>
-
-        <td th:text="${customer.visitCount}">
-            1
-        </td>
-
-        <td th:text="${customer.totalPayment}">
-            30000
-        </td>
-
-        <td th:text="${customer.revisitRecommendedDate}">
-            2026-09-20
-        </td>
-
-        <td th:text="${customer.activeYn}">
-            Y
-        </td>
-
-    </tr>
-
-
-    <!-- 데이터 없음 -->
-    <tr th:if="${#lists.isEmpty(customers)}">
-
-        <td colspan="10"
-            class="empty">
-
-            조회된 고객이 없습니다.
-
-        </td>
-
-    </tr>
-
-    </tbody>
-
-</table>
 
 </body>
 </html>
