@@ -38,13 +38,19 @@ public class NoShow {
     @PrePersist
     private void prePersist() {
         LocalDateTime now = LocalDateTime.now();
+        if (processedAt == null) processedAt = now;
+        if (createdAt == null) createdAt = now;
+    }
 
-        if (processedAt == null) {
-            processedAt = now;
-        }
-
-        if (createdAt == null) {
-            createdAt = now;
-        }
+    public static NoShow create(
+            Reservation reservation,
+            String reason,
+            String adminMemo
+    ) {
+        NoShow noShow = new NoShow();
+        noShow.reservation = reservation;
+        noShow.reason = reason;
+        noShow.adminMemo = adminMemo;
+        return noShow;
     }
 }

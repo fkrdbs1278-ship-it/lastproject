@@ -46,21 +46,48 @@ public class SalonHoliday {
     @PrePersist
     private void prePersist() {
         LocalDateTime now = LocalDateTime.now();
-
-        if (allDayYn == null) {
-            allDayYn = 'Y';
-        }
-
-        if (createdAt == null) {
-            createdAt = now;
-        }
-
+        if (allDayYn == null) allDayYn = 'Y';
+        if (createdAt == null) createdAt = now;
         updatedAt = now;
     }
 
     @PreUpdate
     private void preUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    public static SalonHoliday create(
+            HolidayType holidayType,
+            String title,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            boolean allDay,
+            String memo
+    ) {
+        SalonHoliday holiday = new SalonHoliday();
+        holiday.holidayType = holidayType;
+        holiday.title = title;
+        holiday.startAt = startAt;
+        holiday.endAt = endAt;
+        holiday.allDayYn = allDay ? 'Y' : 'N';
+        holiday.memo = memo;
+        return holiday;
+    }
+
+    public void change(
+            HolidayType holidayType,
+            String title,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            boolean allDay,
+            String memo
+    ) {
+        this.holidayType = holidayType;
+        this.title = title;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.allDayYn = allDay ? 'Y' : 'N';
+        this.memo = memo;
     }
 
     public boolean isAllDay() {
