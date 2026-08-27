@@ -6,16 +6,10 @@
     <meta charset="UTF-8">
     <title>고객 CRM 목록 QA 테스트</title>
 
-    <!--
-        고객 CRM 기능 테스트용 임시 화면입니다.
-
-        현재는 기능 확인을 우선으로 하며,
-        팀 공통 CSS가 확정되면 나중에 디자인을 통일합니다.
-    -->
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 40px;
+            margin: 30px;
             background: #f7f7f7;
             color: #222;
         }
@@ -28,13 +22,50 @@
             background: white;
             border: 1px solid #ddd;
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .search-area {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .search-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .search-item label {
+            font-size: 13px;
+        }
+
+        input,
+        select,
+        button {
+            padding: 7px 9px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .reset-button {
+            display: inline-block;
+            padding: 7px 11px;
+            border: 1px solid #777;
+            color: #333;
+            text-decoration: none;
+            background: white;
         }
 
         .summary {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: #555;
+            font-size: 14px;
         }
 
         table {
@@ -45,7 +76,7 @@
         th,
         td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 9px;
             text-align: center;
         }
 
@@ -92,27 +123,23 @@
             font-weight: bold;
         }
 
-        a {
-            color: #1565c0;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
+        .revisit-due {
+            color: #d32f2f;
+            font-weight: bold;
         }
 
         .detail-button {
             display: inline-block;
-            padding: 7px 12px;
+            padding: 6px 10px;
             border: 1px solid #1565c0;
-            border-radius: 5px;
+            border-radius: 4px;
+            color: #1565c0;
             text-decoration: none;
         }
 
         .detail-button:hover {
             background: #1565c0;
             color: white;
-            text-decoration: none;
         }
 
         .empty {
@@ -134,23 +161,250 @@
 
 
 <!-- ===================================================== -->
+<!-- 고객 검색 -->
+<!-- ===================================================== -->
+
+<div class="box">
+
+    <h2>고객 검색</h2>
+
+    <form
+            method="get"
+            th:action="@{/admin/customers}"
+            th:object="${condition}">
+
+        <div class="search-area">
+
+
+            <!-- ================================================= -->
+            <!-- 이름 / 전화번호 -->
+            <!-- ================================================= -->
+
+            <div class="search-item">
+
+                <label for="keyword">
+                    이름 / 전화번호
+                </label>
+
+                <input
+                        type="text"
+                        id="keyword"
+                        th:field="*{keyword}"
+                        placeholder="고객명 또는 전화번호">
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- 고객 유형 -->
+            <!-- ================================================= -->
+
+            <div class="search-item">
+
+                <label for="customerType">
+                    고객유형
+                </label>
+
+                <select
+                        id="customerType"
+                        th:field="*{customerType}">
+
+                    <option value="">
+                        전체
+                    </option>
+
+                    <option value="MEMBER">
+                        회원
+                    </option>
+
+                    <option value="GUEST">
+                        비회원
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- 고객 등급 -->
+            <!-- ================================================= -->
+
+            <div class="search-item">
+
+                <label for="gradeCode">
+                    고객등급
+                </label>
+
+                <select
+                        id="gradeCode"
+                        th:field="*{gradeCode}">
+
+                    <option value="">
+                        전체
+                    </option>
+
+                    <option
+                            th:each="grade : ${grades}"
+                            th:value="${grade.gradeCode}"
+                            th:text="${grade.gradeName
+                                     + ' ('
+                                     + grade.gradeCode
+                                     + ')'}">
+
+                        일반 (NORMAL)
+
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- 활성 여부 -->
+            <!-- ================================================= -->
+
+            <div class="search-item">
+
+                <label for="activeYn">
+                    활성여부
+                </label>
+
+                <select
+                        id="activeYn"
+                        th:field="*{activeYn}">
+
+                    <option value="">
+                        전체
+                    </option>
+
+                    <option value="Y">
+                        활성
+                    </option>
+
+                    <option value="N">
+                        비활성
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- 미방문 기간 -->
+            <!-- ================================================= -->
+
+            <div class="search-item">
+
+                <label for="inactiveDays">
+                    미방문 기간
+                </label>
+
+                <select
+                        id="inactiveDays"
+                        th:field="*{inactiveDays}">
+
+                    <option value="">
+                        전체
+                    </option>
+
+                    <option value="30">
+                        30일 이상 미방문
+                    </option>
+
+                    <option value="60">
+                        60일 이상 미방문
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- 재방문 대상 -->
+            <!-- ================================================= -->
+
+            <div class="search-item">
+
+                <label for="revisitDueYn">
+                    재방문 대상
+                </label>
+
+                <select
+                        id="revisitDueYn"
+                        th:field="*{revisitDueYn}">
+
+                    <option value="">
+                        전체
+                    </option>
+
+                    <option value="Y">
+                        재방문 권장일 도래
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- 검색 버튼 -->
+            <!-- ================================================= -->
+
+            <div class="search-item">
+
+                <button type="submit">
+                    검색
+                </button>
+
+            </div>
+
+
+            <!-- ================================================= -->
+            <!-- 검색 초기화 -->
+            <!-- ================================================= -->
+
+            <div class="search-item">
+
+                <a
+                        class="reset-button"
+                        th:href="@{/admin/customers}">
+                    초기화
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- ===================================================== -->
 <!-- 고객 목록 -->
 <!-- ===================================================== -->
 
 <div class="box">
 
-    <h2>전체 고객</h2>
+    <h2>고객 목록</h2>
 
 
     <!-- ================================================= -->
-    <!-- 고객 수 -->
+    <!-- 검색 결과 개수 -->
     <!-- ================================================= -->
 
     <div class="summary">
 
-        총 고객 수:
+        검색 결과:
 
-        <strong th:text="${customers != null ? #lists.size(customers) : 0}">
+        <strong
+                th:text="${customers != null
+                         ? #lists.size(customers)
+                         : 0}">
             0
         </strong>
 
@@ -160,24 +414,26 @@
 
 
     <!-- ================================================= -->
-    <!-- 고객이 없는 경우 -->
+    <!-- 검색 결과 없음 -->
     <!-- ================================================= -->
 
     <div
             class="empty"
-            th:if="${customers == null or #lists.isEmpty(customers)}">
+            th:if="${customers == null
+                   or #lists.isEmpty(customers)}">
 
-        등록된 고객이 없습니다.
+        검색 조건에 해당하는 고객이 없습니다.
 
     </div>
 
 
     <!-- ================================================= -->
-    <!-- 고객 목록 테이블 -->
+    <!-- 고객 목록 -->
     <!-- ================================================= -->
 
     <table
-            th:if="${customers != null and !#lists.isEmpty(customers)}">
+            th:if="${customers != null
+                   and !#lists.isEmpty(customers)}">
 
         <thead>
 
@@ -200,11 +456,6 @@
 
 
         <tbody>
-
-
-        <!-- ============================================= -->
-        <!-- 고객 반복 -->
-        <!-- ============================================= -->
 
         <tr th:each="customer : ${customers}">
 
@@ -233,23 +484,11 @@
             </td>
 
 
-            <!-- ========================================= -->
-            <!-- 고객 등급 -->
-            <!-- ========================================= -->
+            <!-- ================================================= -->
+            <!-- 현재등급 -->
+            <!-- ================================================= -->
 
             <td>
-
-                <!--
-                    CustomerProfile 안에 gradeName이 직접 있는 것이 아니라
-
-                    CustomerProfile
-                         ↓
-                    customerGrade
-                         ↓
-                    gradeName / gradeCode
-
-                    구조이므로 customer.customerGrade로 접근합니다.
-                -->
 
                 <span
                         th:if="${customer.customerGrade != null}"
@@ -276,7 +515,6 @@
                 </span>
 
 
-                <!-- 혹시 등급 데이터가 없는 경우 -->
                 <span
                         th:if="${customer.customerGrade == null}">
                     -
@@ -285,9 +523,9 @@
             </td>
 
 
-            <!-- ========================================= -->
-            <!-- 자동 / 수동 등급 여부 -->
-            <!-- ========================================= -->
+            <!-- ================================================= -->
+            <!-- 자동 / 수동 등급 -->
+            <!-- ================================================= -->
 
             <td>
 
@@ -307,7 +545,10 @@
             </td>
 
 
+            <!-- ================================================= -->
             <!-- 최근 방문일 -->
+            <!-- ================================================= -->
+
             <td th:text="${customer.lastVisitDate != null
                           ? customer.lastVisitDate
                           : '-'}">
@@ -315,12 +556,16 @@
             </td>
 
 
-            <!-- 방문횟수 -->
+            <!-- ================================================= -->
+            <!-- 방문 횟수 -->
+            <!-- ================================================= -->
+
             <td>
 
-                <span th:text="${customer.visitCount != null
-                               ? customer.visitCount
-                               : 0}">
+                <span
+                        th:text="${customer.visitCount != null
+                                 ? customer.visitCount
+                                 : 0}">
                     0
                 </span>
 
@@ -329,7 +574,10 @@
             </td>
 
 
-            <!-- 누적 결제 금액 -->
+            <!-- ================================================= -->
+            <!-- 누적 결제 -->
+            <!-- ================================================= -->
+
             <td>
 
                 <span
@@ -348,15 +596,31 @@
             </td>
 
 
+            <!-- ================================================= -->
             <!-- 재방문 권장일 -->
-            <td th:text="${customer.revisitRecommendedDate != null
-                          ? customer.revisitRecommendedDate
-                          : '-'}">
-                -
+            <!-- ================================================= -->
+
+            <td>
+
+                <span
+                        th:if="${customer.revisitRecommendedDate != null}"
+                        th:text="${customer.revisitRecommendedDate}">
+                    2026-08-26
+                </span>
+
+
+                <span
+                        th:if="${customer.revisitRecommendedDate == null}">
+                    -
+                </span>
+
             </td>
 
 
+            <!-- ================================================= -->
             <!-- 활성 여부 -->
+            <!-- ================================================= -->
+
             <td>
 
                 <span
@@ -375,9 +639,9 @@
             </td>
 
 
-            <!-- ========================================= -->
-            <!-- 고객 상세 -->
-            <!-- ========================================= -->
+            <!-- ================================================= -->
+            <!-- 상세 -->
+            <!-- ================================================= -->
 
             <td>
 
@@ -392,7 +656,6 @@
                 </a>
 
             </td>
-
 
         </tr>
 

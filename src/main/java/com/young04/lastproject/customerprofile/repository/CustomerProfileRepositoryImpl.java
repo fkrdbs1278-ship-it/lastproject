@@ -34,7 +34,11 @@ public class CustomerProfileRepositoryImpl
 
         Map<String, Object> parameters = new HashMap<>();
 
+
+        // =====================================================
         // 이름 또는 전화번호 검색
+        // =====================================================
+
         if (condition != null
                 && StringUtils.hasText(condition.getKeyword())) {
 
@@ -51,7 +55,11 @@ public class CustomerProfileRepositoryImpl
             );
         }
 
+
+        // =====================================================
         // 회원 / 비회원 검색
+        // =====================================================
+
         if (condition != null
                 && StringUtils.hasText(condition.getCustomerType())) {
 
@@ -65,7 +73,11 @@ public class CustomerProfileRepositoryImpl
             );
         }
 
+
+        // =====================================================
         // 고객 등급 검색
+        // =====================================================
+
         if (condition != null
                 && StringUtils.hasText(condition.getGradeCode())) {
 
@@ -79,7 +91,11 @@ public class CustomerProfileRepositoryImpl
             );
         }
 
+
+        // =====================================================
         // 활성 여부 검색
+        // =====================================================
+
         if (condition != null
                 && StringUtils.hasText(condition.getActiveYn())) {
 
@@ -93,15 +109,28 @@ public class CustomerProfileRepositoryImpl
             );
         }
 
+
+        // =====================================================
         // 장기 미방문 고객 검색
-        // 예: 30 입력 → 최근 방문일이 오늘 기준 30일 이전인 고객
+        // =====================================================
+
+        /**
+         * 예:
+         *
+         * inactiveDays = 30
+         *
+         * 오늘 기준 최근 방문일이
+         * 30일 이상 지난 고객을 조회합니다.
+         */
         if (condition != null
                 && condition.getInactiveDays() != null
                 && condition.getInactiveDays() > 0) {
 
             LocalDate inactiveDate =
                     LocalDate.now()
-                            .minusDays(condition.getInactiveDays());
+                            .minusDays(
+                                    condition.getInactiveDays()
+                            );
 
             jpql.append("""
                      AND c.lastVisitDate IS NOT NULL
@@ -114,10 +143,50 @@ public class CustomerProfileRepositoryImpl
             );
         }
 
+
+        // =====================================================
+        // 재방문 권장일 도래 고객 검색
+        // =====================================================
+
+        /**
+         * revisitDueYn = Y 인 경우:
+         *
+         * 재방문 권장일이 존재하고
+         * 권장일이 오늘이거나 이미 지난 고객만 조회합니다.
+         *
+         * 예:
+         *
+         * 오늘: 2026-08-27
+         *
+         * 2026-08-26 → 조회
+         * 2026-08-27 → 조회
+         * 2026-09-05 → 제외
+         */
+        if (condition != null
+                && "Y".equalsIgnoreCase(
+                condition.getRevisitDueYn()
+        )) {
+
+            jpql.append("""
+                     AND c.revisitRecommendedDate IS NOT NULL
+                     AND c.revisitRecommendedDate <= :today
+                    """);
+
+            parameters.put(
+                    "today",
+                    LocalDate.now()
+            );
+        }
+
+
+        // =====================================================
         // 최근 등록 고객부터 조회
+        // =====================================================
+
         jpql.append("""
                  ORDER BY c.customerId DESC
                 """);
+
 
         TypedQuery<CustomerProfile> query =
                 entityManager.createQuery(
@@ -125,7 +194,11 @@ public class CustomerProfileRepositoryImpl
                         CustomerProfile.class
                 );
 
-        parameters.forEach(query::setParameter);
+
+        parameters.forEach(
+                query::setParameter
+        );
+
 
         return query.getResultList();
     }
