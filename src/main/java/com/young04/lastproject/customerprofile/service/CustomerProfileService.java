@@ -32,18 +32,12 @@ public class CustomerProfileService {
     // Repository / Service
     // =====================================================
 
-    // 기본 고객 조회 Repository
     private final CustomerProfileRepository
             customerProfileRepository;
 
-
-    // 이름 / 전화번호 / 등급 / 미방문 / 재방문 등
-    // 복합 검색 처리
     private final CustomerProfileRepositoryCustom
             customerProfileRepositoryCustom;
 
-
-    // 고객 등급 조회 및 자동 계산
     private final CustomerGradeService
             customerGradeService;
 
@@ -55,8 +49,6 @@ public class CustomerProfileService {
 
     /**
      * 등록되어 있는 전체 고객을 조회합니다.
-     *
-     * 기존 기능과의 호환성을 위해 유지합니다.
      *
      * 관리자 고객 목록에서는
      * searchCustomers()의 페이징 기능을 사용합니다.
@@ -89,7 +81,6 @@ public class CustomerProfileService {
                 customerId
         );
 
-
         return customerProfileRepository
                 .findById(
                         customerId
@@ -99,7 +90,7 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 고객 번호로 조회 - Advice 예외 처리 방식
+    // 고객 번호로 조회 - 필수 조회
     // =====================================================
 
     /**
@@ -117,7 +108,6 @@ public class CustomerProfileService {
                 customerId
         );
 
-
         return customerProfileRepository
                 .findById(
                         customerId
@@ -129,7 +119,6 @@ public class CustomerProfileService {
                                     "고객을 찾을 수 없음 customerId={}",
                                     customerId
                             );
-
 
                             return new CustomerNotFoundException(
                                     customerId
@@ -157,14 +146,12 @@ public class CustomerProfileService {
                         phone
                 );
 
-
         log.info(
                 "전화번호 기준 고객 조회 phone={}",
                 maskPhone(
                         normalizedPhone
                 )
         );
-
 
         return customerProfileRepository
                 .findByPhone(
@@ -175,12 +162,18 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 회원 번호로 고객 조회
+    // 회원 번호로 고객 조회 - Optional 방식
     // =====================================================
 
     /**
      * MEMBER 테이블의 회원 번호를 기준으로
      * CRM 고객을 조회합니다.
+     *
+     * 회원 고객:
+     * MEMBER_NO 존재
+     *
+     * 전화예약 / 비회원 고객:
+     * MEMBER_NO NULL 가능
      */
     public Optional<CustomerProfile> findByMemberNo(
             Long memberNo
@@ -191,10 +184,76 @@ public class CustomerProfileService {
                 memberNo
         );
 
+        return customerProfileRepository
+                .findByMemberNo(
+                        memberNo
+                );
+    }
+
+
+
+    // =====================================================
+    // 회원 번호로 CRM 고객 필수 조회
+    // =====================================================
+
+    /**
+     * 로그인 회원의 MEMBER_NO를 기준으로
+     * CUSTOMER_PROFILE을 조회합니다.
+     *
+     * 향후 사용자 기능에서 사용합니다.
+     *
+     * 사용 예정:
+     *
+     * - 본인의 시술 이력 확인
+     * - 본인의 예약 이력 확인
+     * - 본인의 결제 이력 확인
+     * - 고객 활동 연결
+     *
+     * 최종 구조:
+     *
+     * 로그인 사용자
+     *      ↓
+     * MEMBER.NO
+     *      ↓
+     * CUSTOMER_PROFILE.MEMBER_NO
+     *      ↓
+     * CUSTOMER_ID
+     *      ↓
+     * 시술 / 예약 / 결제 이력
+     */
+    public CustomerProfile getCustomerByMemberNo(
+            Long memberNo
+    ) {
+
+        log.info(
+                "회원번호 기준 CRM 고객 필수 조회 memberNo={}",
+                memberNo
+        );
 
         return customerProfileRepository
                 .findByMemberNo(
                         memberNo
+                )
+                .orElseThrow(
+                        () -> {
+
+                            log.warn(
+                                    "회원번호와 연결된 CRM 고객 없음 memberNo={}",
+                                    memberNo
+                            );
+
+                            /*
+                             * 현재 프로젝트의 공통 고객 미존재 예외를
+                             * 재사용합니다.
+                             *
+                             * 이후 MEMBER 연동 시 필요하면
+                             * MemberCustomerProfileNotFoundException 같은
+                             * 전용 예외로 분리할 수 있습니다.
+                             */
+                            return new CustomerNotFoundException(
+                                    memberNo
+                            );
+                        }
                 );
     }
 
@@ -216,18 +275,10 @@ public class CustomerProfileService {
      * - 30일 / 60일 미방문
      * - 재방문 권장일 도래
      *
-     *
      * 페이징:
      *
-     * page = 현재 페이지 번호
+     * page = 현재 페이지
      * size = 한 페이지 고객 수
-     *
-     * 예:
-     *
-     * page = 0
-     * size = 10
-     *
-     * → 첫 페이지 고객 10명 조회
      */
     public Page<CustomerProfile> searchCustomers(
             CustomerSearchCondition condition,
@@ -239,7 +290,6 @@ public class CustomerProfileService {
                 pageable.getPageNumber(),
                 pageable.getPageSize()
         );
-
 
         return customerProfileRepositoryCustom
                 .searchCustomers(
@@ -266,7 +316,6 @@ public class CustomerProfileService {
                 normalizePhone(
                         phone
                 );
-
 
         return customerProfileRepository
                 .existsByPhone(
@@ -315,14 +364,8 @@ public class CustomerProfileService {
                         .trim();
 
 
-
         // -------------------------------------------------
         // 2. 전화번호 정규화
-        // -------------------------------------------------
-        //
-        // 010-1234-5678
-        //      ↓
-        // 01012345678
         // -------------------------------------------------
 
         String normalizedPhone =
@@ -337,7 +380,6 @@ public class CustomerProfileService {
                         normalizedPhone
                 )
         );
-
 
 
         // -------------------------------------------------
@@ -356,10 +398,8 @@ public class CustomerProfileService {
                     )
             );
 
-
             throw new DuplicateCustomerPhoneException();
         }
-
 
 
         // -------------------------------------------------
@@ -378,13 +418,11 @@ public class CustomerProfileService {
                                             "전화예약 고객 등록 실패 - NORMAL 등급 정보 없음"
                                     );
 
-
                                     return new CustomerGradeNotFoundException(
                                             "NORMAL"
                                     );
                                 }
                         );
-
 
 
         // -------------------------------------------------
@@ -398,7 +436,6 @@ public class CustomerProfileService {
                                 normalizedPhone,
                                 normalGrade
                         );
-
 
 
         // -------------------------------------------------
@@ -448,7 +485,6 @@ public class CustomerProfileService {
         );
 
 
-
         // -------------------------------------------------
         // 1. 고객 조회
         // -------------------------------------------------
@@ -457,7 +493,6 @@ public class CustomerProfileService {
                 getCustomerById(
                         customerId
                 );
-
 
 
         // -------------------------------------------------
@@ -473,10 +508,8 @@ public class CustomerProfileService {
                     customerId
             );
 
-
             return customer;
         }
-
 
 
         // -------------------------------------------------
@@ -489,7 +522,6 @@ public class CustomerProfileService {
                                 customer.getVisitCount(),
                                 customer.getTotalPayment()
                         );
-
 
 
         // -------------------------------------------------
@@ -509,13 +541,11 @@ public class CustomerProfileService {
                                             gradeCode
                                     );
 
-
                                     return new CustomerGradeNotFoundException(
                                             gradeCode
                                     );
                                 }
                         );
-
 
 
         // -------------------------------------------------
@@ -533,11 +563,6 @@ public class CustomerProfileService {
                 gradeCode
         );
 
-
-        /*
-         * customer는 영속 상태이므로
-         * 트랜잭션 종료 시 Dirty Checking으로 UPDATE 됩니다.
-         */
 
         return customer;
     }
@@ -566,7 +591,6 @@ public class CustomerProfileService {
         );
 
 
-
         // -------------------------------------------------
         // 1. 고객 조회
         // -------------------------------------------------
@@ -575,7 +599,6 @@ public class CustomerProfileService {
                 getCustomerById(
                         customerId
                 );
-
 
 
         // -------------------------------------------------
@@ -590,23 +613,20 @@ public class CustomerProfileService {
                     customerId
             );
 
-
             throw new CustomerGradeNotFoundException(
                     "EMPTY"
             );
         }
 
 
-
         // -------------------------------------------------
-        // 3. 등급 코드 대문자 정규화
+        // 3. 등급 코드 정규화
         // -------------------------------------------------
 
         String normalizedGradeCode =
                 gradeCode
                         .trim()
                         .toUpperCase();
-
 
 
         // -------------------------------------------------
@@ -627,13 +647,11 @@ public class CustomerProfileService {
                                             normalizedGradeCode
                                     );
 
-
                                     return new CustomerGradeNotFoundException(
                                             normalizedGradeCode
                                     );
                                 }
                         );
-
 
 
         // -------------------------------------------------
@@ -678,7 +696,6 @@ public class CustomerProfileService {
         );
 
 
-
         // -------------------------------------------------
         // 1. 고객 조회
         // -------------------------------------------------
@@ -687,7 +704,6 @@ public class CustomerProfileService {
                 getCustomerById(
                         customerId
                 );
-
 
 
         // -------------------------------------------------
@@ -700,7 +716,6 @@ public class CustomerProfileService {
                                 customer.getVisitCount(),
                                 customer.getTotalPayment()
                         );
-
 
 
         // -------------------------------------------------
@@ -720,13 +735,11 @@ public class CustomerProfileService {
                                             gradeCode
                                     );
 
-
                                     return new CustomerGradeNotFoundException(
                                             gradeCode
                                     );
                                 }
                         );
-
 
 
         // -------------------------------------------------
