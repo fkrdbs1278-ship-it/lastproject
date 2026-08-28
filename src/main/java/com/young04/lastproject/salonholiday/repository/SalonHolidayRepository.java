@@ -12,18 +12,6 @@ public interface SalonHolidayRepository
         extends JpaRepository<SalonHoliday, Long> {
 
     @Query("""
-            select h
-            from SalonHoliday h
-            where h.startAt < :requestedEnd
-              and h.endAt > :requestedStart
-            order by h.startAt asc
-            """)
-    List<SalonHoliday> findOverlappingHolidays(
-            @Param("requestedStart") LocalDateTime requestedStart,
-            @Param("requestedEnd") LocalDateTime requestedEnd
-    );
-
-    @Query("""
             select count(h)
             from SalonHoliday h
             where h.startAt < :requestedEnd
@@ -32,5 +20,17 @@ public interface SalonHolidayRepository
     long countOverlappingHolidays(
             @Param("requestedStart") LocalDateTime requestedStart,
             @Param("requestedEnd") LocalDateTime requestedEnd
+    );
+
+    @Query("""
+            select h
+            from SalonHoliday h
+            where h.startAt < :rangeEnd
+              and h.endAt > :rangeStart
+            order by h.startAt asc
+            """)
+    List<SalonHoliday> findOverlappingHolidays(
+            @Param("rangeStart") LocalDateTime rangeStart,
+            @Param("rangeEnd") LocalDateTime rangeEnd
     );
 }

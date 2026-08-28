@@ -8,9 +8,12 @@ import java.util.List;
 public interface ReservationImageRepository
         extends JpaRepository<ReservationImage, Long> {
 
-    List<ReservationImage> findByReservationReservationNoOrderBySortOrderAsc(
+    List<ReservationImage>
+    findByReservationReservationNoOrderBySortOrderAsc(
             Long reservationNo
     );
 
-    void deleteByReservationReservationNo(Long reservationNo);
+    long countByReservationReservationNo(
+            Long reservationNo
+    );
 }

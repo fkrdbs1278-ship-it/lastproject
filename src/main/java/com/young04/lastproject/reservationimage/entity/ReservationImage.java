@@ -54,4 +54,27 @@ public class ReservationImage {
             createdAt = LocalDateTime.now();
         }
     }
+
+    public static ReservationImage create(
+            Reservation reservation,
+            String originalFileName,
+            String storedFileName,
+            String fileUrl,
+            String contentType,
+            long fileSize,
+            int sortOrder
+    ) {
+        ReservationImage image =
+                new ReservationImage();
+
+        image.reservation = reservation;
+        image.originalFileName = originalFileName;
+        image.storedFileName = storedFileName;
+        image.fileUrl = fileUrl;
+        image.contentType = contentType;
+        image.fileSize = fileSize;
+        image.sortOrder = sortOrder;
+
+        return image;
+    }
 }

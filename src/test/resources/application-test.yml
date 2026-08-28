@@ -4,7 +4,8 @@ spring:
     url: jdbc:oracle:thin:@localhost:1521:XE
     username: orcltest
     password: 1234
-
+file:
+  upload-dir: build/test-uploads
   jpa:
     show-sql: true
     hibernate:

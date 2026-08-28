@@ -11,7 +11,8 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ReservationRepository
-        extends JpaRepository<Reservation, Long>, ReservationRepositoryCustom {
+        extends JpaRepository<Reservation, Long>,
+                ReservationRepositoryCustom {
 
     // Query Method
     List<Reservation> findByMemberNoOrderByStartAtDesc(Long memberNo);
@@ -50,5 +51,20 @@ public interface ReservationRepository
             @Param("requestedStart") LocalDateTime requestedStart,
             @Param("requestedEnd") LocalDateTime requestedEnd,
             @Param("activeStatuses") Collection<ReservationStatus> activeStatuses
+    );
+
+    @Query("""
+            select r
+            from Reservation r
+            where r.status in :activeStatuses
+              and r.startAt < :rangeEnd
+              and r.endAt > :rangeStart
+            order by r.startAt asc
+            """)
+    List<Reservation> findOverlappingReservations(
+            @Param("rangeStart") LocalDateTime rangeStart,
+            @Param("rangeEnd") LocalDateTime rangeEnd,
+            @Param("activeStatuses")
+            Collection<ReservationStatus> activeStatuses
     );
 }
