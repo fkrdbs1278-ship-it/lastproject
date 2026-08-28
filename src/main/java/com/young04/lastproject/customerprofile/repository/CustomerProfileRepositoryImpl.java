@@ -5,6 +5,9 @@ import com.young04.lastproject.customerprofile.entity.CustomerProfile;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -13,17 +16,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * =========================================================
+ * 고객 CRM Custom Repository 구현체
+ * =========================================================
+ *
+ * 관리자 고객 목록의 복합 조건 검색과
+ * 페이징 처리를 담당합니다.
+ *
+ * 검색 조건:
+ *
+ * - 이름 / 전화번호
+ * - 회원 / 비회원
+ * - 고객 등급
+ * - 활성 여부
+ * - 30일 / 60일 미방문
+ * - 재방문 권장일 도래
+ */
 @Repository
 @RequiredArgsConstructor
 public class CustomerProfileRepositoryImpl
         implements CustomerProfileRepositoryCustom {
 
+
     private final EntityManager entityManager;
 
+
+    // =====================================================
+    // 고객 조건 검색 + 페이징
+    // =====================================================
+
     @Override
-    public List<CustomerProfile> searchCustomers(
-            CustomerSearchCondition condition
+    public Page<CustomerProfile> searchCustomers(
+            CustomerSearchCondition condition,
+            Pageable pageable
     ) {
+
+
+        // =================================================
+        // 실제 고객 데이터 조회 JPQL
+        // =================================================
 
         StringBuilder jpql = new StringBuilder("""
                 SELECT c
@@ -32,7 +65,28 @@ public class CustomerProfileRepositoryImpl
                 WHERE 1 = 1
                 """);
 
-        Map<String, Object> parameters = new HashMap<>();
+
+        // =================================================
+        // 전체 검색 결과 개수 조회 JPQL
+        //
+        // Page 객체를 만들려면
+        // 전체 고객 수가 필요합니다.
+        // =================================================
+
+        StringBuilder countJpql = new StringBuilder("""
+                SELECT COUNT(c)
+                FROM CustomerProfile c
+                JOIN c.customerGrade g
+                WHERE 1 = 1
+                """);
+
+
+        // =================================================
+        // 공통 Query Parameter
+        // =================================================
+
+        Map<String, Object> parameters =
+                new HashMap<>();
 
 
         // =====================================================
@@ -40,18 +94,30 @@ public class CustomerProfileRepositoryImpl
         // =====================================================
 
         if (condition != null
-                && StringUtils.hasText(condition.getKeyword())) {
+                && StringUtils.hasText(
+                condition.getKeyword()
+        )) {
 
-            jpql.append("""
+            String searchCondition = """
                      AND (
                          LOWER(c.customerName) LIKE LOWER(:keyword)
                          OR c.phone LIKE :keyword
                      )
-                    """);
+                    """;
+
+
+            jpql.append(searchCondition);
+
+            countJpql.append(searchCondition);
+
 
             parameters.put(
                     "keyword",
-                    "%" + condition.getKeyword().trim() + "%"
+                    "%"
+                            + condition
+                            .getKeyword()
+                            .trim()
+                            + "%"
             );
         }
 
@@ -61,11 +127,19 @@ public class CustomerProfileRepositoryImpl
         // =====================================================
 
         if (condition != null
-                && StringUtils.hasText(condition.getCustomerType())) {
+                && StringUtils.hasText(
+                condition.getCustomerType()
+        )) {
 
-            jpql.append("""
+            String searchCondition = """
                      AND c.customerType = :customerType
-                    """);
+                    """;
+
+
+            jpql.append(searchCondition);
+
+            countJpql.append(searchCondition);
+
 
             parameters.put(
                     "customerType",
@@ -79,11 +153,19 @@ public class CustomerProfileRepositoryImpl
         // =====================================================
 
         if (condition != null
-                && StringUtils.hasText(condition.getGradeCode())) {
+                && StringUtils.hasText(
+                condition.getGradeCode()
+        )) {
 
-            jpql.append("""
+            String searchCondition = """
                      AND g.gradeCode = :gradeCode
-                    """);
+                    """;
+
+
+            jpql.append(searchCondition);
+
+            countJpql.append(searchCondition);
+
 
             parameters.put(
                     "gradeCode",
@@ -97,11 +179,19 @@ public class CustomerProfileRepositoryImpl
         // =====================================================
 
         if (condition != null
-                && StringUtils.hasText(condition.getActiveYn())) {
+                && StringUtils.hasText(
+                condition.getActiveYn()
+        )) {
 
-            jpql.append("""
+            String searchCondition = """
                      AND c.activeYn = :activeYn
-                    """);
+                    """;
+
+
+            jpql.append(searchCondition);
+
+            countJpql.append(searchCondition);
+
 
             parameters.put(
                     "activeYn",
@@ -126,16 +216,25 @@ public class CustomerProfileRepositoryImpl
                 && condition.getInactiveDays() != null
                 && condition.getInactiveDays() > 0) {
 
+
             LocalDate inactiveDate =
                     LocalDate.now()
                             .minusDays(
-                                    condition.getInactiveDays()
+                                    condition
+                                            .getInactiveDays()
                             );
 
-            jpql.append("""
+
+            String searchCondition = """
                      AND c.lastVisitDate IS NOT NULL
                      AND c.lastVisitDate <= :inactiveDate
-                    """);
+                    """;
+
+
+            jpql.append(searchCondition);
+
+            countJpql.append(searchCondition);
+
 
             parameters.put(
                     "inactiveDate",
@@ -152,25 +251,25 @@ public class CustomerProfileRepositoryImpl
          * revisitDueYn = Y 인 경우:
          *
          * 재방문 권장일이 존재하고
-         * 권장일이 오늘이거나 이미 지난 고객만 조회합니다.
-         *
-         * 예:
-         *
-         * 오늘: 2026-08-27
-         *
-         * 2026-08-26 → 조회
-         * 2026-08-27 → 조회
-         * 2026-09-05 → 제외
+         * 권장일이 오늘이거나
+         * 이미 지난 고객만 조회합니다.
          */
         if (condition != null
                 && "Y".equalsIgnoreCase(
                 condition.getRevisitDueYn()
         )) {
 
-            jpql.append("""
+
+            String searchCondition = """
                      AND c.revisitRecommendedDate IS NOT NULL
                      AND c.revisitRecommendedDate <= :today
-                    """);
+                    """;
+
+
+            jpql.append(searchCondition);
+
+            countJpql.append(searchCondition);
+
 
             parameters.put(
                     "today",
@@ -188,6 +287,10 @@ public class CustomerProfileRepositoryImpl
                 """);
 
 
+        // =====================================================
+        // 실제 고객 조회 Query 생성
+        // =====================================================
+
         TypedQuery<CustomerProfile> query =
                 entityManager.createQuery(
                         jpql.toString(),
@@ -195,11 +298,85 @@ public class CustomerProfileRepositoryImpl
                 );
 
 
+        // =====================================================
+        // 전체 검색 결과 수 Query 생성
+        // =====================================================
+
+        TypedQuery<Long> countQuery =
+                entityManager.createQuery(
+                        countJpql.toString(),
+                        Long.class
+                );
+
+
+        // =====================================================
+        // Query Parameter 적용
+        // =====================================================
+
         parameters.forEach(
-                query::setParameter
+                (key, value) -> {
+
+                    query.setParameter(
+                            key,
+                            value
+                    );
+
+                    countQuery.setParameter(
+                            key,
+                            value
+                    );
+                }
         );
 
 
-        return query.getResultList();
+        // =====================================================
+        // 페이징 적용
+        //
+        // page = 0
+        // size = 10
+        //
+        // firstResult = 0
+        //
+        // page = 1
+        // size = 10
+        //
+        // firstResult = 10
+        // =====================================================
+
+        query.setFirstResult(
+                (int) pageable.getOffset()
+        );
+
+
+        query.setMaxResults(
+                pageable.getPageSize()
+        );
+
+
+        // =====================================================
+        // 현재 페이지 데이터 조회
+        // =====================================================
+
+        List<CustomerProfile> customers =
+                query.getResultList();
+
+
+        // =====================================================
+        // 전체 검색 결과 개수
+        // =====================================================
+
+        Long totalCount =
+                countQuery.getSingleResult();
+
+
+        // =====================================================
+        // Page 객체 생성
+        // =====================================================
+
+        return new PageImpl<>(
+                customers,
+                pageable,
+                totalCount
+        );
     }
 }

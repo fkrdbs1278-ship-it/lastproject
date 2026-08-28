@@ -8,6 +8,9 @@ import com.young04.lastproject.customerprofile.service.CustomerProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -27,17 +29,23 @@ import java.util.List;
 @RequestMapping("/admin/customers")
 public class AdminCustomerController {
 
+
+    // =====================================================
+    // Service
+    // =====================================================
+
     private final CustomerProfileService customerProfileService;
 
     private final CustomerGradeService customerGradeService;
 
 
+
     // =====================================================
-    // 관리자 고객 CRM 목록 / 검색
+    // 관리자 고객 CRM 목록 / 검색 + 페이징
     // =====================================================
 
     /**
-     * 관리자 고객 CRM 목록 화면
+     * 관리자 고객 CRM 목록 화면입니다.
      *
      * 검색 조건:
      *
@@ -47,36 +55,145 @@ public class AdminCustomerController {
      * - 활성 여부
      * - 미방문 기간
      * - 재방문 권장일 도래
+     *
+     *
+     * 페이징:
+     *
+     * page = 0 → 첫 번째 페이지
+     * page = 1 → 두 번째 페이지
+     *
+     * 한 페이지에는 10명의 고객을 표시합니다.
      */
     @GetMapping
     public String customerList(
+
             @ModelAttribute("condition")
             CustomerSearchCondition condition,
+
+            @RequestParam(
+                    name = "page",
+                    defaultValue = "0"
+            )
+            int page,
+
             Model model
     ) {
 
-        log.info("관리자 고객 CRM 목록 조회");
+
+        // -------------------------------------------------
+        // 잘못된 음수 페이지 방지
+        // -------------------------------------------------
+
+        int currentPage =
+                Math.max(
+                        page,
+                        0
+                );
 
 
-        List<CustomerProfile> customers =
-                customerProfileService
-                        .searchCustomers(condition);
+        // -------------------------------------------------
+        // 한 페이지 고객 수
+        // -------------------------------------------------
+
+        int pageSize = 10;
 
 
-        model.addAttribute(
-                "customers",
-                customers
+        // -------------------------------------------------
+        // Pageable 생성
+        // -------------------------------------------------
+
+        Pageable pageable =
+                PageRequest.of(
+                        currentPage,
+                        pageSize
+                );
+
+
+        log.info(
+                "관리자 고객 CRM 목록 조회 page={}, size={}",
+                currentPage,
+                pageSize
         );
 
 
+        // -------------------------------------------------
+        // 고객 검색 + 페이징
+        // -------------------------------------------------
+
+        Page<CustomerProfile> customerPage =
+                customerProfileService
+                        .searchCustomers(
+                                condition,
+                                pageable
+                        );
+
+
+        // -------------------------------------------------
+        // 현재 페이지 고객 목록
+        //
+        // 기존 list.html의
+        // ${customers}를 그대로 사용할 수 있도록
+        // Page의 content만 따로 전달합니다.
+        // -------------------------------------------------
+
+        model.addAttribute(
+                "customers",
+                customerPage.getContent()
+        );
+
+
+        // -------------------------------------------------
+        // 페이징 정보 전체 전달
+        // -------------------------------------------------
+
+        model.addAttribute(
+                "customerPage",
+                customerPage
+        );
+
+
+        // 현재 페이지 번호
+        model.addAttribute(
+                "currentPage",
+                customerPage.getNumber()
+        );
+
+
+        // 전체 페이지 수
+        model.addAttribute(
+                "totalPages",
+                customerPage.getTotalPages()
+        );
+
+
+        // 전체 검색 결과 고객 수
+        model.addAttribute(
+                "totalElements",
+                customerPage.getTotalElements()
+        );
+
+
+        // 한 페이지 표시 개수
+        model.addAttribute(
+                "pageSize",
+                customerPage.getSize()
+        );
+
+
+        // -------------------------------------------------
+        // 고객 등급 목록
+        // -------------------------------------------------
+
         model.addAttribute(
                 "grades",
-                customerGradeService.findAllGrades()
+                customerGradeService
+                        .findAllGrades()
         );
 
 
         return "customer/list";
     }
+
 
 
     // =====================================================
@@ -92,7 +209,9 @@ public class AdminCustomerController {
             Model model
     ) {
 
-        log.info("전화예약 고객 등록 화면");
+        log.info(
+                "전화예약 고객 등록 화면"
+        );
 
 
         /*
@@ -115,6 +234,7 @@ public class AdminCustomerController {
     }
 
 
+
     // =====================================================
     // 전화예약 고객 등록 처리
     // =====================================================
@@ -133,6 +253,7 @@ public class AdminCustomerController {
      */
     @PostMapping("/new")
     public String createGuestCustomer(
+
             @Valid
             @ModelAttribute("customerCreateRequest")
             CustomerCreateRequest request,
@@ -170,7 +291,9 @@ public class AdminCustomerController {
 
         CustomerProfile savedCustomer =
                 customerProfileService
-                        .createGuestCustomer(request);
+                        .createGuestCustomer(
+                                request
+                        );
 
 
         // -------------------------------------------------
@@ -198,13 +321,17 @@ public class AdminCustomerController {
     }
 
 
+
     // =====================================================
     // 관리자 고객 상세 조회
     // =====================================================
 
     @GetMapping("/{customerId}")
     public String customerDetail(
-            @PathVariable Long customerId,
+
+            @PathVariable
+            Long customerId,
+
             Model model
     ) {
 
@@ -214,10 +341,20 @@ public class AdminCustomerController {
         );
 
 
+        // -------------------------------------------------
+        // 고객 조회
+        // -------------------------------------------------
+
         CustomerProfile customer =
                 customerProfileService
-                        .getCustomerById(customerId);
+                        .getCustomerById(
+                                customerId
+                        );
 
+
+        // -------------------------------------------------
+        // 고객 정보
+        // -------------------------------------------------
 
         model.addAttribute(
                 "customer",
@@ -225,14 +362,20 @@ public class AdminCustomerController {
         );
 
 
+        // -------------------------------------------------
+        // 고객 등급 선택 목록
+        // -------------------------------------------------
+
         model.addAttribute(
                 "grades",
-                customerGradeService.findAllGrades()
+                customerGradeService
+                        .findAllGrades()
         );
 
 
         return "customer/detail";
     }
+
 
 
     // =====================================================
@@ -241,7 +384,10 @@ public class AdminCustomerController {
 
     @PostMapping("/{customerId}/grade/recalculate")
     public String recalculateGrade(
-            @PathVariable Long customerId,
+
+            @PathVariable
+            Long customerId,
+
             RedirectAttributes redirectAttributes
     ) {
 
@@ -253,7 +399,9 @@ public class AdminCustomerController {
 
         CustomerProfile customer =
                 customerProfileService
-                        .applyAutomaticGrade(customerId);
+                        .applyAutomaticGrade(
+                                customerId
+                        );
 
 
         // -------------------------------------------------
@@ -266,7 +414,8 @@ public class AdminCustomerController {
 
             redirectAttributes.addFlashAttribute(
                     "message",
-                    "관리자가 직접 지정한 등급입니다. 자동 등급으로 전환한 후 재계산할 수 있습니다."
+                    "관리자가 직접 지정한 등급입니다. "
+                            + "자동 등급으로 전환한 후 재계산할 수 있습니다."
             );
 
         } else {
@@ -283,13 +432,16 @@ public class AdminCustomerController {
     }
 
 
+
     // =====================================================
     // 관리자 고객 등급 수동 변경
     // =====================================================
 
     @PostMapping("/{customerId}/grade/manual")
     public String changeGradeManually(
-            @PathVariable Long customerId,
+
+            @PathVariable
+            Long customerId,
 
             @RequestParam("gradeCode")
             String gradeCode,
@@ -331,13 +483,17 @@ public class AdminCustomerController {
     }
 
 
+
     // =====================================================
     // 수동 등급 해제 → 자동 등급 관리
     // =====================================================
 
     @PostMapping("/{customerId}/grade/automatic")
     public String changeToAutomaticGrade(
-            @PathVariable Long customerId,
+
+            @PathVariable
+            Long customerId,
+
             RedirectAttributes redirectAttributes
     ) {
 
@@ -348,7 +504,9 @@ public class AdminCustomerController {
 
 
         customerProfileService
-                .changeToAutomaticGrade(customerId);
+                .changeToAutomaticGrade(
+                        customerId
+                );
 
 
         redirectAttributes.addFlashAttribute(

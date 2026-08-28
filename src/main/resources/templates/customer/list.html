@@ -4,6 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
@@ -22,6 +23,7 @@
             color: #222;
         }
 
+
         /* =====================================================
            전체 관리자 레이아웃
         ===================================================== */
@@ -30,6 +32,7 @@
             display: flex;
             min-height: 100vh;
         }
+
 
         /* =====================================================
            사이드바
@@ -81,6 +84,7 @@
             font-weight: bold;
         }
 
+
         /* =====================================================
            메인
         ===================================================== */
@@ -90,6 +94,7 @@
             padding: 30px 40px;
             overflow-x: auto;
         }
+
 
         /* =====================================================
            상단 헤더
@@ -128,6 +133,7 @@
             background: #000;
         }
 
+
         /* =====================================================
            카드
         ===================================================== */
@@ -143,6 +149,7 @@
         .box h2 {
             margin-top: 0;
         }
+
 
         /* =====================================================
            검색
@@ -207,6 +214,7 @@
             background: white;
         }
 
+
         /* =====================================================
            메시지
         ===================================================== */
@@ -228,6 +236,7 @@
             border-radius: 7px;
             color: #c62828;
         }
+
 
         /* =====================================================
            고객 목록
@@ -321,6 +330,61 @@
             color: #777;
         }
 
+
+        /* =====================================================
+           페이징
+        ===================================================== */
+
+        .pagination-area {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .page-button {
+            min-width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: white;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .page-button:hover {
+            background: #f1f1f1;
+        }
+
+        .page-button.current {
+            background: #22252a;
+            color: white;
+            border-color: #22252a;
+            font-weight: bold;
+        }
+
+        .page-button.disabled {
+            color: #aaa;
+            background: #f5f5f5;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .page-info {
+            margin-top: 12px;
+            text-align: center;
+            color: #777;
+            font-size: 13px;
+        }
+
+
         /* =====================================================
            반응형
         ===================================================== */
@@ -345,7 +409,9 @@
     </style>
 </head>
 
+
 <body>
+
 
 <div class="admin-layout">
 
@@ -360,15 +426,14 @@
             SALON ADMIN
         </div>
 
+
         <div class="menu-title">
             MANAGEMENT
         </div>
 
+
         <nav class="menu">
 
-            <!--
-                다른 담당자 URL 확정 후 실제 주소 연결
-            -->
             <a href="#">
                 대시보드
             </a>
@@ -401,14 +466,14 @@
 
 
     <!-- =====================================================
-         메인 화면
+         메인
     ====================================================== -->
 
     <main class="main">
 
 
         <!-- =================================================
-             상단 제목
+             상단
         ================================================== -->
 
         <div class="header">
@@ -425,10 +490,6 @@
 
             </div>
 
-
-            <!-- =============================================
-                 전화예약 고객 등록
-            ============================================== -->
 
             <a
                     class="create-button"
@@ -486,10 +547,22 @@
                     th:object="${condition}">
 
 
+                <!--
+                    새로운 검색을 하면 항상
+                    첫 번째 페이지부터 조회
+                -->
+                <input
+                        type="hidden"
+                        name="page"
+                        value="0">
+
+
                 <div class="search-area">
 
 
-                    <!-- 이름 / 전화번호 -->
+                    <!-- =====================================
+                         이름 / 전화번호
+                    ====================================== -->
 
                     <div class="search-item">
 
@@ -506,13 +579,16 @@
                     </div>
 
 
-                    <!-- 고객 유형 -->
+                    <!-- =====================================
+                         고객 유형
+                    ====================================== -->
 
                     <div class="search-item">
 
                         <label for="customerType">
                             고객유형
                         </label>
+
 
                         <select
                                 id="customerType"
@@ -535,13 +611,16 @@
                     </div>
 
 
-                    <!-- 고객 등급 -->
+                    <!-- =====================================
+                         고객 등급
+                    ====================================== -->
 
                     <div class="search-item">
 
                         <label for="gradeCode">
                             고객등급
                         </label>
+
 
                         <select
                                 id="gradeCode"
@@ -550,6 +629,7 @@
                             <option value="">
                                 전체
                             </option>
+
 
                             <option
                                     th:each="grade : ${grades}"
@@ -568,13 +648,16 @@
                     </div>
 
 
-                    <!-- 활성 여부 -->
+                    <!-- =====================================
+                         활성 여부
+                    ====================================== -->
 
                     <div class="search-item">
 
                         <label for="activeYn">
                             활성여부
                         </label>
+
 
                         <select
                                 id="activeYn"
@@ -597,13 +680,16 @@
                     </div>
 
 
-                    <!-- 미방문 기간 -->
+                    <!-- =====================================
+                         미방문 기간
+                    ====================================== -->
 
                     <div class="search-item">
 
                         <label for="inactiveDays">
                             미방문 기간
                         </label>
+
 
                         <select
                                 id="inactiveDays"
@@ -626,13 +712,16 @@
                     </div>
 
 
-                    <!-- 재방문 대상 -->
+                    <!-- =====================================
+                         재방문 대상
+                    ====================================== -->
 
                     <div class="search-item">
 
                         <label for="revisitDueYn">
                             재방문 대상
                         </label>
+
 
                         <select
                                 id="revisitDueYn"
@@ -651,7 +740,9 @@
                     </div>
 
 
-                    <!-- 검색 -->
+                    <!-- =====================================
+                         검색 버튼
+                    ====================================== -->
 
                     <div class="search-item">
 
@@ -666,7 +757,9 @@
                     </div>
 
 
-                    <!-- 초기화 -->
+                    <!-- =====================================
+                         초기화
+                    ====================================== -->
 
                     <div class="search-item">
 
@@ -679,7 +772,6 @@
                         </a>
 
                     </div>
-
 
                 </div>
 
@@ -699,14 +791,15 @@
             </h2>
 
 
+            <!-- =================================================
+                 검색 결과 전체 건수
+            ================================================== -->
+
             <div class="summary">
 
                 검색 결과:
 
-                <strong
-                        th:text="${customers != null
-                                 ? #lists.size(customers)
-                                 : 0}">
+                <strong th:text="${totalElements}">
                     0
                 </strong>
 
@@ -715,7 +808,9 @@
             </div>
 
 
-            <!-- 검색 결과 없음 -->
+            <!-- =================================================
+                 검색 결과 없음
+            ================================================== -->
 
             <div
                     class="empty"
@@ -727,7 +822,9 @@
             </div>
 
 
-            <!-- 고객 목록 -->
+            <!-- =================================================
+                 고객 목록
+            ================================================== -->
 
             <table
                     th:if="${customers != null
@@ -755,10 +852,11 @@
 
                 <tbody>
 
+
                 <tr th:each="customer : ${customers}">
 
 
-                    <!-- 고객 번호 -->
+                    <!-- 고객번호 -->
 
                     <td th:text="${customer.customerId}">
                         1
@@ -779,14 +877,16 @@
                     </td>
 
 
-                    <!-- 고객 유형 -->
+                    <!-- 고객유형 -->
 
                     <td th:text="${customer.customerType}">
                         GUEST
                     </td>
 
 
-                    <!-- 현재 등급 -->
+                    <!-- =================================================
+                         현재 등급
+                    ================================================== -->
 
                     <td>
 
@@ -820,6 +920,7 @@
 
                             )
 
+
                         </span>
 
 
@@ -833,7 +934,9 @@
                     </td>
 
 
-                    <!-- 등급 관리 방식 -->
+                    <!-- =================================================
+                         등급 관리 방식
+                    ================================================== -->
 
                     <td>
 
@@ -857,7 +960,9 @@
                     </td>
 
 
-                    <!-- 최근 방문일 -->
+                    <!-- =================================================
+                         최근 방문일
+                    ================================================== -->
 
                     <td
                             th:text="${customer.lastVisitDate != null
@@ -869,7 +974,9 @@
                     </td>
 
 
-                    <!-- 방문 횟수 -->
+                    <!-- =================================================
+                         방문 횟수
+                    ================================================== -->
 
                     <td>
 
@@ -887,7 +994,9 @@
                     </td>
 
 
-                    <!-- 누적 결제 -->
+                    <!-- =================================================
+                         누적 결제
+                    ================================================== -->
 
                     <td>
 
@@ -909,7 +1018,9 @@
                     </td>
 
 
-                    <!-- 재방문 권장일 -->
+                    <!-- =================================================
+                         재방문 권장일
+                    ================================================== -->
 
                     <td
                             th:text="${customer.revisitRecommendedDate != null
@@ -921,7 +1032,9 @@
                     </td>
 
 
-                    <!-- 활성 여부 -->
+                    <!-- =================================================
+                         활성 여부
+                    ================================================== -->
 
                     <td>
 
@@ -945,7 +1058,9 @@
                     </td>
 
 
-                    <!-- 상세 -->
+                    <!-- =================================================
+                         상세
+                    ================================================== -->
 
                     <td>
 
@@ -964,16 +1079,151 @@
 
                 </tr>
 
+
                 </tbody>
 
             </table>
 
-        </section>
 
+            <!-- =================================================
+                 페이징
+            ================================================== -->
+
+            <div
+                    class="pagination-area"
+                    th:if="${totalPages > 1}">
+
+
+                <!-- =================================================
+                     이전
+                ================================================== -->
+
+                <a
+                        class="page-button"
+                        th:classappend="${currentPage == 0}
+                                       ? ' disabled'
+                                       : ''"
+
+                        th:href="@{/admin/customers(
+                            page=${currentPage - 1},
+                            keyword=${condition.keyword},
+                            customerType=${condition.customerType},
+                            gradeCode=${condition.gradeCode},
+                            activeYn=${condition.activeYn},
+                            inactiveDays=${condition.inactiveDays},
+                            revisitDueYn=${condition.revisitDueYn}
+                        )}">
+
+                    이전
+
+                </a>
+
+
+                <!-- =================================================
+                     페이지 번호
+                ================================================== -->
+
+                <a
+                        th:each="pageNumber : ${#numbers.sequence(
+                            0,
+                            totalPages - 1
+                        )}"
+
+                        class="page-button"
+
+                        th:classappend="${pageNumber == currentPage}
+                                       ? ' current'
+                                       : ''"
+
+                        th:text="${pageNumber + 1}"
+
+                        th:href="@{/admin/customers(
+                            page=${pageNumber},
+                            keyword=${condition.keyword},
+                            customerType=${condition.customerType},
+                            gradeCode=${condition.gradeCode},
+                            activeYn=${condition.activeYn},
+                            inactiveDays=${condition.inactiveDays},
+                            revisitDueYn=${condition.revisitDueYn}
+                        )}">
+
+                    1
+
+                </a>
+
+
+                <!-- =================================================
+                     다음
+                ================================================== -->
+
+                <a
+                        class="page-button"
+
+                        th:classappend="${currentPage + 1 >= totalPages}
+                                       ? ' disabled'
+                                       : ''"
+
+                        th:href="@{/admin/customers(
+                            page=${currentPage + 1},
+                            keyword=${condition.keyword},
+                            customerType=${condition.customerType},
+                            gradeCode=${condition.gradeCode},
+                            activeYn=${condition.activeYn},
+                            inactiveDays=${condition.inactiveDays},
+                            revisitDueYn=${condition.revisitDueYn}
+                        )}">
+
+                    다음
+
+                </a>
+
+            </div>
+
+
+            <!-- =================================================
+                 현재 페이지 안내
+            ================================================== -->
+
+            <div
+                    class="page-info"
+                    th:if="${totalElements > 0}">
+
+                현재
+
+                <strong th:text="${currentPage + 1}">
+                    1
+                </strong>
+
+                페이지
+
+                /
+
+                전체
+
+                <strong th:text="${totalPages}">
+                    1
+                </strong>
+
+                페이지
+
+                ·
+
+                총
+
+                <strong th:text="${totalElements}">
+                    0
+                </strong>
+
+                명
+
+            </div>
+
+        </section>
 
     </main>
 
 </div>
 
 </body>
+
 </html>
