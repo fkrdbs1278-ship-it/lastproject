@@ -18,19 +18,16 @@
         </div>
 
         <div class="material-header-actions">
-            <!-- 발주 관리 페이지로 이동 -->
             <a class="history-button"
                th:href="@{/admin/purchaseorder}">
                 발주 관리
             </a>
 
-            <!-- 재고 변동 이력 페이지로 이동 -->
             <a class="history-button"
                th:href="@{/admin/stockhistory}">
                 재고 변동 이력
             </a>
 
-            <!-- 자재 등록 페이지로 이동 -->
             <a class="primary-button"
                th:href="@{/admin/material/new}">
                 자재 등록
@@ -41,6 +38,12 @@
     <div class="message"
          th:if="${message != null}"
          th:text="${message}">
+    </div>
+
+    <!-- 자재 삭제 실패 메시지 -->
+    <div class="message error-message"
+         th:if="${errorMessage != null}"
+         th:text="${errorMessage}">
     </div>
 
     <section class="material-summary">
@@ -98,12 +101,12 @@
             <tr>
                 <th>번호</th>
                 <th>자재명</th>
-                <th>카테고리</th>
+                <th>자재 분류</th>
                 <th>현재 재고</th>
                 <th>안전 재고</th>
-                <th>단위</th>
-                <th>단가</th>
-                <th>공급업체</th>
+                <th>재고 단위</th>
+                <th>기준 구매가</th>
+                <th>업체명</th>
                 <th>상태</th>
                 <th>관리</th>
             </tr>
@@ -136,16 +139,16 @@
                     -
                 </td>
 
-                <td th:text="${#numbers.formatDecimal(
-                        material.currentStock, 1, 2
+                <td th:text="${#numbers.formatInteger(
+                        material.currentStock, 1
                 )}">
-                    0.00
+                    0
                 </td>
 
-                <td th:text="${#numbers.formatDecimal(
-                        material.safetyStock, 1, 2
+                <td th:text="${#numbers.formatInteger(
+                        material.safetyStock, 1
                 )}">
-                    0.00
+                    0
                 </td>
 
                 <td th:text="${material.unitCode}">개</td>
@@ -173,12 +176,27 @@
                     </span>
                 </td>
 
-                <td>
+                <td class="manage-cell">
                     <a class="edit-button"
                        th:href="@{/admin/material/{no}/edit
                        (no=${material.materialNo})}">
                         수정
                     </a>
+
+                    <!-- 사용 중지된 자재에만 삭제 버튼 표시 -->
+                    <form class="delete-form"
+                          th:if="${material.useYn == 'N'}"
+                          th:action="@{/admin/material/{no}/delete(
+                                no=${material.materialNo}
+                          )}"
+                          method="post"
+                          onsubmit="return confirm('이 자재를 삭제하면 연결된 발주 품목과 재고 이력도 함께 삭제됩니다. 계속하시겠습니까?');">
+
+                        <button class="delete-button"
+                                type="submit">
+                            삭제
+                        </button>
+                    </form>
                 </td>
             </tr>
 

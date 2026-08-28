@@ -101,7 +101,8 @@
     </section>
 
     <!-- 발주 품목 추가 -->
-    <section class="detail-card">
+    <section class="detail-card"
+             th:if="${order.orderStatus == 'REQUESTED'}">
         <div class="section-title">
             <h2>발주 품목 추가</h2>
             <p>등록된 자재에서 발주할 품목을 선택합니다.</p>
@@ -230,6 +231,55 @@
                 </tbody>
             </table>
         </div>
+    </section>
+
+    <!-- 공급업체 출고 완료 후 관리자 입고 처리 -->
+    <section class="detail-card"
+             th:if="${order.orderStatus == 'ORDERED'}">
+        <div class="section-title">
+            <h2>입고 처리</h2>
+            <p>
+                공급업체에서 출고한 자재의 수량을 확인한 뒤
+                입고 완료 처리합니다.
+            </p>
+        </div>
+
+        <form th:action="@{/admin/purchaseorder/{no}/receive(
+                    no=${order.purchaseOrderNo}
+              )}"
+              method="post"
+              onsubmit="return confirm('발주 품목을 입고 완료 처리하시겠습니까?');">
+
+            <button class="primary-button"
+                    type="submit">
+                입고 완료
+            </button>
+        </form>
+    </section>
+
+    <!-- 입고 처리가 완료된 발주서 안내 -->
+    <section class="detail-card"
+             th:if="${order.orderStatus == 'RECEIVED'}">
+        <div class="section-title">
+            <h2>입고 완료</h2>
+            <p>
+                발주 품목의 입고 수량과 자재 재고가 반영되었습니다.
+            </p>
+        </div>
+
+        <dl class="detail-grid">
+            <div class="detail-wide">
+                <dt>실제 입고일</dt>
+                <dd th:text="${order.receivedDate != null
+                        ? #temporals.format(
+                                order.receivedDate,
+                                'yyyy-MM-dd HH:mm'
+                          )
+                        : '-'}">
+                    -
+                </dd>
+            </div>
+        </dl>
     </section>
 
 </main>

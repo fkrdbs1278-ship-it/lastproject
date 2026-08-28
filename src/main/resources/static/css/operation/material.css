@@ -93,6 +93,13 @@
     font-size: 14px;
 }
 
+/* 삭제 실패 안내 메시지 */
+.message.error-message {
+    border-color: #efc0c0;
+    color: #b63f3f;
+    background-color: #fff1f1;
+}
+
 /* 재고 부족 요약 카드 */
 .material-summary {
     display: flex;
@@ -331,6 +338,36 @@
 .edit-button:hover {
     border-color: #5c6bc0;
     color: #5c6bc0;
+}
+
+/* 관리 열의 삭제 폼 */
+.delete-form {
+    display: inline-flex;
+    margin: 0 0 0 6px;
+    vertical-align: middle;
+}
+
+/* 사용 중지 자재 삭제 버튼 */
+.delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 13px;
+    border: 1px solid #e6a7a7;
+    border-radius: 8px;
+    color: #c34444;
+    background-color: #fff6f6;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    border-color: #cf4f4f;
+    color: #ffffff;
+    background-color: #cf4f4f;
 }
 
 .empty-message {

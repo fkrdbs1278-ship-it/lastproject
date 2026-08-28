@@ -73,7 +73,7 @@
             </div>
 
             <div class="detail-item">
-                <span>카테고리 코드</span>
+                <span>자재 분류</span>
                 <strong th:text="${material.categoryCode != null
                         ? material.categoryCode : '-'}">
                     -
@@ -88,7 +88,7 @@
                         th:text="${#numbers.formatDecimal(
                                 material.currentStock, 1, 2
                         ) + ' ' + material.unitCode}">
-                    0.00 EA
+                    1 EA
                 </strong>
             </div>
 
@@ -98,12 +98,12 @@
                 <strong th:text="${#numbers.formatDecimal(
                                 material.safetyStock, 1, 2
                         ) + ' ' + material.unitCode}">
-                    0.00 EA
+                    1 EA
                 </strong>
             </div>
 
             <div class="detail-item">
-                <span>단가</span>
+                <span>기준 구매가</span>
 
                 <strong th:text="${#numbers.formatInteger(
                                 material.unitPrice, 1, 'COMMA'
@@ -113,7 +113,7 @@
             </div>
 
             <div class="detail-item">
-                <span>공급업체</span>
+                <span>업체</span>
 
                 <strong th:text="${material.supplierName != null
                         ? material.supplierName : '-'}">

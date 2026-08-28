@@ -2,7 +2,7 @@ package com.young04.lastproject.stockhistory.service;
 
 import com.young04.lastproject.stockhistory.dto.StockHistoryResponse;
 import com.young04.lastproject.stockhistory.entity.StockHistory;
-import com.young04.lastproject.stockhistory.entity.StockHistoryRepository;
+import com.young04.lastproject.stockhistory.repository.StockHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

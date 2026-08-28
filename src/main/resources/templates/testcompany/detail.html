@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공급업체 발주 상세</title>
+
+    <!-- 테스트 공급업체 화면 전용 CSS 연결 -->
+    <link rel="stylesheet"
+          th:href="@{/css/operation/testcompany.css}">
+</head>
+
+<body>
+<main class="test-company-page">
+
+    <!-- 테스트 공급업체 상세 화면 제목 -->
+    <section class="test-company-header">
+        <div>
+            <p class="page-category">외부 공급업체 테스트</p>
+            <h1>발주서 상세 확인</h1>
+            <p>
+                미용실에서 요청한 발주 정보와 품목을 확인합니다.
+            </p>
+        </div>
+
+        <a class="secondary-button"
+           th:href="@{/testcompany/purchaseorder}">
+            목록으로
+        </a>
+    </section>
+
+    <!-- 상태 처리 완료 메시지 -->
+    <div class="message"
+         th:if="${message != null}"
+         th:text="${message}">
+    </div>
+
+    <!-- 테스트 화면 안내 -->
+    <section class="test-notice">
+        <strong>공급업체 처리 화면</strong>
+
+        <p>
+            발주 내용을 확인한 뒤 출고 처리하거나
+            발주 요청을 거절할 수 있습니다.
+        </p>
+    </section>
+
+    <!-- 발주서 기본 정보 -->
+    <section class="detail-card">
+        <div class="section-title">
+            <h2>발주 정보</h2>
+        </div>
+
+        <dl class="detail-grid">
+            <div>
+                <dt>발주서 번호</dt>
+                <dd th:text="${order.purchaseOrderNo}">
+                    1
+                </dd>
+            </div>
+
+            <div>
+                <dt>공급업체</dt>
+                <dd th:text="${order.supplierName}">
+                    공급업체명
+                </dd>
+            </div>
+
+            <div>
+                <dt>처리 상태</dt>
+                <dd>
+                    <span class="status-badge"
+                          th:classappend="${#strings.toLowerCase(
+                                  order.orderStatus
+                          )}"
+                          th:text="${order.orderStatus == 'REQUESTED'
+                                  ? '확인 대기'
+                                  : order.orderStatus == 'ORDERED'
+                                  ? '출고 완료'
+                                  : order.orderStatus == 'RECEIVED'
+                                  ? '입고 확인 완료'
+                                  : order.orderStatus == 'CANCELED'
+                                  ? '발주 거절'
+                                  : order.orderStatus}">
+                        확인 대기
+                    </span>
+                </dd>
+            </div>
+
+            <div>
+                <dt>발주일</dt>
+                <dd th:text="${#temporals.format(
+                        order.orderDate,
+                        'yyyy-MM-dd HH:mm'
+                )}">
+                    2026-08-28 10:00
+                </dd>
+            </div>
+
+            <div>
+                <dt>입고 예정일</dt>
+                <dd th:text="${order.expectedDate != null
+                        ? #temporals.format(
+                                order.expectedDate,
+                                'yyyy-MM-dd'
+                          )
+                        : '-'}">
+                    -
+                </dd>
+            </div>
+
+            <div>
+                <dt>총 발주 금액</dt>
+                <dd th:text="${#numbers.formatInteger(
+                        order.totalAmount,
+                        1,
+                        'COMMA'
+                ) + '원'}">
+                    0원
+                </dd>
+            </div>
+
+            <div class="detail-wide">
+                <dt>요청 메모</dt>
+                <dd th:text="${order.memo != null
+                        and !order.memo.isBlank()
+                        ? order.memo
+                        : '-'}">
+                    -
+                </dd>
+            </div>
+        </dl>
+    </section>
+
+    <!-- 발주 요청 품목 -->
+    <section class="detail-card">
+        <div class="section-title">
+            <h2>요청 품목</h2>
+            <p>미용실에서 요청한 자재와 수량입니다.</p>
+        </div>
+
+        <div class="table-wrap">
+            <table class="order-table">
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>자재명</th>
+                    <th>발주 수량</th>
+                    <th>구매 가격</th>
+                    <th>품목 금액</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <!-- 발주 품목 반복 출력 -->
+                <tr th:each="item, itemStat : ${items}">
+                    <td th:text="${itemStat.count}">
+                        1
+                    </td>
+
+                    <td th:text="${item.materialName}">
+                        자재명
+                    </td>
+
+                    <td th:text="${#numbers.formatDecimal(
+                            item.orderQuantity,
+                            1,
+                            2
+                    ) + ' ' + item.unitCode}">
+                        0.00 EA
+                    </td>
+
+                    <td th:text="${#numbers.formatInteger(
+                            item.unitPrice,
+                            1,
+                            'COMMA'
+                    ) + '원'}">
+                        0원
+                    </td>
+
+                    <td th:text="${#numbers.formatInteger(
+                            item.itemAmount,
+                            1,
+                            'COMMA'
+                    ) + '원'}">
+                        0원
+                    </td>
+                </tr>
+
+                <!-- 발주 품목이 없을 때 표시 -->
+                <tr th:if="${#lists.isEmpty(items)}">
+                    <td class="empty-message"
+                        colspan="5">
+                        등록된 발주 품목이 없습니다.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 발주 요청 상태에서만 공급업체 처리 버튼 표시 -->
+    <section class="detail-card action-card"
+             th:if="${order.orderStatus == 'REQUESTED'}">
+
+        <div class="section-title">
+            <h2>발주 처리</h2>
+            <p>
+                품목과 수량을 확인한 뒤 처리 방법을 선택해 주세요.
+            </p>
+        </div>
+
+        <div class="order-actions">
+
+            <!-- 공급업체 출고 처리 -->
+            <form th:action="@{/testcompany/purchaseorder/{no}/shipment(
+                        no=${order.purchaseOrderNo}
+                  )}"
+                  method="post">
+
+                <button class="primary-button"
+                        type="submit"
+                        th:disabled="${#lists.isEmpty(items)}">
+                    출고 처리
+                </button>
+            </form>
+
+            <!-- 공급업체 발주 거절 -->
+            <form th:action="@{/testcompany/purchaseorder/{no}/reject(
+                        no=${order.purchaseOrderNo}
+                  )}"
+                  method="post">
+
+                <button class="danger-button"
+                        type="submit"
+                        onclick="return confirm('이 발주 요청을 거절하시겠습니까?');">
+                    발주 거절
+                </button>
+            </form>
+        </div>
+
+        <!-- 품목이 없으면 출고 처리 불가 안내 -->
+        <p class="action-help"
+           th:if="${#lists.isEmpty(items)}">
+            발주 품목이 등록되지 않아 출고 처리할 수 없습니다.
+        </p>
+    </section>
+
+    <!-- 출고 처리가 끝난 경우 -->
+    <section class="result-card ordered"
+             th:if="${order.orderStatus == 'ORDERED'}">
+        <strong>출고 처리가 완료되었습니다.</strong>
+        <p>
+            미용실 관리자가 자재를 확인한 뒤 입고 완료 처리할 수 있습니다.
+        </p>
+    </section>
+
+    <!-- 미용실 입고까지 완료된 경우 -->
+    <section class="result-card received"
+             th:if="${order.orderStatus == 'RECEIVED'}">
+        <strong>미용실 입고가 완료되었습니다.</strong>
+        <p>
+            발주 수량이 미용실 자재 재고에 반영된 상태입니다.
+        </p>
+    </section>
+
+    <!-- 공급업체에서 발주를 거절한 경우 -->
+    <section class="result-card canceled"
+             th:if="${order.orderStatus == 'CANCELED'}">
+        <strong>발주 요청이 거절되었습니다.</strong>
+        <p>이 발주서는 더 이상 처리할 수 없습니다.</p>
+    </section>
+
+</main>
+</body>
+</html>

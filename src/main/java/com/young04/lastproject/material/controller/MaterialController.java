@@ -148,6 +148,34 @@ public class MaterialController {
         return "redirect:/admin/material/" + materialNo;
     }
 
+    // 사용 중지된 자재와 연결 이력 삭제 처리
+    @PostMapping("/{materialNo}/delete")
+    public String deleteMaterial(
+            @PathVariable Long materialNo,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            // 사용 중지된 자재와 연결 이력 삭제
+            materialService.deleteMaterial(materialNo);
+
+            // 삭제 성공 메시지 전달
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "자재가 삭제되었습니다."
+            );
+
+        } catch (IllegalStateException exception) {
+            // 사용 중이거나 다른 업무 내역에 연결되어 있으면 삭제 실패 안내
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    exception.getMessage()
+            );
+        }
+
+        // 사용 중지된 자재 목록으로 이동
+        return "redirect:/admin/material?useYn=N";
+    }
+
     // 조회 DTO를 수정 화면용 DTO로 변환
     private MaterialRequest convertToRequest(
             MaterialResponse material
@@ -165,4 +193,5 @@ public class MaterialController {
 
         return request;
     }
+
 }

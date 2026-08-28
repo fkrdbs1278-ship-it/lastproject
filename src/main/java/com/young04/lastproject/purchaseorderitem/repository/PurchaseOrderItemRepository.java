@@ -20,4 +20,7 @@ public interface PurchaseOrderItemRepository
             Long purchaseOrderNo,
             Long materialNo
     );
+
+    // 자재와 연결된 발주 품목 삭제
+    long deleteByMaterial_MaterialNo(Long materialNo);
 }

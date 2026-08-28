@@ -197,4 +197,23 @@ public class PurchaseOrderController {
         // 해당 발주서 상세 화면으로 다시 이동
         return "redirect:/admin/purchaseorder/" + purchaseOrderNo;
     }
+
+    // 공급업체에서 출고한 발주 품목의 입고 완료 처리
+    @PostMapping("/{purchaseOrderNo}/receive")
+    public String receiveOrder(
+            @PathVariable Long purchaseOrderNo,
+            RedirectAttributes redirectAttributes
+    ) {
+        // 발주 품목의 입고 수량과 자재 재고를 반영
+        purchaseOrderService.receiveOrder(purchaseOrderNo);
+
+        // 입고 완료 메시지를 한 번만 전달
+        redirectAttributes.addFlashAttribute(
+                "message",
+                "입고가 완료되어 자재 재고에 반영되었습니다."
+        );
+
+        // 입고 처리한 발주서 상세 화면으로 다시 이동
+        return "redirect:/admin/purchaseorder/" + purchaseOrderNo;
+    }
 }
