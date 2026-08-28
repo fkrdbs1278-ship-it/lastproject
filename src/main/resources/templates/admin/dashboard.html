@@ -115,7 +115,10 @@
 
                 <div class="summary-content">
                     <p class="summary-title">재고 부족</p>
-                    <strong class="summary-number">4개 품목</strong>
+                    <strong class="summary-number"
+                            th:text="${lowStockCount + '개 품목'}">
+                        0개 품목
+                    </strong>
 
                     <a href="/admin/material"
                        th:href="@{/admin/material}"
@@ -537,7 +540,9 @@
 
                         <div>
                             <p>재고 부족</p>
-                            <strong>4건</strong>
+                            <strong th:text="${lowStockCount + '건'}">
+                                0건
+                            </strong>
                         </div>
 
                     </div>
@@ -557,34 +562,37 @@
 
                 <div class="stock-list">
 
-                    <div class="stock-item">
+                    <div class="stock-item"
+                         th:each="material : ${lowStockMaterials}">
 
                         <div>
-                            <strong>염색약 A</strong>
-                            <span>현재 재고 2개</span>
+                            <strong th:text="${material.materialName}">
+                                자재명
+                            </strong>
+
+                            <span th:text="${'현재 재고 '
+                                    + #numbers.formatDecimal(
+                                        material.currentStock,
+                                        1,
+                                        0
+                                      )}">
+                                현재 재고 0
+                            </span>
                         </div>
 
                         <span class="stock-badge danger">부족</span>
                     </div>
 
-                    <div class="stock-item">
+                    <!-- 현재 재고 부족 자재가 없는 경우 -->
+                    <div class="stock-item"
+                         th:if="${#lists.isEmpty(lowStockMaterials)}">
 
                         <div>
-                            <strong>중화제 B</strong>
-                            <span>현재 재고 1개</span>
+                            <strong>재고 상태가 안전합니다.</strong>
+                            <span>현재 부족한 자재가 없습니다.</span>
                         </div>
 
-                        <span class="stock-badge danger">부족</span>
-                    </div>
-
-                    <div class="stock-item">
-
-                        <div>
-                            <strong>일회용 장갑</strong>
-                            <span>현재 재고 5개</span>
-                        </div>
-
-                        <span class="stock-badge warning">주의</span>
+                        <span class="stock-badge warning">정상</span>
                     </div>
 
                 </div>

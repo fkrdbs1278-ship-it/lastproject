@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <title>이벤트 상세</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/salonevent.css}">
+</head>
+
+<body>
+
+<main class="salon-event-page event-detail-page">
+
+    <!-- 페이지 제목과 관리 버튼 -->
+    <section class="salon-event-header">
+        <div>
+            <span class="page-category">매장 운영 관리</span>
+            <h1>이벤트 상세</h1>
+            <p>이벤트 정보와 사용자 화면 노출 상태를 확인합니다.</p>
+        </div>
+
+        <div class="salon-event-header-actions">
+            <a class="secondary-button"
+               th:href="@{/admin/salonevent/{no}/edit(
+                    no=${event.eventNo}
+               )}">
+                수정
+            </a>
+
+            <a class="secondary-button"
+               th:href="@{/admin/salonevent}">
+                목록으로
+            </a>
+        </div>
+    </section>
+
+    <!-- 등록·수정·상태 변경 완료 메시지 -->
+    <div class="message success-message"
+         th:if="${message != null}"
+         th:text="${message}">
+        처리가 완료되었습니다.
+    </div>
+
+    <!-- 이벤트 기본 정보 -->
+    <section class="event-detail-section">
+
+        <div class="event-detail-heading">
+            <div>
+                <span class="event-number"
+                      th:text="'이벤트 번호 ' + ${event.eventNo}">
+                    이벤트 번호 1
+                </span>
+
+                <h2 th:text="${event.eventTitle}">
+                    첫 방문 고객 할인 이벤트
+                </h2>
+            </div>
+
+            <div class="detail-status-group">
+                <span class="status-badge"
+                      th:classappend="${' status-' +
+                                       event.eventStatus.toLowerCase()}"
+                      th:text="${event.eventStatusName}">
+                    진행 중
+                </span>
+
+                <span class="use-badge"
+                      th:classappend="${event.useYn == 'Y'
+                                       ? ' use-active'
+                                       : ' use-stopped'}"
+                      th:text="${event.useYn == 'Y'
+                               ? '노출'
+                               : '숨김'}">
+                    노출
+                </span>
+            </div>
+        </div>
+
+        <!-- 이미지 주소가 등록된 경우 표시 -->
+        <div class="event-image-wrap"
+             th:if="${event.eventImageUrl != null
+                      and !event.eventImageUrl.isBlank()}">
+
+            <img th:src="${event.eventImageUrl}"
+                 th:alt="${event.eventTitle}">
+        </div>
+
+        <!-- 이벤트 세부 정보 -->
+        <dl class="event-information-grid">
+
+            <div>
+                <dt>이벤트 유형</dt>
+                <dd th:text="${event.eventTypeName}">
+                    첫 방문
+                </dd>
+            </div>
+
+            <div>
+                <dt>노출 상태</dt>
+                <dd th:text="${event.useYn == 'Y'
+                              ? '사용자 화면에 노출'
+                              : '사용자 화면에서 숨김'}">
+                    사용자 화면에 노출
+                </dd>
+            </div>
+
+            <div>
+                <dt>시작일</dt>
+                <dd th:text="${#temporals.format(
+                        event.startDate,
+                        'yyyy-MM-dd HH:mm'
+                    )}">
+                    2026-08-28 10:00
+                </dd>
+            </div>
+
+            <div>
+                <dt>종료일</dt>
+                <dd th:text="${#temporals.format(
+                        event.endDate,
+                        'yyyy-MM-dd HH:mm'
+                    )}">
+                    2026-09-30 23:59
+                </dd>
+            </div>
+
+            <div>
+                <dt>등록일</dt>
+                <dd th:text="${#temporals.format(
+                        event.regdate,
+                        'yyyy-MM-dd HH:mm'
+                    )}">
+                    2026-08-28 10:00
+                </dd>
+            </div>
+
+            <div>
+                <dt>최근 수정일</dt>
+
+                <dd th:text="${event.updatedate != null
+                        ? #temporals.format(
+                            event.updatedate,
+                            'yyyy-MM-dd HH:mm'
+                          )
+                        : '-'}">
+                    -
+                </dd>
+            </div>
+
+        </dl>
+
+        <!-- 이벤트 내용 -->
+        <div class="event-content-section">
+            <h3>이벤트 내용</h3>
+
+            <div class="event-content"
+                 th:text="${event.eventContent != null
+                           and !event.eventContent.isBlank()
+                           ? event.eventContent
+                           : '등록된 이벤트 내용이 없습니다.'}">
+                이벤트 상세 내용
+            </div>
+        </div>
+
+        <!-- 이벤트 이미지 주소 확인 -->
+        <div class="event-image-url-section"
+             th:if="${event.eventImageUrl != null
+                      and !event.eventImageUrl.isBlank()}">
+
+            <h3>이미지 주소</h3>
+
+            <a th:href="${event.eventImageUrl}"
+               th:text="${event.eventImageUrl}"
+               target="_blank"
+               rel="noopener noreferrer">
+                이미지 주소
+            </a>
+        </div>
+
+    </section>
+
+    <!-- 이벤트 노출 상태 관리 -->
+    <section class="event-status-action-section">
+        <div>
+            <h2>노출 상태 관리</h2>
+            <p>
+                사용 중지하면 사용자 이벤트 화면에서 표시되지 않습니다.
+            </p>
+        </div>
+
+        <!-- 현재 사용 중인 이벤트 -->
+        <form th:if="${event.useYn == 'Y'}"
+              th:action="@{/admin/salonevent/{no}/stop(
+                    no=${event.eventNo}
+               )}"
+              method="post"
+              onsubmit="return confirm('이 이벤트를 사용 중지하시겠습니까?');">
+
+            <button type="submit"
+                    class="danger-button">
+                사용 중지
+            </button>
+        </form>
+
+        <!-- 현재 사용 중지된 이벤트 -->
+        <form th:if="${event.useYn == 'N'}"
+              th:action="@{/admin/salonevent/{no}/resume(
+                    no=${event.eventNo}
+               )}"
+              method="post"
+              onsubmit="return confirm('이 이벤트를 다시 노출하시겠습니까?');">
+
+            <button type="submit"
+                    class="primary-button">
+                다시 사용
+            </button>
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

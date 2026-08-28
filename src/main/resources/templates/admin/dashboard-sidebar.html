@@ -87,6 +87,25 @@
             <span>시술 메뉴 관리</span>
         </a>
 
+        <!-- 이벤트 관리 -->
+        <a href="/admin/salonevent"
+           th:href="@{/admin/salonevent}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'salonevent'} ? ' active' : ''">
+
+            <!-- 달력 아이콘 -->
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <path d="M16 3v4"></path>
+                <path d="M8 3v4"></path>
+                <path d="M3 10h18"></path>
+                <path d="m9 15 2 2 4-4"></path>
+            </svg>
+
+            <span>이벤트 관리</span>
+        </a>
+
         <!-- 재고 관리 -->
         <a href="/admin/material"
            th:href="@{/admin/material}"
