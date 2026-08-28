@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,14 +34,11 @@ public class CustomerProfileService {
     // Repository / Service
     // =====================================================
 
-    private final CustomerProfileRepository
-            customerProfileRepository;
+    private final CustomerProfileRepository customerProfileRepository;
 
-    private final CustomerProfileRepositoryCustom
-            customerProfileRepositoryCustom;
+    private final CustomerProfileRepositoryCustom customerProfileRepositoryCustom;
 
-    private final CustomerGradeService
-            customerGradeService;
+    private final CustomerGradeService customerGradeService;
 
 
 
@@ -47,12 +46,6 @@ public class CustomerProfileService {
     // 고객 전체 조회
     // =====================================================
 
-    /**
-     * 등록되어 있는 전체 고객을 조회합니다.
-     *
-     * 관리자 고객 목록에서는
-     * searchCustomers()의 페이징 기능을 사용합니다.
-     */
     public List<CustomerProfile> findAllCustomers() {
 
         log.info(
@@ -66,12 +59,9 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 고객 번호로 조회 - Optional 방식
+    // 고객 번호로 조회 - Optional
     // =====================================================
 
-    /**
-     * 기존 코드와의 호환성을 위해 유지합니다.
-     */
     public Optional<CustomerProfile> findByCustomerId(
             Long customerId
     ) {
@@ -90,15 +80,9 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 고객 번호로 조회 - 필수 조회
+    // 고객 번호로 필수 조회
     // =====================================================
 
-    /**
-     * 고객번호로 고객을 조회합니다.
-     *
-     * 고객이 존재하지 않으면
-     * CustomerNotFoundException을 발생시킵니다.
-     */
     public CustomerProfile getCustomerById(
             Long customerId
     ) {
@@ -130,13 +114,9 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 전화번호로 고객 조회
+    // 전화번호 기준 고객 조회
     // =====================================================
 
-    /**
-     * 전화번호에서 하이픈 등을 제거한 후
-     * 고객을 조회합니다.
-     */
     public Optional<CustomerProfile> findByPhone(
             String phone
     ) {
@@ -162,19 +142,9 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 회원 번호로 고객 조회 - Optional 방식
+    // 회원 번호 기준 고객 조회 - Optional
     // =====================================================
 
-    /**
-     * MEMBER 테이블의 회원 번호를 기준으로
-     * CRM 고객을 조회합니다.
-     *
-     * 회원 고객:
-     * MEMBER_NO 존재
-     *
-     * 전화예약 / 비회원 고객:
-     * MEMBER_NO NULL 가능
-     */
     public Optional<CustomerProfile> findByMemberNo(
             Long memberNo
     ) {
@@ -193,33 +163,12 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 회원 번호로 CRM 고객 필수 조회
+    // 회원 번호 기준 CRM 고객 필수 조회
     // =====================================================
 
     /**
-     * 로그인 회원의 MEMBER_NO를 기준으로
-     * CUSTOMER_PROFILE을 조회합니다.
-     *
-     * 향후 사용자 기능에서 사용합니다.
-     *
-     * 사용 예정:
-     *
-     * - 본인의 시술 이력 확인
-     * - 본인의 예약 이력 확인
-     * - 본인의 결제 이력 확인
-     * - 고객 활동 연결
-     *
-     * 최종 구조:
-     *
-     * 로그인 사용자
-     *      ↓
-     * MEMBER.NO
-     *      ↓
-     * CUSTOMER_PROFILE.MEMBER_NO
-     *      ↓
-     * CUSTOMER_ID
-     *      ↓
-     * 시술 / 예약 / 결제 이력
+     * 향후 1part 로그인 회원과 CRM 고객을
+     * 연결할 때 사용합니다.
      */
     public CustomerProfile getCustomerByMemberNo(
             Long memberNo
@@ -242,14 +191,6 @@ public class CustomerProfileService {
                                     memberNo
                             );
 
-                            /*
-                             * 현재 프로젝트의 공통 고객 미존재 예외를
-                             * 재사용합니다.
-                             *
-                             * 이후 MEMBER 연동 시 필요하면
-                             * MemberCustomerProfileNotFoundException 같은
-                             * 전용 예외로 분리할 수 있습니다.
-                             */
                             return new CustomerNotFoundException(
                                     memberNo
                             );
@@ -263,23 +204,6 @@ public class CustomerProfileService {
     // 복합 조건 고객 검색 + 페이징
     // =====================================================
 
-    /**
-     * 관리자 CRM 고객 목록의 조건 검색입니다.
-     *
-     * 검색 조건:
-     *
-     * - 이름 / 전화번호
-     * - 회원 / 비회원
-     * - 고객 등급
-     * - 활성 여부
-     * - 30일 / 60일 미방문
-     * - 재방문 권장일 도래
-     *
-     * 페이징:
-     *
-     * page = 현재 페이지
-     * size = 한 페이지 고객 수
-     */
     public Page<CustomerProfile> searchCustomers(
             CustomerSearchCondition condition,
             Pageable pageable
@@ -301,13 +225,9 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 전화번호 중복 여부
+    // 전화번호 중복 확인
     // =====================================================
 
-    /**
-     * 입력된 전화번호를 숫자만 남도록 정규화한 후
-     * 이미 등록된 고객인지 확인합니다.
-     */
     public boolean existsByPhone(
             String phone
     ) {
@@ -326,23 +246,9 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 전화예약 / 비회원 고객 직접 등록
+    // 전화예약 / 비회원 고객 등록
     // =====================================================
 
-    /**
-     * 관리자가 전화 예약 고객을
-     * CUSTOMER_PROFILE에 직접 등록합니다.
-     *
-     * 신규 전화예약 고객 초기값:
-     *
-     * MEMBER_NO       = NULL
-     * CUSTOMER_TYPE   = GUEST
-     * GRADE_CODE      = NORMAL
-     * GRADE_MANUAL_YN = N
-     * VISIT_COUNT     = 0
-     * TOTAL_PAYMENT   = 0
-     * ACTIVE_YN       = Y
-     */
     @Transactional
     public CustomerProfile createGuestCustomer(
             CustomerCreateRequest request
@@ -354,19 +260,11 @@ public class CustomerProfileService {
         );
 
 
-        // -------------------------------------------------
-        // 1. 고객명 정리
-        // -------------------------------------------------
-
         String customerName =
                 request
                         .getCustomerName()
                         .trim();
 
-
-        // -------------------------------------------------
-        // 2. 전화번호 정규화
-        // -------------------------------------------------
 
         String normalizedPhone =
                 normalizePhone(
@@ -381,10 +279,6 @@ public class CustomerProfileService {
                 )
         );
 
-
-        // -------------------------------------------------
-        // 3. 동일 전화번호 고객 존재 여부 확인
-        // -------------------------------------------------
 
         if (customerProfileRepository
                 .existsByPhone(
@@ -402,10 +296,6 @@ public class CustomerProfileService {
         }
 
 
-        // -------------------------------------------------
-        // 4. 신규 고객 기본 등급 NORMAL 조회
-        // -------------------------------------------------
-
         CustomerGrade normalGrade =
                 customerGradeService
                         .findByGradeCode(
@@ -415,7 +305,7 @@ public class CustomerProfileService {
                                 () -> {
 
                                     log.error(
-                                            "전화예약 고객 등록 실패 - NORMAL 등급 정보 없음"
+                                            "전화예약 고객 등록 실패 - NORMAL 등급 없음"
                                     );
 
                                     return new CustomerGradeNotFoundException(
@@ -425,10 +315,6 @@ public class CustomerProfileService {
                         );
 
 
-        // -------------------------------------------------
-        // 5. 비회원 고객 Entity 생성
-        // -------------------------------------------------
-
         CustomerProfile customer =
                 CustomerProfile
                         .createGuestCustomer(
@@ -437,10 +323,6 @@ public class CustomerProfileService {
                                 normalGrade
                         );
 
-
-        // -------------------------------------------------
-        // 6. CUSTOMER_PROFILE 저장
-        // -------------------------------------------------
 
         CustomerProfile savedCustomer =
                 customerProfileRepository
@@ -465,23 +347,33 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 고객 등급 자동 적용
+    // 고객 방문 완료 처리
     // =====================================================
 
     /**
-     * 현재 방문 횟수와 누적 결제 금액으로
-     * 고객 등급을 자동 계산합니다.
+     * 실제 방문 및 시술 완료 후
+     * CUSTOMER_PROFILE의 CRM 정보를 갱신합니다.
      *
-     * 수동 지정 고객은 자동 변경하지 않습니다.
+     * VISIT_COUNT + 1
+     * LAST_VISIT_DATE 변경
+     * REVISIT_RECOMMENDED_DATE 변경
+     * 자동 등급 재계산
+     *
+     * 향후 2part 예약 상태가 COMPLETED가 되었을 때
+     * 이 메서드를 호출하면 됩니다.
      */
     @Transactional
-    public CustomerProfile applyAutomaticGrade(
-            Long customerId
+    public CustomerProfile completeVisit(
+            Long customerId,
+            LocalDate visitDate,
+            LocalDate revisitRecommendedDate
     ) {
 
         log.info(
-                "고객 자동 등급 적용 시작 customerId={}",
-                customerId
+                "고객 방문 완료 처리 시작 customerId={}, visitDate={}, revisitRecommendedDate={}",
+                customerId,
+                visitDate,
+                revisitRecommendedDate
         );
 
 
@@ -496,25 +388,172 @@ public class CustomerProfileService {
 
 
         // -------------------------------------------------
-        // 2. 수동 등급 여부 확인
+        // 2. 방문정보 갱신
         // -------------------------------------------------
 
+        customer.recordVisit(
+                visitDate,
+                revisitRecommendedDate
+        );
+
+
+        // -------------------------------------------------
+        // 3. 자동 등급 고객이면 등급 재계산
+        // -------------------------------------------------
+
+        applyAutomaticGradeToCustomer(
+                customer
+        );
+
+
+        log.info(
+                "고객 방문 완료 처리 완료 customerId={}, visitCount={}, lastVisitDate={}, revisitRecommendedDate={}, gradeCode={}",
+                customerId,
+                customer.getVisitCount(),
+                customer.getLastVisitDate(),
+                customer.getRevisitRecommendedDate(),
+                customer.getCustomerGrade().getGradeCode()
+        );
+
+
+        return customer;
+    }
+
+
+
+    // =====================================================
+    // 고객 결제 금액 누적
+    // =====================================================
+
+    /**
+     * 결제 완료된 금액을
+     * 고객 누적 결제액에 더합니다.
+     *
+     * TOTAL_PAYMENT 증가
+     * 자동 등급 재계산
+     *
+     * 향후 4part 결제가 PAID 상태가 되었을 때
+     * 이 메서드를 호출하면 됩니다.
+     */
+    @Transactional
+    public CustomerProfile addCustomerPayment(
+            Long customerId,
+            BigDecimal paymentAmount
+    ) {
+
+        log.info(
+                "고객 결제금액 누적 시작 customerId={}, paymentAmount={}",
+                customerId,
+                paymentAmount
+        );
+
+
+        // -------------------------------------------------
+        // 1. 고객 조회
+        // -------------------------------------------------
+
+        CustomerProfile customer =
+                getCustomerById(
+                        customerId
+                );
+
+
+        // -------------------------------------------------
+        // 2. 누적 결제액 증가
+        // -------------------------------------------------
+
+        customer.addPayment(
+                paymentAmount
+        );
+
+
+        // -------------------------------------------------
+        // 3. 자동 등급 고객이면 등급 재계산
+        // -------------------------------------------------
+
+        applyAutomaticGradeToCustomer(
+                customer
+        );
+
+
+        log.info(
+                "고객 결제금액 누적 완료 customerId={}, totalPayment={}, gradeCode={}",
+                customerId,
+                customer.getTotalPayment(),
+                customer.getCustomerGrade().getGradeCode()
+        );
+
+
+        return customer;
+    }
+
+
+
+    // =====================================================
+    // 고객 등급 자동 적용
+    // =====================================================
+
+    @Transactional
+    public CustomerProfile applyAutomaticGrade(
+            Long customerId
+    ) {
+
+        log.info(
+                "고객 자동 등급 적용 시작 customerId={}",
+                customerId
+        );
+
+
+        CustomerProfile customer =
+                getCustomerById(
+                        customerId
+                );
+
+
+        applyAutomaticGradeToCustomer(
+                customer
+        );
+
+
+        log.info(
+                "고객 자동 등급 적용 완료 customerId={}, gradeCode={}, manualYn={}",
+                customerId,
+                customer.getCustomerGrade().getGradeCode(),
+                customer.getGradeManualYn()
+        );
+
+
+        return customer;
+    }
+
+
+
+    // =====================================================
+    // 자동 등급 계산 공통 처리
+    // =====================================================
+
+    /**
+     * 방문 완료 / 결제 완료 / 관리자 재계산에서
+     * 공통으로 사용하는 내부 메서드입니다.
+     */
+    private void applyAutomaticGradeToCustomer(
+            CustomerProfile customer
+    ) {
+
+
+        // 수동 등급 고객은 자동 변경하지 않음
         if ("Y".equals(
                 customer.getGradeManualYn()
         )) {
 
             log.info(
                     "자동 등급 적용 제외 - 수동 등급 고객 customerId={}",
-                    customerId
+                    customer.getCustomerId()
             );
 
-            return customer;
+            return;
         }
 
-
-        // -------------------------------------------------
-        // 3. 등급 코드 자동 계산
-        // -------------------------------------------------
 
         String gradeCode =
                 customerGradeService
@@ -523,10 +562,6 @@ public class CustomerProfileService {
                                 customer.getTotalPayment()
                         );
 
-
-        // -------------------------------------------------
-        // 4. 등급 Entity 조회
-        // -------------------------------------------------
 
         CustomerGrade grade =
                 customerGradeService
@@ -537,7 +572,7 @@ public class CustomerProfileService {
                                 () -> {
 
                                     log.error(
-                                            "자동 등급 적용 실패 - 등급 정보 없음 gradeCode={}",
+                                            "자동 등급 적용 실패 - 등급 없음 gradeCode={}",
                                             gradeCode
                                     );
 
@@ -548,23 +583,9 @@ public class CustomerProfileService {
                         );
 
 
-        // -------------------------------------------------
-        // 5. 등급 적용
-        // -------------------------------------------------
-
         customer.applyAutomaticGrade(
                 grade
         );
-
-
-        log.info(
-                "고객 자동 등급 적용 완료 customerId={}, gradeCode={}",
-                customerId,
-                gradeCode
-        );
-
-
-        return customer;
     }
 
 
@@ -573,11 +594,6 @@ public class CustomerProfileService {
     // 관리자 고객 등급 수동 변경
     // =====================================================
 
-    /**
-     * 관리자가 고객 등급을 직접 변경합니다.
-     *
-     * 변경 후 GRADE_MANUAL_YN = Y가 됩니다.
-     */
     @Transactional
     public CustomerProfile changeGradeManually(
             Long customerId,
@@ -591,19 +607,11 @@ public class CustomerProfileService {
         );
 
 
-        // -------------------------------------------------
-        // 1. 고객 조회
-        // -------------------------------------------------
-
         CustomerProfile customer =
                 getCustomerById(
                         customerId
                 );
 
-
-        // -------------------------------------------------
-        // 2. 등급 코드 검증
-        // -------------------------------------------------
 
         if (gradeCode == null
                 || gradeCode.isBlank()) {
@@ -619,19 +627,11 @@ public class CustomerProfileService {
         }
 
 
-        // -------------------------------------------------
-        // 3. 등급 코드 정규화
-        // -------------------------------------------------
-
         String normalizedGradeCode =
                 gradeCode
                         .trim()
                         .toUpperCase();
 
-
-        // -------------------------------------------------
-        // 4. 변경할 등급 조회
-        // -------------------------------------------------
 
         CustomerGrade grade =
                 customerGradeService
@@ -642,7 +642,7 @@ public class CustomerProfileService {
                                 () -> {
 
                                     log.warn(
-                                            "고객 등급 수동 변경 실패 - 존재하지 않는 등급 customerId={}, gradeCode={}",
+                                            "고객 등급 수동 변경 실패 customerId={}, gradeCode={}",
                                             customerId,
                                             normalizedGradeCode
                                     );
@@ -653,10 +653,6 @@ public class CustomerProfileService {
                                 }
                         );
 
-
-        // -------------------------------------------------
-        // 5. 수동 등급 변경
-        // -------------------------------------------------
 
         customer.changeGradeManually(
                 grade
@@ -676,15 +672,9 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 수동 등급 해제 → 자동 등급 관리
+    // 수동 등급 해제 → 자동 등급
     // =====================================================
 
-    /**
-     * 수동 지정한 고객 등급을 해제하고
-     * 현재 실적 기준 자동 등급으로 돌아갑니다.
-     *
-     * 변경 후 GRADE_MANUAL_YN = N
-     */
     @Transactional
     public CustomerProfile changeToAutomaticGrade(
             Long customerId
@@ -696,19 +686,11 @@ public class CustomerProfileService {
         );
 
 
-        // -------------------------------------------------
-        // 1. 고객 조회
-        // -------------------------------------------------
-
         CustomerProfile customer =
                 getCustomerById(
                         customerId
                 );
 
-
-        // -------------------------------------------------
-        // 2. 현재 실적으로 등급 계산
-        // -------------------------------------------------
 
         String gradeCode =
                 customerGradeService
@@ -718,33 +700,17 @@ public class CustomerProfileService {
                         );
 
 
-        // -------------------------------------------------
-        // 3. 계산된 등급 Entity 조회
-        // -------------------------------------------------
-
         CustomerGrade grade =
                 customerGradeService
                         .findByGradeCode(
                                 gradeCode
                         )
                         .orElseThrow(
-                                () -> {
-
-                                    log.error(
-                                            "자동 등급 전환 실패 - 등급 정보 없음 gradeCode={}",
-                                            gradeCode
-                                    );
-
-                                    return new CustomerGradeNotFoundException(
-                                            gradeCode
-                                    );
-                                }
+                                () -> new CustomerGradeNotFoundException(
+                                        gradeCode
+                                )
                         );
 
-
-        // -------------------------------------------------
-        // 4. 자동 등급으로 전환
-        // -------------------------------------------------
 
         customer.changeGradeAutomatically(
                 grade
@@ -767,13 +733,6 @@ public class CustomerProfileService {
     // 전화번호 정규화
     // =====================================================
 
-    /**
-     * 전화번호에서 숫자가 아닌 문자를 모두 제거합니다.
-     *
-     * 010-1234-5678
-     * →
-     * 01012345678
-     */
     private String normalizePhone(
             String phone
     ) {
@@ -796,13 +755,6 @@ public class CustomerProfileService {
     // 개인정보 로그 마스킹
     // =====================================================
 
-    /**
-     * 로그에 전화번호 전체가 노출되지 않도록 처리합니다.
-     *
-     * 01012345678
-     * →
-     * 010****5678
-     */
     private String maskPhone(
             String phone
     ) {
