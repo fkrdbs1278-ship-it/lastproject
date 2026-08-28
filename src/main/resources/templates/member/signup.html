@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -10,221 +12,437 @@
             content="width=device-width, initial-scale=1.0"
     >
 
-    <title>회원가입</title>
+    <title>회원가입 | SALON CRM</title>
+
+
+    <!-- 공통 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+
+    <!-- 회원가입 전용 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/member/signup.css}"
+    >
+
 </head>
+
 
 <body>
 
-<h1>회원가입</h1>
+
+<main class="signup-page">
+
+    <div class="signup-container">
 
 
-<!-- 회원가입 성공 -->
-<div th:if="${param.success}">
-    <p>회원가입이 완료되었습니다.</p>
-</div>
+        <!-- Logo
+             클릭하면 메인으로 이동 -->
 
+        <div class="auth-logo-area">
 
-<form
-        th:action="@{/member/signup}"
-        th:object="${signupRequest}"
-        method="post"
->
-
-    <div>
-        <label for="memberId">
-            아이디
-        </label>
-
-        <input
-                type="text"
-                id="memberId"
-                th:field="*{memberId}"
-        >
-
-        <p
-                th:if="${#fields.hasErrors('memberId')}"
-                th:errors="*{memberId}"
-        ></p>
-    </div>
-
-
-    <div>
-        <label for="password">
-            비밀번호
-        </label>
-
-        <input
-                type="password"
-                id="password"
-                th:field="*{password}"
-        >
-
-        <p
-                th:if="${#fields.hasErrors('password')}"
-                th:errors="*{password}"
-        ></p>
-    </div>
-
-
-    <div>
-        <label for="passwordCheck">
-            비밀번호 확인
-        </label>
-
-        <input
-                type="password"
-                id="passwordCheck"
-                th:field="*{passwordCheck}"
-        >
-
-        <p
-                th:if="${#fields.hasErrors('passwordCheck')}"
-                th:errors="*{passwordCheck}"
-        ></p>
-    </div>
-
-
-    <div>
-        <label for="name">
-            이름
-        </label>
-
-        <input
-                type="text"
-                id="name"
-                th:field="*{name}"
-        >
-
-        <p
-                th:if="${#fields.hasErrors('name')}"
-                th:errors="*{name}"
-        ></p>
-    </div>
-
-
-    <div>
-        <label for="nickname">
-            닉네임
-        </label>
-
-        <input
-                type="text"
-                id="nickname"
-                th:field="*{nickname}"
-        >
-    </div>
-
-
-    <div>
-        <label for="email">
-            이메일
-        </label>
-
-        <input
-                type="email"
-                id="email"
-                th:field="*{email}"
-        >
-
-        <p
-                th:if="${#fields.hasErrors('email')}"
-                th:errors="*{email}"
-        ></p>
-    </div>
-
-
-    <div>
-        <label for="phone">
-            전화번호
-        </label>
-
-        <input
-                type="text"
-                id="phone"
-                th:field="*{phone}"
-                placeholder="010-1234-5678"
-        >
-
-        <p
-                th:if="${#fields.hasErrors('phone')}"
-                th:errors="*{phone}"
-        ></p>
-    </div>
-
-
-    <div>
-        <label for="birthDate">
-            생년월일
-        </label>
-
-        <input
-                type="date"
-                id="birthDate"
-                th:field="*{birthDate}"
-        >
-    </div>
-
-
-    <div>
-        <span>성별</span>
-
-        <label>
-            <input
-                    type="radio"
-                    th:field="*{gender}"
-                    value="M"
+            <a
+                    th:href="@{/}"
+                    class="auth-logo"
             >
-            남성
-        </label>
+                SALON CRM
+            </a>
 
-        <label>
-            <input
-                    type="radio"
-                    th:field="*{gender}"
-                    value="F"
+        </div>
+
+
+        <!-- Signup Card -->
+
+        <section class="signup-card">
+
+
+            <!-- 회원가입 제목 -->
+
+            <h1 class="signup-title">
+                회원가입
+            </h1>
+
+
+            <p class="signup-description">
+                서비스 이용을 위한 회원 정보를 입력해주세요.
+            </p>
+
+
+            <!--  Signup Form -->
+
+            <form
+                    th:action="@{/member/signup}"
+                    th:object="${signupRequest}"
+                    method="post"
+                    class="signup-form"
             >
-            여성
-        </label>
+
+
+                <!-- CSRF -->
+
+                <input
+                        type="hidden"
+                        th:name="${_csrf.parameterName}"
+                        th:value="${_csrf.token}"
+                >
+
+
+                <!-- 아이디 -->
+
+                <div class="form-group">
+
+                    <label for="memberId">
+                        아이디
+                    </label>
+
+                    <input
+                            type="text"
+                            id="memberId"
+                            th:field="*{memberId}"
+                            placeholder="아이디를 입력해주세요."
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('memberId')}"
+                            th:errors="*{memberId}"
+                    >
+                        아이디 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 비밀번호 -->
+
+                <div class="form-group">
+
+                    <label for="password">
+                        비밀번호
+                    </label>
+
+                    <input
+                            type="password"
+                            id="password"
+                            th:field="*{password}"
+                            placeholder="8자 이상 입력해주세요."
+                            autocomplete="new-password"
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('password')}"
+                            th:errors="*{password}"
+                    >
+                        비밀번호 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 비밀번호 확인 -->
+
+                <div class="form-group">
+
+                    <label for="passwordCheck">
+                        비밀번호 확인
+                    </label>
+
+                    <input
+                            type="password"
+                            id="passwordCheck"
+                            th:field="*{passwordCheck}"
+                            placeholder="비밀번호를 다시 입력해주세요."
+                            autocomplete="new-password"
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('passwordCheck')}"
+                            th:errors="*{passwordCheck}"
+                    >
+                        비밀번호 확인 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 이름 -->
+
+                <div class="form-group">
+
+                    <label for="name">
+                        이름
+                    </label>
+
+                    <input
+                            type="text"
+                            id="name"
+                            th:field="*{name}"
+                            placeholder="이름을 입력해주세요."
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('name')}"
+                            th:errors="*{name}"
+                    >
+                        이름 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 닉네임 -->
+
+                <div class="form-group">
+
+                    <label for="nickname">
+                        닉네임
+                    </label>
+
+                    <input
+                            type="text"
+                            id="nickname"
+                            th:field="*{nickname}"
+                            placeholder="닉네임을 입력해주세요."
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('nickname')}"
+                            th:errors="*{nickname}"
+                    >
+                        닉네임 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 이메일 -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        이메일
+                    </label>
+
+                    <input
+                            type="email"
+                            id="email"
+                            th:field="*{email}"
+                            placeholder="example@email.com"
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('email')}"
+                            th:errors="*{email}"
+                    >
+                        이메일 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 전화번호 -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        전화번호
+                    </label>
+
+                    <input
+                            type="text"
+                            id="phone"
+                            th:field="*{phone}"
+                            placeholder="010-1234-5678"
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('phone')}"
+                            th:errors="*{phone}"
+                    >
+                        전화번호 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 생년월일 -->
+
+                <div class="form-group">
+
+                    <label for="birthDate">
+                        생년월일
+                    </label>
+
+                    <input
+                            type="date"
+                            id="birthDate"
+                            th:field="*{birthDate}"
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('birthDate')}"
+                            th:errors="*{birthDate}"
+                    >
+                        생년월일 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 성별 -->
+
+                <div class="form-group">
+
+                    <label>
+                        성별
+                    </label>
+
+
+                    <div class="gender-group">
+
+                        <label class="gender-option">
+
+                            <input
+                                    type="radio"
+                                    th:field="*{gender}"
+                                    value="M"
+                            >
+
+                            남성
+
+                        </label>
+
+
+                        <label class="gender-option">
+
+                            <input
+                                    type="radio"
+                                    th:field="*{gender}"
+                                    value="F"
+                            >
+
+                            여성
+
+                        </label>
+
+                    </div>
+
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('gender')}"
+                            th:errors="*{gender}"
+                    >
+                        성별 오류
+                    </p>
+
+                </div>
+
+
+                <!--약관 동의 -->
+
+                <div class="agreement-area">
+
+
+                    <!-- 이용약관 -->
+
+                    <label class="agreement-item">
+
+                        <input
+                                type="checkbox"
+                                th:field="*{agreeTerms}"
+                        >
+
+                        <span>
+                            이용약관에 동의합니다. (필수)
+                        </span>
+
+                    </label>
+
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('agreeTerms')}"
+                            th:errors="*{agreeTerms}"
+                    >
+                        이용약관 오류
+                    </p>
+
+
+                    <!-- 개인정보 -->
+
+                    <label class="agreement-item">
+
+                        <input
+                                type="checkbox"
+                                th:field="*{agreePrivacy}"
+                        >
+
+                        <span>
+                            개인정보 수집 및 이용에 동의합니다. (필수)
+                        </span>
+
+                    </label>
+
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('agreePrivacy')}"
+                            th:errors="*{agreePrivacy}"
+                    >
+                        개인정보 동의 오류
+                    </p>
+
+                </div>
+
+
+                <!-- 회원가입 버튼 -->
+
+                <button
+                        type="submit"
+                        class="signup-button"
+                >
+                    회원가입
+                </button>
+
+            </form>
+
+
+            <!-- Login Link -->
+
+            <div class="signup-bottom">
+
+                <span>
+                    이미 회원이신가요?
+                </span>
+
+                <a
+                        th:href="@{/member/login}"
+                        class="login-link"
+                >
+                    로그인
+                </a>
+
+            </div>
+
+
+        </section>
+
     </div>
 
+</main>
 
-    <div>
-        <label>
-            <input
-                    type="checkbox"
-                    th:field="*{agreeTerms}"
-            >
-            이용약관에 동의합니다.
-        </label>
-
-        <p
-                th:if="${#fields.hasErrors('agreeTerms')}"
-                th:errors="*{agreeTerms}"
-        ></p>
-    </div>
-
-
-    <div>
-        <label>
-            <input
-                    type="checkbox"
-                    th:field="*{agreePrivacy}"
-            >
-            개인정보 수집에 동의합니다.
-        </label>
-
-        <p
-                th:if="${#fields.hasErrors('agreePrivacy')}"
-                th:errors="*{agreePrivacy}"
-        ></p>
-    </div>
-
-
-    <button type="submit">
-        회원가입
-    </button>
-
-</form>
 
 </body>
+
 </html>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org">
 
@@ -11,146 +12,196 @@
             content="width=device-width, initial-scale=1.0"
     >
 
-    <title>로그인</title>
+    <title>로그인 | SALON CRM</title>
+
+
+    <!-- 공통 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+
+    <!-- 로그인 전용 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/member/login.css}"
+    >
 
 </head>
+
 
 <body>
 
 
-<h1>로그인</h1>
+<main class="login-page">
+
+    <div class="login-container">
 
 
-<!-- ==============================
-     회원가입 성공
-============================== -->
+        <!--  Logo
+             클릭하면 메인 페이지로 이동 -->
 
-<div th:if="${param.signup}">
+        <div class="auth-logo-area">
 
-    <p>
-        회원가입이 완료되었습니다.
-        로그인해주세요.
-    </p>
+            <a
+                    th:href="@{/}"
+                    class="auth-logo"
+            >
+                SALON CRM
+            </a>
 
-</div>
-
-
-<!-- ==============================
-     로그인 실패
-============================== -->
-
-<div th:if="${param.error}">
-
-    <p>
-        아이디 또는 비밀번호를 확인해주세요.
-    </p>
-
-</div>
+        </div>
 
 
-<!-- ==============================
-     로그아웃 완료
-============================== -->
+        <!-- Login Card -->
 
-<div th:if="${param.logout}">
-
-    <p>
-        로그아웃되었습니다.
-    </p>
-
-</div>
+        <section class="login-card">
 
 
-<!-- 회원탈퇴 완료 -->
+            <!-- 로그인이라는 큰 제목은 사용하지 않음 -->
 
-<div th:if="${param.withdraw}">
+            <p class="login-description">
+                회원 정보를 입력해주세요.
+            </p>
 
-    <p>
-        회원탈퇴가 완료되었습니다.
-    </p>
 
-</div>
+            <!-- 회원가입 성공 -->
 
-<!-- ==============================
-     로그인 Form
-============================== -->
+            <div
+                    th:if="${param.signup}"
+                    class="login-message success"
+            >
+                회원가입이 완료되었습니다.
+                로그인해주세요.
+            </div>
 
-<form
-        th:action="@{/member/login/process}"
-        method="post"
->
 
-    <!-- 아이디 -->
+            <!-- 로그인 실패 -->
 
-    <div>
+            <div
+                    th:if="${param.error}"
+                    class="login-message error"
+            >
+                아이디 또는 비밀번호를 확인해주세요.
+            </div>
 
-        <label for="memberId">
-            아이디
-        </label>
 
-        <input
-                type="text"
-                id="memberId"
-                name="memberId"
-                autocomplete="username"
-                required
-        >
+            <!--  로그아웃 성공 -->
+
+            <div
+                    th:if="${param.logout}"
+                    class="login-message success"
+            >
+                로그아웃되었습니다.
+            </div>
+
+
+            <!-- 회원탈퇴 성공 -->
+
+            <div
+                    th:if="${param.withdraw}"
+                    class="login-message success"
+            >
+                회원탈퇴가 완료되었습니다.
+            </div>
+
+
+            <!-- Login Form -->
+
+            <form
+                    th:action="@{/member/login/process}"
+                    method="post"
+                    class="login-form"
+            >
+
+
+                <!-- CSRF -->
+
+                <input
+                        type="hidden"
+                        th:name="${_csrf.parameterName}"
+                        th:value="${_csrf.token}"
+                >
+
+
+                <!-- 아이디 -->
+
+                <div class="form-group">
+
+                    <label for="memberId">
+                        아이디
+                    </label>
+
+                    <input
+                            type="text"
+                            id="memberId"
+                            name="memberId"
+                            placeholder="아이디를 입력해주세요."
+                            autocomplete="username"
+                            required
+                    >
+
+                </div>
+
+
+                <!-- 비밀번호 -->
+
+                <div class="form-group">
+
+                    <label for="password">
+                        비밀번호
+                    </label>
+
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="비밀번호를 입력해주세요."
+                            autocomplete="current-password"
+                            required
+                    >
+
+                </div>
+
+
+                <!-- 로그인 버튼 -->
+
+                <button
+                        type="submit"
+                        class="login-button"
+                >
+                    로그인
+                </button>
+
+            </form>
+
+
+            <!-- =====================================
+                 Signup Link
+            ====================================== -->
+
+            <div class="login-bottom">
+
+                <span>
+                    아직 회원이 아니신가요?
+                </span>
+
+                <a
+                        th:href="@{/member/signup}"
+                        class="signup-link"
+                >
+                    회원가입
+                </a>
+
+            </div>
+
+
+        </section>
 
     </div>
 
-
-    <!-- 비밀번호 -->
-
-    <div>
-
-        <label for="password">
-            비밀번호
-        </label>
-
-        <input
-                type="password"
-                id="password"
-                name="password"
-                autocomplete="current-password"
-                required
-        >
-
-    </div>
-
-
-    <!-- CSRF -->
-
-    <input
-            type="hidden"
-            th:name="${_csrf.parameterName}"
-            th:value="${_csrf.token}"
-    >
-
-
-    <!-- 로그인 -->
-
-    <button type="submit">
-        로그인
-    </button>
-
-</form>
-
-
-<!-- ==============================
-     회원가입 이동
-============================== -->
-
-<div>
-
-    <p>
-        아직 회원이 아니신가요?
-    </p>
-
-    <a th:href="@{/member/signup}">
-        회원가입
-    </a>
-
-</div>
+</main>
 
 
 </body>
