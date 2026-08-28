@@ -1,9 +1,7 @@
 package com.young04.lastproject.reservation.controller;
 
 import com.young04.lastproject.noshow.service.NoShowService;
-import com.young04.lastproject.reservation.dto.AdminReservationSearchResponse;
-import com.young04.lastproject.reservation.dto.ReservationResponse;
-import com.young04.lastproject.reservation.dto.ReservationSearchCondition;
+import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.CanceledBy;
 import com.young04.lastproject.reservation.service.AdminReservationService;
 import com.young04.lastproject.reservation.service.ReservationService;
@@ -27,11 +25,16 @@ public class AdminReservationController {
             @RequestParam(defaultValue = "20") int size
     ) {
         return ResponseEntity.ok(
-                adminReservationService.search(
-                        condition,
-                        page,
-                        size
-                )
+                adminReservationService.search(condition, page, size)
+        );
+    }
+
+    @GetMapping("/{reservationNo}")
+    public ResponseEntity<AdminReservationDetailResponse> detail(
+            @PathVariable Long reservationNo
+    ) {
+        return ResponseEntity.ok(
+                adminReservationService.detail(reservationNo)
         );
     }
 
@@ -40,9 +43,7 @@ public class AdminReservationController {
             @PathVariable Long reservationNo
     ) {
         return ResponseEntity.ok(
-                reservationService.confirmReservation(
-                        reservationNo
-                )
+                reservationService.confirmReservation(reservationNo)
         );
     }
 
@@ -51,9 +52,7 @@ public class AdminReservationController {
             @PathVariable Long reservationNo
     ) {
         return ResponseEntity.ok(
-                reservationService.completeReservation(
-                        reservationNo
-                )
+                reservationService.completeReservation(reservationNo)
         );
     }
 

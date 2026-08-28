@@ -9,9 +9,11 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class ReservationResponse {
+
     private Long reservationNo;
     private Long memberNo;
     private Long serviceMenuNo;
+    private Long hairStyleNo;
     private CustomerType customerType;
     private String guestName;
     private String guestPhone;
@@ -28,6 +30,7 @@ public class ReservationResponse {
                 .reservationNo(r.getReservationNo())
                 .memberNo(r.getMemberNo())
                 .serviceMenuNo(r.getServiceMenuNo())
+                .hairStyleNo(r.getHairStyleNo())
                 .customerType(r.getCustomerType())
                 .guestName(r.getGuestName())
                 .guestPhone(r.getGuestPhone())

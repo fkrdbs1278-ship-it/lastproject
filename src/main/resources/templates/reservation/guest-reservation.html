@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>비회원 예약 조회</title>
+    <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
+    <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/reservation/reservation.css}">
+</head>
+<body>
+<main class="reservation-page">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">GUEST RESERVATION</p>
+            <h1>비회원 예약 조회</h1>
+            <p>예약번호와 예약 시 입력한 휴대전화 번호로 조회합니다.</p>
+        </div>
+        <a class="secondary-button" th:href="@{/reservation}">예약하기</a>
+    </section>
+
+    <section class="panel guest-lookup-form">
+        <label class="field">
+            <span>예약번호</span>
+            <input id="lookupReservationNo" type="number" min="1">
+        </label>
+
+        <label class="field">
+            <span>휴대전화</span>
+            <input id="lookupGuestPhone" type="tel" maxlength="13" placeholder="01012345678">
+        </label>
+
+        <button id="lookupButton" type="button" class="primary-button">예약 조회</button>
+    </section>
+
+    <section id="lookupResult" class="panel hidden"></section>
+    <div id="messageBox" class="message-box hidden" role="alert"></div>
+</main>
+<script th:src="@{/js/reservation/guest-reservation.js}"></script>
+</body>
+</html>

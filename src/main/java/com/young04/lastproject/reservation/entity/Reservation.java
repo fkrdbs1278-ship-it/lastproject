@@ -24,6 +24,9 @@ public class Reservation {
     @Column(name = "SERVICE_MENU_NO", nullable = false)
     private Long serviceMenuNo;
 
+    @Column(name = "HAIR_STYLE_NO")
+    private Long hairStyleNo;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "CUSTOMER_TYPE", nullable = false, length = 10)
     private CustomerType customerType;
@@ -107,9 +110,11 @@ public class Reservation {
         updatedAt = LocalDateTime.now();
     }
 
+    // 4.1용 새 factory
     public static Reservation createMemberReservation(
             Long memberNo,
             Long serviceMenuNo,
+            Long hairStyleNo,
             String serviceNameSnapshot,
             Integer durationMinutesSnapshot,
             LocalDateTime startAt,
@@ -120,6 +125,7 @@ public class Reservation {
         Reservation reservation = new Reservation();
         reservation.memberNo = memberNo;
         reservation.serviceMenuNo = serviceMenuNo;
+        reservation.hairStyleNo = hairStyleNo;
         reservation.customerType = CustomerType.MEMBER;
         reservation.reservationSource =
                 source == null ? ReservationSource.ONLINE : source;
@@ -132,10 +138,35 @@ public class Reservation {
         return reservation;
     }
 
+    // 기존 1~3차 테스트 호환용 overload
+    public static Reservation createMemberReservation(
+            Long memberNo,
+            Long serviceMenuNo,
+            String serviceNameSnapshot,
+            Integer durationMinutesSnapshot,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            String requestMemo,
+            ReservationSource source
+    ) {
+        return createMemberReservation(
+                memberNo,
+                serviceMenuNo,
+                null,
+                serviceNameSnapshot,
+                durationMinutesSnapshot,
+                startAt,
+                endAt,
+                requestMemo,
+                source
+        );
+    }
+
     public static Reservation createGuestReservation(
             String guestName,
             String guestPhone,
             Long serviceMenuNo,
+            Long hairStyleNo,
             String serviceNameSnapshot,
             Integer durationMinutesSnapshot,
             LocalDateTime startAt,
@@ -148,6 +179,7 @@ public class Reservation {
         reservation.guestName = guestName;
         reservation.guestPhone = guestPhone;
         reservation.serviceMenuNo = serviceMenuNo;
+        reservation.hairStyleNo = hairStyleNo;
         reservation.reservationSource =
                 source == null ? ReservationSource.ONLINE : source;
         reservation.serviceNameSnapshot = serviceNameSnapshot;
@@ -159,6 +191,51 @@ public class Reservation {
         return reservation;
     }
 
+    // 기존 테스트 호환용 overload
+    public static Reservation createGuestReservation(
+            String guestName,
+            String guestPhone,
+            Long serviceMenuNo,
+            String serviceNameSnapshot,
+            Integer durationMinutesSnapshot,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            String requestMemo,
+            ReservationSource source
+    ) {
+        return createGuestReservation(
+                guestName,
+                guestPhone,
+                serviceMenuNo,
+                null,
+                serviceNameSnapshot,
+                durationMinutesSnapshot,
+                startAt,
+                endAt,
+                requestMemo,
+                source
+        );
+    }
+
+    public void changeSchedule(
+            Long serviceMenuNo,
+            Long hairStyleNo,
+            String serviceNameSnapshot,
+            Integer durationMinutesSnapshot,
+            LocalDateTime startAt,
+            LocalDateTime endAt,
+            String requestMemo
+    ) {
+        this.serviceMenuNo = serviceMenuNo;
+        this.hairStyleNo = hairStyleNo;
+        this.serviceNameSnapshot = serviceNameSnapshot;
+        this.durationMinutesSnapshot = durationMinutesSnapshot;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.requestMemo = requestMemo;
+    }
+
+    // 기존 테스트/호출부 호환용 overload
     public void changeSchedule(
             Long serviceMenuNo,
             String serviceNameSnapshot,
@@ -167,12 +244,15 @@ public class Reservation {
             LocalDateTime endAt,
             String requestMemo
     ) {
-        this.serviceMenuNo = serviceMenuNo;
-        this.serviceNameSnapshot = serviceNameSnapshot;
-        this.durationMinutesSnapshot = durationMinutesSnapshot;
-        this.startAt = startAt;
-        this.endAt = endAt;
-        this.requestMemo = requestMemo;
+        changeSchedule(
+                serviceMenuNo,
+                this.hairStyleNo,
+                serviceNameSnapshot,
+                durationMinutesSnapshot,
+                startAt,
+                endAt,
+                requestMemo
+        );
     }
 
     public void confirm() {

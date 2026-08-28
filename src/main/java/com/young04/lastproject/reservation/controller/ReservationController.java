@@ -1,14 +1,8 @@
 package com.young04.lastproject.reservation.controller;
 
-import com.young04.lastproject.reservation.dto.AvailableTimeResponse;
-import com.young04.lastproject.reservation.dto.ReservationCreateRequest;
-import com.young04.lastproject.reservation.dto.ReservationResponse;
-import com.young04.lastproject.reservation.dto.ReservationUpdateRequest;
-import com.young04.lastproject.reservation.dto.ServiceMenuOptionResponse;
+import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.CanceledBy;
-import com.young04.lastproject.reservation.service.AvailableTimeService;
-import com.young04.lastproject.reservation.service.ReservationService;
-import com.young04.lastproject.reservation.service.ServiceMenuReader;
+import com.young04.lastproject.reservation.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,6 +20,7 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final AvailableTimeService availableTimeService;
     private final ServiceMenuReader serviceMenuReader;
+    private final HairStyleReader hairStyleReader;
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(
@@ -42,10 +37,7 @@ public class ReservationController {
             @Valid @RequestBody ReservationUpdateRequest request
     ) {
         return ResponseEntity.ok(
-                reservationService.updateReservation(
-                        reservationNo,
-                        request
-                )
+                reservationService.updateReservation(reservationNo, request)
         );
     }
 
@@ -86,6 +78,15 @@ public class ReservationController {
         );
     }
 
+    @GetMapping("/hair-styles")
+    public ResponseEntity<List<HairStyleOptionResponse>> hairStyles(
+            @RequestParam Long serviceMenuNo
+    ) {
+        return ResponseEntity.ok(
+                hairStyleReader.getActiveStylesForService(serviceMenuNo)
+        );
+    }
+
     @PostMapping("/{reservationNo}/cancel")
     public ResponseEntity<ReservationResponse> cancel(
             @PathVariable Long reservationNo,
@@ -97,6 +98,24 @@ public class ReservationController {
                         reason,
                         CanceledBy.USER
                 )
+        );
+    }
+
+    @PostMapping("/guest/lookup")
+    public ResponseEntity<ReservationResponse> lookupGuest(
+            @Valid @RequestBody GuestReservationLookupRequest request
+    ) {
+        return ResponseEntity.ok(
+                reservationService.lookupGuestReservation(request)
+        );
+    }
+
+    @PostMapping("/guest/cancel")
+    public ResponseEntity<ReservationResponse> cancelGuest(
+            @Valid @RequestBody GuestReservationCancelRequest request
+    ) {
+        return ResponseEntity.ok(
+                reservationService.cancelGuestReservation(request)
         );
     }
 }

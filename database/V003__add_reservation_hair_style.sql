@@ -1,0 +1,121 @@
+-- =====================================================================
+-- V003__add_reservation_hair_style.sql
+-- 목적:
+--   예약자가 미용실에서 제공하는 헤어스타일 예시를 선택할 수 있도록
+--   RESERVATION.HAIR_STYLE_NO 추가
+--
+-- 특징:
+--   - 기존 예약 데이터 보존
+--   - HAIR_STYLE_NO는 선택사항이므로 NULL 허용
+--   - HAIR_STYLE(NO) FK 추가
+--   - 관리자/예약 상세 조회를 위한 인덱스 추가
+-- =====================================================================
+
+DECLARE
+    V_TABLE_COUNT NUMBER;
+BEGIN
+    SELECT COUNT(*)
+      INTO V_TABLE_COUNT
+      FROM USER_TABLES
+     WHERE TABLE_NAME = 'RESERVATION';
+
+    IF V_TABLE_COUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(
+            -20010,
+            'RESERVATION 테이블이 없습니다. 먼저 기본 스키마를 적용하세요.'
+        );
+    END IF;
+
+    SELECT COUNT(*)
+      INTO V_TABLE_COUNT
+      FROM USER_TABLES
+     WHERE TABLE_NAME = 'HAIR_STYLE';
+
+    IF V_TABLE_COUNT = 0 THEN
+        RAISE_APPLICATION_ERROR(
+            -20011,
+            'HAIR_STYLE 테이블이 없습니다. 먼저 기본 스키마를 적용하세요.'
+        );
+    END IF;
+END;
+/
+
+DECLARE
+    V_COLUMN_COUNT NUMBER;
+BEGIN
+    SELECT COUNT(*)
+      INTO V_COLUMN_COUNT
+      FROM USER_TAB_COLUMNS
+     WHERE TABLE_NAME = 'RESERVATION'
+       AND COLUMN_NAME = 'HAIR_STYLE_NO';
+
+    IF V_COLUMN_COUNT = 0 THEN
+        EXECUTE IMMEDIATE
+            'ALTER TABLE RESERVATION ADD HAIR_STYLE_NO NUMBER';
+    END IF;
+END;
+/
+
+DECLARE
+    V_CONSTRAINT_COUNT NUMBER;
+BEGIN
+    SELECT COUNT(*)
+      INTO V_CONSTRAINT_COUNT
+      FROM USER_CONSTRAINTS
+     WHERE TABLE_NAME = 'RESERVATION'
+       AND CONSTRAINT_NAME = 'RESERVATION_HAIR_STYLE_FK';
+
+    IF V_CONSTRAINT_COUNT = 0 THEN
+        EXECUTE IMMEDIATE
+            'ALTER TABLE RESERVATION '
+            || 'ADD CONSTRAINT RESERVATION_HAIR_STYLE_FK '
+            || 'FOREIGN KEY (HAIR_STYLE_NO) '
+            || 'REFERENCES HAIR_STYLE(NO)';
+    END IF;
+END;
+/
+
+DECLARE
+    V_INDEX_COUNT NUMBER;
+BEGIN
+    SELECT COUNT(*)
+      INTO V_INDEX_COUNT
+      FROM USER_INDEXES
+     WHERE INDEX_NAME = 'IDX_RESERVATION_HAIR_STYLE';
+
+    IF V_INDEX_COUNT = 0 THEN
+        EXECUTE IMMEDIATE
+            'CREATE INDEX IDX_RESERVATION_HAIR_STYLE '
+            || 'ON RESERVATION(HAIR_STYLE_NO)';
+    END IF;
+END;
+/
+
+SELECT
+    TABLE_NAME,
+    COLUMN_NAME,
+    NULLABLE,
+    DATA_TYPE
+FROM USER_TAB_COLUMNS
+WHERE TABLE_NAME = 'RESERVATION'
+  AND COLUMN_NAME = 'HAIR_STYLE_NO';
+
+SELECT
+    CONSTRAINT_NAME,
+    CONSTRAINT_TYPE,
+    STATUS
+FROM USER_CONSTRAINTS
+WHERE TABLE_NAME = 'RESERVATION'
+  AND CONSTRAINT_NAME = 'RESERVATION_HAIR_STYLE_FK';
+
+SELECT
+    INDEX_NAME,
+    STATUS
+FROM USER_INDEXES
+WHERE INDEX_NAME = 'IDX_RESERVATION_HAIR_STYLE';
+
+-- 기대 결과
+-- RESERVATION.HAIR_STYLE_NO : NULLABLE = Y
+-- RESERVATION_HAIR_STYLE_FK : TYPE = R / ENABLED
+-- IDX_RESERVATION_HAIR_STYLE : VALID
+-- =====================================================================

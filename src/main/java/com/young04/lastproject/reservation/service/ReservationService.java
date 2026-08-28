@@ -20,6 +20,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final AvailableTimeService availableTimeService;
     private final ServiceMenuReader serviceMenuReader;
+    private final HairStyleReader hairStyleReader;
     private final BusinessHourRepository businessHourRepository;
 
     @Transactional
@@ -33,13 +34,14 @@ public class ReservationService {
                         request.getServiceMenuNo()
                 );
 
-        LocalDateTime start =
-                request.getStartAt();
+        validateHairStyle(
+                request.getHairStyleNo(),
+                request.getServiceMenuNo()
+        );
 
+        LocalDateTime start = request.getStartAt();
         LocalDateTime end =
-                start.plusMinutes(
-                        menu.durationMin()
-                );
+                start.plusMinutes(menu.durationMin());
 
         /*
          * 같은 요일의 BUSINESS_HOUR 행을 PESSIMISTIC_WRITE로 잠근 뒤
@@ -51,8 +53,7 @@ public class ReservationService {
          */
         lockReservationDay(start);
 
-        if (!availableTimeService
-                .isAvailable(start, end)) {
+        if (!availableTimeService.isAvailable(start, end)) {
             throw new ReservationUnavailableException(
                     "선택한 시간에는 예약할 수 없습니다."
             );
@@ -70,24 +71,30 @@ public class ReservationService {
                     Reservation.createMemberReservation(
                             request.getMemberNo(),
                             request.getServiceMenuNo(),
+                            request.getHairStyleNo(),
                             menu.name(),
                             menu.durationMin(),
                             start,
                             end,
-                            request.getRequestMemo(),
+                            normalizeMemo(request.getRequestMemo()),
                             source
                     );
         } else {
             reservation =
                     Reservation.createGuestReservation(
-                            request.getGuestName(),
-                            request.getGuestPhone(),
+                            normalizeGuestName(
+                                    request.getGuestName()
+                            ),
+                            normalizeGuestPhone(
+                                    request.getGuestPhone()
+                            ),
                             request.getServiceMenuNo(),
+                            request.getHairStyleNo(),
                             menu.name(),
                             menu.durationMin(),
                             start,
                             end,
-                            request.getRequestMemo(),
+                            normalizeMemo(request.getRequestMemo()),
                             source
                     );
         }
@@ -112,13 +119,14 @@ public class ReservationService {
                         request.getServiceMenuNo()
                 );
 
-        LocalDateTime start =
-                request.getStartAt();
+        validateHairStyle(
+                request.getHairStyleNo(),
+                request.getServiceMenuNo()
+        );
 
+        LocalDateTime start = request.getStartAt();
         LocalDateTime end =
-                start.plusMinutes(
-                        menu.durationMin()
-                );
+                start.plusMinutes(menu.durationMin());
 
         lockReservationDay(start);
 
@@ -135,11 +143,12 @@ public class ReservationService {
 
         reservation.changeSchedule(
                 request.getServiceMenuNo(),
+                request.getHairStyleNo(),
                 menu.name(),
                 menu.durationMin(),
                 start,
                 end,
-                request.getRequestMemo()
+                normalizeMemo(request.getRequestMemo())
         );
 
         return ReservationResponse.from(reservation);
@@ -160,7 +169,6 @@ public class ReservationService {
         }
 
         reservation.confirm();
-
         return ReservationResponse.from(reservation);
     }
 
@@ -179,7 +187,6 @@ public class ReservationService {
         }
 
         reservation.complete();
-
         return ReservationResponse.from(reservation);
     }
 
@@ -192,20 +199,71 @@ public class ReservationService {
         Reservation reservation =
                 getReservation(reservationNo);
 
-        if (reservation.getStatus()
-                == ReservationStatus.COMPLETED
-                || reservation.getStatus()
-                == ReservationStatus.CANCELED
-                || reservation.getStatus()
-                == ReservationStatus.NO_SHOW) {
-            throw new InvalidReservationStatusException(
-                    "현재 상태에서는 예약을 취소할 수 없습니다."
-            );
-        }
+        validateCancelable(reservation);
 
         reservation.cancel(
-                reason,
+                normalizeCancelReason(reason),
                 canceledBy
+        );
+
+        return ReservationResponse.from(reservation);
+    }
+
+    public ReservationResponse lookupGuestReservation(
+            GuestReservationLookupRequest request
+    ) {
+        String phone =
+                normalizeGuestPhone(
+                        request.getGuestPhone()
+                );
+
+        Reservation reservation =
+                reservationRepository
+                        .findByReservationNoAndCustomerTypeAndGuestPhone(
+                                request.getReservationNo(),
+                                CustomerType.GUEST,
+                                phone
+                        )
+                        .orElseThrow(
+                                () ->
+                                        new ReservationNotFoundException(
+                                                request.getReservationNo()
+                                        )
+                        );
+
+        return ReservationResponse.from(reservation);
+    }
+
+    @Transactional
+    public ReservationResponse cancelGuestReservation(
+            GuestReservationCancelRequest request
+    ) {
+        String phone =
+                normalizeGuestPhone(
+                        request.getGuestPhone()
+                );
+
+        Reservation reservation =
+                reservationRepository
+                        .findByReservationNoAndCustomerTypeAndGuestPhone(
+                                request.getReservationNo(),
+                                CustomerType.GUEST,
+                                phone
+                        )
+                        .orElseThrow(
+                                () ->
+                                        new ReservationNotFoundException(
+                                                request.getReservationNo()
+                                        )
+                        );
+
+        validateCancelable(reservation);
+
+        reservation.cancel(
+                normalizeCancelReason(
+                        request.getReason()
+                ),
+                CanceledBy.USER
         );
 
         return ReservationResponse.from(reservation);
@@ -227,6 +285,37 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
+    }
+
+    private void validateCustomer(
+            ReservationCreateRequest request
+    ) {
+        boolean member =
+                request.getMemberNo() != null;
+
+        boolean guest =
+                hasText(request.getGuestName())
+                        && hasText(request.getGuestPhone());
+
+        if (member == guest) {
+            throw new ReservationUnavailableException(
+                    "회원 또는 비회원 정보 중 하나만 입력해야 합니다."
+            );
+        }
+    }
+
+    private void validateHairStyle(
+            Long hairStyleNo,
+            Long serviceMenuNo
+    ) {
+        if (!hairStyleReader.isStyleLinkedToService(
+                hairStyleNo,
+                serviceMenuNo
+        )) {
+            throw new ReservationUnavailableException(
+                    "선택한 헤어스타일은 해당 시술 메뉴에서 사용할 수 없습니다."
+            );
+        }
     }
 
     private void lockReservationDay(
@@ -258,25 +347,6 @@ public class ReservationService {
                 );
     }
 
-    private void validateCustomer(
-            ReservationCreateRequest request
-    ) {
-        boolean member =
-                request.getMemberNo() != null;
-
-        boolean guest =
-                hasText(request.getGuestName())
-                        && hasText(
-                                request.getGuestPhone()
-                        );
-
-        if (member == guest) {
-            throw new ReservationUnavailableException(
-                    "회원 또는 비회원 정보 중 하나만 입력해야 합니다."
-            );
-        }
-    }
-
     private void validateModifiable(
             Reservation reservation
     ) {
@@ -290,8 +360,50 @@ public class ReservationService {
         }
     }
 
+    private void validateCancelable(
+            Reservation reservation
+    ) {
+        if (reservation.getStatus()
+                == ReservationStatus.COMPLETED
+                || reservation.getStatus()
+                == ReservationStatus.CANCELED
+                || reservation.getStatus()
+                == ReservationStatus.NO_SHOW) {
+            throw new InvalidReservationStatusException(
+                    "현재 상태에서는 예약을 취소할 수 없습니다."
+            );
+        }
+    }
+
+    private String normalizeGuestName(String value) {
+        return value == null
+                ? null
+                : value.trim().replaceAll("\\s+", " ");
+    }
+
+    private String normalizeGuestPhone(String value) {
+        return value == null
+                ? null
+                : value.replaceAll("\\D", "");
+    }
+
+    private String normalizeMemo(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        return value.trim();
+    }
+
+    private String normalizeCancelReason(String value) {
+        if (value == null || value.isBlank()) {
+            return "사용자 요청";
+        }
+
+        return value.trim();
+    }
+
     private boolean hasText(String value) {
-        return value != null
-                && !value.isBlank();
+        return value != null && !value.isBlank();
     }
 }

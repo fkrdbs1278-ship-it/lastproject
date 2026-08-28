@@ -1,5 +1,6 @@
 package com.young04.lastproject.reservation.controller;
 
+import com.young04.lastproject.reservation.dto.MemberReservationInfo;
 import com.young04.lastproject.reservation.service.ReservationMemberReader;
 import com.young04.lastproject.reservation.service.ServiceMenuReader;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +22,32 @@ public class ReservationPageController {
             Principal principal,
             Model model
     ) {
-        Long memberNo = resolveMemberNo(principal);
+        MemberReservationInfo member =
+                resolveMember(principal);
 
         model.addAttribute(
                 "serviceMenus",
                 serviceMenuReader.getActiveServiceMenus()
         );
-        model.addAttribute("memberNo", memberNo);
+
+        model.addAttribute(
+                "memberNo",
+                member == null ? null : member.getMemberNo()
+        );
+
+        model.addAttribute(
+                "memberName",
+                member == null ? null : member.getName()
+        );
+
+        model.addAttribute(
+                "memberPhoneMasked",
+                member == null ? null : member.getMaskedPhone()
+        );
+
         model.addAttribute(
                 "isLoggedIn",
-                memberNo != null
+                member != null
         );
 
         return "reservation/reservation-form";
@@ -41,24 +58,36 @@ public class ReservationPageController {
             Principal principal,
             Model model
     ) {
-        Long memberNo = resolveMemberNo(principal);
+        MemberReservationInfo member =
+                resolveMember(principal);
 
-        model.addAttribute("memberNo", memberNo);
+        model.addAttribute(
+                "memberNo",
+                member == null ? null : member.getMemberNo()
+        );
+
         model.addAttribute(
                 "isLoggedIn",
-                memberNo != null
+                member != null
         );
 
         return "reservation/my-reservations";
     }
 
-    private Long resolveMemberNo(Principal principal) {
+    @GetMapping("/guest-reservation")
+    public String guestReservationLookup() {
+        return "reservation/guest-reservation";
+    }
+
+    private MemberReservationInfo resolveMember(
+            Principal principal
+    ) {
         if (principal == null) {
             return null;
         }
 
         return reservationMemberReader
-                .findMemberNoByMemberId(
+                .findMemberInfoByMemberId(
                         principal.getName()
                 )
                 .orElse(null);
