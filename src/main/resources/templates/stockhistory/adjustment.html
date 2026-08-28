@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>재고 조정</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/stockhistory.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/stockhistory-adjustment.css}">
+</head>
+
+<body>
+<main class="stockhistory-page adjustment-page">
+
+    <section class="page-header">
+        <div>
+            <p class="page-category">매장 운영 관리</p>
+            <h1>재고 조정</h1>
+            <p class="page-description">
+                자재의 사용, 폐기 및 수동 재고 변경 내용을 등록합니다.
+            </p>
+        </div>
+
+        <a class="material-link"
+           th:href="@{/admin/stockhistory}">
+            이력 목록
+        </a>
+    </section>
+
+    <section class="adjustment-card">
+        <form class="adjustment-form"
+              th:action="@{/admin/stockhistory/adjustment}"
+              th:object="${stockAdjustmentRequest}"
+              method="post">
+
+            <!-- 서비스 처리 과정에서 발생한 공통 오류 표시 -->
+            <div class="form-error global-error"
+                 th:if="${#fields.hasGlobalErrors()}">
+                <p th:each="error : ${#fields.globalErrors()}"
+                   th:text="${error}">
+                    재고를 조정할 수 없습니다.
+                </p>
+            </div>
+
+            <div class="form-field full-field">
+                <label for="materialNo">자재 선택 <span>*</span></label>
+
+                <select id="materialNo"
+                        th:field="*{materialNo}">
+                    <option value="">자재를 선택해 주세요.</option>
+
+                    <option th:each="material : ${materials}"
+                            th:value="${material.materialNo}"
+                            th:text="|${material.materialName} · 현재 ${#numbers.formatInteger(material.currentStock, 1)} ${material.unitCode}|">
+                        자재명 · 현재 0 EA
+                    </option>
+                </select>
+
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('materialNo')}"
+                   th:errors="*{materialNo}">
+                    자재를 선택해 주세요.
+                </p>
+            </div>
+
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="movementType">변동 구분 <span>*</span></label>
+
+                    <select id="movementType"
+                            th:field="*{movementType}">
+                        <option value="">변동 구분을 선택해 주세요.</option>
+                        <option value="USE">사용</option>
+                        <option value="DISCARD">폐기</option>
+                        <option value="MANUAL_IN">수동 증가</option>
+                        <option value="MANUAL_OUT">수동 감소</option>
+                    </select>
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('movementType')}"
+                       th:errors="*{movementType}">
+                        변동 구분을 선택해 주세요.
+                    </p>
+                </div>
+
+                <div class="form-field">
+                    <label for="quantity">조정 수량 <span>*</span></label>
+
+                    <input type="number"
+                           id="quantity"
+                           min="1"
+                           step="1"
+                           placeholder="1 이상 입력"
+                           th:field="*{quantity}">
+
+                    <p class="field-error"
+                       th:if="${#fields.hasErrors('quantity')}"
+                       th:errors="*{quantity}">
+                        수량은 1 이상 입력해 주세요.
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-field full-field">
+                <label for="memo">메모</label>
+
+                <textarea id="memo"
+                          rows="5"
+                          maxlength="500"
+                          placeholder="사용, 폐기 또는 조정 사유를 입력해 주세요."
+                          th:field="*{memo}"></textarea>
+
+                <p class="field-error"
+                   th:if="${#fields.hasErrors('memo')}"
+                   th:errors="*{memo}">
+                    메모는 500자 이하로 입력해 주세요.
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <a class="cancel-button"
+                   th:href="@{/admin/stockhistory}">
+                    취소
+                </a>
+
+                <button type="submit" class="submit-button">
+                    재고 조정
+                </button>
+            </div>
+        </form>
+    </section>
+
+</main>
+</body>
+</html>
