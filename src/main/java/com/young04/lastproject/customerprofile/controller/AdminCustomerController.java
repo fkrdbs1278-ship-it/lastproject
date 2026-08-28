@@ -1,26 +1,42 @@
 package com.young04.lastproject.customerprofile.controller;
 
 import com.young04.lastproject.customergrade.service.CustomerGradeService;
+
+import com.young04.lastproject.customermemo.dto.CustomerMemoResponse;
+import com.young04.lastproject.customermemo.service.CustomerMemoService;
+
 import com.young04.lastproject.customerprofile.dto.CustomerCreateRequest;
 import com.young04.lastproject.customerprofile.dto.CustomerSearchCondition;
 import com.young04.lastproject.customerprofile.entity.CustomerProfile;
 import com.young04.lastproject.customerprofile.service.CustomerProfileService;
+
+import com.young04.lastproject.treatmenthistory.dto.TreatmentHistoryResponse;
+import com.young04.lastproject.treatmenthistory.service.TreatmentHistoryService;
+
 import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+
 import org.springframework.validation.BindingResult;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 
 @Slf4j
@@ -38,32 +54,16 @@ public class AdminCustomerController {
 
     private final CustomerGradeService customerGradeService;
 
+    private final CustomerMemoService customerMemoService;
+
+    private final TreatmentHistoryService treatmentHistoryService;
+
 
 
     // =====================================================
     // 관리자 고객 CRM 목록 / 검색 + 페이징
     // =====================================================
 
-    /**
-     * 관리자 고객 CRM 목록 화면입니다.
-     *
-     * 검색 조건:
-     *
-     * - 이름 / 전화번호
-     * - 회원 / 비회원
-     * - 고객 등급
-     * - 활성 여부
-     * - 미방문 기간
-     * - 재방문 권장일 도래
-     *
-     *
-     * 페이징:
-     *
-     * page = 0 → 첫 번째 페이지
-     * page = 1 → 두 번째 페이지
-     *
-     * 한 페이지에는 10명의 고객을 표시합니다.
-     */
     @GetMapping
     public String customerList(
 
@@ -130,10 +130,6 @@ public class AdminCustomerController {
 
         // -------------------------------------------------
         // 현재 페이지 고객 목록
-        //
-        // 기존 list.html의
-        // ${customers}를 그대로 사용할 수 있도록
-        // Page의 content만 따로 전달합니다.
         // -------------------------------------------------
 
         model.addAttribute(
@@ -143,7 +139,7 @@ public class AdminCustomerController {
 
 
         // -------------------------------------------------
-        // 페이징 정보 전체 전달
+        // 페이징 정보
         // -------------------------------------------------
 
         model.addAttribute(
@@ -151,29 +147,21 @@ public class AdminCustomerController {
                 customerPage
         );
 
-
-        // 현재 페이지 번호
         model.addAttribute(
                 "currentPage",
                 customerPage.getNumber()
         );
 
-
-        // 전체 페이지 수
         model.addAttribute(
                 "totalPages",
                 customerPage.getTotalPages()
         );
 
-
-        // 전체 검색 결과 고객 수
         model.addAttribute(
                 "totalElements",
                 customerPage.getTotalElements()
         );
 
-
-        // 한 페이지 표시 개수
         model.addAttribute(
                 "pageSize",
                 customerPage.getSize()
@@ -181,7 +169,7 @@ public class AdminCustomerController {
 
 
         // -------------------------------------------------
-        // 고객 등급 목록
+        // 등급 목록
         // -------------------------------------------------
 
         model.addAttribute(
@@ -200,10 +188,6 @@ public class AdminCustomerController {
     // 전화예약 고객 등록 화면
     // =====================================================
 
-    /**
-     * 관리자가 전화로 예약을 받은 신규 고객을
-     * 직접 등록하는 화면입니다.
-     */
     @GetMapping("/new")
     public String createGuestCustomerForm(
             Model model
@@ -214,11 +198,6 @@ public class AdminCustomerController {
         );
 
 
-        /*
-         * DuplicateCustomerPhoneException 발생 후
-         * redirect 되어 들어온 경우를 제외하고
-         * 빈 등록 DTO를 생성합니다.
-         */
         if (!model.containsAttribute(
                 "customerCreateRequest"
         )) {
@@ -239,18 +218,6 @@ public class AdminCustomerController {
     // 전화예약 고객 등록 처리
     // =====================================================
 
-    /**
-     * 전화예약 고객을 실제 CUSTOMER_PROFILE에 등록합니다.
-     *
-     * 신규 고객 기본값:
-     *
-     * CUSTOMER_TYPE   = GUEST
-     * GRADE_CODE      = NORMAL
-     * GRADE_MANUAL_YN = N
-     * VISIT_COUNT     = 0
-     * TOTAL_PAYMENT   = 0
-     * ACTIVE_YN       = Y
-     */
     @PostMapping("/new")
     public String createGuestCustomer(
 
@@ -263,6 +230,7 @@ public class AdminCustomerController {
             RedirectAttributes redirectAttributes
     ) {
 
+
         log.info(
                 "관리자 전화예약 고객 등록 요청 customerName={}",
                 request.getCustomerName()
@@ -270,7 +238,7 @@ public class AdminCustomerController {
 
 
         // -------------------------------------------------
-        // 입력값 검증 실패
+        // Validation 실패
         // -------------------------------------------------
 
         if (bindingResult.hasErrors()) {
@@ -297,7 +265,7 @@ public class AdminCustomerController {
 
 
         // -------------------------------------------------
-        // 등록 성공 메시지
+        // 성공 메시지
         // -------------------------------------------------
 
         redirectAttributes.addFlashAttribute(
@@ -307,14 +275,10 @@ public class AdminCustomerController {
 
 
         log.info(
-                "전화예약 고객 등록 Controller 처리 완료 customerId={}",
+                "전화예약 고객 등록 완료 customerId={}",
                 savedCustomer.getCustomerId()
         );
 
-
-        // -------------------------------------------------
-        // 등록된 고객 상세 화면으로 이동
-        // -------------------------------------------------
 
         return "redirect:/admin/customers/"
                 + savedCustomer.getCustomerId();
@@ -323,9 +287,19 @@ public class AdminCustomerController {
 
 
     // =====================================================
-    // 관리자 고객 상세 조회
+    // 관리자 고객 상세 통합 조회
     // =====================================================
 
+    /**
+     * 고객 상세 화면에서
+     *
+     * - 고객 기본정보
+     * - 고객 등급
+     * - 상담 메모 / 특이사항
+     * - 시술 이력
+     *
+     * 을 한 화면에서 함께 조회합니다.
+     */
     @GetMapping("/{customerId}")
     public String customerDetail(
 
@@ -335,14 +309,15 @@ public class AdminCustomerController {
             Model model
     ) {
 
+
         log.info(
-                "관리자 고객 상세 조회 customerId={}",
+                "관리자 고객 상세 통합 조회 customerId={}",
                 customerId
         );
 
 
         // -------------------------------------------------
-        // 고객 조회
+        // 1. 고객 기본정보
         // -------------------------------------------------
 
         CustomerProfile customer =
@@ -353,7 +328,39 @@ public class AdminCustomerController {
 
 
         // -------------------------------------------------
-        // 고객 정보
+        // 2. 상담 메모
+        // -------------------------------------------------
+
+        List<CustomerMemoResponse> memos =
+                customerMemoService
+                        .findByCustomerId(
+                                customerId
+                        )
+                        .stream()
+                        .map(
+                                CustomerMemoResponse::from
+                        )
+                        .toList();
+
+
+        // -------------------------------------------------
+        // 3. 시술 이력
+        // -------------------------------------------------
+
+        List<TreatmentHistoryResponse> treatments =
+                treatmentHistoryService
+                        .findByCustomerId(
+                                customerId
+                        )
+                        .stream()
+                        .map(
+                                TreatmentHistoryResponse::from
+                        )
+                        .toList();
+
+
+        // -------------------------------------------------
+        // 4. 고객 기본정보
         // -------------------------------------------------
 
         model.addAttribute(
@@ -363,13 +370,41 @@ public class AdminCustomerController {
 
 
         // -------------------------------------------------
-        // 고객 등급 선택 목록
+        // 5. 고객 등급
         // -------------------------------------------------
 
         model.addAttribute(
                 "grades",
                 customerGradeService
                         .findAllGrades()
+        );
+
+
+        // -------------------------------------------------
+        // 6. 상담 메모
+        // -------------------------------------------------
+
+        model.addAttribute(
+                "memos",
+                memos
+        );
+
+
+        // -------------------------------------------------
+        // 7. 시술 이력
+        // -------------------------------------------------
+
+        model.addAttribute(
+                "treatments",
+                treatments
+        );
+
+
+        log.info(
+                "고객 상세 통합 조회 완료 customerId={}, memoCount={}, treatmentCount={}",
+                customerId,
+                memos.size(),
+                treatments.size()
         );
 
 
@@ -391,6 +426,7 @@ public class AdminCustomerController {
             RedirectAttributes redirectAttributes
     ) {
 
+
         log.info(
                 "관리자 고객 자동 등급 재계산 요청 customerId={}",
                 customerId
@@ -405,7 +441,7 @@ public class AdminCustomerController {
 
 
         // -------------------------------------------------
-        // 수동 등급 고객은 자동 재계산 제외
+        // 수동 관리 고객
         // -------------------------------------------------
 
         if ("Y".equals(
@@ -449,6 +485,7 @@ public class AdminCustomerController {
             RedirectAttributes redirectAttributes
     ) {
 
+
         log.info(
                 "관리자 고객 등급 수동 변경 요청 customerId={}, gradeCode={}",
                 customerId,
@@ -471,9 +508,10 @@ public class AdminCustomerController {
 
 
         log.info(
-                "관리자 고객 등급 수동 변경 처리 완료 customerId={}, gradeCode={}",
+                "관리자 고객 등급 수동 변경 완료 customerId={}, gradeCode={}",
                 customerId,
-                customer.getCustomerGrade()
+                customer
+                        .getCustomerGrade()
                         .getGradeCode()
         );
 
@@ -496,6 +534,7 @@ public class AdminCustomerController {
 
             RedirectAttributes redirectAttributes
     ) {
+
 
         log.info(
                 "관리자 고객 자동 등급 전환 요청 customerId={}",
