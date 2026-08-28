@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDate;
+import java.util.Objects;
+
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/member")
@@ -50,9 +54,70 @@ public class AuthController {
             BindingResult bindingResult
     ) {
 
+        /* =====================================================
+           1. 비밀번호 / 비밀번호 확인 일치 검사
+        ===================================================== */
+
+        if (!Objects.equals(
+                signupRequest.getPassword(),
+                signupRequest.getPasswordCheck()
+        )) {
+
+            bindingResult.rejectValue(
+                    "passwordCheck",
+                    "mismatch",
+                    "비밀번호가 일치하지 않습니다."
+            );
+        }
+
+
+        /* =====================================================
+           2. 생년월일 최소 날짜 검사
+
+           1900-01-01부터 허용
+           1899-12-31 이전은 가입 불가
+        ===================================================== */
+
+        LocalDate minimumBirthDate =
+                LocalDate.of(
+                        1900,
+                        1,
+                        1
+                );
+
+
+        if (signupRequest.getBirthDate() != null
+                && signupRequest
+                .getBirthDate()
+                .isBefore(minimumBirthDate)) {
+
+            bindingResult.rejectValue(
+                    "birthDate",
+                    "range",
+                    "생년월일은 1900년 1월 1일 이후의 날짜를 선택해주세요."
+            );
+        }
+
+
+        /* =====================================================
+           3. Validation 오류 확인
+
+           @NotBlank
+           @Pattern
+           @Past
+           비밀번호 불일치
+           생년월일 범위
+
+           하나라도 문제가 있으면 회원가입 화면으로 돌아감
+        ===================================================== */
+
         if (bindingResult.hasErrors()) {
+
             return "member/signup";
         }
+
+
+        /* 4. 실제 회원가입 */
 
         try {
 
@@ -89,17 +154,18 @@ public class AuthController {
             return "member/signup";
         }
 
+
+        /* 5. 회원가입 성공 */
+
         return "redirect:/member/login?signup=success";
     }
 
-    /* =========================================================
-    로그인 페이지
-    ========================================================= */
+
+    /* 로그인 페이지 */
 
     @GetMapping("/login")
     public String login() {
 
         return "member/login";
     }
-
 }

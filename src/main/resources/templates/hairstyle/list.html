@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>헤어스타일 | SALON CRM</title>
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/hairstyle/hairstyle.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+
+<main class="hair-page">
+
+    <div class="hair-container">
+
+
+        <!-- Header -->
+
+        <div class="hair-page-header">
+
+            <h1 class="hair-page-title">
+                헤어스타일
+            </h1>
+
+            <p class="hair-page-description">
+                원하는 헤어스타일을 찾아보고
+                관련 시술 메뉴도 확인해보세요.
+            </p>
+
+        </div>
+
+
+        <!-- Category -->
+
+        <nav class="hair-category">
+
+
+            <a
+                    th:href="@{/hairstyles}"
+                    class="hair-category-button"
+                    th:classappend="${selectedCategory == null ? 'active' : ''}"
+            >
+                전체
+            </a>
+
+
+            <a
+                    th:href="@{/hairstyles(category='SHORT')}"
+                    class="hair-category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'SHORT'
+                        ? 'active' : ''}"
+            >
+                숏
+            </a>
+
+
+            <a
+                    th:href="@{/hairstyles(category='MEDIUM')}"
+                    class="hair-category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'MEDIUM'
+                        ? 'active' : ''}"
+            >
+                미디엄
+            </a>
+
+
+            <a
+                    th:href="@{/hairstyles(category='LONG')}"
+                    class="hair-category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'LONG'
+                        ? 'active' : ''}"
+            >
+                롱
+            </a>
+
+
+            <a
+                    th:href="@{/hairstyles(category='MEN')}"
+                    class="hair-category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'MEN'
+                        ? 'active' : ''}"
+            >
+                남성
+            </a>
+
+
+            <a
+                    th:href="@{/hairstyles(category='ETC')}"
+                    class="hair-category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'ETC'
+                        ? 'active' : ''}"
+            >
+                기타
+            </a>
+
+        </nav>
+
+
+        <!-- Empty -->
+
+        <div
+                th:if="${#lists.isEmpty(hairStyles)}"
+                class="hair-empty"
+        >
+            등록된 헤어스타일이 없습니다.
+        </div>
+
+
+        <!-- Grid -->
+
+        <div
+                th:unless="${#lists.isEmpty(hairStyles)}"
+                class="hair-grid"
+        >
+
+
+            <article
+                    th:each="hairStyle : ${hairStyles}"
+                    class="hair-card"
+            >
+
+                <a
+                        th:href="@{/hairstyles/{no}(no=${hairStyle.no})}"
+                        class="hair-card-link"
+                >
+
+
+                    <div class="hair-image-area">
+
+                        <img
+                                th:src="${hairStyle.imageUrl}"
+                                th:alt="${hairStyle.title}"
+                                class="hair-image"
+                        >
+
+                    </div>
+
+
+                    <div class="hair-card-body">
+
+                        <p
+                                class="hair-category-name"
+                                th:text="${hairStyle.categoryName}"
+                        >
+                            롱
+                        </p>
+
+
+                        <h2
+                                class="hair-title"
+                                th:text="${hairStyle.title}"
+                        >
+                            레이어드 C컬
+                        </h2>
+
+
+                        <p
+                                class="hair-description"
+                                th:text="${hairStyle.description != null
+                                    ? hairStyle.description
+                                    : '헤어스타일 설명이 준비중입니다.'}"
+                        >
+                            설명
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </article>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+
+</body>
+
+</html>
