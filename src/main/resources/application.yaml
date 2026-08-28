@@ -4,9 +4,13 @@ spring:
 
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:oracle:thin:@localhost:1521:XE
+    username: orcltest
+    password: 1234
+#    driver-class-name: oracle.jdbc.OracleDriver
+#    url: ${DB_URL}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
 
   jpa:
     show-sql: false

@@ -1,5 +1,6 @@
 package com.young04.lastproject.reservation.controller;
 
+import com.young04.lastproject.noshow.service.NoShowService;
 import com.young04.lastproject.reservation.dto.AdminReservationSearchResponse;
 import com.young04.lastproject.reservation.dto.ReservationResponse;
 import com.young04.lastproject.reservation.dto.ReservationSearchCondition;
@@ -17,6 +18,7 @@ public class AdminReservationController {
 
     private final ReservationService reservationService;
     private final AdminReservationService adminReservationService;
+    private final NoShowService noShowService;
 
     @GetMapping
     public ResponseEntity<AdminReservationSearchResponse> search(
@@ -38,10 +40,9 @@ public class AdminReservationController {
             @PathVariable Long reservationNo
     ) {
         return ResponseEntity.ok(
-                reservationService
-                        .confirmReservation(
-                                reservationNo
-                        )
+                reservationService.confirmReservation(
+                        reservationNo
+                )
         );
     }
 
@@ -50,10 +51,9 @@ public class AdminReservationController {
             @PathVariable Long reservationNo
     ) {
         return ResponseEntity.ok(
-                reservationService
-                        .completeReservation(
-                                reservationNo
-                        )
+                reservationService.completeReservation(
+                        reservationNo
+                )
         );
     }
 
@@ -63,12 +63,26 @@ public class AdminReservationController {
             @RequestParam String reason
     ) {
         return ResponseEntity.ok(
-                reservationService
-                        .cancelReservation(
-                                reservationNo,
-                                reason,
-                                CanceledBy.ADMIN
-                        )
+                reservationService.cancelReservation(
+                        reservationNo,
+                        reason,
+                        CanceledBy.ADMIN
+                )
         );
+    }
+
+    @PostMapping("/{reservationNo}/no-show")
+    public ResponseEntity<Void> noShow(
+            @PathVariable Long reservationNo,
+            @RequestParam(required = false) String reason,
+            @RequestParam(required = false) String adminMemo
+    ) {
+        noShowService.markNoShow(
+                reservationNo,
+                reason,
+                adminMemo
+        );
+
+        return ResponseEntity.noContent().build();
     }
 }

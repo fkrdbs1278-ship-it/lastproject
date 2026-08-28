@@ -4,9 +4,11 @@ import com.young04.lastproject.reservation.dto.AvailableTimeResponse;
 import com.young04.lastproject.reservation.dto.ReservationCreateRequest;
 import com.young04.lastproject.reservation.dto.ReservationResponse;
 import com.young04.lastproject.reservation.dto.ReservationUpdateRequest;
+import com.young04.lastproject.reservation.dto.ServiceMenuOptionResponse;
 import com.young04.lastproject.reservation.entity.CanceledBy;
 import com.young04.lastproject.reservation.service.AvailableTimeService;
 import com.young04.lastproject.reservation.service.ReservationService;
+import com.young04.lastproject.reservation.service.ServiceMenuReader;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -23,6 +25,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
     private final AvailableTimeService availableTimeService;
+    private final ServiceMenuReader serviceMenuReader;
 
     @PostMapping
     public ResponseEntity<ReservationResponse> create(
@@ -73,6 +76,13 @@ public class ReservationController {
     ) {
         return ResponseEntity.ok(
                 availableTimeService.getAvailableTimes(date, serviceMenuNo)
+        );
+    }
+
+    @GetMapping("/service-menus")
+    public ResponseEntity<List<ServiceMenuOptionResponse>> serviceMenus() {
+        return ResponseEntity.ok(
+                serviceMenuReader.getActiveServiceMenus()
         );
     }
 

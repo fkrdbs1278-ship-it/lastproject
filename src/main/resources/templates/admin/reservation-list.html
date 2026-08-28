@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 예약 관리</title>
+
+    <meta th:if="${_csrf != null}"
+          name="_csrf"
+          th:content="${_csrf.token}">
+    <meta th:if="${_csrf != null}"
+          name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/reservation/reservation.css}">
+</head>
+<body>
+<main class="reservation-page admin-page">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">ADMIN</p>
+            <h1>예약 관리</h1>
+            <p>예약 검색, 확정, 완료, 취소, 노쇼 처리를 할 수 있습니다.</p>
+        </div>
+    </section>
+
+    <section class="panel">
+        <form id="searchForm"
+              class="search-grid">
+            <label class="field">
+                <span>상태</span>
+                <select id="status">
+                    <option value="">전체</option>
+                    <option value="REQUESTED">신청</option>
+                    <option value="CONFIRMED">확정</option>
+                    <option value="COMPLETED">완료</option>
+                    <option value="CANCELED">취소</option>
+                    <option value="NO_SHOW">노쇼</option>
+                </select>
+            </label>
+
+            <label class="field">
+                <span>고객 유형</span>
+                <select id="customerType">
+                    <option value="">전체</option>
+                    <option value="MEMBER">회원</option>
+                    <option value="GUEST">비회원</option>
+                </select>
+            </label>
+
+            <label class="field">
+                <span>예약 경로</span>
+                <select id="reservationSource">
+                    <option value="">전체</option>
+                    <option value="ONLINE">온라인</option>
+                    <option value="PHONE">전화</option>
+                </select>
+            </label>
+
+            <label class="field">
+                <span>비회원 이름</span>
+                <input type="text"
+                       id="guestName">
+            </label>
+
+            <label class="field">
+                <span>비회원 전화번호</span>
+                <input type="text"
+                       id="guestPhone">
+            </label>
+
+            <label class="field">
+                <span>시작일</span>
+                <input type="date"
+                       id="startFrom">
+            </label>
+
+            <label class="field">
+                <span>종료일</span>
+                <input type="date"
+                       id="startTo">
+            </label>
+
+            <div class="search-actions">
+                <button type="submit"
+                        class="primary-button">
+                    검색
+                </button>
+                <button type="button"
+                        class="secondary-button"
+                        id="resetSearch">
+                    초기화
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="table-wrap">
+            <table class="reservation-table">
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>고객</th>
+                    <th>시술</th>
+                    <th>예약시간</th>
+                    <th>상태</th>
+                    <th>경로</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody id="reservationTableBody">
+                <tr>
+                    <td colspan="7"
+                        class="loading-box">
+                        예약을 불러오는 중입니다.
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <button type="button"
+                    id="prevPage"
+                    class="secondary-button">
+                이전
+            </button>
+
+            <span id="pageInfo">1 / 1</span>
+
+            <button type="button"
+                    id="nextPage"
+                    class="secondary-button">
+                다음
+            </button>
+        </div>
+    </section>
+
+    <div id="messageBox"
+         class="message-box hidden"
+         role="alert"></div>
+</main>
+
+<script th:src="@{/js/reservation/admin-reservations.js}"></script>
+</body>
+</html>

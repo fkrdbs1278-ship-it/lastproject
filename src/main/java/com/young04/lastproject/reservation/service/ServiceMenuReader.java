@@ -1,12 +1,17 @@
 package com.young04.lastproject.reservation.service;
 
+import com.young04.lastproject.reservation.dto.ServiceMenuOptionResponse;
 import com.young04.lastproject.reservation.exception.ServiceMenuNotFoundException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Component
+@Transactional(readOnly = true)
 public class ServiceMenuReader {
 
     @PersistenceContext
@@ -31,6 +36,27 @@ public class ServiceMenuReader {
         } catch (NoResultException e) {
             throw new ServiceMenuNotFoundException(serviceMenuNo);
         }
+    }
+
+    public List<ServiceMenuOptionResponse> getActiveServiceMenus() {
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = entityManager.createNativeQuery("""
+                SELECT NO, CATEGORY, NAME, PRICE, DURATION_MIN
+                FROM SERVICE_MENU
+                WHERE ACTIVE_YN = 'Y'
+                ORDER BY DISPLAY_ORDER ASC, NO ASC
+                """)
+                .getResultList();
+
+        return rows.stream()
+                .map(row -> ServiceMenuOptionResponse.builder()
+                        .serviceMenuNo(((Number) row[0]).longValue())
+                        .category((String) row[1])
+                        .name((String) row[2])
+                        .price(((Number) row[3]).intValue())
+                        .durationMin(((Number) row[4]).intValue())
+                        .build())
+                .toList();
     }
 
     public record ServiceMenuSnapshot(

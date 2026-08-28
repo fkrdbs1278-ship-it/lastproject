@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 예약</title>
+
+    <meta th:if="${_csrf != null}"
+          name="_csrf"
+          th:content="${_csrf.token}">
+    <meta th:if="${_csrf != null}"
+          name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/reservation/reservation.css}">
+</head>
+<body>
+<main class="reservation-page"
+      id="myReservationPage"
+      th:attr="data-member-no=${memberNo},
+               data-logged-in=${isLoggedIn}">
+
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">MY RESERVATION</p>
+            <h1>내 예약</h1>
+            <p>예약 상태와 시술 일정을 확인할 수 있습니다.</p>
+        </div>
+
+        <a class="primary-link"
+           th:href="@{/reservation}">
+            새 예약
+        </a>
+    </section>
+
+    <section th:unless="${isLoggedIn}"
+             class="panel empty-box">
+        로그인한 회원만 내 예약을 조회할 수 있습니다.
+    </section>
+
+    <section th:if="${isLoggedIn}"
+             class="panel">
+        <div class="toolbar">
+            <button type="button"
+                    class="secondary-button"
+                    id="refreshReservations">
+                새로고침
+            </button>
+        </div>
+
+        <div id="reservationList"
+             class="reservation-list">
+            <div class="loading-box">
+                예약을 불러오는 중입니다.
+            </div>
+        </div>
+    </section>
+
+    <div id="messageBox"
+         class="message-box hidden"
+         role="alert"></div>
+</main>
+
+<script th:src="@{/js/reservation/my-reservations.js}"></script>
+</body>
+</html>
