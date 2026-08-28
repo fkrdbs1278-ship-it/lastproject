@@ -4,6 +4,8 @@ import com.young04.lastproject.customermemo.dto.CustomerMemoRequest;
 import com.young04.lastproject.customermemo.dto.CustomerMemoResponse;
 import com.young04.lastproject.customermemo.entity.CustomerMemo;
 import com.young04.lastproject.customermemo.service.CustomerMemoService;
+import com.young04.lastproject.customerprofile.entity.CustomerProfile;
+import com.young04.lastproject.customerprofile.service.CustomerProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,9 @@ public class CustomerMemoController {
 
     private final CustomerMemoService customerMemoService;
 
+    // 고객명 등 고객 기본정보 조회
+    private final CustomerProfileService customerProfileService;
+
 
     // =====================================================
     // 고객별 상담 메모 목록
@@ -37,6 +42,19 @@ public class CustomerMemoController {
             Model model
     ) {
 
+        // -------------------------------------------------
+        // 1. 고객 정보 조회
+        // -------------------------------------------------
+
+        CustomerProfile customer =
+                customerProfileService
+                        .getCustomerById(customerId);
+
+
+        // -------------------------------------------------
+        // 2. 고객별 상담 메모 조회
+        // -------------------------------------------------
+
         List<CustomerMemoResponse> memos =
                 customerMemoService
                         .findByCustomerId(customerId)
@@ -44,16 +62,41 @@ public class CustomerMemoController {
                         .map(CustomerMemoResponse::from)
                         .toList();
 
-        model.addAttribute("customerId", customerId);
-        model.addAttribute("memos", memos);
 
-        // 등록 Form에서 사용할 객체
-        if (!model.containsAttribute("memoRequest")) {
+        // -------------------------------------------------
+        // 3. 화면 전달
+        // -------------------------------------------------
+
+        model.addAttribute(
+                "customer",
+                customer
+        );
+
+        model.addAttribute(
+                "customerId",
+                customerId
+        );
+
+        model.addAttribute(
+                "memos",
+                memos
+        );
+
+
+        // -------------------------------------------------
+        // 4. 신규 메모 등록 Form 객체
+        // -------------------------------------------------
+
+        if (!model.containsAttribute(
+                "memoRequest"
+        )) {
+
             model.addAttribute(
                     "memoRequest",
                     new CustomerMemoRequest()
             );
         }
+
 
         return "customer/memo";
     }
@@ -72,11 +115,20 @@ public class CustomerMemoController {
             CustomerMemoRequest request,
 
             BindingResult bindingResult,
+
             Model model
     ) {
 
+        // -------------------------------------------------
         // Validation 실패
+        // -------------------------------------------------
+
         if (bindingResult.hasErrors()) {
+
+            CustomerProfile customer =
+                    customerProfileService
+                            .getCustomerById(customerId);
+
 
             List<CustomerMemoResponse> memos =
                     customerMemoService
@@ -85,11 +137,30 @@ public class CustomerMemoController {
                             .map(CustomerMemoResponse::from)
                             .toList();
 
-            model.addAttribute("customerId", customerId);
-            model.addAttribute("memos", memos);
+
+            model.addAttribute(
+                    "customer",
+                    customer
+            );
+
+            model.addAttribute(
+                    "customerId",
+                    customerId
+            );
+
+            model.addAttribute(
+                    "memos",
+                    memos
+            );
+
 
             return "customer/memo";
         }
+
+
+        // -------------------------------------------------
+        // 상담 메모 등록
+        // -------------------------------------------------
 
         CustomerMemo savedMemo =
                 customerMemoService.createMemo(
@@ -97,11 +168,13 @@ public class CustomerMemoController {
                         request
                 );
 
+
         log.info(
                 "상담 메모 등록 요청 완료 customerId={}, memoId={}",
                 customerId,
                 savedMemo.getMemoId()
         );
+
 
         return "redirect:/admin/customers/"
                 + customerId
@@ -133,16 +206,19 @@ public class CustomerMemoController {
                     memoId
             );
 
+
             return "redirect:/admin/customers/"
                     + customerId
                     + "/memos";
         }
+
 
         customerMemoService.updateMemo(
                 customerId,
                 memoId,
                 request
         );
+
 
         return "redirect:/admin/customers/"
                 + customerId
@@ -164,6 +240,7 @@ public class CustomerMemoController {
                 customerId,
                 memoId
         );
+
 
         return "redirect:/admin/customers/"
                 + customerId

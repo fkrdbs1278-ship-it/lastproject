@@ -4,16 +4,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>고객 상세 QA 테스트</title>
+    <title th:text="'고객 상세 - ' + ${customer.customerName}">
+        고객 상세
+    </title>
 
-    <!--
-        고객 CRM 기능 테스트용 임시 화면입니다.
 
-        다른 작업자가 메인페이지 / 공통 CSS 기준을 잡고 있으므로
-        현재는 기능 확인이 가능할 정도의 최소 스타일만 사용합니다.
-
-        공통 CSS가 확정되면 나중에 디자인을 통일합니다.
-    -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -114,13 +109,9 @@
 
 <body>
 
-<h1>고객 상세 QA 테스트</h1>
-
-
-<!-- ===================================================== -->
-<!-- 처리 완료 메시지 -->
-<!-- ===================================================== -->
-
+<h1 th:text="'고객 상세 - ' + ${customer.customerName}">
+    고객 상세
+</h1>
 <div
         class="success"
         th:if="${message != null}"

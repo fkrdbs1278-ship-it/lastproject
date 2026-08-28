@@ -5,7 +5,9 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>고객 상담 메모 QA</title>
+    <title th:text="'고객 상담 메모 - ' + ${customer.customerName}">
+        고객 상담 메모
+    </title>
 
     <style>
         body {
@@ -122,7 +124,19 @@
 
 <body>
 
-<h1>고객 상담 메모 QA 테스트</h1>
+
+<!-- =====================================================
+     페이지 제목
+===================================================== -->
+
+<h1 th:text="'고객 상담 메모 - ' + ${customer.customerName}">
+    고객 상담 메모
+</h1>
+
+
+<!-- =====================================================
+     고객 기본 정보
+===================================================== -->
 
 <div class="customer-info">
 
@@ -133,6 +147,21 @@
 
     &nbsp; | &nbsp;
 
+    고객명:
+    <strong th:text="${customer.customerName}">
+        고객명
+    </strong>
+
+    &nbsp; | &nbsp;
+
+    <a th:href="@{/admin/customers/{customerId}(
+        customerId=${customerId}
+    )}">
+        고객 상세
+    </a>
+
+    &nbsp; | &nbsp;
+
     <a th:href="@{/admin/customers}">
         고객 목록으로
     </a>
@@ -140,28 +169,39 @@
 </div>
 
 
-<!-- ================================================= -->
-<!-- 메모 등록 -->
-<!-- ================================================= -->
+<!-- =====================================================
+     새 상담 메모 등록
+===================================================== -->
 
 <div class="box">
 
-    <h2>새 상담 메모 등록</h2>
+    <h2>
+        새 상담 메모 등록
+    </h2>
+
 
     <form
             method="post"
-            th:action="@{/admin/customers/{customerId}/memos(customerId=${customerId})}"
-            th:object="${memoRequest}"
-    >
+            th:action="@{/admin/customers/{customerId}/memos(
+                customerId=${customerId}
+            )}"
+            th:object="${memoRequest}">
 
-        <!-- Spring Security CSRF -->
+
+        <!-- =================================================
+             Spring Security CSRF
+        ================================================== -->
+
         <input
                 type="hidden"
                 th:if="${_csrf != null}"
                 th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}"
-        >
+                th:value="${_csrf.token}">
 
+
+        <!-- =================================================
+             메모 유형
+        ================================================== -->
 
         <div class="form-row">
 
@@ -169,45 +209,57 @@
                 메모 유형
             </label>
 
+
             <select
                     id="memoType"
-                    th:field="*{memoType}"
-            >
+                    th:field="*{memoType}">
+
 
                 <option value="">
                     선택
                 </option>
 
+
                 <option value="COUNSELING">
                     상담
                 </option>
+
 
                 <option value="ALLERGY">
                     알레르기
                 </option>
 
+
                 <option value="SCALP">
                     두피
                 </option>
+
 
                 <option value="HAIR">
                     모발
                 </option>
 
+
                 <option value="GENERAL">
                     일반
                 </option>
 
+
             </select>
+
 
             <div
                     class="error"
                     th:if="${#fields.hasErrors('memoType')}"
-                    th:errors="*{memoType}"
-            ></div>
+                    th:errors="*{memoType}">
+            </div>
 
         </div>
 
+
+        <!-- =================================================
+             메모 내용
+        ================================================== -->
 
         <div class="form-row">
 
@@ -215,20 +267,26 @@
                 메모 내용
             </label>
 
+
             <textarea
                     id="memoContent"
                     th:field="*{memoContent}"
-                    placeholder="상담 내용 또는 고객 특이사항을 입력하세요."
-            ></textarea>
+                    placeholder="상담 내용 또는 고객 특이사항을 입력하세요.">
+            </textarea>
+
 
             <div
                     class="error"
                     th:if="${#fields.hasErrors('memoContent')}"
-                    th:errors="*{memoContent}"
-            ></div>
+                    th:errors="*{memoContent}">
+            </div>
 
         </div>
 
+
+        <!-- =================================================
+             중요 여부
+        ================================================== -->
 
         <div class="form-row">
 
@@ -236,105 +294,132 @@
                 중요 여부
             </label>
 
+
             <select
                     id="importantYn"
-                    th:field="*{importantYn}"
-            >
+                    th:field="*{importantYn}">
+
 
                 <option value="">
                     선택
                 </option>
 
+
                 <option value="N">
                     일반
                 </option>
+
 
                 <option value="Y">
                     중요
                 </option>
 
+
             </select>
+
 
             <div
                     class="error"
                     th:if="${#fields.hasErrors('importantYn')}"
-                    th:errors="*{importantYn}"
-            ></div>
+                    th:errors="*{importantYn}">
+            </div>
 
         </div>
 
 
+        <!-- =================================================
+             등록 버튼
+        ================================================== -->
+
         <button
                 type="submit"
-                class="save-button"
-        >
+                class="save-button">
+
             메모 등록
+
         </button>
+
 
     </form>
 
 </div>
 
 
+<!-- =====================================================
+     등록된 상담 메모 목록
+===================================================== -->
 
-<!-- ================================================= -->
-<!-- 등록된 메모 목록 -->
-<!-- ================================================= -->
-
-<h2>등록된 상담 메모</h2>
+<h2>
+    등록된 상담 메모
+</h2>
 
 
 <div
         class="memo"
-        th:each="memo : ${memos}"
->
+        th:each="memo : ${memos}">
+
+
+    <!-- =================================================
+         메모 기본 정보
+    ================================================== -->
 
     <div class="meta">
 
         메모번호:
+
         <span th:text="${memo.memoId}">
             1
         </span>
 
+
         &nbsp; | &nbsp;
 
+
         작성일:
+
         <span th:text="${memo.createdAt}">
             2026-08-26
         </span>
 
+
         &nbsp;
+
 
         <span
                 class="important"
-                th:if="${memo.importantYn == 'Y'}"
-        >
+                th:if="${memo.importantYn == 'Y'}">
+
             ★ 중요
+
         </span>
 
     </div>
 
 
-    <!-- ================================================= -->
-    <!-- 메모 수정 -->
-    <!-- ================================================= -->
+    <!-- =================================================
+         메모 수정
+    ================================================== -->
 
     <form
             method="post"
             th:action="@{/admin/customers/{customerId}/memos/{memoId}/update(
-                        customerId=${customerId},
-                        memoId=${memo.memoId}
-                       )}"
-    >
+                customerId=${customerId},
+                memoId=${memo.memoId}
+            )}">
+
 
         <!-- Spring Security CSRF -->
+
         <input
                 type="hidden"
                 th:if="${_csrf != null}"
                 th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}"
-        >
+                th:value="${_csrf.token}">
 
+
+        <!-- =================================================
+             수정 - 메모 유형
+        ================================================== -->
 
         <div class="form-row">
 
@@ -342,47 +427,63 @@
                 메모 유형
             </label>
 
+
             <select name="memoType">
+
 
                 <option
                         value="COUNSELING"
-                        th:selected="${memo.memoType == 'COUNSELING'}"
-                >
+                        th:selected="${memo.memoType == 'COUNSELING'}">
+
                     상담
+
                 </option>
+
 
                 <option
                         value="ALLERGY"
-                        th:selected="${memo.memoType == 'ALLERGY'}"
-                >
+                        th:selected="${memo.memoType == 'ALLERGY'}">
+
                     알레르기
+
                 </option>
+
 
                 <option
                         value="SCALP"
-                        th:selected="${memo.memoType == 'SCALP'}"
-                >
+                        th:selected="${memo.memoType == 'SCALP'}">
+
                     두피
+
                 </option>
+
 
                 <option
                         value="HAIR"
-                        th:selected="${memo.memoType == 'HAIR'}"
-                >
+                        th:selected="${memo.memoType == 'HAIR'}">
+
                     모발
+
                 </option>
+
 
                 <option
                         value="GENERAL"
-                        th:selected="${memo.memoType == 'GENERAL'}"
-                >
+                        th:selected="${memo.memoType == 'GENERAL'}">
+
                     일반
+
                 </option>
+
 
             </select>
 
         </div>
 
+
+        <!-- =================================================
+             수정 - 메모 내용
+        ================================================== -->
 
         <div class="form-row">
 
@@ -390,13 +491,18 @@
                 메모 내용
             </label>
 
+
             <textarea
                     name="memoContent"
-                    th:text="${memo.memoContent}"
-            ></textarea>
+                    th:text="${memo.memoContent}">
+            </textarea>
 
         </div>
 
+
+        <!-- =================================================
+             수정 - 중요 여부
+        ================================================== -->
 
         <div class="form-row">
 
@@ -404,78 +510,99 @@
                 중요 여부
             </label>
 
+
             <select name="importantYn">
+
 
                 <option
                         value="N"
-                        th:selected="${memo.importantYn == 'N'}"
-                >
+                        th:selected="${memo.importantYn == 'N'}">
+
                     일반
+
                 </option>
+
 
                 <option
                         value="Y"
-                        th:selected="${memo.importantYn == 'Y'}"
-                >
+                        th:selected="${memo.importantYn == 'Y'}">
+
                     중요
+
                 </option>
+
 
             </select>
 
         </div>
 
 
+        <!-- =================================================
+             수정 버튼
+        ================================================== -->
+
         <button
                 type="submit"
-                class="update-button"
-        >
+                class="update-button">
+
             수정
+
         </button>
+
 
     </form>
 
 
-    <!-- ================================================= -->
-    <!-- 메모 삭제 -->
-    <!-- ================================================= -->
+    <!-- =================================================
+         메모 삭제
+    ================================================== -->
 
     <form
             method="post"
             th:action="@{/admin/customers/{customerId}/memos/{memoId}/delete(
-                        customerId=${customerId},
-                        memoId=${memo.memoId}
-                       )}"
-            style="margin-top: 10px;"
-    >
+                customerId=${customerId},
+                memoId=${memo.memoId}
+            )}"
+            style="margin-top: 10px;">
+
 
         <!-- Spring Security CSRF -->
+
         <input
                 type="hidden"
                 th:if="${_csrf != null}"
                 th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}"
-        >
+                th:value="${_csrf.token}">
+
 
         <button
                 type="submit"
                 class="delete-button"
-                onclick="return confirm('이 메모를 삭제하시겠습니까?');"
-        >
+                onclick="return confirm('이 메모를 삭제하시겠습니까?');">
+
             삭제
+
         </button>
+
 
     </form>
 
 </div>
 
 
+<!-- =====================================================
+     등록된 메모가 없는 경우
+===================================================== -->
+
 <div
         class="box empty"
-        th:if="${#lists.isEmpty(memos)}"
->
+        th:if="${#lists.isEmpty(memos)}">
+
     등록된 상담 메모가 없습니다.
+
 </div>
 
 
 </body>
+
 </html>

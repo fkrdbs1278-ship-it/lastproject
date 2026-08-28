@@ -5,7 +5,9 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>고객 시술 이력 QA</title>
+    <title th:text="'고객 시술 이력 - ' + ${customer.customerName}">
+        고객 시술 이력
+    </title>
 
     <style>
         body {
@@ -69,32 +71,77 @@
 
 <body>
 
-<h1>고객 시술 이력 QA 테스트</h1>
 
+<!-- =====================================================
+     페이지 제목
+===================================================== -->
+
+<h1 th:text="'고객 시술 이력 - ' + ${customer.customerName}">
+    고객 시술 이력
+</h1>
+
+
+<!-- =====================================================
+     고객 정보 / 이동 메뉴
+===================================================== -->
 
 <div class="customer-info">
 
     고객번호:
+
     <strong th:text="${customerId}">
         0
     </strong>
 
+
     &nbsp; | &nbsp;
+
+
+    고객명:
+
+    <strong th:text="${customer.customerName}">
+        고객명
+    </strong>
+
+
+    &nbsp; | &nbsp;
+
+
+    <a th:href="@{/admin/customers/{customerId}(
+        customerId=${customerId}
+    )}">
+        고객 상세
+    </a>
+
 
     <a th:href="@{/admin/customers}">
         고객 목록으로
     </a>
 
-    <a th:href="@{/admin/customers/{customerId}/memos(customerId=${customerId})}">
+
+    <a th:href="@{/admin/customers/{customerId}/memos(
+        customerId=${customerId}
+    )}">
         상담 메모 보기
     </a>
 
 </div>
 
 
+<!-- =====================================================
+     시술 이력
+===================================================== -->
+
 <div class="box">
 
-    <h2>시술 이력</h2>
+    <h2>
+        시술 이력
+    </h2>
+
+
+    <!-- =================================================
+         시술 이력이 존재하는 경우
+    ================================================== -->
 
     <table th:if="${!#lists.isEmpty(treatments)}">
 
@@ -116,11 +163,18 @@
 
         <tbody>
 
+
         <tr th:each="treatment : ${treatments}">
+
+
+            <!-- 시술 번호 -->
 
             <td th:text="${treatment.treatmentId}">
                 1
             </td>
+
+
+            <!-- 예약 번호 -->
 
             <td th:text="${treatment.reservationNo != null
                             ? treatment.reservationNo
@@ -128,55 +182,96 @@
                 -
             </td>
 
+
+            <!-- 시술 메뉴 번호 -->
+
             <td th:text="${treatment.serviceMenuNo != null
                             ? treatment.serviceMenuNo
                             : '-'}">
                 -
             </td>
 
+
+            <!-- 시술명 -->
+
             <td th:text="${treatment.treatmentName}">
                 여성 커트
             </td>
+
+
+            <!-- 시술일 -->
 
             <td th:text="${treatment.treatmentDate}">
                 2026-08-26
             </td>
 
-            <td th:text="${treatment.treatmentPrice}">
-                35000
+
+            <!-- 시술 금액 -->
+
+            <td>
+
+                <span th:text="${treatment.treatmentPrice != null
+                                ? #numbers.formatInteger(
+                                    treatment.treatmentPrice,
+                                    0,
+                                    'COMMA'
+                                  )
+                                : '0'}">
+                    35,000
+                </span>
+
+                원
+
             </td>
+
+
+            <!-- 시술 메모 -->
 
             <td
                     class="memo"
                     th:text="${treatment.treatmentMemo != null
                                 ? treatment.treatmentMemo
-                                : '-'}"
-            >
+                                : '-'}">
+
                 손상모 주의
+
             </td>
+
+
+            <!-- 다음 추천일 -->
 
             <td th:text="${treatment.nextRecommendedDate != null
                             ? treatment.nextRecommendedDate
                             : '-'}">
+
                 2026-09-26
+
             </td>
 
+
         </tr>
+
 
         </tbody>
 
     </table>
 
 
+    <!-- =================================================
+         시술 이력이 없는 경우
+    ================================================== -->
+
     <div
             class="empty"
-            th:if="${#lists.isEmpty(treatments)}"
-    >
+            th:if="${#lists.isEmpty(treatments)}">
+
         등록된 시술 이력이 없습니다.
+
     </div>
 
 </div>
 
 
 </body>
+
 </html>
