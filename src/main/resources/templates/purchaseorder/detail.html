@@ -19,10 +19,21 @@
         </div>
 
         <div class="purchase-order-header-actions">
+
+            <!-- 발주서 인쇄 화면을 새 창으로 열기 -->
+            <a class="secondary-button"
+               th:href="@{/admin/purchaseorder/{no}/print(
+           no=${order.purchaseOrderNo}
+       )}"
+               target="_blank">
+                발주서 출력
+            </a>
+
             <a class="secondary-button"
                th:href="@{/admin/purchaseorder}">
                 목록으로
             </a>
+
         </div>
     </section>
 

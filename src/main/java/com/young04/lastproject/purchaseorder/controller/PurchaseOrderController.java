@@ -151,6 +151,26 @@ public class PurchaseOrderController {
         return "purchaseorder/detail";
     }
 
+    // 발주서를 인쇄용 화면으로 조회
+    @GetMapping("/{purchaseOrderNo}/print")
+    public String printPurchaseOrder(
+            @PathVariable Long purchaseOrderNo,
+            Model model
+    ) {
+        // 발주서 기본 정보 조회
+        PurchaseOrderResponse order =
+                purchaseOrderService.getOrder(purchaseOrderNo);
+
+        // 발주서에 등록된 품목 조회
+        List<PurchaseOrderItemResponse> items =
+                purchaseOrderItemService.getItems(purchaseOrderNo);
+
+        model.addAttribute("order", order);
+        model.addAttribute("items", items);
+
+        return "purchaseorder/print";
+    }
+
     // 기존 발주서에 새로운 자재 품목 등록
     @PostMapping("/{purchaseOrderNo}/items")
     public String createItem(

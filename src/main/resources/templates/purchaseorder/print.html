@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <title th:text="'발주서_' + ${order.purchaseOrderNo}">
+        발주서
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/purchaseorder-print.css}">
+</head>
+
+<body>
+
+<main class="print-page">
+
+    <!-- 인쇄할 때는 표시되지 않는 버튼 영역 -->
+    <div class="print-actions">
+        <button type="button"
+                class="print-button"
+                onclick="window.print()">
+            인쇄하기
+        </button>
+
+        <button type="button"
+                class="close-button"
+                onclick="window.close()">
+            닫기
+        </button>
+    </div>
+
+    <!-- 발주서 제목 -->
+    <header class="document-header">
+        <h1>발주서</h1>
+        <p>Purchase Order</p>
+    </header>
+
+    <!-- 발주 기본 정보 -->
+    <section class="order-information">
+        <table>
+            <tbody>
+            <tr>
+                <th>발주서 번호</th>
+                <td th:text="${order.purchaseOrderNo}">
+                    1
+                </td>
+
+                <th>발주 상태</th>
+                <td th:text="${order.orderStatus == 'REQUESTED' ? '발주 요청' :
+                              order.orderStatus == 'ORDERED' ? '발주 완료' :
+                              order.orderStatus == 'RECEIVED' ? '입고 완료' :
+                              order.orderStatus == 'CANCELED' ? '발주 취소' :
+                              order.orderStatus}">
+                    발주 요청
+                </td>
+            </tr>
+
+            <tr>
+                <th>공급업체</th>
+                <td th:text="${order.supplierName}">
+                    공급업체명
+                </td>
+
+                <th>발주일</th>
+                <td th:text="${order.orderDate != null
+                        ? #temporals.format(
+                            order.orderDate,
+                            'yyyy-MM-dd HH:mm'
+                          )
+                        : '-'}">
+                    2026-08-28 10:00
+                </td>
+            </tr>
+
+            <tr>
+                <th>입고 예정일</th>
+                <td th:text="${order.expectedDate != null
+                        ? #temporals.format(
+                            order.expectedDate,
+                            'yyyy-MM-dd'
+                          )
+                        : '-'}">
+                    2026-08-30
+                </td>
+
+                <th>실제 입고일</th>
+                <td th:text="${order.receivedDate != null
+                        ? #temporals.format(
+                            order.receivedDate,
+                            'yyyy-MM-dd HH:mm'
+                          )
+                        : '-'}">
+                    -
+                </td>
+            </tr>
+
+            <tr>
+                <th>메모</th>
+                <td colspan="3"
+                    th:text="${order.memo != null
+                              and !order.memo.isBlank()
+                              ? order.memo : '-'}">
+                    메모 내용
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- 발주 품목 -->
+    <section class="order-items">
+        <h2>발주 품목</h2>
+
+        <table>
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>자재명</th>
+                <th>발주 수량</th>
+                <th>재고 단위</th>
+                <th>구매 가격</th>
+                <th>품목 금액</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="item, itemStat : ${items}">
+                <td th:text="${itemStat.count}">
+                    1
+                </td>
+
+                <td th:text="${item.materialName}">
+                    염색약
+                </td>
+
+                <td th:text="${#numbers.formatDecimal(
+                        item.orderQuantity, 1, 0
+                )}">
+                    5
+                </td>
+
+                <td th:text="${item.unitCode}">
+                    EA
+                </td>
+
+                <td class="amount"
+                    th:text="${#numbers.formatInteger(
+                        item.unitPrice, 1, 'COMMA'
+                    ) + '원'}">
+                    5,000원
+                </td>
+
+                <td class="amount"
+                    th:text="${#numbers.formatInteger(
+                        item.itemAmount, 1, 'COMMA'
+                    ) + '원'}">
+                    25,000원
+                </td>
+            </tr>
+
+            <!-- 발주 품목이 없는 경우 -->
+            <tr th:if="${#lists.isEmpty(items)}">
+                <td colspan="6" class="empty-row">
+                    등록된 발주 품목이 없습니다.
+                </td>
+            </tr>
+            </tbody>
+
+            <tfoot>
+            <tr>
+                <th colspan="5">총 발주 금액</th>
+
+                <td class="total-amount"
+                    th:text="${#numbers.formatInteger(
+                        order.totalAmount, 1, 'COMMA'
+                    ) + '원'}">
+                    0원
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </section>
+
+    <!-- 확인 서명란 -->
+    <section class="signature-section">
+        <div>
+            <span>발주 담당자</span>
+            <strong>(서명)</strong>
+        </div>
+
+        <div>
+            <span>공급업체 확인</span>
+            <strong>(서명)</strong>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>
