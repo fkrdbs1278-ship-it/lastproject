@@ -23,10 +23,10 @@ public class ReservationImage {
     @JoinColumn(name = "RESERVATION_NO", nullable = false)
     private Reservation reservation;
 
-    @Column(name = "ORIGINAL_FILE_NAME", nullable = false, length = 255)
+    @Column(name = "ORIGINAL_FILE_NAME", nullable = false)
     private String originalFileName;
 
-    @Column(name = "STORED_FILE_NAME", nullable = false, length = 255)
+    @Column(name = "STORED_FILE_NAME", nullable = false)
     private String storedFileName;
 
     @Column(name = "FILE_URL", nullable = false, length = 1000)

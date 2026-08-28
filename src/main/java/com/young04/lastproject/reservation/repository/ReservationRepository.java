@@ -17,12 +17,6 @@ public interface ReservationRepository
     // Query Method
     List<Reservation> findByMemberNoOrderByStartAtDesc(Long memberNo);
 
-    List<Reservation> findByStatusAndStartAtBetweenOrderByStartAtAsc(
-            ReservationStatus status,
-            LocalDateTime start,
-            LocalDateTime end
-    );
-
     // JPQL: 기존 시작 < 신규 종료 AND 기존 종료 > 신규 시작
     @Query("""
             select count(r)

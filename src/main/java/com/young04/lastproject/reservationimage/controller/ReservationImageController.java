@@ -45,7 +45,9 @@ public class ReservationImageController {
             @PathVariable Long reservationNo,
             @PathVariable Long reservationImageNo
     ) {
+
         reservationImageService.delete(
+                reservationNo,
                 reservationImageNo
         );
 

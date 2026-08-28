@@ -3,6 +3,7 @@ package com.young04.lastproject.reservation.service;
 import com.young04.lastproject.reservation.dto.AdminReservationSearchResponse;
 import com.young04.lastproject.reservation.dto.ReservationResponse;
 import com.young04.lastproject.reservation.dto.ReservationSearchCondition;
+import com.young04.lastproject.reservation.entity.Reservation;
 import com.young04.lastproject.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,26 +24,18 @@ public class AdminReservationService {
             int page,
             int size
     ) {
+
         Pageable pageable =
                 PageRequest.of(
                         Math.max(page, 0),
-                        Math.min(
-                                Math.max(size, 1),
-                                100
-                        )
+                        Math.clamp(size, 1, 100)
                 );
 
-        Page<?> result =
+        Page<Reservation> reservationPage =
                 reservationRepository.search(
                         condition,
                         pageable
                 );
-
-        @SuppressWarnings("unchecked")
-        Page<com.young04.lastproject.reservation.entity.Reservation>
-                reservationPage =
-                (Page<com.young04.lastproject.reservation.entity.Reservation>)
-                        result;
 
         return AdminReservationSearchResponse
                 .builder()
@@ -53,12 +46,8 @@ public class AdminReservationService {
                                 .map(ReservationResponse::from)
                                 .toList()
                 )
-                .page(
-                        reservationPage.getNumber()
-                )
-                .size(
-                        reservationPage.getSize()
-                )
+                .page(reservationPage.getNumber())
+                .size(reservationPage.getSize())
                 .totalElements(
                         reservationPage.getTotalElements()
                 )

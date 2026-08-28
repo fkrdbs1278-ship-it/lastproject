@@ -168,13 +168,13 @@ public class ReservationImageService {
 
     @Transactional
     public void delete(
+            Long reservationNo,
             Long reservationImageNo
     ) {
+
         ReservationImage image =
                 reservationImageRepository
-                        .findById(
-                                reservationImageNo
-                        )
+                        .findById(reservationImageNo)
                         .orElseThrow(
                                 () ->
                                         new ReservationImageException(
@@ -182,18 +182,24 @@ public class ReservationImageService {
                                         )
                         );
 
+        if (!image.getReservation()
+                .getReservationNo()
+                .equals(reservationNo)) {
+
+            throw new ReservationImageException(
+                    "해당 예약의 이미지가 아닙니다."
+            );
+        }
+
         Path filePath =
                 Path.of(
-                        uploadDir,
-                        "reservation",
-                        String.valueOf(
-                                image.getReservation()
-                                        .getReservationNo()
-                        ),
-                        image.getStoredFileName()
-                )
-                .toAbsolutePath()
-                .normalize();
+                                uploadDir,
+                                "reservation",
+                                String.valueOf(reservationNo),
+                                image.getStoredFileName()
+                        )
+                        .toAbsolutePath()
+                        .normalize();
 
         reservationImageRepository.delete(image);
         reservationImageRepository.flush();
