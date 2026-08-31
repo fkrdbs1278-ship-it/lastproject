@@ -2,9 +2,7 @@ package com.young04.lastproject.member.dto;
 
 
 import com.young04.lastproject.member.entity.Member;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,11 +23,21 @@ public class MemberUpdateRequest {
     @Size(max = 100, message = "이메일은 100자 이하로 입력해주세요.")
     private String email;
 
-    @NotBlank(message = "전화번호를 입력해주세요.")
-    @Size(max = 20, message = "전화번호는 20자 이하로 입력해주세요.")
+    @NotBlank(
+            message = "전화번호를 입력해주세요."
+    )
+    @Pattern(
+            regexp = "^01[016789]-?\\d{3,4}-?\\d{4}$",
+            message = "올바른 휴대전화 번호를 입력해주세요."
+    )
     private String phone;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @Past(
+            message = "생년월일은 오늘보다 이전 날짜만 선택할 수 있습니다."
+    )
+    @DateTimeFormat(
+            iso = DateTimeFormat.ISO.DATE
+    )
     private LocalDate birthDate;
 
     private String gender;

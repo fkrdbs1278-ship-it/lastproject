@@ -129,7 +129,9 @@ public class MemberService {
 
 
         /* 생년월일 */
-        validateBirthDate(request);
+        validateBirthDate(
+                request.getBirthDate()
+        );
 
 
         /* 아이디 중복 */
@@ -160,30 +162,31 @@ public class MemberService {
 
 
     /* =========================================================
-       생년월일 검사
+   생년월일 검사
 
-       허용 범위:
-       1900-01-01 ~ 어제
+   허용 범위:
+   1900-01-01 ~ 어제
 
-       SignupRequest의 @Past도 검사하지만
-       Service에서도 회원가입 규칙을 다시 보호한다.
-    ========================================================= */
+   회원가입 / 회원정보 수정에서 공통 사용
+========================================================= */
 
     private void validateBirthDate(
-            SignupRequest request
+            LocalDate birthDate
     ) {
 
-        LocalDate birthDate =
-                request.getBirthDate();
-
-
-        /* 생년월일이 선택사항이면 null 허용 */
+        /*
+         * 생년월일은 선택사항이므로
+         * null 허용
+         */
         if (birthDate == null) {
 
             return;
         }
 
 
+        /*
+         * 최소 생년월일
+         */
         LocalDate minimumBirthDate =
                 LocalDate.of(
                         1900,
@@ -205,9 +208,6 @@ public class MemberService {
 
         /*
          * 오늘 또는 미래
-         *
-         * @Past에서도 검사하지만
-         * Service를 직접 호출하는 상황까지 대비
          */
         if (!birthDate.isBefore(
                 LocalDate.now()
@@ -366,6 +366,16 @@ public class MemberService {
 
             return false;
         }
+        /* =====================================================
+        생년월일 검사
+
+        허용 범위:
+        1900-01-01 ~ 어제
+        ===================================================== */
+
+        validateBirthDate(
+                request.getBirthDate()
+        );
 
 
         String email =

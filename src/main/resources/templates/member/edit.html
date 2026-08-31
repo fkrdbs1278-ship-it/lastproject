@@ -175,15 +175,15 @@
                             id="email"
                             th:field="*{email}"
                             placeholder="example@email.com"
+                            maxlength="100"
+                            autocomplete="email"
                     >
 
                     <p
-                            class="field-error"
                             th:if="${#fields.hasErrors('email')}"
                             th:errors="*{email}"
-                    >
-                        이메일 오류
-                    </p>
+                            class="field-error"
+                    ></p>
 
                 </div>
 
@@ -197,10 +197,13 @@
                     </label>
 
                     <input
-                            type="text"
+                            type="tel"
                             id="phone"
                             th:field="*{phone}"
                             placeholder="010-1234-5678"
+                            inputmode="numeric"
+                            autocomplete="tel"
+                            maxlength="13"
                     >
 
                     <p
@@ -209,6 +212,10 @@
                             th:errors="*{phone}"
                     >
                         전화번호 오류
+                    </p>
+
+                    <p class="field-help">
+                        숫자만 입력해도 자동으로 하이픈(-)이 추가됩니다.
                     </p>
 
                 </div>
@@ -226,6 +233,8 @@
                             type="date"
                             id="birthDate"
                             th:field="*{birthDate}"
+                            min="1900-01-01"
+                            autocomplete="bday"
                     >
 
                     <p
@@ -354,6 +363,8 @@
 <footer th:replace="~{layout/footer :: footer}">
 </footer>
 
+
+<script th:src="@{/js/member/edit.js}"></script>
 
 </body>
 

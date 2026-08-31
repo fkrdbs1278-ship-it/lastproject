@@ -57,4 +57,21 @@ public interface ReviewRepository
             Long reservationNo,
             ReviewStatus status
     );
+
+    /* =========================================================
+       특정 회원이 작성한 특정 활성 리뷰
+
+       수정 / 삭제 권한 확인용
+    ========================================================= */
+
+    Optional<Review>
+    findByNoAndMember_NoAndStatus(
+            Long no,
+            Long memberNo,
+            ReviewStatus status
+    );
+
+
+
+
 }
