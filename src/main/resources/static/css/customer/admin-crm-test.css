@@ -1,0 +1,892 @@
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    margin: 0;
+
+    background: #f5f6f8;
+
+    color: #222;
+
+    font-family:
+            Arial,
+            "Noto Sans KR",
+            sans-serif;
+}
+
+
+button,
+input {
+    font: inherit;
+}
+
+
+
+/* =========================================================
+   테스트 배너
+========================================================= */
+
+.test-banner {
+    padding: 10px 16px;
+
+    background: #1f1f1f;
+
+    color: #fff;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+
+/* =========================================================
+   전체
+========================================================= */
+
+.page-container {
+    width: min(
+            1100px,
+            calc(100% - 40px)
+    );
+
+    margin: 0 auto;
+
+    padding: 42px 0 70px;
+}
+
+
+
+/* =========================================================
+   헤더
+========================================================= */
+
+.page-header {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 24px;
+
+    margin-bottom: 24px;
+}
+
+
+.eyebrow {
+    margin: 0 0 8px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.8px;
+}
+
+
+.page-header h1 {
+    margin: 0;
+
+    font-size: 32px;
+}
+
+
+.page-header p:last-child {
+    margin: 10px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+.header-links {
+    display: flex;
+
+    gap: 8px;
+
+    flex-shrink: 0;
+}
+
+
+.header-links a,
+.sub-link,
+.quick-links a {
+    color: #333;
+
+    text-decoration: none;
+}
+
+
+.header-links a {
+    padding: 9px 12px;
+
+    background: #fff;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+}
+
+
+
+/* =========================================================
+   메시지
+========================================================= */
+
+.alert {
+    margin-bottom: 14px;
+
+    padding: 13px 16px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+}
+
+
+.alert.success {
+    background: #eef8f1;
+
+    border: 1px solid #cce8d4;
+
+    color: #25633a;
+}
+
+
+.alert.error {
+    background: #fff1f1;
+
+    border: 1px solid #efcccc;
+
+    color: #8d3333;
+}
+
+
+
+/* =========================================================
+   고객 요약
+========================================================= */
+
+.customer-summary {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 24px;
+
+    margin-bottom: 16px;
+
+    background: #fff;
+
+    border: 1px solid #e4e4e4;
+
+    border-radius: 14px;
+}
+
+
+.avatar {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 58px;
+
+    height: 58px;
+
+    flex-shrink: 0;
+
+    background: #222;
+
+    border-radius: 50%;
+
+    color: #fff;
+
+    font-size: 21px;
+
+    font-weight: 700;
+}
+
+
+.customer-summary-main {
+    flex: 1;
+}
+
+
+.summary-label,
+.grade-box span,
+.metric-card span {
+    color: #888;
+
+    font-size: 12px;
+}
+
+
+.customer-summary-main h2 {
+    margin: 4px 0 6px;
+
+    font-size: 21px;
+}
+
+
+.customer-summary-main p {
+    margin: 0;
+
+    color: #666;
+
+    font-size: 13px;
+}
+
+
+.grade-box {
+    min-width: 125px;
+
+    padding: 14px 18px;
+
+    background: #f7f7f7;
+
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+
+.grade-box strong,
+.grade-box small {
+    display: block;
+}
+
+
+.grade-box strong {
+    margin: 5px 0;
+
+    font-size: 20px;
+}
+
+
+.grade-box small {
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+
+/* =========================================================
+   CRM 현재값
+========================================================= */
+
+.metrics-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(4, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+}
+
+
+.metric-card {
+    padding: 19px;
+
+    background: #fff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 12px;
+}
+
+
+.metric-card strong {
+    display: inline-block;
+
+    margin-top: 9px;
+
+    font-size: 20px;
+}
+
+
+.metric-card small {
+    color: #777;
+
+    font-size: 12px;
+}
+
+
+.metric-card .date-value {
+    font-size: 16px;
+}
+
+
+
+/* =========================================================
+   테스트 영역
+========================================================= */
+
+.test-section {
+    padding: 24px;
+
+    margin-top: 16px;
+
+    background: #fff;
+
+    border: 1px solid #e4e4e4;
+
+    border-radius: 14px;
+}
+
+
+.section-heading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+.section-heading h2 {
+    margin: 7px 0 0;
+
+    font-size: 20px;
+}
+
+
+.step-badge {
+    display: inline-block;
+
+    padding: 4px 7px;
+
+    background: #222;
+
+    border-radius: 5px;
+
+    color: #fff;
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+
+
+/* =========================================================
+   상태 배지
+========================================================= */
+
+.status {
+    display: inline-block;
+
+    padding: 6px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.status.complete {
+    background: #edf6ef;
+
+    color: #2d693b;
+}
+
+
+.status.waiting {
+    background: #f1f1f1;
+
+    color: #666;
+}
+
+
+
+/* =========================================================
+   Form
+========================================================= */
+
+.inline-form,
+.action-form {
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+}
+
+
+.inline-form label,
+.action-form label {
+    display: flex;
+
+    flex: 1;
+
+    min-width: 210px;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    color: #555;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.inline-form input,
+.action-form input {
+    width: 100%;
+
+    height: 42px;
+
+    padding: 0 12px;
+
+    background: #fff;
+
+    border: 1px solid #d7d7d7;
+
+    border-radius: 8px;
+
+    outline: none;
+}
+
+
+.inline-form input:focus,
+.action-form input:focus {
+    border-color: #555;
+}
+
+
+.inline-form button,
+.primary-button {
+    height: 42px;
+
+    padding: 0 16px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    background: #222;
+
+    color: #fff;
+
+    cursor: pointer;
+}
+
+
+.inline-form button:hover,
+.primary-button:hover {
+    background: #000;
+}
+
+
+.help-text {
+    margin: 11px 0 0;
+
+    color: #888;
+
+    font-size: 12px;
+}
+
+
+
+/* =========================================================
+   효과
+========================================================= */
+
+.effect-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    flex-wrap: wrap;
+
+    margin-top: 16px;
+
+    padding: 13px;
+
+    background: #f8f8f8;
+
+    border-radius: 9px;
+}
+
+
+.effect-box strong {
+    margin-right: 3px;
+
+    font-size: 12px;
+}
+
+
+.effect-box span {
+    padding: 5px 8px;
+
+    background: #fff;
+
+    border: 1px solid #e6e6e6;
+
+    border-radius: 15px;
+
+    color: #666;
+
+    font-size: 11px;
+}
+
+
+
+/* =========================================================
+   이력 상태
+========================================================= */
+
+.history-status-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(3, 1fr);
+
+    gap: 12px;
+}
+
+
+.history-status-card {
+    padding: 18px;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 10px;
+}
+
+
+.waiting-card {
+    background: #fafafa;
+}
+
+
+.history-card-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+}
+
+
+.history-card-header h3 {
+    margin: 0;
+
+    font-size: 16px;
+}
+
+
+.history-status-card p {
+    margin: 13px 0 0;
+
+    color: #777;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+.sub-link {
+    display: inline-block;
+
+    margin-top: 13px;
+
+    padding: 7px 10px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 7px;
+
+    font-size: 11px;
+}
+
+
+
+/* =========================================================
+   시술 미리보기
+========================================================= */
+
+.treatment-preview,
+.empty-preview {
+    margin-top: 18px;
+
+    padding: 16px;
+
+    background: #f8f8f8;
+
+    border-radius: 10px;
+}
+
+
+.treatment-preview h3 {
+    margin: 0 0 12px;
+
+    font-size: 14px;
+}
+
+
+.treatment-row {
+    display: grid;
+
+    grid-template-columns:
+            120px 1fr 130px;
+
+    gap: 14px;
+
+    padding: 10px 0;
+
+    border-top: 1px solid #e6e6e6;
+
+    color: #666;
+
+    font-size: 12px;
+}
+
+
+.treatment-row:first-of-type {
+    border-top: 0;
+}
+
+
+.empty-preview {
+    color: #888;
+
+    font-size: 12px;
+}
+
+
+
+/* =========================================================
+   바로가기
+========================================================= */
+
+.compact-section {
+    padding-bottom: 20px;
+}
+
+
+.quick-links {
+    display: grid;
+
+    grid-template-columns:
+            repeat(2, 1fr);
+
+    gap: 9px;
+}
+
+
+.quick-links a {
+    padding: 12px 13px;
+
+    background: #f8f8f8;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+}
+
+
+.quick-links a:hover {
+    background: #f0f0f0;
+}
+
+
+
+/* =========================================================
+   경고
+========================================================= */
+
+.warning-box {
+    margin-top: 16px;
+
+    padding: 17px 19px;
+
+    background: #fff8e8;
+
+    border: 1px solid #ecdcae;
+
+    border-radius: 10px;
+
+    color: #725e27;
+}
+
+
+.warning-box strong {
+    font-size: 13px;
+}
+
+
+.warning-box p {
+    margin: 6px 0 0;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+
+/* =========================================================
+   Toast
+========================================================= */
+
+.test-toast {
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 28px;
+
+    z-index: 1000;
+
+    min-width: 280px;
+
+    max-width: calc(100% - 40px);
+
+    padding: 13px 18px;
+
+    background: #222;
+
+    border-radius: 8px;
+
+    color: #fff;
+
+    text-align: center;
+
+    font-size: 12px;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform: translate(-50%, 10px);
+
+    transition: 0.2s ease;
+}
+
+
+.test-toast.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translate(-50%, 0);
+}
+
+
+
+/* =========================================================
+   태블릿
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .page-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .metrics-grid,
+    .history-status-grid,
+    .quick-links {
+        grid-template-columns:
+                repeat(2, 1fr);
+    }
+
+}
+
+
+
+/* =========================================================
+   모바일
+========================================================= */
+
+@media (max-width: 560px) {
+
+    .page-container {
+        width: calc(100% - 24px);
+
+        padding-top: 28px;
+    }
+
+
+    .customer-summary {
+        align-items: flex-start;
+
+        flex-wrap: wrap;
+    }
+
+
+    .grade-box {
+        width: 100%;
+    }
+
+
+    .metrics-grid,
+    .history-status-grid,
+    .quick-links {
+        grid-template-columns: 1fr;
+    }
+
+
+    .inline-form,
+    .action-form {
+        align-items: stretch;
+
+        flex-direction: column;
+    }
+
+
+    .inline-form label,
+    .action-form label {
+        min-width: 0;
+    }
+
+
+    .inline-form button,
+    .primary-button {
+        width: 100%;
+    }
+
+
+    .treatment-row {
+        grid-template-columns: 1fr;
+
+        gap: 5px;
+    }
+
+}
