@@ -15,8 +15,9 @@ public class GuestReservationCancelRequest {
     private Long reservationNo;
 
     @NotBlank(message = "휴대전화 번호를 입력해주세요.")
+
     @Pattern(
-            regexp = "^01[016789]-?\\d{3,4}-?\\d{4}$",
+            regexp = "^01[016789]-?\\d{4}-?\\d{4}$",
             message = "휴대전화 번호 형식이 올바르지 않습니다."
     )
     private String guestPhone;
