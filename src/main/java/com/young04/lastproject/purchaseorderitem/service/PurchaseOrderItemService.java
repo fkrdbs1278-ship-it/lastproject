@@ -87,4 +87,15 @@ public class PurchaseOrderItemService {
                 .map(PurchaseOrderItemResponse::new)
                 .toList();
     }
+
+    // 대시보드에 표시할 발주 품목 이름 조회
+    public List<String> getMaterialNames(Long purchaseOrderNo) {
+        return purchaseOrderItemRepository
+                .findByPurchaseOrder_PurchaseOrderNoOrderByPurchaseOrderItemNoAsc(
+                        purchaseOrderNo
+                )
+                .stream()
+                .map(item -> item.getMaterial().getMaterialName())
+                .toList();
+    }
 }

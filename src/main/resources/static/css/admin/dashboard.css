@@ -132,7 +132,7 @@ a {
 /* 상단 카드 */
 .summary-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
 
     margin-bottom: 20px;
@@ -280,10 +280,17 @@ a {
 /* 중앙 영역 */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.65fr) minmax(330px, 0.95fr);
+    grid-template-columns: minmax(0, 2fr) minmax(400px, 1fr);
     gap: 20px;
 
     margin-bottom: 20px;
+}
+
+.dashboard-side-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
 }
 
 .dashboard-panel {
@@ -295,7 +302,7 @@ a {
 }
 
 .stock-alert-panel {
-    min-height: 500px;
+    min-height: 0;
     padding: 25px;
 }
 
@@ -821,6 +828,9 @@ a {
     padding: 18px;
 
     border-radius: 15px;
+
+    text-decoration: none;
+    color: inherit;
 }
 
 .stock-summary-box.shortage {
@@ -873,6 +883,12 @@ a {
 }
 
 /* 재고 목록 */
+.stock-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
 .stock-list {
     display: flex;
     flex-direction: column;
@@ -936,6 +952,11 @@ a {
     color: #cd744f;
 }
 
+.stock-badge.waiting {
+    background-color: #ffede2;
+    color: #cd744f;
+}
+
 /* 전체 재고 확인 */
 .panel-link {
     display: flex;
@@ -963,12 +984,13 @@ a {
 
 /* 빠른 관리 */
 .quick-panel {
+    flex: 1;
     padding: 25px;
 }
 
 .quick-menu-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
 
     margin-top: 21px;
@@ -1063,7 +1085,7 @@ a {
     }
 
     .summary-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 
     .dashboard-grid {
@@ -1077,5 +1099,14 @@ a {
 
     .quick-menu-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .summary-grid,
+    .stock-summary,
+    .stock-detail-grid,
+    .quick-menu-grid {
+        grid-template-columns: 1fr;
     }
 }
