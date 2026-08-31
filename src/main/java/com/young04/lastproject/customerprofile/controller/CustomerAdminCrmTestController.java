@@ -189,8 +189,7 @@ public class CustomerAdminCrmTestController {
                     customerProfileService
                             .completeVisit(
                                     customerId,
-                                    visitDate,
-                                    revisitRecommendedDate
+                                    visitDate
                             );
 
 

@@ -34,8 +34,6 @@ public class CustomerDetailResponse {
 
     private BigDecimal totalPayment;
 
-    private LocalDate revisitRecommendedDate;
-
     private String activeYn;
 
     private LocalDateTime createdAt;
@@ -64,9 +62,6 @@ public class CustomerDetailResponse {
                 .lastVisitDate(customer.getLastVisitDate())
                 .visitCount(customer.getVisitCount())
                 .totalPayment(customer.getTotalPayment())
-                .revisitRecommendedDate(
-                        customer.getRevisitRecommendedDate()
-                )
                 .activeYn(customer.getActiveYn())
                 .createdAt(customer.getCreatedAt())
                 .updatedAt(customer.getUpdatedAt())

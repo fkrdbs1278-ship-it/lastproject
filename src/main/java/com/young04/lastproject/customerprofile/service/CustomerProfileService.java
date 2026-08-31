@@ -59,7 +59,7 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 고객 번호로 조회 - Optional
+    // 고객 번호 조회 - Optional
     // =====================================================
 
     public Optional<CustomerProfile> findByCustomerId(
@@ -80,7 +80,7 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 고객 번호로 필수 조회
+    // 고객 번호 필수 조회
     // =====================================================
 
     public CustomerProfile getCustomerById(
@@ -91,6 +91,7 @@ public class CustomerProfileService {
                 "고객 조회 customerId={}",
                 customerId
         );
+
 
         return customerProfileRepository
                 .findById(
@@ -103,6 +104,7 @@ public class CustomerProfileService {
                                     "고객을 찾을 수 없음 customerId={}",
                                     customerId
                             );
+
 
                             return new CustomerNotFoundException(
                                     customerId
@@ -117,32 +119,79 @@ public class CustomerProfileService {
     // 전화번호 기준 고객 조회
     // =====================================================
 
+    /**
+     * 입력 예:
+     *
+     * 01012345678
+     * 010-1234-5678
+     * 010 1234 5678
+     *
+     * 모두
+     *
+     * 010-1234-5678
+     *
+     * 형식으로 변환하여 조회합니다.
+     *
+     *
+     * 기존 QA 데이터처럼
+     * DB에 숫자만 저장된 고객도
+     * 당분간 조회할 수 있도록 fallback 조회를 유지합니다.
+     */
     public Optional<CustomerProfile> findByPhone(
             String phone
     ) {
 
-        String normalizedPhone =
-                normalizePhone(
+        String phoneDigits =
+                extractPhoneDigits(
                         phone
                 );
+
+
+        String formattedPhone =
+                formatPhone(
+                        phoneDigits
+                );
+
 
         log.info(
                 "전화번호 기준 고객 조회 phone={}",
                 maskPhone(
-                        normalizedPhone
+                        formattedPhone
                 )
         );
 
+
+        // -------------------------------------------------
+        // 1. 새로운 표준 형식 조회
+        // -------------------------------------------------
+
+        Optional<CustomerProfile> customer =
+                customerProfileRepository
+                        .findByPhone(
+                                formattedPhone
+                        );
+
+
+        if (customer.isPresent()) {
+
+            return customer;
+        }
+
+
+        // -------------------------------------------------
+        // 2. 기존 숫자-only 데이터 호환 조회
+        // -------------------------------------------------
+
         return customerProfileRepository
                 .findByPhone(
-                        normalizedPhone
+                        phoneDigits
                 );
     }
 
 
 
     // =====================================================
-    // 회원 번호 기준 고객 조회 - Optional
+    // 회원 번호 조회 - Optional
     // =====================================================
 
     public Optional<CustomerProfile> findByMemberNo(
@@ -153,6 +202,7 @@ public class CustomerProfileService {
                 "회원 번호 기준 고객 조회 memberNo={}",
                 memberNo
         );
+
 
         return customerProfileRepository
                 .findByMemberNo(
@@ -167,8 +217,11 @@ public class CustomerProfileService {
     // =====================================================
 
     /**
-     * 향후 1part 로그인 회원과 CRM 고객을
-     * 연결할 때 사용합니다.
+     * 1part 로그인 기능과 통합할 때
+     * 로그인 MEMBER.NO를 기준으로
+     * CRM 고객을 조회하기 위한 메서드입니다.
+     *
+     * 1part 코드는 여기서 수정하지 않습니다.
      */
     public CustomerProfile getCustomerByMemberNo(
             Long memberNo
@@ -178,6 +231,7 @@ public class CustomerProfileService {
                 "회원번호 기준 CRM 고객 필수 조회 memberNo={}",
                 memberNo
         );
+
 
         return customerProfileRepository
                 .findByMemberNo(
@@ -190,6 +244,7 @@ public class CustomerProfileService {
                                     "회원번호와 연결된 CRM 고객 없음 memberNo={}",
                                     memberNo
                             );
+
 
                             return new CustomerNotFoundException(
                                     memberNo
@@ -204,6 +259,23 @@ public class CustomerProfileService {
     // 복합 조건 고객 검색 + 페이징
     // =====================================================
 
+    /**
+     * 관리자 고객관리 목록
+     *
+     * /admin/customers
+     *
+     * 에서 사용합니다.
+     *
+     * 검색:
+     *
+     * - 이름 / 전화번호
+     * - 회원 / 비회원
+     * - 등급
+     * - 활성 / 비활성
+     * - 30일 / 60일 이상 미방문
+     *
+     * 재방문 권장일 조건은 사용하지 않습니다.
+     */
     public Page<CustomerProfile> searchCustomers(
             CustomerSearchCondition condition,
             Pageable pageable
@@ -214,6 +286,7 @@ public class CustomerProfileService {
                 pageable.getPageNumber(),
                 pageable.getPageSize()
         );
+
 
         return customerProfileRepositoryCustom
                 .searchCustomers(
@@ -232,15 +305,40 @@ public class CustomerProfileService {
             String phone
     ) {
 
-        String normalizedPhone =
-                normalizePhone(
+        String phoneDigits =
+                extractPhoneDigits(
                         phone
                 );
 
+
+        String formattedPhone =
+                formatPhone(
+                        phoneDigits
+                );
+
+
+        /*
+         * 새 데이터:
+         *
+         * 010-1234-5678
+         *
+         *
+         * 기존 테스트 데이터:
+         *
+         * 01012345678
+         *
+         *
+         * 두 형식 모두 중복검사합니다.
+         */
         return customerProfileRepository
                 .existsByPhone(
-                        normalizedPhone
-                );
+                        formattedPhone
+                )
+                ||
+                customerProfileRepository
+                        .existsByPhone(
+                                phoneDigits
+                        );
     }
 
 
@@ -249,6 +347,23 @@ public class CustomerProfileService {
     // 전화예약 / 비회원 고객 등록
     // =====================================================
 
+    /**
+     * 관리자 고객관리 화면에서
+     * 전화예약 고객을 직접 등록합니다.
+     *
+     *
+     * 입력자가:
+     *
+     * 01012345678
+     *
+     * 로 입력해도
+     *
+     * DB에는:
+     *
+     * 010-1234-5678
+     *
+     * 로 저장합니다.
+     */
     @Transactional
     public CustomerProfile createGuestCustomer(
             CustomerCreateRequest request
@@ -260,41 +375,79 @@ public class CustomerProfileService {
         );
 
 
+        // -------------------------------------------------
+        // 1. 고객명 정리
+        // -------------------------------------------------
+
         String customerName =
                 request
                         .getCustomerName()
                         .trim();
 
 
-        String normalizedPhone =
-                normalizePhone(
+
+        // -------------------------------------------------
+        // 2. 전화번호 숫자 추출
+        // -------------------------------------------------
+
+        String phoneDigits =
+                extractPhoneDigits(
                         request.getPhone()
                 );
 
 
+
+        // -------------------------------------------------
+        // 3. 전화번호 표준 형식 변환
+        // -------------------------------------------------
+        //
+        // 01012345678
+        //
+        // ↓
+        //
+        // 010-1234-5678
+        //
+        // -------------------------------------------------
+
+        String formattedPhone =
+                formatPhone(
+                        phoneDigits
+                );
+
+
         log.info(
-                "전화예약 고객 전화번호 정규화 phone={}",
+                "전화예약 고객 전화번호 표준화 phone={}",
                 maskPhone(
-                        normalizedPhone
+                        formattedPhone
                 )
         );
 
 
-        if (customerProfileRepository
-                .existsByPhone(
-                        normalizedPhone
-                )) {
+
+        // -------------------------------------------------
+        // 4. 전화번호 중복 확인
+        // -------------------------------------------------
+
+        if (existsByPhone(
+                formattedPhone
+        )) {
 
             log.warn(
                     "전화예약 고객 등록 실패 - 중복 전화번호 phone={}",
                     maskPhone(
-                            normalizedPhone
+                            formattedPhone
                     )
             );
+
 
             throw new DuplicateCustomerPhoneException();
         }
 
+
+
+        // -------------------------------------------------
+        // 5. 신규 고객 NORMAL 등급 조회
+        // -------------------------------------------------
 
         CustomerGrade normalGrade =
                 customerGradeService
@@ -308,6 +461,7 @@ public class CustomerProfileService {
                                             "전화예약 고객 등록 실패 - NORMAL 등급 없음"
                                     );
 
+
                                     return new CustomerGradeNotFoundException(
                                             "NORMAL"
                                     );
@@ -315,14 +469,24 @@ public class CustomerProfileService {
                         );
 
 
+
+        // -------------------------------------------------
+        // 6. 비회원 고객 Entity 생성
+        // -------------------------------------------------
+
         CustomerProfile customer =
                 CustomerProfile
                         .createGuestCustomer(
                                 customerName,
-                                normalizedPhone,
+                                formattedPhone,
                                 normalGrade
                         );
 
+
+
+        // -------------------------------------------------
+        // 7. 저장
+        // -------------------------------------------------
 
         CustomerProfile savedCustomer =
                 customerProfileRepository
@@ -351,30 +515,36 @@ public class CustomerProfileService {
     // =====================================================
 
     /**
-     * 실제 방문 및 시술 완료 후
-     * CUSTOMER_PROFILE의 CRM 정보를 갱신합니다.
+     * 고객 방문이 완료되면:
      *
      * VISIT_COUNT + 1
      * LAST_VISIT_DATE 변경
-     * REVISIT_RECOMMENDED_DATE 변경
      * 자동 등급 재계산
      *
-     * 향후 2part 예약 상태가 COMPLETED가 되었을 때
-     * 이 메서드를 호출하면 됩니다.
+     *
+     * 재방문 권장일은 더 이상 사용하지 않습니다.
+     *
+     * 장기 미방문 여부는
+     * LAST_VISIT_DATE를 기준으로
+     * 30일 / 60일로 계산합니다.
+     *
+     *
+     * 향후 2part 예약 기능과 통합 시
+     * 예약 상태 COMPLETED에서 호출할 수 있도록
+     * 3part에 준비해두는 메서드입니다.
      */
     @Transactional
     public CustomerProfile completeVisit(
             Long customerId,
-            LocalDate visitDate,
-            LocalDate revisitRecommendedDate
+            LocalDate visitDate
     ) {
 
         log.info(
-                "고객 방문 완료 처리 시작 customerId={}, visitDate={}, revisitRecommendedDate={}",
+                "고객 방문 완료 처리 시작 customerId={}, visitDate={}",
                 customerId,
-                visitDate,
-                revisitRecommendedDate
+                visitDate
         );
+
 
 
         // -------------------------------------------------
@@ -387,18 +557,19 @@ public class CustomerProfileService {
                 );
 
 
+
         // -------------------------------------------------
         // 2. 방문정보 갱신
         // -------------------------------------------------
 
         customer.recordVisit(
-                visitDate,
-                revisitRecommendedDate
+                visitDate
         );
 
 
+
         // -------------------------------------------------
-        // 3. 자동 등급 고객이면 등급 재계산
+        // 3. 자동 등급 재계산
         // -------------------------------------------------
 
         applyAutomaticGradeToCustomer(
@@ -406,13 +577,14 @@ public class CustomerProfileService {
         );
 
 
+
         log.info(
-                "고객 방문 완료 처리 완료 customerId={}, visitCount={}, lastVisitDate={}, revisitRecommendedDate={}, gradeCode={}",
+                "고객 방문 완료 처리 완료 customerId={}, visitCount={}, lastVisitDate={}, gradeCode={}",
                 customerId,
                 customer.getVisitCount(),
                 customer.getLastVisitDate(),
-                customer.getRevisitRecommendedDate(),
-                customer.getCustomerGrade().getGradeCode()
+                customer.getCustomerGrade()
+                        .getGradeCode()
         );
 
 
@@ -426,14 +598,16 @@ public class CustomerProfileService {
     // =====================================================
 
     /**
-     * 결제 완료된 금액을
-     * 고객 누적 결제액에 더합니다.
+     * 결제 완료 금액을
+     * 고객 누적 결제액에 추가합니다.
      *
      * TOTAL_PAYMENT 증가
      * 자동 등급 재계산
      *
-     * 향후 4part 결제가 PAID 상태가 되었을 때
-     * 이 메서드를 호출하면 됩니다.
+     * 향후 4part 결제 기능과 통합할 수 있도록
+     * 3part에 준비해둡니다.
+     *
+     * 4part 코드는 수정하지 않습니다.
      */
     @Transactional
     public CustomerProfile addCustomerPayment(
@@ -448,6 +622,7 @@ public class CustomerProfileService {
         );
 
 
+
         // -------------------------------------------------
         // 1. 고객 조회
         // -------------------------------------------------
@@ -458,8 +633,9 @@ public class CustomerProfileService {
                 );
 
 
+
         // -------------------------------------------------
-        // 2. 누적 결제액 증가
+        // 2. 누적 결제금액 증가
         // -------------------------------------------------
 
         customer.addPayment(
@@ -467,8 +643,9 @@ public class CustomerProfileService {
         );
 
 
+
         // -------------------------------------------------
-        // 3. 자동 등급 고객이면 등급 재계산
+        // 3. 자동 등급 재계산
         // -------------------------------------------------
 
         applyAutomaticGradeToCustomer(
@@ -476,11 +653,13 @@ public class CustomerProfileService {
         );
 
 
+
         log.info(
                 "고객 결제금액 누적 완료 customerId={}, totalPayment={}, gradeCode={}",
                 customerId,
                 customer.getTotalPayment(),
-                customer.getCustomerGrade().getGradeCode()
+                customer.getCustomerGrade()
+                        .getGradeCode()
         );
 
 
@@ -518,7 +697,8 @@ public class CustomerProfileService {
         log.info(
                 "고객 자동 등급 적용 완료 customerId={}, gradeCode={}, manualYn={}",
                 customerId,
-                customer.getCustomerGrade().getGradeCode(),
+                customer.getCustomerGrade()
+                        .getGradeCode(),
                 customer.getGradeManualYn()
         );
 
@@ -533,15 +713,21 @@ public class CustomerProfileService {
     // =====================================================
 
     /**
-     * 방문 완료 / 결제 완료 / 관리자 재계산에서
-     * 공통으로 사용하는 내부 메서드입니다.
+     * 다음 기능에서 공통으로 사용합니다.
+     *
+     * - 방문 완료
+     * - 결제 누적
+     * - 관리자 자동등급 재계산
      */
     private void applyAutomaticGradeToCustomer(
             CustomerProfile customer
     ) {
 
 
-        // 수동 등급 고객은 자동 변경하지 않음
+        // -------------------------------------------------
+        // 수동 등급 고객은 자동변경하지 않음
+        // -------------------------------------------------
+
         if ("Y".equals(
                 customer.getGradeManualYn()
         )) {
@@ -551,9 +737,15 @@ public class CustomerProfileService {
                     customer.getCustomerId()
             );
 
+
             return;
         }
 
+
+
+        // -------------------------------------------------
+        // 현재 방문 / 결제 실적으로 등급 계산
+        // -------------------------------------------------
 
         String gradeCode =
                 customerGradeService
@@ -562,6 +754,11 @@ public class CustomerProfileService {
                                 customer.getTotalPayment()
                         );
 
+
+
+        // -------------------------------------------------
+        // 등급 Entity 조회
+        // -------------------------------------------------
 
         CustomerGrade grade =
                 customerGradeService
@@ -576,12 +773,18 @@ public class CustomerProfileService {
                                             gradeCode
                                     );
 
+
                                     return new CustomerGradeNotFoundException(
                                             gradeCode
                                     );
                                 }
                         );
 
+
+
+        // -------------------------------------------------
+        // 등급 적용
+        // -------------------------------------------------
 
         customer.applyAutomaticGrade(
                 grade
@@ -607,11 +810,21 @@ public class CustomerProfileService {
         );
 
 
+
+        // -------------------------------------------------
+        // 1. 고객 조회
+        // -------------------------------------------------
+
         CustomerProfile customer =
                 getCustomerById(
                         customerId
                 );
 
+
+
+        // -------------------------------------------------
+        // 2. 등급 코드 검증
+        // -------------------------------------------------
 
         if (gradeCode == null
                 || gradeCode.isBlank()) {
@@ -621,17 +834,28 @@ public class CustomerProfileService {
                     customerId
             );
 
+
             throw new CustomerGradeNotFoundException(
                     "EMPTY"
             );
         }
 
 
+
+        // -------------------------------------------------
+        // 3. 등급 코드 정규화
+        // -------------------------------------------------
+
         String normalizedGradeCode =
                 gradeCode
                         .trim()
                         .toUpperCase();
 
+
+
+        // -------------------------------------------------
+        // 4. 변경할 등급 조회
+        // -------------------------------------------------
 
         CustomerGrade grade =
                 customerGradeService
@@ -647,12 +871,18 @@ public class CustomerProfileService {
                                             normalizedGradeCode
                                     );
 
+
                                     return new CustomerGradeNotFoundException(
                                             normalizedGradeCode
                                     );
                                 }
                         );
 
+
+
+        // -------------------------------------------------
+        // 5. 수동 등급 변경
+        // -------------------------------------------------
 
         customer.changeGradeManually(
                 grade
@@ -686,11 +916,21 @@ public class CustomerProfileService {
         );
 
 
+
+        // -------------------------------------------------
+        // 1. 고객 조회
+        // -------------------------------------------------
+
         CustomerProfile customer =
                 getCustomerById(
                         customerId
                 );
 
+
+
+        // -------------------------------------------------
+        // 2. 현재 실적으로 등급 계산
+        // -------------------------------------------------
 
         String gradeCode =
                 customerGradeService
@@ -699,6 +939,11 @@ public class CustomerProfileService {
                                 customer.getTotalPayment()
                         );
 
+
+
+        // -------------------------------------------------
+        // 3. 등급 Entity 조회
+        // -------------------------------------------------
 
         CustomerGrade grade =
                 customerGradeService
@@ -711,6 +956,11 @@ public class CustomerProfileService {
                                 )
                         );
 
+
+
+        // -------------------------------------------------
+        // 4. 자동 등급 관리로 전환
+        // -------------------------------------------------
 
         customer.changeGradeAutomatically(
                 grade
@@ -730,22 +980,175 @@ public class CustomerProfileService {
 
 
     // =====================================================
-    // 전화번호 정규화
+    // 전화번호 숫자 추출
     // =====================================================
 
-    private String normalizePhone(
+    /**
+     * 아래 입력을 모두 숫자로 변환합니다.
+     *
+     * 010-1234-5678
+     * 010 1234 5678
+     * 01012345678
+     *
+     * ↓
+     *
+     * 01012345678
+     */
+    private String extractPhoneDigits(
             String phone
     ) {
 
-        if (phone == null) {
+        if (phone == null
+                || phone.isBlank()) {
 
-            return null;
+            throw new IllegalArgumentException(
+                    "전화번호는 필수입니다."
+            );
         }
 
 
-        return phone.replaceAll(
-                "[^0-9]",
-                ""
+        String digits =
+                phone.replaceAll(
+                        "[^0-9]",
+                        ""
+                );
+
+
+        if (digits.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "올바른 전화번호를 입력해주세요."
+            );
+        }
+
+
+        return digits;
+    }
+
+
+
+    // =====================================================
+    // 전화번호 하이픈 자동 포맷
+    // =====================================================
+
+    /**
+     * 숫자만 입력된 전화번호를
+     * 하이픈 포함 표준 형식으로 변경합니다.
+     *
+     *
+     * 01012345678
+     *
+     * ↓
+     *
+     * 010-1234-5678
+     *
+     *
+     * 일반 10자리 번호도 지원합니다.
+     *
+     * 0311234567
+     *
+     * ↓
+     *
+     * 031-123-4567
+     */
+    private String formatPhone(
+            String digits
+    ) {
+
+
+        // -------------------------------------------------
+        // 서울 지역번호 02
+        // -------------------------------------------------
+
+        if (digits.startsWith("02")) {
+
+
+            if (digits.length() == 9) {
+
+                return digits.substring(
+                        0,
+                        2
+                )
+                        + "-"
+                        + digits.substring(
+                        2,
+                        5
+                )
+                        + "-"
+                        + digits.substring(
+                        5
+                );
+            }
+
+
+            if (digits.length() == 10) {
+
+                return digits.substring(
+                        0,
+                        2
+                )
+                        + "-"
+                        + digits.substring(
+                        2,
+                        6
+                )
+                        + "-"
+                        + digits.substring(
+                        6
+                );
+            }
+        }
+
+
+
+        // -------------------------------------------------
+        // 휴대폰 / 일반 11자리
+        // -------------------------------------------------
+
+        if (digits.length() == 11) {
+
+            return digits.substring(
+                    0,
+                    3
+            )
+                    + "-"
+                    + digits.substring(
+                    3,
+                    7
+            )
+                    + "-"
+                    + digits.substring(
+                    7
+            );
+        }
+
+
+
+        // -------------------------------------------------
+        // 일반 10자리
+        // -------------------------------------------------
+
+        if (digits.length() == 10) {
+
+            return digits.substring(
+                    0,
+                    3
+            )
+                    + "-"
+                    + digits.substring(
+                    3,
+                    6
+            )
+                    + "-"
+                    + digits.substring(
+                    6
+            );
+        }
+
+
+
+        throw new IllegalArgumentException(
+                "올바른 전화번호 형식이 아닙니다."
         );
     }
 
@@ -755,24 +1158,46 @@ public class CustomerProfileService {
     // 개인정보 로그 마스킹
     // =====================================================
 
+    /**
+     * 로그에 전화번호 전체가 노출되지 않게 합니다.
+     *
+     * 010-1234-5678
+     *
+     * ↓
+     *
+     * 010-****-5678
+     */
     private String maskPhone(
             String phone
     ) {
 
         if (phone == null
-                || phone.length() < 8) {
+                || phone.isBlank()) {
 
             return "****";
         }
 
 
-        return phone.substring(
+        String digits =
+                phone.replaceAll(
+                        "[^0-9]",
+                        ""
+                );
+
+
+        if (digits.length() < 8) {
+
+            return "****";
+        }
+
+
+        return digits.substring(
                 0,
                 3
         )
-                + "****"
-                + phone.substring(
-                phone.length() - 4
+                + "-****-"
+                + digits.substring(
+                digits.length() - 4
         );
     }
 }

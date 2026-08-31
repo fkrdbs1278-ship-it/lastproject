@@ -22,17 +22,44 @@ import java.util.Map;
  * 고객 CRM Custom Repository 구현체
  * =========================================================
  *
- * 관리자 고객 목록의 복합 조건 검색과
- * 페이징 처리를 담당합니다.
+ * 관리자 고객관리 목록
  *
- * 검색 조건:
+ * /admin/customers
  *
- * - 이름 / 전화번호
- * - 회원 / 비회원
- * - 고객 등급
- * - 활성 여부
- * - 30일 / 60일 미방문
- * - 재방문 권장일 도래
+ * 에서 사용하는
+ * 복합 검색 + 페이징 기능입니다.
+ *
+ *
+ * 검색 조건
+ *
+ * 1. 고객명 / 전화번호
+ * 2. 회원 / 비회원
+ * 3. 고객 등급
+ * 4. 활성 / 비활성
+ * 5. 30일 / 60일 이상 미방문
+ *
+ *
+ * 전화번호 기준
+ *
+ * DB 저장:
+ *
+ * 010-1234-5678
+ *
+ *
+ * 검색:
+ *
+ * 010-1234-5678
+ * 01012345678
+ * 0101234
+ *
+ * 모두 검색할 수 있도록
+ * DB 전화번호의 '-'를 제거하여 비교합니다.
+ *
+ *
+ * 재방문 권장일은 사용하지 않습니다.
+ *
+ * 장기 미방문 고객은
+ * LAST_VISIT_DATE 기준으로 계산합니다.
  */
 @Repository
 @RequiredArgsConstructor
@@ -40,11 +67,16 @@ public class CustomerProfileRepositoryImpl
         implements CustomerProfileRepositoryCustom {
 
 
+    // =====================================================
+    // EntityManager
+    // =====================================================
+
     private final EntityManager entityManager;
 
 
+
     // =====================================================
-    // 고객 조건 검색 + 페이징
+    // 고객 검색 + 페이징
     // =====================================================
 
     @Override
@@ -55,42 +87,48 @@ public class CustomerProfileRepositoryImpl
 
 
         // =================================================
-        // 실제 고객 데이터 조회 JPQL
+        // 고객 목록 조회 JPQL
         // =================================================
 
-        StringBuilder jpql = new StringBuilder("""
-                SELECT c
-                FROM CustomerProfile c
-                JOIN FETCH c.customerGrade g
-                WHERE 1 = 1
-                """);
+        StringBuilder jpql =
+                new StringBuilder(
+                        """
+                        SELECT c
+                        FROM CustomerProfile c
+                        JOIN FETCH c.customerGrade g
+                        WHERE 1 = 1
+                        """
+                );
 
-
-        // =================================================
-        // 전체 검색 결과 개수 조회 JPQL
-        //
-        // Page 객체를 만들려면
-        // 전체 고객 수가 필요합니다.
-        // =================================================
-
-        StringBuilder countJpql = new StringBuilder("""
-                SELECT COUNT(c)
-                FROM CustomerProfile c
-                JOIN c.customerGrade g
-                WHERE 1 = 1
-                """);
 
 
         // =================================================
-        // 공통 Query Parameter
+        // 검색 결과 전체 개수 JPQL
+        // =================================================
+
+        StringBuilder countJpql =
+                new StringBuilder(
+                        """
+                        SELECT COUNT(c)
+                        FROM CustomerProfile c
+                        JOIN c.customerGrade g
+                        WHERE 1 = 1
+                        """
+                );
+
+
+
+        // =================================================
+        // Query Parameter
         // =================================================
 
         Map<String, Object> parameters =
                 new HashMap<>();
 
 
+
         // =====================================================
-        // 이름 또는 전화번호 검색
+        // 1. 고객명 / 전화번호 통합 검색
         // =====================================================
 
         if (condition != null
@@ -98,32 +136,126 @@ public class CustomerProfileRepositoryImpl
                 condition.getKeyword()
         )) {
 
-            String searchCondition = """
-                     AND (
-                         LOWER(c.customerName) LIKE LOWER(:keyword)
-                         OR c.phone LIKE :keyword
-                     )
-                    """;
 
-
-            jpql.append(searchCondition);
-
-            countJpql.append(searchCondition);
-
-
-            parameters.put(
-                    "keyword",
-                    "%"
-                            + condition
+            String keyword =
+                    condition
                             .getKeyword()
-                            .trim()
-                            + "%"
-            );
+                            .trim();
+
+
+            /*
+             * 전화번호 검색용
+             *
+             * 입력:
+             *
+             * 010-1234-5678
+             * 01012345678
+             * 010 1234 5678
+             *
+             * ↓
+             *
+             * 01012345678
+             */
+            String phoneDigits =
+                    keyword.replaceAll(
+                            "[^0-9]",
+                            ""
+                    );
+
+
+
+            // ---------------------------------------------
+            // 숫자가 포함된 검색어
+            // ---------------------------------------------
+            //
+            // 이름 검색 +
+            // 전화번호 검색을 동시에 수행
+            //
+            // ---------------------------------------------
+
+            if (StringUtils.hasText(
+                    phoneDigits
+            )) {
+
+
+                String searchCondition =
+                        """
+                         AND (
+                             LOWER(c.customerName)
+                                 LIKE :nameKeyword
+
+                             OR
+
+                             REPLACE(
+                                 c.phone,
+                                 '-',
+                                 ''
+                             )
+                                 LIKE :phoneDigits
+                         )
+                        """;
+
+
+                jpql.append(
+                        searchCondition
+                );
+
+
+                countJpql.append(
+                        searchCondition
+                );
+
+
+                parameters.put(
+                        "nameKeyword",
+                        "%" + keyword.toLowerCase() + "%"
+                );
+
+
+                parameters.put(
+                        "phoneDigits",
+                        "%" + phoneDigits + "%"
+                );
+
+            } else {
+
+
+                // -----------------------------------------
+                // 문자만 입력한 경우
+                // -----------------------------------------
+                //
+                // 이름만 검색
+                //
+                // -----------------------------------------
+
+                String searchCondition =
+                        """
+                         AND LOWER(c.customerName)
+                             LIKE :nameKeyword
+                        """;
+
+
+                jpql.append(
+                        searchCondition
+                );
+
+
+                countJpql.append(
+                        searchCondition
+                );
+
+
+                parameters.put(
+                        "nameKeyword",
+                        "%" + keyword.toLowerCase() + "%"
+                );
+            }
         }
 
 
+
         // =====================================================
-        // 회원 / 비회원 검색
+        // 2. 회원 / 비회원
         // =====================================================
 
         if (condition != null
@@ -131,25 +263,36 @@ public class CustomerProfileRepositoryImpl
                 condition.getCustomerType()
         )) {
 
-            String searchCondition = """
+
+            String searchCondition =
+                    """
                      AND c.customerType = :customerType
                     """;
 
 
-            jpql.append(searchCondition);
+            jpql.append(
+                    searchCondition
+            );
 
-            countJpql.append(searchCondition);
+
+            countJpql.append(
+                    searchCondition
+            );
 
 
             parameters.put(
                     "customerType",
-                    condition.getCustomerType()
+                    condition
+                            .getCustomerType()
+                            .trim()
+                            .toUpperCase()
             );
         }
 
 
+
         // =====================================================
-        // 고객 등급 검색
+        // 3. 고객 등급
         // =====================================================
 
         if (condition != null
@@ -157,25 +300,36 @@ public class CustomerProfileRepositoryImpl
                 condition.getGradeCode()
         )) {
 
-            String searchCondition = """
+
+            String searchCondition =
+                    """
                      AND g.gradeCode = :gradeCode
                     """;
 
 
-            jpql.append(searchCondition);
+            jpql.append(
+                    searchCondition
+            );
 
-            countJpql.append(searchCondition);
+
+            countJpql.append(
+                    searchCondition
+            );
 
 
             parameters.put(
                     "gradeCode",
-                    condition.getGradeCode()
+                    condition
+                            .getGradeCode()
+                            .trim()
+                            .toUpperCase()
             );
         }
 
 
+
         // =====================================================
-        // 활성 여부 검색
+        // 4. 활성 / 비활성
         // =====================================================
 
         if (condition != null
@@ -183,57 +337,84 @@ public class CustomerProfileRepositoryImpl
                 condition.getActiveYn()
         )) {
 
-            String searchCondition = """
+
+            String searchCondition =
+                    """
                      AND c.activeYn = :activeYn
                     """;
 
 
-            jpql.append(searchCondition);
+            jpql.append(
+                    searchCondition
+            );
 
-            countJpql.append(searchCondition);
+
+            countJpql.append(
+                    searchCondition
+            );
 
 
             parameters.put(
                     "activeYn",
-                    condition.getActiveYn()
+                    condition
+                            .getActiveYn()
+                            .trim()
+                            .toUpperCase()
             );
         }
 
 
+
         // =====================================================
-        // 장기 미방문 고객 검색
+        // 5. 장기 미방문 고객
+        // =====================================================
+        //
+        // inactiveDays = 30
+        //
+        // → 최근 방문일이 오늘 기준
+        //   30일 이전인 고객
+        //
+        //
+        // inactiveDays = 60
+        //
+        // → 최근 방문일이 오늘 기준
+        //   60일 이전인 고객
+        //
+        //
+        // 방문 기록이 없는 신규 고객은
+        // 장기 미방문 대상에 포함하지 않습니다.
+        //
         // =====================================================
 
-        /**
-         * 예:
-         *
-         * inactiveDays = 30
-         *
-         * 오늘 기준 최근 방문일이
-         * 30일 이상 지난 고객을 조회합니다.
-         */
         if (condition != null
                 && condition.getInactiveDays() != null
                 && condition.getInactiveDays() > 0) {
 
 
             LocalDate inactiveDate =
-                    LocalDate.now()
+                    LocalDate
+                            .now()
                             .minusDays(
                                     condition
                                             .getInactiveDays()
                             );
 
 
-            String searchCondition = """
+            String searchCondition =
+                    """
                      AND c.lastVisitDate IS NOT NULL
                      AND c.lastVisitDate <= :inactiveDate
                     """;
 
 
-            jpql.append(searchCondition);
+            jpql.append(
+                    searchCondition
+            );
 
-            countJpql.append(searchCondition);
+
+            countJpql.append(
+                    searchCondition
+            );
 
 
             parameters.put(
@@ -243,52 +424,25 @@ public class CustomerProfileRepositoryImpl
         }
 
 
-        // =====================================================
-        // 재방문 권장일 도래 고객 검색
-        // =====================================================
-
-        /**
-         * revisitDueYn = Y 인 경우:
-         *
-         * 재방문 권장일이 존재하고
-         * 권장일이 오늘이거나
-         * 이미 지난 고객만 조회합니다.
-         */
-        if (condition != null
-                && "Y".equalsIgnoreCase(
-                condition.getRevisitDueYn()
-        )) {
-
-
-            String searchCondition = """
-                     AND c.revisitRecommendedDate IS NOT NULL
-                     AND c.revisitRecommendedDate <= :today
-                    """;
-
-
-            jpql.append(searchCondition);
-
-            countJpql.append(searchCondition);
-
-
-            parameters.put(
-                    "today",
-                    LocalDate.now()
-            );
-        }
-
 
         // =====================================================
-        // 최근 등록 고객부터 조회
+        // 정렬
+        // =====================================================
+        //
+        // 최근 등록 고객부터 표시
+        //
         // =====================================================
 
-        jpql.append("""
+        jpql.append(
+                """
                  ORDER BY c.customerId DESC
-                """);
+                """
+        );
+
 
 
         // =====================================================
-        // 실제 고객 조회 Query 생성
+        // 고객 조회 Query
         // =====================================================
 
         TypedQuery<CustomerProfile> query =
@@ -298,8 +452,9 @@ public class CustomerProfileRepositoryImpl
                 );
 
 
+
         // =====================================================
-        // 전체 검색 결과 수 Query 생성
+        // Count Query
         // =====================================================
 
         TypedQuery<Long> countQuery =
@@ -309,17 +464,20 @@ public class CustomerProfileRepositoryImpl
                 );
 
 
+
         // =====================================================
-        // Query Parameter 적용
+        // Parameter 적용
         // =====================================================
 
         parameters.forEach(
                 (key, value) -> {
 
+
                     query.setParameter(
                             key,
                             value
                     );
+
 
                     countQuery.setParameter(
                             key,
@@ -329,18 +487,24 @@ public class CustomerProfileRepositoryImpl
         );
 
 
+
         // =====================================================
-        // 페이징 적용
+        // 페이징
+        // =====================================================
+        //
+        // 예:
         //
         // page = 0
         // size = 10
         //
-        // firstResult = 0
+        // 0 ~ 9
+        //
         //
         // page = 1
         // size = 10
         //
-        // firstResult = 10
+        // 10 ~ 19
+        //
         // =====================================================
 
         query.setFirstResult(
@@ -353,12 +517,14 @@ public class CustomerProfileRepositoryImpl
         );
 
 
+
         // =====================================================
-        // 현재 페이지 데이터 조회
+        // 현재 페이지 고객
         // =====================================================
 
         List<CustomerProfile> customers =
                 query.getResultList();
+
 
 
         // =====================================================
@@ -369,8 +535,9 @@ public class CustomerProfileRepositoryImpl
                 countQuery.getSingleResult();
 
 
+
         // =====================================================
-        // Page 객체 생성
+        // Page 반환
         // =====================================================
 
         return new PageImpl<>(

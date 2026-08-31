@@ -38,8 +38,13 @@ public class CustomerProfile {
     private Long customerId;
 
 
-    // 회원 고객이면 MEMBER.NO 저장
-    // 비회원 / 전화예약 고객이면 NULL
+    /**
+     * 회원 고객이면 MEMBER.NO 저장
+     *
+     * 비회원 / 전화예약 고객이면 NULL
+     *
+     * 실제 MEMBER 연동은 1part 통합 시 처리합니다.
+     */
     @Column(name = "MEMBER_NO")
     private Long memberNo;
 
@@ -52,6 +57,14 @@ public class CustomerProfile {
     private String customerName;
 
 
+    /**
+     * CRM에서는 전화번호를 숫자만 저장합니다.
+     *
+     * 예:
+     * 010-1234-5678
+     * →
+     * 01012345678
+     */
     @Column(
             name = "PHONE",
             nullable = false,
@@ -61,7 +74,10 @@ public class CustomerProfile {
     private String phone;
 
 
-    // MEMBER / GUEST
+    /**
+     * MEMBER
+     * GUEST
+     */
     @Column(
             name = "CUSTOMER_TYPE",
             nullable = false,
@@ -75,7 +91,11 @@ public class CustomerProfile {
     // 고객 등급
     // =====================================================
 
-    // NORMAL / REGULAR / VIP
+    /**
+     * NORMAL
+     * REGULAR
+     * VIP
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "GRADE_CODE",
@@ -84,8 +104,12 @@ public class CustomerProfile {
     private CustomerGrade customerGrade;
 
 
-    // 관리자가 고객 등급을 직접 변경했는지 여부
-    // Y / N
+    /**
+     * 관리자가 고객 등급을 직접 변경했는지 여부
+     *
+     * Y = 수동 등급
+     * N = 자동 등급
+     */
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(
             name = "GRADE_MANUAL_YN",
@@ -101,12 +125,19 @@ public class CustomerProfile {
     // CRM 방문 / 결제 정보
     // =====================================================
 
-    // 최근 방문일
+    /**
+     * 최근 방문일
+     *
+     * 장기 미방문 고객 조회 시
+     * 이 값을 기준으로 30일 / 60일을 계산합니다.
+     */
     @Column(name = "LAST_VISIT_DATE")
     private LocalDate lastVisitDate;
 
 
-    // 누적 방문 횟수
+    /**
+     * 누적 방문 횟수
+     */
     @Column(
             name = "VISIT_COUNT",
             nullable = false
@@ -114,7 +145,9 @@ public class CustomerProfile {
     private Integer visitCount;
 
 
-    // 누적 결제 금액
+    /**
+     * 누적 결제 금액
+     */
     @Column(
             name = "TOTAL_PAYMENT",
             nullable = false,
@@ -124,17 +157,15 @@ public class CustomerProfile {
     private BigDecimal totalPayment;
 
 
-    // 재방문 권장일
-    @Column(name = "REVISIT_RECOMMENDED_DATE")
-    private LocalDate revisitRecommendedDate;
-
-
 
     // =====================================================
     // 고객 상태
     // =====================================================
 
-    // Y / N
+    /**
+     * Y = 활성
+     * N = 비활성
+     */
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(
             name = "ACTIVE_YN",
@@ -174,8 +205,8 @@ public class CustomerProfile {
     // =====================================================
 
     /**
-     * 관리자 전화예약으로 처음 등록하는
-     * 비회원 고객을 생성합니다.
+     * 관리자 고객관리 화면에서
+     * 전화예약 고객을 처음 등록할 때 사용합니다.
      *
      * 초기값:
      *
@@ -183,6 +214,7 @@ public class CustomerProfile {
      * CUSTOMER_TYPE   = GUEST
      * GRADE_CODE      = NORMAL
      * GRADE_MANUAL_YN = N
+     * LAST_VISIT_DATE = null
      * VISIT_COUNT     = 0
      * TOTAL_PAYMENT   = 0
      * ACTIVE_YN       = Y
@@ -233,10 +265,6 @@ public class CustomerProfile {
                 BigDecimal.ZERO;
 
 
-        customer.revisitRecommendedDate =
-                null;
-
-
         customer.activeYn =
                 "Y";
 
@@ -258,14 +286,17 @@ public class CustomerProfile {
      *
      * VISIT_COUNT + 1
      * LAST_VISIT_DATE 변경
-     * REVISIT_RECOMMENDED_DATE 변경
      *
-     * 나중에 2part의 예약 상태가
-     * COMPLETED가 되었을 때 호출할 수 있습니다.
+     * 재방문 관리는 별도의 권장일을 사용하지 않고
+     * LAST_VISIT_DATE 기준으로
+     * 30일 / 60일 미방문 여부를 계산합니다.
+     *
+     * 향후 2part 예약 기능과 통합할 경우
+     * 예약 상태 COMPLETED 시 호출할 수 있도록
+     * 3part에서 제공하는 도메인 메서드입니다.
      */
     public void recordVisit(
-            LocalDate visitDate,
-            LocalDate revisitRecommendedDate
+            LocalDate visitDate
     ) {
 
         if (visitDate == null) {
@@ -276,7 +307,7 @@ public class CustomerProfile {
         }
 
 
-        // 방문횟수 방어 처리
+        // 기존 데이터 NULL 방어
         if (this.visitCount == null) {
 
             this.visitCount =
@@ -290,30 +321,6 @@ public class CustomerProfile {
 
         this.lastVisitDate =
                 visitDate;
-
-
-        this.revisitRecommendedDate =
-                revisitRecommendedDate;
-    }
-
-
-
-    // =====================================================
-    // 재방문 권장일 변경
-    // =====================================================
-
-    /**
-     * 고객의 재방문 권장일만 별도로 변경합니다.
-     *
-     * 향후 시술 메뉴 또는 CRM 정책에 따라
-     * 재방문 주기가 달라질 때 사용할 수 있습니다.
-     */
-    public void changeRevisitRecommendedDate(
-            LocalDate revisitRecommendedDate
-    ) {
-
-        this.revisitRecommendedDate =
-                revisitRecommendedDate;
     }
 
 
@@ -323,10 +330,14 @@ public class CustomerProfile {
     // =====================================================
 
     /**
-     * 결제 완료 금액을 고객의 누적 결제액에 더합니다.
+     * 결제 완료 금액을 고객의
+     * 누적 결제액에 더합니다.
      *
-     * 향후 4part의 결제가
-     * PAID 상태가 되었을 때 호출할 수 있습니다.
+     * 향후 4part 결제 기능과 통합할 경우
+     * 결제 완료 시 호출할 수 있도록
+     * 3part에서 제공하는 도메인 메서드입니다.
+     *
+     * 4part 코드는 여기서 수정하지 않습니다.
      */
     public void addPayment(
             BigDecimal paymentAmount
@@ -341,7 +352,7 @@ public class CustomerProfile {
         }
 
 
-        // 기존 데이터 NULL 방어 처리
+        // 기존 데이터 NULL 방어
         if (this.totalPayment == null) {
 
             this.totalPayment =
@@ -358,13 +369,13 @@ public class CustomerProfile {
 
 
     // =====================================================
-    // 고객 등급 관리
+    // 고객 등급 자동 적용
     // =====================================================
 
     /**
      * 자동으로 계산된 고객 등급을 적용합니다.
      *
-     * 관리자가 수동으로 등급을 지정한 고객은
+     * 수동 등급 고객은
      * 자동 계산 결과가 기존 등급을 덮어쓰지 않습니다.
      */
     public void applyAutomaticGrade(
@@ -385,11 +396,15 @@ public class CustomerProfile {
 
 
 
+    // =====================================================
+    // 고객 등급 수동 변경
+    // =====================================================
+
     /**
      * 관리자가 고객 등급을 직접 변경합니다.
      *
      * 수동 변경 여부를 Y로 설정하여
-     * 이후 자동 등급 계산에서 제외합니다.
+     * 이후 자동 등급 계산 대상에서 제외합니다.
      */
     public void changeGradeManually(
             CustomerGrade customerGrade
@@ -405,9 +420,13 @@ public class CustomerProfile {
 
 
 
+    // =====================================================
+    // 자동 등급으로 복귀
+    // =====================================================
+
     /**
      * 수동 등급 설정을 해제하고
-     * 다시 자동 등급 관리 상태로 변경합니다.
+     * 자동 등급 관리 상태로 변경합니다.
      */
     public void changeGradeAutomatically(
             CustomerGrade customerGrade

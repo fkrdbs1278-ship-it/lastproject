@@ -29,8 +29,6 @@ public class CustomerResponse {
 
     private BigDecimal totalPayment;
 
-    private LocalDate revisitRecommendedDate;
-
     private String activeYn;
 
 
@@ -47,9 +45,6 @@ public class CustomerResponse {
                 .lastVisitDate(customer.getLastVisitDate())
                 .visitCount(customer.getVisitCount())
                 .totalPayment(customer.getTotalPayment())
-                .revisitRecommendedDate(
-                        customer.getRevisitRecommendedDate()
-                )
                 .activeYn(customer.getActiveYn())
                 .build();
     }
