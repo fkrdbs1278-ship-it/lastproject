@@ -97,6 +97,10 @@ public class SignupRequest {
     @Email(
             message = "올바른 이메일 형식이 아닙니다."
     )
+    @Pattern(
+            regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+            message = "이메일 도메인을 올바르게 입력해주세요."
+    )
     @Size(
             max = 100,
             message = "이메일은 100자 이하로 입력해주세요."

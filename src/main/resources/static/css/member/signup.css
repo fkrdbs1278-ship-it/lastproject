@@ -144,6 +144,49 @@
     color: #aaaaaa;
 }
 
+/* =========================================
+   Password Input
+========================================= */
+
+.password-input-wrap {
+    position: relative;
+
+    width: 100%;
+}
+
+
+.password-input-wrap input {
+    width: 100%;
+
+    padding-right: 75px;
+}
+
+
+.password-toggle {
+    position: absolute;
+
+    top: 50%;
+    right: 12px;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    color: #666666;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.password-toggle:hover {
+    color: #222222;
+}
+
 
 /* Gender */
 

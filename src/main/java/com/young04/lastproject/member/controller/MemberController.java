@@ -2,6 +2,7 @@ package com.young04.lastproject.member.controller;
 
 
 import com.young04.lastproject.global.exception.member.DuplicateEmailException;
+import com.young04.lastproject.global.exception.member.InvalidBirthDateException;
 import com.young04.lastproject.global.security.CustomUserDetails;
 import com.young04.lastproject.member.dto.MemberUpdateRequest;
 import com.young04.lastproject.member.dto.PasswordConfirmRequest;
@@ -99,7 +100,20 @@ public class MemberController {
             );
 
             return "member/edit";
-        }
+        } catch (InvalidBirthDateException e) {
+
+        /* =====================================================
+           1900-01-01 이전 생년월일 등
+        ===================================================== */
+
+        bindingResult.rejectValue(
+                "birthDate",
+                "range",
+                e.getMessage()
+        );
+
+        return "member/edit";
+    }
 
 
         return "redirect:/member/edit?updated=success";

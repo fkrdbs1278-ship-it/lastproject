@@ -14,6 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.querySelector("#password");
     const passwordCheck = document.querySelector("#passwordCheck");
 
+    const passwordToggle =
+        document.querySelector("#passwordToggle");
+
+    const passwordCheckToggle =
+        document.querySelector("#passwordCheckToggle");
+
     const passwordMatchMessage =
         document.querySelector("#passwordMatchMessage");
 
@@ -194,6 +200,69 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
     }
+    /* =========================================================
+    비밀번호 보기 / 숨기기
+    ========================================================= */
+
+    function setupPasswordToggle(
+        input,
+        toggleButton
+    ) {
+
+        if (!input || !toggleButton) {
+            return;
+        }
+
+
+        toggleButton.addEventListener(
+            "click",
+            () => {
+
+                const isHidden =
+                    input.type === "password";
+
+
+                if (isHidden) {
+
+                    input.type = "text";
+
+                    toggleButton.textContent =
+                        "숨기기";
+
+                    toggleButton.setAttribute(
+                        "aria-label",
+                        "비밀번호 숨기기"
+                    );
+
+                } else {
+
+                    input.type = "password";
+
+                    toggleButton.textContent =
+                        "보기";
+
+                    toggleButton.setAttribute(
+                        "aria-label",
+                        "비밀번호 표시"
+                    );
+                }
+
+
+                input.focus();
+            }
+        );
+    }
+
+
+    setupPasswordToggle(
+        password,
+        passwordToggle
+    );
+
+    setupPasswordToggle(
+        passwordCheck,
+        passwordCheckToggle
+    );
 
 
     /* =========================================================
