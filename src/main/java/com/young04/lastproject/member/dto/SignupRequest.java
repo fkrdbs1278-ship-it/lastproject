@@ -16,12 +16,22 @@ import java.time.LocalDate;
 @Setter
 public class SignupRequest {
 
-    /* 아이디 */
+     /* =========================================================
+       아이디
 
-    @NotBlank(message = "아이디를 입력해주세요.")
-    @Size(
-            max = 100,
-            message = "아이디는 100자 이하로 입력해주세요."
+       - 4 ~ 20자
+       - 영문 소문자
+       - 숫자
+       - _
+       - -
+    ========================================================= */
+
+    @NotBlank(
+            message = "아이디를 입력해주세요."
+    )
+    @Pattern(
+            regexp = "^[a-z0-9_-]{4,20}$",
+            message = "아이디는 영문 소문자, 숫자, _, -를 사용하여 4~20자로 입력해주세요."
     )
     private String memberId;
 

@@ -235,8 +235,15 @@
 }
 
 
-.signup-button:hover {
+.signup-button:not(:disabled):hover {
     background-color: #444444;
+}
+
+/*회원가입 처리 중 버튼 */
+.signup-button:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.6;
 }
 
 
@@ -267,9 +274,102 @@
 }
 
 
+/* =========================================
+   Field Help
+========================================= */
+
+.field-help {
+    color: #888888;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =========================================
+   Password Rules
+========================================= */
+
+.password-rules {
+    display: grid;
+
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    gap: 6px 12px;
+
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    background-color: #f7f7f7;
+}
+
+
+.password-rule {
+    margin: 0;
+
+    color: #999999;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* 조건 만족 */
+
+.password-rule.valid {
+    color: #218838;
+
+    font-weight: 600;
+}
+
+
+/* 조건 불만족 */
+
+.password-rule.invalid {
+    color: #999999;
+
+    font-weight: 400;
+}
+
+
+/* =========================================
+   Password Match
+========================================= */
+
+.password-match-message {
+    min-height: 18px;
+
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+
+.password-match-message.success {
+    color: #218838;
+
+    font-weight: 600;
+}
+
+
+.password-match-message.error {
+    color: #c0392b;
+}
+
+
 /* Mobile */
 
 @media (max-width: 600px) {
+
+
+    .password-rules {
+        grid-template-columns: 1fr;
+    }
+
+
 
     .signup-page {
         padding: 45px 16px;

@@ -2,6 +2,7 @@ package com.young04.lastproject.member.controller;
 
 import com.young04.lastproject.global.exception.member.DuplicateEmailException;
 import com.young04.lastproject.global.exception.member.DuplicateMemberIdException;
+import com.young04.lastproject.global.exception.member.InvalidBirthDateException;
 import com.young04.lastproject.global.exception.member.PasswordMismatchException;
 import com.young04.lastproject.member.dto.SignupRequest;
 import com.young04.lastproject.member.service.MemberService;
@@ -14,9 +15,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.LocalDate;
-import java.util.Objects;
-
 
 @Controller
 @RequiredArgsConstructor
@@ -26,9 +24,7 @@ public class AuthController {
     private final MemberService memberService;
 
 
-    /* =========================================================
-       회원가입 페이지
-    ========================================================= */
+    /* 회원가입 페이지 */
 
     @GetMapping("/signup")
     public String signup(
@@ -40,9 +36,7 @@ public class AuthController {
     }
 
 
-    /* =========================================================
-       회원가입 처리
-    ========================================================= */
+    /* 회원가입 처리 */
 
     @PostMapping("/signup")
     public String signupProcess(
@@ -55,60 +49,15 @@ public class AuthController {
     ) {
 
         /* =====================================================
-           1. 비밀번호 / 비밀번호 확인 일치 검사
-        ===================================================== */
-
-        if (!Objects.equals(
-                signupRequest.getPassword(),
-                signupRequest.getPasswordCheck()
-        )) {
-
-            bindingResult.rejectValue(
-                    "passwordCheck",
-                    "mismatch",
-                    "비밀번호가 일치하지 않습니다."
-            );
-        }
-
-
-        /* =====================================================
-           2. 생년월일 최소 날짜 검사
-
-           1900-01-01부터 허용
-           1899-12-31 이전은 가입 불가
-        ===================================================== */
-
-        LocalDate minimumBirthDate =
-                LocalDate.of(
-                        1900,
-                        1,
-                        1
-                );
-
-
-        if (signupRequest.getBirthDate() != null
-                && signupRequest
-                .getBirthDate()
-                .isBefore(minimumBirthDate)) {
-
-            bindingResult.rejectValue(
-                    "birthDate",
-                    "range",
-                    "생년월일은 1900년 1월 1일 이후의 날짜를 선택해주세요."
-            );
-        }
-
-
-        /* =====================================================
-           3. Validation 오류 확인
+           DTO Validation
 
            @NotBlank
+           @Size
            @Pattern
+           @Email
            @Past
-           비밀번호 불일치
-           생년월일 범위
 
-           하나라도 문제가 있으면 회원가입 화면으로 돌아감
+           등의 형식 오류가 있으면 Service까지 보내지 않는다.
         ===================================================== */
 
         if (bindingResult.hasErrors()) {
@@ -117,13 +66,25 @@ public class AuthController {
         }
 
 
-        /* 4. 실제 회원가입 */
-
         try {
 
-            memberService.signup(signupRequest);
+            /*
+             * 비밀번호 일치
+             * 생년월일 범위
+             * 아이디 중복
+             * 이메일 중복
+             *
+             * 등의 회원가입 검증은 Service에서 처리
+             */
+            memberService.signup(
+                    signupRequest
+            );
 
-        } catch (DuplicateMemberIdException e) {
+        }
+
+        /* 아이디 중복 */
+
+        catch (DuplicateMemberIdException e) {
 
             bindingResult.rejectValue(
                     "memberId",
@@ -132,8 +93,12 @@ public class AuthController {
             );
 
             return "member/signup";
+        }
 
-        } catch (DuplicateEmailException e) {
+
+        /* 이메일 중복 */
+
+        catch (DuplicateEmailException e) {
 
             bindingResult.rejectValue(
                     "email",
@@ -142,8 +107,12 @@ public class AuthController {
             );
 
             return "member/signup";
+        }
 
-        } catch (PasswordMismatchException e) {
+
+        /* 비밀번호 불일치 */
+
+        catch (PasswordMismatchException e) {
 
             bindingResult.rejectValue(
                     "passwordCheck",
@@ -155,7 +124,21 @@ public class AuthController {
         }
 
 
-        /* 5. 회원가입 성공 */
+        /* 잘못된 생년월일 */
+
+        catch (InvalidBirthDateException e) {
+
+            bindingResult.rejectValue(
+                    "birthDate",
+                    "range",
+                    e.getMessage()
+            );
+
+            return "member/signup";
+        }
+
+
+        /* 회원가입 성공= */
 
         return "redirect:/member/login?signup=success";
     }

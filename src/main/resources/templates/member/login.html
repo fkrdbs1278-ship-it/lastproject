@@ -110,6 +110,7 @@
             <!-- Login Form -->
 
             <form
+                    id="loginForm"
                     th:action="@{/member/login/process}"
                     method="post"
                     class="login-form"
@@ -149,18 +150,44 @@
 
                 <div class="form-group">
 
-                    <label for="password">
+                    <label for="loginPassword">
                         비밀번호
                     </label>
 
-                    <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="비밀번호를 입력해주세요."
-                            autocomplete="current-password"
-                            required
-                    >
+
+                    <!-- 비밀번호 입력 + 보기/숨기기 버튼 -->
+
+                    <div class="password-input-wrap">
+
+                        <input
+                                type="password"
+                                id="loginPassword"
+                                name="password"
+                                placeholder="비밀번호를 입력해주세요."
+                                autocomplete="current-password"
+                                required
+                        >
+
+
+                        <button
+                                type="button"
+                                id="passwordToggle"
+                                class="password-toggle"
+                                aria-label="비밀번호 표시"
+                        >
+                            보기
+                        </button>
+
+                    </div>
+
+
+                    <!-- Caps Lock 안내 -->
+
+                    <p
+                            id="capsLockMessage"
+                            class="caps-lock-message"
+                            aria-live="polite"
+                    ></p>
 
                 </div>
 
@@ -169,6 +196,7 @@
 
                 <button
                         type="submit"
+                        id="loginButton"
                         class="login-button"
                 >
                     로그인
@@ -203,6 +231,7 @@
 
 </main>
 
+<script th:src="@{/js/member/login.js}"></script>
 
 </body>
 

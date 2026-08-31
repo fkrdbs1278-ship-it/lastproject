@@ -74,6 +74,7 @@
             <!--  Signup Form -->
 
             <form
+                    id="signupForm"
                     th:action="@{/member/signup}"
                     th:object="${signupRequest}"
                     method="post"
@@ -103,7 +104,15 @@
                             id="memberId"
                             th:field="*{memberId}"
                             placeholder="아이디를 입력해주세요."
+                            minlength="4"
+                            maxlength="20"
+                            autocomplete="username"
                     >
+
+                    <p class="field-help">
+                        영문 소문자, 숫자, _, -를 사용하여 4~20자로 입력해주세요.
+                    </p>
+
 
                     <p
                             class="field-error"
@@ -128,9 +137,42 @@
                             type="password"
                             id="password"
                             th:field="*{password}"
-                            placeholder="8자 이상 입력해주세요."
+                            placeholder="비밀번호를 입력해주세요."
                             autocomplete="new-password"
+                            maxlength="100"
                     >
+
+
+                    <!-- 비밀번호 조건 -->
+
+                    <div class="password-rules">
+
+                        <p id="ruleLength" class="password-rule">
+                            ✓ 8자 이상
+                        </p>
+
+                        <p id="ruleUppercase" class="password-rule">
+                            ✓ 영문 대문자 포함
+                        </p>
+
+                        <p id="ruleLowercase" class="password-rule">
+                            ✓ 영문 소문자 포함
+                        </p>
+
+                        <p id="ruleNumber" class="password-rule">
+                            ✓ 숫자 포함
+                        </p>
+
+                        <p id="ruleSpecial" class="password-rule">
+                            ✓ 특수문자 포함
+                        </p>
+
+                        <p id="ruleNoSpace" class="password-rule">
+                            ✓ 공백 없음
+                        </p>
+
+                    </div>
+
 
                     <p
                             class="field-error"
@@ -157,7 +199,20 @@
                             th:field="*{passwordCheck}"
                             placeholder="비밀번호를 다시 입력해주세요."
                             autocomplete="new-password"
+                            maxlength="100"
                     >
+
+
+                    <!-- 실시간 비밀번호 일치 여부 -->
+
+                    <p
+                            id="passwordMatchMessage"
+                            class="password-match-message"
+                            aria-live="polite"
+                    ></p>
+
+
+                    <!-- 서버 검증 오류 -->
 
                     <p
                             class="field-error"
@@ -235,6 +290,8 @@
                             id="email"
                             th:field="*{email}"
                             placeholder="example@email.com"
+                            maxlength="100"
+                            autocomplete="email"
                     >
 
                     <p
@@ -257,11 +314,18 @@
                     </label>
 
                     <input
-                            type="text"
+                            type="tel"
                             id="phone"
                             th:field="*{phone}"
                             placeholder="010-1234-5678"
+                            inputmode="numeric"
+                            autocomplete="tel"
+                            maxlength="13"
                     >
+
+                    <p class="field-help">
+                        숫자만 입력해도 자동으로 하이픈(-)이 추가됩니다.
+                    </p>
 
                     <p
                             class="field-error"
@@ -286,7 +350,13 @@
                             type="date"
                             id="birthDate"
                             th:field="*{birthDate}"
+                            min="1900-01-01"
+                            autocomplete="bday"
                     >
+
+                    <p class="field-help">
+                        1900년 1월 1일부터 어제까지 선택할 수 있습니다.
+                    </p>
 
                     <p
                             class="field-error"
@@ -410,6 +480,7 @@
 
                 <button
                         type="submit"
+                        id="signupButton"
                         class="signup-button"
                 >
                     회원가입
@@ -442,6 +513,9 @@
 
 </main>
 
+<script
+        th:src="@{/js/member/signup.js}"
+></script>
 
 </body>
 

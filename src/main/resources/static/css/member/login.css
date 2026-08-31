@@ -133,6 +133,66 @@
     color:#aaaaaa;
 }
 
+/* Password Input */
+
+.password-input-wrap {
+    position: relative;
+
+    width: 100%;
+}
+
+
+.password-input-wrap input {
+    width: 100%;
+
+    padding-right: 75px;
+}
+
+
+.password-toggle {
+    position: absolute;
+
+    top: 50%;
+    right: 12px;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    color: #666666;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.password-toggle:hover {
+    color: #222222;
+}
+
+
+/* Caps Lock Message */
+
+.caps-lock-message {
+    min-height: 18px;
+
+    margin: 0;
+
+    color: #c0392b;
+
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+
+.caps-lock-message.show {
+    margin-top: 4px;
+}
+
 /* Login Button */
 
 .login-button{
@@ -153,8 +213,14 @@
     cursor: pointer;
 }
 
-.login-button:hover{
+.login-button:not(:disabled):hover{
     background-color: #444444;
+}
+
+.login-button:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.6;
 }
 
 /* Bottom Menu */
@@ -192,7 +258,7 @@
         padding:28px 22px;
     }
 
-    .auto-logo{
+    .auth-logo{
         font-size:32px;
     }
 
