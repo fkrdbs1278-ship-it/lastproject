@@ -566,8 +566,55 @@
 
 /* 품목 추가 버튼 */
 .item-add-button {
-    margin-top: 24px;
+    min-width: 220px;
     cursor: pointer;
+    white-space: nowrap;
+}
+
+/* 품목 추가 버튼과 합계 표시 영역 */
+.item-form-footer {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 4px;
+}
+
+/* 선택한 품목의 예상 합계 */
+.item-amount-summary {
+    display: flex;
+    min-width: 320px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    padding: 14px 18px;
+    border: 1px solid #dfe3f4;
+    border-radius: 10px;
+    background-color: #f5f6ff;
+}
+
+.item-amount-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item-amount-label {
+    color: #4e5665;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#itemAmountFormula {
+    color: #8a91a0;
+    font-size: 12px;
+}
+
+#itemAmount {
+    color: #5262c4;
+    font-size: 22px;
+    font-weight: 800;
     white-space: nowrap;
 }
 
@@ -624,6 +671,16 @@
     .item-add-button {
         width: 100%;
         margin-top: 0;
+    }
+
+    .item-form-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .item-amount-summary {
+        width: 100%;
+        min-width: 0;
     }
 }
 

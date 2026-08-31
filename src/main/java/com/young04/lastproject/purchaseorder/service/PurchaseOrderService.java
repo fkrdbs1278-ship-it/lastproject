@@ -2,6 +2,7 @@ package com.young04.lastproject.purchaseorder.service;
 
 import com.young04.lastproject.material.entity.Material;
 import com.young04.lastproject.purchaseorder.dto.PurchaseOrderRequest;
+import com.young04.lastproject.purchaseorder.dto.PurchaseOrderReceiveRequest;
 import com.young04.lastproject.purchaseorder.dto.PurchaseOrderResponse;
 import com.young04.lastproject.purchaseorder.entity.PurchaseOrder;
 import com.young04.lastproject.purchaseorder.repository.PurchaseOrderRepository;
@@ -153,7 +154,10 @@ public class PurchaseOrderService {
 
     // 출고된 발주 품목을 입고하고 자재 재고와 이력을 함께 반영
     @Transactional
-    public void receiveOrder(Long purchaseOrderNo) {
+    public void receiveOrder(
+            Long purchaseOrderNo,
+            PurchaseOrderReceiveRequest request
+    ) {
 
         // 입고 처리할 발주서 조회
         PurchaseOrder purchaseOrder = findOrder(purchaseOrderNo);
@@ -185,8 +189,22 @@ public class PurchaseOrderService {
             // 발주 품목과 연결된 자재
             Material material = item.getMaterial();
 
-            // 이번에 입고할 수량
-            BigDecimal receivedQuantity = item.getOrderQuantity();
+            // 화면에서 입력한 품목별 실제 입고 수량
+            BigDecimal receivedQuantity = request.getReceivedQuantities()
+                    .get(item.getPurchaseOrderItemNo());
+
+            if (receivedQuantity == null
+                    || receivedQuantity.compareTo(BigDecimal.ZERO) < 0) {
+                throw new IllegalArgumentException(
+                        "실제 입고 수량은 0 이상으로 입력해 주세요."
+                );
+            }
+
+            if (receivedQuantity.compareTo(item.getOrderQuantity()) > 0) {
+                throw new IllegalArgumentException(
+                        "실제 입고 수량은 발주 수량을 넘을 수 없습니다."
+                );
+            }
 
             // 입고 전과 입고 후 재고 계산
             BigDecimal beforeStock = material.getCurrentStock();
@@ -198,19 +216,20 @@ public class PurchaseOrderService {
             // 자재의 현재 재고 증가
             material.changeStock(afterStock);
 
-            // 입고에 따른 재고 변동 이력 생성
-            StockHistory stockHistory = new StockHistory();
-            stockHistory.setMaterialNo(material.getMaterialNo());
-            stockHistory.setMovementType("PURCHASE_IN");
-            stockHistory.setQuantity(receivedQuantity);
-            stockHistory.setBeforeStock(beforeStock);
-            stockHistory.setAfterStock(afterStock);
-            stockHistory.setReferenceType("PURCHASE_ORDER");
-            stockHistory.setReferenceNo(purchaseOrderNo);
-            stockHistory.setMemo("발주서 입고 완료");
+            // 실제 입고된 수량이 있을 때만 재고 변동 이력을 저장
+            if (receivedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                StockHistory stockHistory = new StockHistory();
+                stockHistory.setMaterialNo(material.getMaterialNo());
+                stockHistory.setMovementType("PURCHASE_IN");
+                stockHistory.setQuantity(receivedQuantity);
+                stockHistory.setBeforeStock(beforeStock);
+                stockHistory.setAfterStock(afterStock);
+                stockHistory.setReferenceType("PURCHASE_ORDER");
+                stockHistory.setReferenceNo(purchaseOrderNo);
+                stockHistory.setMemo("발주서 입고 완료");
 
-            // 재고 변동 이력 저장
-            stockHistoryService.saveHistory(stockHistory);
+                stockHistoryService.saveHistory(stockHistory);
+            }
         }
 
         // 발주 상태와 실제 입고 날짜 변경

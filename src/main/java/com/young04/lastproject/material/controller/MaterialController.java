@@ -5,14 +5,13 @@ import com.young04.lastproject.material.dto.MaterialResponse;
 import com.young04.lastproject.material.service.MaterialService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 // final 필드의 생성자를 자동으로 생성
 @RequiredArgsConstructor
@@ -30,21 +29,40 @@ public class MaterialController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String useYn,
             @RequestParam(defaultValue = "false") boolean lowStock,
+            @RequestParam(defaultValue = "0") int page,
             Model model
     ) {
-        List<MaterialResponse> materials;
+        // 관리자 목록은 한 페이지에 10개씩 표시
+        Page<MaterialResponse> materialPage =
+                materialService.getMaterialPage(
+                        keyword,
+                        useYn,
+                        lowStock,
+                        page,
+                        10
+                );
 
-        if (StringUtils.hasText(keyword)) {
-            materials = materialService.searchMaterials(keyword);
-        } else if (lowStock) {
-            materials = materialService.getLowStockMaterials();
-        } else if (StringUtils.hasText(useYn)) {
-            materials = materialService.getMaterialsByUseYn(useYn);
-        } else {
-            materials = materialService.getAllMaterials();
-        }
+        // 자재가 없어도 1페이지는 화면에 표시합니다.
+        int displayTotalPages = Math.max(
+                materialPage.getTotalPages(),
+                1
+        );
 
-        model.addAttribute("materials", materials);
+        int endPage = Math.min(
+                displayTotalPages - 1,
+                materialPage.getNumber() + 2
+        );
+
+        int startPage = Math.max(0, endPage - 4);
+
+        model.addAttribute(
+                "materials",
+                materialPage.getContent()
+        );
+        model.addAttribute("materialPage", materialPage);
+        model.addAttribute("currentPage", materialPage.getNumber());
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
         model.addAttribute("keyword", keyword);
         model.addAttribute("useYn", useYn);
         model.addAttribute("lowStock", lowStock);

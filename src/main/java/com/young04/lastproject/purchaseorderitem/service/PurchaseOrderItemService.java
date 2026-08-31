@@ -13,7 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 // 발주 품목 등록과 조회 기능을 처리하는 Service
@@ -59,20 +60,43 @@ public class PurchaseOrderItemService {
             );
         }
 
+        // 화면의 가격이 아닌 자재 관리에 등록된 구매 가격을 사용
+        BigDecimal unitPrice = material.getUnitPrice();
+
         // 입력값으로 새로운 발주 품목 생성
         PurchaseOrderItem purchaseOrderItem =
                 new PurchaseOrderItem(
                         purchaseOrder,
                         material,
                         request.getOrderQuantity(),
-                        request.getUnitPrice()
+                        unitPrice
                 );
 
         // 발주 품목 저장
         PurchaseOrderItem savedItem =
                 purchaseOrderItemRepository.save(purchaseOrderItem);
 
+        // 품목이 추가될 때 발주서 전체 금액을 다시 계산
+        updateTotalAmount(purchaseOrder);
+
         return new PurchaseOrderItemResponse(savedItem);
+    }
+
+    // 현재 등록된 모든 품목의 수량과 구매 가격으로 총 발주 금액 계산
+    private void updateTotalAmount(PurchaseOrder purchaseOrder) {
+        BigDecimal totalAmount = purchaseOrderItemRepository
+                .findByPurchaseOrder_PurchaseOrderNoOrderByPurchaseOrderItemNoAsc(
+                        purchaseOrder.getPurchaseOrderNo()
+                )
+                .stream()
+                .map(item -> item.getOrderQuantity()
+                        .multiply(item.getUnitPrice()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        purchaseOrder.setTotalAmount(
+                totalAmount.setScale(0, RoundingMode.HALF_UP)
+                        .longValueExact()
+        );
     }
 
     // 발주서 번호에 포함된 전체 품목 조회

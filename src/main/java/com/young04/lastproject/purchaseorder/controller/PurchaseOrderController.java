@@ -2,6 +2,7 @@ package com.young04.lastproject.purchaseorder.controller;
 
 import com.young04.lastproject.material.service.MaterialService;
 import com.young04.lastproject.purchaseorder.dto.PurchaseOrderRequest;
+import com.young04.lastproject.purchaseorder.dto.PurchaseOrderReceiveRequest;
 import com.young04.lastproject.purchaseorder.dto.PurchaseOrderResponse;
 import com.young04.lastproject.purchaseorder.service.PurchaseOrderService;
 import com.young04.lastproject.purchaseorderitem.dto.PurchaseOrderItemCreateRequest;
@@ -147,6 +148,12 @@ public class PurchaseOrderController {
                 new PurchaseOrderItemCreateRequest()
         );
 
+        // 품목별 실제 입고 수량을 받을 빈 DTO를 화면으로 전달
+        model.addAttribute(
+                "purchaseOrderReceiveRequest",
+                new PurchaseOrderReceiveRequest()
+        );
+
         // 발주서 상세 HTML로 이동
         return "purchaseorder/detail";
     }
@@ -222,10 +229,12 @@ public class PurchaseOrderController {
     @PostMapping("/{purchaseOrderNo}/receive")
     public String receiveOrder(
             @PathVariable Long purchaseOrderNo,
+            @ModelAttribute("purchaseOrderReceiveRequest")
+            PurchaseOrderReceiveRequest request,
             RedirectAttributes redirectAttributes
     ) {
         // 발주 품목의 입고 수량과 자재 재고를 반영
-        purchaseOrderService.receiveOrder(purchaseOrderNo);
+        purchaseOrderService.receiveOrder(purchaseOrderNo, request);
 
         // 입고 완료 메시지를 한 번만 전달
         redirectAttributes.addFlashAttribute(

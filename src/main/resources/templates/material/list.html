@@ -105,7 +105,7 @@
                 <th>현재 재고</th>
                 <th>안전 재고</th>
                 <th>재고 단위</th>
-                <th>기준 구매가</th>
+                <th>개당 구매가</th>
                 <th>업체명</th>
                 <th>상태</th>
                 <th>관리</th>
@@ -134,8 +134,13 @@
                     </span>
                 </td>
 
-                <td th:text="${material.categoryCode != null
-                        ? material.categoryCode : '-'}">
+                <td th:text="${material.categoryCode == 'HAIR_COLOR' ? '염색제' :
+                               material.categoryCode == 'PERM' ? '펌제' :
+                               material.categoryCode == 'TREATMENT' ? '클리닉·트리트먼트' :
+                               material.categoryCode == 'SHAMPOO' ? '샴푸·두피케어' :
+                               material.categoryCode == 'STYLING' ? '스타일링제' :
+                               material.categoryCode == 'SUPPLIES' ? '미용 소모품' :
+                               material.categoryCode == 'ETC' ? '기타' : '-'}">
                     -
                 </td>
 
@@ -209,6 +214,59 @@
             </tbody>
         </table>
     </section>
+
+    <!-- 자재가 없어도 기본 페이지 번호를 표시합니다. -->
+    <nav class="pagination"
+         aria-label="자재 목록 페이지">
+
+        <a class="page-button"
+           th:classappend="${currentPage == 0}
+               ? 'disabled'"
+           th:href="${currentPage == 0}
+               ? '#'
+               : @{/admin/material(
+                    page=${currentPage - 1},
+                    keyword=${keyword},
+                    useYn=${useYn},
+                    lowStock=${lowStock}
+                 )}"
+           aria-label="이전 페이지">
+            ‹
+        </a>
+
+        <a class="page-number"
+           th:each="pageNumber :
+               ${#numbers.sequence(startPage, endPage)}"
+           th:classappend="${pageNumber == currentPage}
+               ? 'active'"
+           th:href="@{/admin/material(
+            page=${pageNumber},
+            keyword=${keyword},
+            useYn=${useYn},
+            lowStock=${lowStock}
+       )}"
+           th:text="${pageNumber + 1}">
+            1
+        </a>
+
+        <a class="page-button"
+           th:classappend="${materialPage.totalPages <= 1
+                        or materialPage.last}
+               ? 'disabled'"
+           th:href="${materialPage.totalPages <= 1
+                  or materialPage.last}
+               ? '#'
+               : @{/admin/material(
+                    page=${currentPage + 1},
+                    keyword=${keyword},
+                    useYn=${useYn},
+                    lowStock=${lowStock}
+                 )}"
+           aria-label="다음 페이지">
+            ›
+        </a>
+
+    </nav>
 
 </main>
 </body>

@@ -669,3 +669,56 @@
     gap: 10px;
     margin-top: 28px;
 }
+
+/* 자재 목록 페이지 이동 영역 */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 24px;
+}
+
+.page-button,
+.page-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 12px;
+    border: 1px solid #d9dee7;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #596170;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            color 0.2s ease;
+}
+
+.page-number {
+    padding: 0;
+}
+
+.page-button:hover,
+.page-number:hover {
+    border-color: #6573d0;
+    color: #5968c8;
+}
+
+.page-number.active {
+    border-color: #606fce;
+    background: #606fce;
+    color: #ffffff;
+}
+
+.page-button.disabled {
+    pointer-events: none;
+    border-color: #e5e8ee;
+    background: #f4f5f7;
+    color: #b6bbc4;
+}

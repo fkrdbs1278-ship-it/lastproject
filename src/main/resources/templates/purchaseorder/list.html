@@ -17,7 +17,7 @@
         <div>
             <p class="page-category">매장 운영 관리</p>
             <h1>발주 관리</h1>
-            <p>공급업체별 발주서와 입고 상태를 관리합니다.</p>
+            <p>업체별 발주서와 입고 상태를 관리합니다.</p>
         </div>
 
         <div class="header-actions">
@@ -41,10 +41,10 @@
          th:text="${message}">
     </div>
 
-    <!-- 공급업체 검색과 발주 상태 필터 -->
+    <!-- 업체명 검색과 발주 상태 필터 -->
     <section class="purchaseorder-filter">
 
-        <!-- 공급업체명 검색 -->
+        <!-- 업체명 검색 -->
         <form class="search-form"
               th:action="@{/admin/purchaseorder}"
               method="get">
@@ -52,7 +52,7 @@
             <input type="text"
                    name="supplierName"
                    th:value="${supplierName}"
-                   placeholder="공급업체명을 입력해 주세요.">
+                   placeholder="업체명을 입력해 주세요.">
 
             <button type="submit">검색</button>
         </form>
@@ -104,7 +104,7 @@
             <thead>
             <tr>
                 <th>번호</th>
-                <th>공급업체</th>
+                <th>업체명</th>
                 <th>발주 상태</th>
                 <th>발주일</th>
                 <th>입고 예정일</th>
@@ -124,13 +124,13 @@
                     1
                 </td>
 
-                <!-- 공급업체 이름과 상세 화면 링크 -->
+                <!-- 업체 이름과 상세 화면 링크 -->
                 <td>
                     <a class="supplier-name"
                        th:href="@{/admin/purchaseorder/{no}
                        (no=${order.purchaseOrderNo})}"
                        th:text="${order.supplierName}">
-                        공급업체
+                        업체명
                     </a>
                 </td>
 

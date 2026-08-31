@@ -8,6 +8,10 @@ import com.young04.lastproject.purchaseorderitem.repository.PurchaseOrderItemRep
 import com.young04.lastproject.stockhistory.repository.StockHistoryRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +29,56 @@ public class MaterialService {
     private final MaterialRepository materialRepository;
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
     private final StockHistoryRepository stockHistoryRepository;
+
+    // 검색과 필터 조건을 유지하면서 자재 목록을 페이지 단위로 조회
+    public Page<MaterialResponse> getMaterialPage(
+            String keyword,
+            String useYn,
+            boolean lowStock,
+            int page,
+            int size
+    ) {
+        int safePage = Math.max(page, 0);
+
+        Pageable pageable;
+
+        if (lowStock) {
+            pageable = PageRequest.of(
+                    safePage,
+                    size,
+                    Sort.by(
+                            Sort.Order.asc("currentStock"),
+                            Sort.Order.desc("materialNo")
+                    )
+            );
+        } else {
+            pageable = PageRequest.of(
+                    safePage,
+                    size,
+                    Sort.by(Sort.Direction.DESC, "materialNo")
+            );
+        }
+
+        Page<Material> materialPage;
+
+        if (keyword != null && !keyword.isBlank()) {
+            materialPage = materialRepository
+                    .findByMaterialNameContainingIgnoreCase(
+                            keyword.trim(),
+                            pageable
+                    );
+        } else if (lowStock) {
+            materialPage = materialRepository
+                    .findLowStockMaterials(pageable);
+        } else if (useYn != null && !useYn.isBlank()) {
+            materialPage = materialRepository
+                    .findByUseYn(useYn, pageable);
+        } else {
+            materialPage = materialRepository.findAll(pageable);
+        }
+
+        return materialPage.map(MaterialResponse::from);
+    }
 
     // 전체 자재 목록 조회
     public List<MaterialResponse> getAllMaterials() {
@@ -44,8 +98,14 @@ public class MaterialService {
     // 사용 여부에 따라 자재 조회
     public List<MaterialResponse> getMaterialsByUseYn(String useYn) {
         return materialRepository
-                .findByUseYnOrderByMaterialNoDesc(useYn)
+                .findAllByOrderByMaterialNoDesc()
                 .stream()
+                .filter(material ->
+                        material.getUseYn() != null &&
+                                useYn.equalsIgnoreCase(
+                                        material.getUseYn().trim()
+                                )
+                )
                 .map(MaterialResponse::from)
                 .toList();
     }
