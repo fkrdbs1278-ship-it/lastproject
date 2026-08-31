@@ -5,12 +5,18 @@ import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.CanceledBy;
 import com.young04.lastproject.reservation.service.AdminReservationService;
 import com.young04.lastproject.reservation.service.ReservationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/*
+ * 1번 담당자의 SecurityConfig가 /admin/** 를 ROLE_ADMIN으로 보호하므로
+ * 다른 파트 코드를 수정하지 않고 그 정책을 그대로 사용하기 위해
+ * 관리자 API도 /admin/api/** 아래에 둡니다.
+ */
 @RestController
-@RequestMapping("/api/admin/reservations")
+@RequestMapping("/admin/api/reservations")
 @RequiredArgsConstructor
 public class AdminReservationController {
 
@@ -35,6 +41,16 @@ public class AdminReservationController {
     ) {
         return ResponseEntity.ok(
                 adminReservationService.detail(reservationNo)
+        );
+    }
+
+    @PostMapping("/phone")
+    public ResponseEntity<ReservationResponse> createPhoneReservation(
+            @Valid @RequestBody AdminPhoneReservationRequest request
+    ) {
+        return ResponseEntity.ok(
+                adminReservationService
+                        .createPhoneReservation(request)
         );
     }
 

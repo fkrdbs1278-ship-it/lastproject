@@ -1,12 +1,13 @@
 package com.young04.lastproject.reservation.controller;
 
 import com.young04.lastproject.reservation.dto.*;
-import com.young04.lastproject.reservation.entity.CanceledBy;
+import com.young04.lastproject.reservation.entity.ReservationSource;
 import com.young04.lastproject.reservation.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,44 +19,101 @@ import java.util.List;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final AuthenticatedReservationService authenticatedReservationService;
     private final AvailableTimeService availableTimeService;
     private final ServiceMenuReader serviceMenuReader;
     private final HairStyleReader hairStyleReader;
 
+    /*
+     * 공개 예약 생성은 비회원 전용입니다.
+     * 클라이언트가 memberNo를 조작해 회원 예약을 만들 수 없도록
+     * memberNo를 서버에서 강제로 제거합니다.
+     */
     @PostMapping
-    public ResponseEntity<ReservationResponse> create(
+    public ResponseEntity<ReservationResponse> createGuest(
             @Valid @RequestBody ReservationCreateRequest request
     ) {
+        request.setMemberNo(null);
+        request.setReservationSource(ReservationSource.ONLINE);
+
         return ResponseEntity.ok(
                 reservationService.createReservation(request)
         );
     }
 
-    @PutMapping("/{reservationNo}")
-    public ResponseEntity<ReservationResponse> update(
+    /*
+     * 로그인 회원 예약.
+     * memberNo는 요청에서 받지 않고 로그인 ID를 통해 서버가 결정합니다.
+     */
+    @PostMapping("/me")
+    public ResponseEntity<ReservationResponse> createMine(
+            Authentication authentication,
+            @Valid @RequestBody MemberReservationCreateRequest request
+    ) {
+        return ResponseEntity.ok(
+                authenticatedReservationService
+                        .createMyReservation(
+                                username(authentication),
+                                request
+                        )
+        );
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<List<ReservationResponse>> myReservations(
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(
+                authenticatedReservationService
+                        .getMyReservations(
+                                username(authentication)
+                        )
+        );
+    }
+
+    @GetMapping("/me/{reservationNo}")
+    public ResponseEntity<ReservationDetailResponse> myReservationDetail(
+            Authentication authentication,
+            @PathVariable Long reservationNo
+    ) {
+        return ResponseEntity.ok(
+                authenticatedReservationService
+                        .getMyReservationDetail(
+                                username(authentication),
+                                reservationNo
+                        )
+        );
+    }
+
+    @PutMapping("/me/{reservationNo}")
+    public ResponseEntity<ReservationResponse> updateMine(
+            Authentication authentication,
             @PathVariable Long reservationNo,
             @Valid @RequestBody ReservationUpdateRequest request
     ) {
         return ResponseEntity.ok(
-                reservationService.updateReservation(reservationNo, request)
+                authenticatedReservationService
+                        .updateMyReservation(
+                                username(authentication),
+                                reservationNo,
+                                request
+                        )
         );
     }
 
-    @GetMapping("/{reservationNo}")
-    public ResponseEntity<ReservationResponse> detail(
-            @PathVariable Long reservationNo
+    @PostMapping("/me/{reservationNo}/cancel")
+    public ResponseEntity<ReservationResponse> cancelMine(
+            Authentication authentication,
+            @PathVariable Long reservationNo,
+            @RequestParam String reason
     ) {
         return ResponseEntity.ok(
-                reservationService.getReservationDetail(reservationNo)
-        );
-    }
-
-    @GetMapping("/member/{memberNo}")
-    public ResponseEntity<List<ReservationResponse>> memberReservations(
-            @PathVariable Long memberNo
-    ) {
-        return ResponseEntity.ok(
-                reservationService.getMemberReservations(memberNo)
+                authenticatedReservationService
+                        .cancelMyReservation(
+                                username(authentication),
+                                reservationNo,
+                                reason
+                        )
         );
     }
 
@@ -67,7 +125,10 @@ public class ReservationController {
             @RequestParam Long serviceMenuNo
     ) {
         return ResponseEntity.ok(
-                availableTimeService.getAvailableTimes(date, serviceMenuNo)
+                availableTimeService.getAvailableTimes(
+                        date,
+                        serviceMenuNo
+                )
         );
     }
 
@@ -83,20 +144,8 @@ public class ReservationController {
             @RequestParam Long serviceMenuNo
     ) {
         return ResponseEntity.ok(
-                hairStyleReader.getActiveStylesForService(serviceMenuNo)
-        );
-    }
-
-    @PostMapping("/{reservationNo}/cancel")
-    public ResponseEntity<ReservationResponse> cancel(
-            @PathVariable Long reservationNo,
-            @RequestParam String reason
-    ) {
-        return ResponseEntity.ok(
-                reservationService.cancelReservation(
-                        reservationNo,
-                        reason,
-                        CanceledBy.USER
+                hairStyleReader.getActiveStylesForService(
+                        serviceMenuNo
                 )
         );
     }
@@ -110,6 +159,15 @@ public class ReservationController {
         );
     }
 
+    @PutMapping("/guest")
+    public ResponseEntity<ReservationResponse> updateGuest(
+            @Valid @RequestBody GuestReservationUpdateRequest request
+    ) {
+        return ResponseEntity.ok(
+                reservationService.updateGuestReservation(request)
+        );
+    }
+
     @PostMapping("/guest/cancel")
     public ResponseEntity<ReservationResponse> cancelGuest(
             @Valid @RequestBody GuestReservationCancelRequest request
@@ -117,5 +175,11 @@ public class ReservationController {
         return ResponseEntity.ok(
                 reservationService.cancelGuestReservation(request)
         );
+    }
+
+    private String username(Authentication authentication) {
+        return authentication == null
+                ? null
+                : authentication.getName();
     }
 }

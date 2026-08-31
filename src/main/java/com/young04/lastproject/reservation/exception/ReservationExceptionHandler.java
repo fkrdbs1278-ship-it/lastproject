@@ -20,6 +20,22 @@ public class ReservationExceptionHandler {
                 .body(errorBody("RESERVATION_NOT_FOUND", e.getMessage()));
     }
 
+    @ExceptionHandler(ReservationAuthenticationRequiredException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthentication(
+            ReservationAuthenticationRequiredException e
+    ) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(errorBody("AUTHENTICATION_REQUIRED", e.getMessage()));
+    }
+
+    @ExceptionHandler(ReservationAccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(
+            ReservationAccessDeniedException e
+    ) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(errorBody("RESERVATION_ACCESS_DENIED", e.getMessage()));
+    }
+
     @ExceptionHandler({
             ReservationUnavailableException.class,
             InvalidReservationStatusException.class
@@ -48,7 +64,10 @@ public class ReservationExceptionHandler {
                 .body(errorBody("VALIDATION_ERROR", message));
     }
 
-    private Map<String, Object> errorBody(String code, String message) {
+    private Map<String, Object> errorBody(
+            String code,
+            String message
+    ) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("success", false);
         body.put("code", code);

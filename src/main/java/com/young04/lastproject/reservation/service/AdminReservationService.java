@@ -2,6 +2,7 @@ package com.young04.lastproject.reservation.service;
 
 import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.Reservation;
+import com.young04.lastproject.reservation.entity.ReservationSource;
 import com.young04.lastproject.reservation.exception.ReservationNotFoundException;
 import com.young04.lastproject.reservation.repository.ReservationRepository;
 import com.young04.lastproject.reservationimage.dto.ReservationImageResponse;
@@ -20,6 +21,7 @@ public class AdminReservationService {
     private final ReservationImageRepository reservationImageRepository;
     private final ReservationMemberReader reservationMemberReader;
     private final HairStyleReader hairStyleReader;
+    private final ReservationService reservationService;
 
     public AdminReservationSearchResponse search(
             ReservationSearchCondition condition,
@@ -49,7 +51,9 @@ public class AdminReservationService {
                 .build();
     }
 
-    public AdminReservationDetailResponse detail(Long reservationNo) {
+    public AdminReservationDetailResponse detail(
+            Long reservationNo
+    ) {
         Reservation reservation =
                 reservationRepository.findById(reservationNo)
                         .orElseThrow(
@@ -82,5 +86,33 @@ public class AdminReservationService {
                                 .toList()
                 )
                 .build();
+    }
+
+    /*
+     * 관리자가 직접 입력하는 전화 예약.
+     * 전화로 이미 일정을 합의하고 관리자가 등록하는 흐름이므로
+     * 생성 직후 CONFIRMED 상태로 확정합니다.
+     */
+    @Transactional
+    public ReservationResponse createPhoneReservation(
+            AdminPhoneReservationRequest request
+    ) {
+        ReservationCreateRequest create =
+                new ReservationCreateRequest();
+
+        create.setGuestName(request.getGuestName());
+        create.setGuestPhone(request.getGuestPhone());
+        create.setServiceMenuNo(request.getServiceMenuNo());
+        create.setHairStyleNo(request.getHairStyleNo());
+        create.setStartAt(request.getStartAt());
+        create.setRequestMemo(request.getRequestMemo());
+        create.setReservationSource(ReservationSource.PHONE);
+
+        ReservationResponse created =
+                reservationService.createReservation(create);
+
+        return reservationService.confirmReservation(
+                created.getReservationNo()
+        );
     }
 }

@@ -43,14 +43,6 @@ public class ReservationService {
         LocalDateTime end =
                 start.plusMinutes(menu.durationMin());
 
-        /*
-         * 같은 요일의 BUSINESS_HOUR 행을 PESSIMISTIC_WRITE로 잠근 뒤
-         * 예약 가능 여부를 최종 재검사합니다.
-         *
-         * 1인 미용실에서는 동시 예약량이 많지 않기 때문에,
-         * 날짜 전용 lock table을 추가하지 않고도
-         * 단순하고 안정적인 직렬화 효과를 얻을 수 있습니다.
-         */
         lockReservationDay(start);
 
         if (!availableTimeService.isAvailable(start, end)) {
@@ -112,43 +104,48 @@ public class ReservationService {
         Reservation reservation =
                 getReservation(reservationNo);
 
-        validateModifiable(reservation);
-
-        var menu =
-                serviceMenuReader.getActiveServiceMenu(
-                        request.getServiceMenuNo()
-                );
-
-        validateHairStyle(
-                request.getHairStyleNo(),
-                request.getServiceMenuNo()
-        );
-
-        LocalDateTime start = request.getStartAt();
-        LocalDateTime end =
-                start.plusMinutes(menu.durationMin());
-
-        lockReservationDay(start);
-
-        if (!availableTimeService
-                .isAvailableForUpdate(
-                        reservationNo,
-                        start,
-                        end
-                )) {
-            throw new ReservationUnavailableException(
-                    "변경하려는 시간에는 예약할 수 없습니다."
-            );
-        }
-
-        reservation.changeSchedule(
+        updateReservationEntity(
+                reservation,
+                reservationNo,
                 request.getServiceMenuNo(),
                 request.getHairStyleNo(),
-                menu.name(),
-                menu.durationMin(),
-                start,
-                end,
-                normalizeMemo(request.getRequestMemo())
+                request.getStartAt(),
+                request.getRequestMemo()
+        );
+
+        return ReservationResponse.from(reservation);
+    }
+
+    @Transactional
+    public ReservationResponse updateGuestReservation(
+            GuestReservationUpdateRequest request
+    ) {
+        String phone =
+                normalizeGuestPhone(
+                        request.getGuestPhone()
+                );
+
+        Reservation reservation =
+                reservationRepository
+                        .findByReservationNoAndCustomerTypeAndGuestPhone(
+                                request.getReservationNo(),
+                                CustomerType.GUEST,
+                                phone
+                        )
+                        .orElseThrow(
+                                () ->
+                                        new ReservationNotFoundException(
+                                                request.getReservationNo()
+                                        )
+                        );
+
+        updateReservationEntity(
+                reservation,
+                reservation.getReservationNo(),
+                request.getServiceMenuNo(),
+                request.getHairStyleNo(),
+                request.getStartAt(),
+                request.getRequestMemo()
         );
 
         return ReservationResponse.from(reservation);
@@ -285,6 +282,53 @@ public class ReservationService {
                 .stream()
                 .map(ReservationResponse::from)
                 .toList();
+    }
+
+    private void updateReservationEntity(
+            Reservation reservation,
+            Long reservationNo,
+            Long serviceMenuNo,
+            Long hairStyleNo,
+            LocalDateTime start,
+            String requestMemo
+    ) {
+        validateModifiable(reservation);
+
+        var menu =
+                serviceMenuReader.getActiveServiceMenu(
+                        serviceMenuNo
+                );
+
+        validateHairStyle(
+                hairStyleNo,
+                serviceMenuNo
+        );
+
+        LocalDateTime end =
+                start.plusMinutes(menu.durationMin());
+
+        lockReservationDay(start);
+
+        if (!availableTimeService
+                .isAvailableForUpdate(
+                        reservationNo,
+                        start,
+                        end
+                )) {
+            throw new ReservationUnavailableException(
+                    "변경하려는 시간에는 예약할 수 없습니다."
+            );
+        }
+
+        reservation.changeSchedule(
+                serviceMenuNo,
+                hairStyleNo,
+                menu.name(),
+                menu.durationMin(),
+                start,
+                end,
+                normalizeMemo(requestMemo)
+        );
     }
 
     private void validateCustomer(

@@ -25,6 +25,14 @@ public class ReservationResponse {
     private String requestMemo;
     private ReservationStatus status;
 
+    private String cancelReason;
+    private CanceledBy canceledBy;
+    private LocalDateTime confirmedAt;
+    private LocalDateTime completedAt;
+    private LocalDateTime canceledAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
     public static ReservationResponse from(Reservation r) {
         return ReservationResponse.builder()
                 .reservationNo(r.getReservationNo())
@@ -41,6 +49,13 @@ public class ReservationResponse {
                 .endAt(r.getEndAt())
                 .requestMemo(r.getRequestMemo())
                 .status(r.getStatus())
+                .cancelReason(r.getCancelReason())
+                .canceledBy(r.getCanceledBy())
+                .confirmedAt(r.getConfirmedAt())
+                .completedAt(r.getCompletedAt())
+                .canceledAt(r.getCanceledAt())
+                .createdAt(r.getCreatedAt())
+                .updatedAt(r.getUpdatedAt())
                 .build();
     }
 }

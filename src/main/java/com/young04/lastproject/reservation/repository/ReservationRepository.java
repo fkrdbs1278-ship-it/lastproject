@@ -20,6 +20,11 @@ public interface ReservationRepository
             Long memberNo
     );
 
+    Optional<Reservation> findByReservationNoAndMemberNo(
+            Long reservationNo,
+            Long memberNo
+    );
+
     Optional<Reservation>
     findByReservationNoAndCustomerTypeAndGuestPhone(
             Long reservationNo,
