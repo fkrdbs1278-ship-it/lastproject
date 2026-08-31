@@ -4,6 +4,7 @@ package com.young04.lastproject.member.controller;
 import com.young04.lastproject.global.exception.member.DuplicateEmailException;
 import com.young04.lastproject.global.exception.member.InvalidBirthDateException;
 import com.young04.lastproject.global.security.CustomUserDetails;
+import com.young04.lastproject.member.dto.MemberResponse;
 import com.young04.lastproject.member.dto.MemberUpdateRequest;
 import com.young04.lastproject.member.dto.PasswordConfirmRequest;
 import com.young04.lastproject.member.service.MemberService;
@@ -26,6 +27,31 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+
+    /* 마이페이지 */
+
+    @GetMapping("/mypage")
+    public String mypage(
+            @AuthenticationPrincipal
+            CustomUserDetails userDetails,
+
+            Model model
+    ) {
+
+        MemberResponse member =
+                memberService.getMember(
+                        userDetails.getMemberNo()
+                );
+
+
+        model.addAttribute(
+                "member",
+                member
+        );
+
+
+        return "member/mypage";
+    }
 
     /*회원 정보 수정 페이지*/
 
