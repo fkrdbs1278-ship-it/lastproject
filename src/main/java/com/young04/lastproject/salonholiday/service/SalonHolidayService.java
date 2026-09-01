@@ -1,11 +1,14 @@
 package com.young04.lastproject.salonholiday.service;
 
 import com.young04.lastproject.salonholiday.dto.SalonHolidayRequest;
+import com.young04.lastproject.salonholiday.dto.SalonHolidayResponse;
 import com.young04.lastproject.salonholiday.entity.SalonHoliday;
 import com.young04.lastproject.salonholiday.repository.SalonHolidayRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -13,6 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class SalonHolidayService {
 
     private final SalonHolidayRepository salonHolidayRepository;
+
+    public List<SalonHolidayResponse> getHolidays() {
+        return salonHolidayRepository
+                .findAllByOrderByStartAtAsc()
+                .stream()
+                .map(SalonHolidayResponse::from)
+                .toList();
+    }
 
     @Transactional
     public SalonHoliday createHoliday(SalonHolidayRequest request) {
@@ -34,10 +45,8 @@ public class SalonHolidayService {
     public SalonHoliday updateHoliday(Long salonHolidayNo, SalonHolidayRequest request) {
         validatePeriod(request);
 
-        SalonHoliday holiday = salonHolidayRepository.findById(salonHolidayNo)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("휴일 정보를 찾을 수 없습니다.")
-                );
+        SalonHoliday holiday =
+                getHoliday(salonHolidayNo);
 
         holiday.change(
                 request.getHolidayType(),
@@ -53,12 +62,19 @@ public class SalonHolidayService {
 
     @Transactional
     public void deleteHoliday(Long salonHolidayNo) {
-        SalonHoliday holiday = salonHolidayRepository.findById(salonHolidayNo)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("휴일 정보를 찾을 수 없습니다.")
-                );
+        salonHolidayRepository.delete(
+                getHoliday(salonHolidayNo)
+        );
+    }
 
-        salonHolidayRepository.delete(holiday);
+    private SalonHoliday getHoliday(Long salonHolidayNo) {
+        return salonHolidayRepository
+                .findById(salonHolidayNo)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "휴일 정보를 찾을 수 없습니다."
+                        )
+                );
     }
 
     private void validatePeriod(SalonHolidayRequest request) {

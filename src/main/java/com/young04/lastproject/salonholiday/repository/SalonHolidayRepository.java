@@ -1,5 +1,6 @@
 package com.young04.lastproject.salonholiday.repository;
 
+import com.young04.lastproject.salonholiday.entity.HolidayType;
 import com.young04.lastproject.salonholiday.entity.SalonHoliday;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -32,5 +33,11 @@ public interface SalonHolidayRepository
     List<SalonHoliday> findOverlappingHolidays(
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd
+    );
+
+    List<SalonHoliday> findAllByOrderByStartAtAsc();
+
+    List<SalonHoliday> findAllByHolidayTypeOrderByStartAtAsc(
+            HolidayType holidayType
     );
 }
