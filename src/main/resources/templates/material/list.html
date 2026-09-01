@@ -6,223 +6,236 @@
 
     <link rel="stylesheet"
           th:href="@{/css/operation/material.css}">
+
+    <!-- 관리자 공통 사이드바 CSS 연결 -->
+    <link rel="stylesheet"
+          th:href="@{/css/admin/dashboard-sidebar.css}">
 </head>
 
 <body>
-<main class="material-page">
+<div class="admin-layout material-admin-layout">
 
-    <section class="material-header">
-        <div>
-            <h1>자재 관리</h1>
-            <p>매장에서 사용하는 자재와 현재 재고를 관리합니다.</p>
-        </div>
+    <!-- 관리자 공통 사이드바 -->
+    <aside th:replace="~{admin/dashboard-sidebar
+            :: sidebar('material')}">
+    </aside>
 
-        <div class="material-header-actions">
-            <a class="history-button"
-               th:href="@{/admin/purchaseorder}">
-                발주 관리
-            </a>
+    <!-- 자재 관리 화면 영역 -->
+    <div class="material-admin-content">
+        <main class="material-page">
 
-            <a class="history-button"
-               th:href="@{/admin/stockhistory/adjustment}">
-                재고 조정
-            </a>
+            <section class="material-header">
+                <div>
+                    <h1>자재 관리</h1>
+                    <p>매장에서 사용하는 자재와 현재 재고를 관리합니다.</p>
+                </div>
 
-            <a class="primary-button"
-               th:href="@{/admin/material/new}">
-                자재 등록
-            </a>
-        </div>
-    </section>
-
-    <div class="message"
-         th:if="${message != null}"
-         th:text="${message}">
-    </div>
-
-    <!-- 자재 삭제 실패 메시지 -->
-    <div class="message error-message"
-         th:if="${errorMessage != null}"
-         th:text="${errorMessage}">
-    </div>
-
-    <section class="material-summary">
-        <a class="summary-card"
-           th:href="@{/admin/material(lowStock=true)}">
-            <span>재고 부족</span>
-
-            <strong th:text="${lowStockCount}">0</strong>
-
-            <small>안전 재고 이하</small>
-        </a>
-    </section>
-
-    <section class="material-filter">
-
-        <form class="search-form"
-              th:action="@{/admin/material}"
-              method="get">
-
-            <input type="text"
-                   name="keyword"
-                   th:value="${keyword}"
-                   placeholder="자재명을 입력해 주세요.">
-
-            <button type="submit">검색</button>
-        </form>
-
-        <nav class="filter-buttons">
-            <a th:href="@{/admin/material}"
-               th:classappend="${keyword == null and useYn == null and !lowStock}
-                       ? 'active'">
-                전체
-            </a>
-
-            <a th:href="@{/admin/material(useYn='Y')}"
-               th:classappend="${useYn == 'Y'} ? 'active'">
-                사용 중
-            </a>
-
-            <a th:href="@{/admin/material(useYn='N')}"
-               th:classappend="${useYn == 'N'} ? 'active'">
-                사용 중지
-            </a>
-
-            <a th:href="@{/admin/material(lowStock=true)}"
-               th:classappend="${lowStock} ? 'active'">
-                재고 부족
-            </a>
-        </nav>
-    </section>
-
-    <section class="material-table-wrap">
-        <table class="material-table">
-            <thead>
-            <tr>
-                <th>번호</th>
-                <th>자재명</th>
-                <th>자재 분류</th>
-                <th>현재 재고</th>
-                <th>안전 재고</th>
-                <th>재고 단위</th>
-                <th>개당 구매가</th>
-                <th>업체명</th>
-                <th>상태</th>
-                <th>관리</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <!-- 재고 부족 자재는 행 색상을 변경 -->
-            <tr th:each="material : ${materials}"
-                th:classappend="${material.lowStock}
-                        ? 'low-stock-row'">
-
-                <td th:text="${material.materialNo}">1</td>
-
-                <td>
-                    <a class="material-name"
-                       th:href="@{/admin/material/{no}
-                       (no=${material.materialNo})}"
-                       th:text="${material.materialName}">
-                        자재명
+                <div class="material-header-actions">
+                    <a class="history-button"
+                       th:href="@{/admin/purchaseorder}">
+                        발주 관리
                     </a>
 
-                    <span class="low-stock-badge"
-                          th:if="${material.lowStock}">
+                    <a class="history-button"
+                       th:href="@{/admin/stockhistory/adjustment}">
+                        재고 조정
+                    </a>
+
+                    <a class="primary-button"
+                       th:href="@{/admin/material/new}">
+                        자재 등록
+                    </a>
+                </div>
+            </section>
+
+            <div class="message"
+                 th:if="${message != null}"
+                 th:text="${message}">
+            </div>
+
+            <!-- 자재 삭제 실패 메시지 -->
+            <div class="message error-message"
+                 th:if="${errorMessage != null}"
+                 th:text="${errorMessage}">
+            </div>
+
+            <section class="material-summary">
+                <a class="summary-card"
+                   th:href="@{/admin/material(lowStock=true)}">
+                    <span>재고 부족</span>
+
+                    <strong th:text="${lowStockCount}">0</strong>
+
+                    <small>안전 재고 이하</small>
+                </a>
+            </section>
+
+            <section class="material-filter">
+
+                <form class="search-form"
+                      th:action="@{/admin/material}"
+                      method="get">
+
+                    <input type="text"
+                           name="keyword"
+                           th:value="${keyword}"
+                           placeholder="자재명을 입력해 주세요.">
+
+                    <button type="submit">검색</button>
+                </form>
+
+                <nav class="filter-buttons">
+                    <a th:href="@{/admin/material}"
+                       th:classappend="${keyword == null and useYn == null and !lowStock}
+                       ? 'active'">
+                        전체
+                    </a>
+
+                    <a th:href="@{/admin/material(useYn='Y')}"
+                       th:classappend="${useYn == 'Y'} ? 'active'">
+                        사용 중
+                    </a>
+
+                    <a th:href="@{/admin/material(useYn='N')}"
+                       th:classappend="${useYn == 'N'} ? 'active'">
+                        사용 중지
+                    </a>
+
+                    <a th:href="@{/admin/material(lowStock=true)}"
+                       th:classappend="${lowStock} ? 'active'">
+                        재고 부족
+                    </a>
+                </nav>
+            </section>
+
+            <section class="material-table-wrap">
+                <table class="material-table">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>자재명</th>
+                        <th>자재 분류</th>
+                        <th>현재 재고</th>
+                        <th>안전 재고</th>
+                        <th>재고 단위</th>
+                        <th>개당 구매가</th>
+                        <th>업체명</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <!-- 재고 부족 자재는 행 색상을 변경 -->
+                    <tr th:each="material : ${materials}"
+                        th:classappend="${material.lowStock}
+                        ? 'low-stock-row'">
+
+                        <td th:text="${material.materialNo}">1</td>
+
+                        <td>
+                            <a class="material-name"
+                               th:href="@{/admin/material/{no}
+                       (no=${material.materialNo})}"
+                               th:text="${material.materialName}">
+                                자재명
+                            </a>
+
+                            <span class="low-stock-badge"
+                                  th:if="${material.lowStock}">
                         부족
                     </span>
-                </td>
+                        </td>
 
-                <td th:text="${material.categoryCode == 'HAIR_COLOR' ? '염색제' :
+                        <td th:text="${material.categoryCode == 'HAIR_COLOR' ? '염색제' :
                                material.categoryCode == 'PERM' ? '펌제' :
                                material.categoryCode == 'TREATMENT' ? '클리닉·트리트먼트' :
                                material.categoryCode == 'SHAMPOO' ? '샴푸·두피케어' :
                                material.categoryCode == 'STYLING' ? '스타일링제' :
                                material.categoryCode == 'SUPPLIES' ? '미용 소모품' :
                                material.categoryCode == 'ETC' ? '기타' : '-'}">
-                    -
-                </td>
+                            -
+                        </td>
 
-                <td th:text="${#numbers.formatInteger(
+                        <td th:text="${#numbers.formatInteger(
                         material.currentStock, 1
                 )}">
-                    0
-                </td>
+                            0
+                        </td>
 
-                <td th:text="${#numbers.formatInteger(
+                        <td th:text="${#numbers.formatInteger(
                         material.safetyStock, 1
                 )}">
-                    0
-                </td>
+                            0
+                        </td>
 
-                <td th:text="${material.unitCode}">개</td>
+                        <td th:text="${material.unitCode}">개</td>
 
-                <td th:text="${#numbers.formatInteger(
+                        <td th:text="${#numbers.formatInteger(
                         material.unitPrice, 1, 'COMMA'
                 ) + '원'}">
-                    0원
-                </td>
+                            0원
+                        </td>
 
-                <td th:text="${material.supplierName != null
+                        <td th:text="${material.supplierName != null
                         ? material.supplierName : '-'}">
-                    -
-                </td>
+                            -
+                        </td>
 
-                <td>
+                        <td>
                     <span class="status-badge active"
                           th:if="${material.useYn == 'Y'}">
                         사용 중
                     </span>
 
-                    <span class="status-badge inactive"
-                          th:if="${material.useYn == 'N'}">
+                            <span class="status-badge inactive"
+                                  th:if="${material.useYn == 'N'}">
                         사용 중지
                     </span>
-                </td>
+                        </td>
 
-                <td class="manage-cell">
-                    <a class="edit-button"
-                       th:href="@{/admin/material/{no}/edit
+                        <td class="manage-cell">
+                            <a class="edit-button"
+                               th:href="@{/admin/material/{no}/edit
                        (no=${material.materialNo})}">
-                        수정
-                    </a>
+                                수정
+                            </a>
 
-                    <!-- 사용 중지된 자재에만 삭제 버튼 표시 -->
-                    <form class="delete-form"
-                          th:if="${material.useYn == 'N'}"
-                          th:action="@{/admin/material/{no}/delete(
+                            <!-- 사용 중지된 자재에만 삭제 버튼 표시 -->
+                            <form class="delete-form"
+                                  th:if="${material.useYn == 'N'}"
+                                  th:action="@{/admin/material/{no}/delete(
                                 no=${material.materialNo}
                           )}"
-                          method="post"
-                          onsubmit="return confirm('이 자재를 삭제하면 연결된 발주 품목과 재고 이력도 함께 삭제됩니다. 계속하시겠습니까?');">
+                                  method="post"
+                                  onsubmit="return confirm('이 자재를 삭제하면 연결된 발주 품목과 재고 이력도 함께 삭제됩니다. 계속하시겠습니까?');">
 
-                        <button class="delete-button"
-                                type="submit">
-                            삭제
-                        </button>
-                    </form>
-                </td>
-            </tr>
+                                <button class="delete-button"
+                                        type="submit">
+                                    삭제
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
 
-            <!-- 조회된 자재가 없을 때 표시 -->
-            <tr th:if="${#lists.isEmpty(materials)}">
-                <td class="empty-message" colspan="10">
-                    조회된 자재가 없습니다.
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
+                    <!-- 조회된 자재가 없을 때 표시 -->
+                    <tr th:if="${#lists.isEmpty(materials)}">
+                        <td class="empty-message" colspan="10">
+                            조회된 자재가 없습니다.
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </section>
 
-    <!-- 자재가 없어도 기본 페이지 번호를 표시합니다. -->
-    <nav class="pagination"
-         aria-label="자재 목록 페이지">
+            <!-- 자재가 없어도 기본 페이지 번호를 표시합니다. -->
+            <nav class="pagination"
+                 aria-label="자재 목록 페이지">
 
-        <a class="page-button"
-           th:classappend="${currentPage == 0}
+                <a class="page-button"
+                   th:classappend="${currentPage == 0}
                ? 'disabled'"
-           th:href="${currentPage == 0}
+                   th:href="${currentPage == 0}
                ? '#'
                : @{/admin/material(
                     page=${currentPage - 1},
@@ -230,30 +243,30 @@
                     useYn=${useYn},
                     lowStock=${lowStock}
                  )}"
-           aria-label="이전 페이지">
-            ‹
-        </a>
+                   aria-label="이전 페이지">
+                    ‹
+                </a>
 
-        <a class="page-number"
-           th:each="pageNumber :
+                <a class="page-number"
+                   th:each="pageNumber :
                ${#numbers.sequence(startPage, endPage)}"
-           th:classappend="${pageNumber == currentPage}
+                   th:classappend="${pageNumber == currentPage}
                ? 'active'"
-           th:href="@{/admin/material(
+                   th:href="@{/admin/material(
             page=${pageNumber},
             keyword=${keyword},
             useYn=${useYn},
             lowStock=${lowStock}
        )}"
-           th:text="${pageNumber + 1}">
-            1
-        </a>
+                   th:text="${pageNumber + 1}">
+                    1
+                </a>
 
-        <a class="page-button"
-           th:classappend="${materialPage.totalPages <= 1
+                <a class="page-button"
+                   th:classappend="${materialPage.totalPages <= 1
                         or materialPage.last}
                ? 'disabled'"
-           th:href="${materialPage.totalPages <= 1
+                   th:href="${materialPage.totalPages <= 1
                   or materialPage.last}
                ? '#'
                : @{/admin/material(
@@ -262,12 +275,15 @@
                     useYn=${useYn},
                     lowStock=${lowStock}
                  )}"
-           aria-label="다음 페이지">
-            ›
-        </a>
+                   aria-label="다음 페이지">
+                    ›
+                </a>
 
-    </nav>
+            </nav>
 
-</main>
+        </main>
+    </div>
+
+</div>
 </body>
 </html>

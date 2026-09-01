@@ -1,4 +1,35 @@
 /* 자재 화면 공통 영역 */
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+/* 공통 사이드바와 자재 관리 화면 배치 */
+.material-admin-layout {
+    min-height: 100vh;
+    background-color: #f7f8fa;
+}
+
+/* 사이드바의 width에 padding이 포함되도록 크기 계산 통일 */
+.material-admin-layout .admin-sidebar,
+.material-admin-layout .admin-sidebar * {
+    box-sizing: border-box;
+}
+
+/* 고정 사이드바 너비만큼 자재 화면을 오른쪽으로 이동 */
+.material-admin-content {
+    min-width: 0;
+    min-height: 100vh;
+    margin-left: 250px;
+}
+
+/* 대시보드처럼 사이드바 바로 옆에서 콘텐츠 시작 */
+.material-admin-content .material-list-page {
+    max-width: none;
+    margin: 0;
+}
+
 .material-page,
 .material-page * {
     box-sizing: border-box;

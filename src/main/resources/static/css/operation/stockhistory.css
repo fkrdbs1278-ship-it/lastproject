@@ -1,4 +1,35 @@
 /* 재고 변동 이력 화면 공통 영역 */
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+/* 공통 사이드바와 재고 화면 배치 */
+.stockhistory-admin-layout {
+    min-height: 100vh;
+    background-color: #f7f8fa;
+}
+
+/* 사이드바의 width에 padding이 포함되도록 크기 계산 통일 */
+.stockhistory-admin-layout .admin-sidebar,
+.stockhistory-admin-layout .admin-sidebar * {
+    box-sizing: border-box;
+}
+
+/* 고정 사이드바 너비만큼 재고 화면을 오른쪽으로 이동 */
+.stockhistory-admin-content {
+    min-width: 0;
+    min-height: 100vh;
+    margin-left: 250px;
+}
+
+/* 이력 목록은 사이드바 오른쪽 영역 전체 너비 사용 */
+.stockhistory-admin-content .stockhistory-list-page {
+    max-width: none;
+    margin: 0;
+}
+
 .stockhistory-page,
 .stockhistory-page * {
     box-sizing: border-box;
