@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -38,36 +40,41 @@ public class PurchaseOrderController {
     // 발주할 자재 목록 조회를 담당하는 Service
     private final MaterialService materialService;
 
-    // 전체·상태별·공급업체별 발주서 목록 조회
+    // 전체·상태별·업체명별 발주서 목록을 페이징 조회
     @GetMapping
     public String list(
             @RequestParam(required = false) String orderStatus,
             @RequestParam(required = false) String supplierName,
+            @RequestParam(defaultValue = "0") int page,
             Model model
     ) {
-        // 화면으로 전달할 발주서 목록
-        List<PurchaseOrderResponse> orders;
+        // 잘못된 음수 페이지가 들어오면 첫 페이지로 변경
+        int pageNumber = Math.max(page, 0);
 
-        // 공급업체명이 입력되면 공급업체명으로 검색
-        if (supplierName != null && !supplierName.isBlank()) {
-            orders = purchaseOrderService.searchOrders(supplierName);
+        // 한 페이지에 발주서 10개 표시
+        PageRequest pageRequest = PageRequest.of(pageNumber, 10);
 
-            // 발주 상태가 선택되면 해당 상태만 조회
-        } else if (orderStatus != null && !orderStatus.isBlank()) {
-            orders = purchaseOrderService.getOrdersByStatus(orderStatus);
+        // 검색 조건과 페이지 정보를 이용하여 발주서 조회
+        Page<PurchaseOrderResponse> orderPage =
+                purchaseOrderService.getOrderPage(
+                        orderStatus,
+                        supplierName,
+                        pageRequest
+                );
 
-            // 검색 조건이 없으면 전체 발주서 조회
-        } else {
-            orders = purchaseOrderService.getAllOrders();
-        }
+        // 현재 페이지에 표시할 발주서 목록 전달
+        model.addAttribute(
+                "orders",
+                orderPage.getContent()
+        );
 
-        // 조회한 발주서 목록을 화면으로 전달
-        model.addAttribute("orders", orders);
+        // 페이지 번호와 이전·다음 버튼 출력에 사용할 정보 전달
+        model.addAttribute("orderPage", orderPage);
 
-        // 현재 선택한 발주 상태를 화면으로 전달
+        // 현재 선택한 발주 상태 유지
         model.addAttribute("orderStatus", orderStatus);
 
-        // 현재 검색한 공급업체명을 화면으로 전달
+        // 현재 검색한 업체명 유지
         model.addAttribute("supplierName", supplierName);
 
         // 발주서 목록 HTML로 이동

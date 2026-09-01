@@ -49,6 +49,11 @@
               th:action="@{/admin/purchaseorder}"
               method="get">
 
+            <!-- 현재 선택한 발주 상태 유지 -->
+            <input type="hidden"
+                   name="orderStatus"
+                   th:value="${orderStatus}">
+
             <input type="text"
                    name="supplierName"
                    th:value="${supplierName}"
@@ -69,28 +74,36 @@
             </a>
 
             <!-- 발주 요청 상태 조회 -->
-            <a th:href="@{/admin/purchaseorder(orderStatus='REQUESTED')}"
+            <a th:href="@{/admin/purchaseorder(
+                    orderStatus='REQUESTED'
+               )}"
                th:classappend="${orderStatus == 'REQUESTED'}
                        ? 'active'">
                 발주 요청
             </a>
 
             <!-- 발주 완료 상태 조회 -->
-            <a th:href="@{/admin/purchaseorder(orderStatus='ORDERED')}"
+            <a th:href="@{/admin/purchaseorder(
+                    orderStatus='ORDERED'
+               )}"
                th:classappend="${orderStatus == 'ORDERED'}
                        ? 'active'">
                 발주 완료
             </a>
 
             <!-- 입고 완료 상태 조회 -->
-            <a th:href="@{/admin/purchaseorder(orderStatus='RECEIVED')}"
+            <a th:href="@{/admin/purchaseorder(
+                    orderStatus='RECEIVED'
+               )}"
                th:classappend="${orderStatus == 'RECEIVED'}
                        ? 'active'">
                 입고 완료
             </a>
 
             <!-- 발주 취소 상태 조회 -->
-            <a th:href="@{/admin/purchaseorder(orderStatus='CANCELED')}"
+            <a th:href="@{/admin/purchaseorder(
+                    orderStatus='CANCELED'
+               )}"
                th:classappend="${orderStatus == 'CANCELED'}
                        ? 'active'">
                 발주 취소
@@ -116,7 +129,8 @@
             </thead>
 
             <tbody>
-            <!-- 발주서 목록 반복 출력 -->
+
+            <!-- 현재 페이지의 발주서 목록 반복 출력 -->
             <tr th:each="order : ${orders}">
 
                 <!-- 발주서 번호 -->
@@ -127,8 +141,9 @@
                 <!-- 업체 이름과 상세 화면 링크 -->
                 <td>
                     <a class="supplier-name"
-                       th:href="@{/admin/purchaseorder/{no}
-                       (no=${order.purchaseOrderNo})}"
+                       th:href="@{/admin/purchaseorder/{no}(
+                            no=${order.purchaseOrderNo}
+                       )}"
                        th:text="${order.supplierName}">
                         업체명
                     </a>
@@ -194,8 +209,9 @@
                 <!-- 상세 화면 이동 -->
                 <td>
                     <a class="detail-button"
-                       th:href="@{/admin/purchaseorder/{no}
-                       (no=${order.purchaseOrderNo})}">
+                       th:href="@{/admin/purchaseorder/{no}(
+                            no=${order.purchaseOrderNo}
+                       )}">
                         상세
                     </a>
                 </td>
@@ -207,9 +223,67 @@
                     조회된 발주서가 없습니다.
                 </td>
             </tr>
+
             </tbody>
         </table>
     </section>
+
+    <!-- 발주서 목록 페이지 번호 -->
+    <nav class="pagination"
+         th:if="${orderPage.totalPages > 0}"
+         aria-label="발주서 페이지 이동">
+
+        <!-- 이전 페이지 -->
+        <a class="page-button"
+           th:if="${orderPage.hasPrevious()}"
+           th:href="@{/admin/purchaseorder(
+                page=${orderPage.number - 1},
+                orderStatus=${orderStatus},
+                supplierName=${supplierName}
+           )}">
+            &lt;
+        </a>
+
+        <!-- 첫 페이지에서는 이전 버튼 비활성화 -->
+        <span class="page-button disabled"
+              th:unless="${orderPage.hasPrevious()}">
+            &lt;
+        </span>
+
+        <!-- 페이지 번호 -->
+        <a class="page-button"
+           th:each="pageNumber : ${#numbers.sequence(
+                    0,
+                    orderPage.totalPages - 1
+           )}"
+           th:classappend="${pageNumber == orderPage.number}
+                    ? 'active'"
+           th:href="@{/admin/purchaseorder(
+                page=${pageNumber},
+                orderStatus=${orderStatus},
+                supplierName=${supplierName}
+           )}"
+           th:text="${pageNumber + 1}">
+            1
+        </a>
+
+        <!-- 다음 페이지 -->
+        <a class="page-button"
+           th:if="${orderPage.hasNext()}"
+           th:href="@{/admin/purchaseorder(
+                page=${orderPage.number + 1},
+                orderStatus=${orderStatus},
+                supplierName=${supplierName}
+           )}">
+            &gt;
+        </a>
+
+        <!-- 마지막 페이지에서는 다음 버튼 비활성화 -->
+        <span class="page-button disabled"
+              th:unless="${orderPage.hasNext()}">
+            &gt;
+        </span>
+    </nav>
 
 </main>
 </body>

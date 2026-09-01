@@ -406,9 +406,7 @@
                                    min="0"
                                    th:max="${item.orderQuantity}"
                                    step="0.01"
-                                   th:name="|receivedQuantities[
-                                        ${item.purchaseOrderItemNo}
-                                   ]|"
+                                   th:name="${'receivedQuantities[' + item.purchaseOrderItemNo + ']'}"
                                    th:value="${item.orderQuantity}"
                                    required>
 

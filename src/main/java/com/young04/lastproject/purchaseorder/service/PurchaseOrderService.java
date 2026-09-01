@@ -13,6 +13,8 @@ import com.young04.lastproject.stockhistory.service.StockHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,6 +41,38 @@ public class PurchaseOrderService {
                 .stream()
                 .map(PurchaseOrderResponse::from)
                 .toList();
+    }
+
+    // 검색 조건에 맞는 발주서 목록을 페이징 조회
+    public Page<PurchaseOrderResponse> getOrderPage(
+            String orderStatus,
+            String supplierName,
+            Pageable pageable
+    ) {
+        // 업체명이 입력되면 업체명으로 검색
+        if (supplierName != null && !supplierName.isBlank()) {
+            return purchaseOrderRepository
+                    .findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
+                            supplierName,
+                            pageable
+                    )
+                    .map(PurchaseOrderResponse::from);
+        }
+
+        // 발주 상태가 선택되면 해당 상태만 조회
+        if (orderStatus != null && !orderStatus.isBlank()) {
+            return purchaseOrderRepository
+                    .findByOrderStatusOrderByOrderDateDesc(
+                            orderStatus,
+                            pageable
+                    )
+                    .map(PurchaseOrderResponse::from);
+        }
+
+        // 검색 조건이 없으면 전체 발주서를 조회
+        return purchaseOrderRepository
+                .findAllByOrderByOrderDateDesc(pageable)
+                .map(PurchaseOrderResponse::from);
     }
 
     // 선택한 발주 상태의 발주서를 최신순으로 조회

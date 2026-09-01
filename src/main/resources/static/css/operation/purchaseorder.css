@@ -855,3 +855,80 @@
         flex: 1;
     }
 }
+
+/* =========================================================
+   발주 관리 페이지 번호
+   ========================================================= */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 24px;
+    margin-bottom: 32px;
+}
+
+.pagination .page-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 11px;
+
+    border: 1px solid #d9dce3;
+    border-radius: 8px;
+    background-color: #ffffff;
+
+    color: #555b66;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+
+    transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.pagination a.page-button:hover {
+    border-color: #5c6bc0;
+    background-color: #f4f5ff;
+    color: #5c6bc0;
+    transform: translateY(-1px);
+}
+
+.pagination .page-button.active {
+    border-color: #5c6bc0;
+    background-color: #5c6bc0;
+    color: #ffffff;
+    pointer-events: none;
+}
+
+.pagination .page-button.disabled {
+    border-color: #eceef2;
+    background-color: #f6f7f9;
+    color: #b8bdc7;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* 작은 화면에서 페이지 버튼 크기 조정 */
+@media (max-width: 700px) {
+    .pagination {
+        gap: 6px;
+        margin-top: 20px;
+        margin-bottom: 24px;
+    }
+
+    .pagination .page-button {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 9px;
+        font-size: 13px;
+    }
+}
