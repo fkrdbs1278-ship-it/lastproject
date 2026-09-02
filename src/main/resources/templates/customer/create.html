@@ -1,32 +1,31 @@
 <!DOCTYPE html>
-
-<html
-        lang="ko"
-        xmlns:th="http://www.thymeleaf.org"
->
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>전화예약 고객 등록</title>
 
 
-    <link
-            rel="stylesheet"
-            th:href="@{/css/customer/create.css}"
-    >
+    <!-- =====================================================
+         3part 고객 CRM 전용 사이드바 CSS
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          th:href="@{/css/customer/customer-sidebar.css}">
 
 
-    <script
-            th:src="@{/js/customer/create.js}"
-            defer
-    ></script>
+    <!-- =====================================================
+         고객 등록 전용 CSS
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          th:href="@{/css/customer/create.css}">
 
 </head>
 
@@ -35,23 +34,32 @@
 
 
 <!-- =========================================================
-     전화예약 고객 등록 전체
+     3part 고객 CRM 전용 관리자 사이드바
 ========================================================= -->
 
-<div class="customer-create-page">
+<aside th:replace="~{customer/customer-sidebar :: sidebar('customer')}">
+</aside>
+
+
+
+<!-- =========================================================
+     전화예약 고객 등록
+========================================================= -->
+
+<main class="create-page">
 
 
     <!-- =====================================================
-         페이지 헤더
+         페이지 상단
     ====================================================== -->
 
-    <header class="page-header">
+    <header class="create-header">
 
 
         <div>
 
             <p class="page-label">
-                CUSTOMER CRM
+                CUSTOMER REGISTRATION
             </p>
 
 
@@ -61,19 +69,16 @@
 
 
             <p class="page-description">
-                전화로 예약한 비회원 고객을
-                고객 CRM에 먼저 등록합니다.
+                전화로 예약한 신규 고객을 고객 CRM에 직접 등록합니다.
             </p>
 
         </div>
 
 
 
-        <a
-                class="back-button"
-                th:href="@{/admin/customers}"
-        >
-            ← 고객관리 목록
+        <a class="back-button"
+           th:href="@{/admin/customers}">
+            ← 고객 목록
         </a>
 
 
@@ -82,102 +87,74 @@
 
 
     <!-- =====================================================
-         안내
+         등록 오류 메시지
     ====================================================== -->
 
-    <section class="guide-section">
+    <div class="alert error"
+         th:if="${errorMessage != null}"
+         th:text="${errorMessage}">
 
-
-        <div class="guide-icon">
-            TEL
-        </div>
-
-
-        <div>
-
-            <strong>
-                전화예약 고객
-            </strong>
-
-
-            <p>
-                회원가입을 하지 않은 고객도 이름과 전화번호를 기준으로
-                고객 CRM에 등록할 수 있습니다.
-            </p>
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- =====================================================
-         오류 메시지
-    ====================================================== -->
-
-    <div
-            class="alert error"
-            th:if="${errorMessage}"
-            th:text="${errorMessage}"
-    >
         고객 등록 중 오류가 발생했습니다.
+
     </div>
 
 
 
     <!-- =====================================================
-         고객 등록 폼
+         고객 등록 카드
     ====================================================== -->
 
-    <section class="form-section">
+    <section class="create-panel">
 
 
-        <div class="section-header">
+        <!-- =================================================
+             카드 제목
+        ================================================== -->
+
+        <div class="panel-header">
 
 
             <div>
 
-                <p class="section-label">
-                    CUSTOMER
+                <p class="panel-label">
+                    NEW CUSTOMER
                 </p>
 
 
                 <h2>
-                    고객 기본정보
+                    신규 고객 정보
                 </h2>
 
             </div>
 
 
-            <span class="required-guide">
-                * 필수 입력
-            </span>
+            <p>
+                고객명과 전화번호를 입력해 주세요.
+            </p>
 
 
         </div>
 
 
 
-        <form
-                id="customerCreateForm"
-                class="customer-create-form"
-                method="post"
-                th:action="@{/admin/customers/new}"
-                th:object="${customerCreateRequest}"
-        >
+        <!-- =================================================
+             고객 등록 Form
+        ================================================== -->
+
+        <form class="create-form"
+              method="post"
+              th:action="@{/admin/customers/new}"
+              th:object="${customerCreateRequest}">
 
 
             <!-- =================================================
-                 Spring Security CSRF
+                 CSRF
             ================================================== -->
 
-            <input
-                    type="hidden"
-                    th:if="${_csrf != null}"
-                    th:name="${_csrf.parameterName}"
-                    th:value="${_csrf.token}"
-            >
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
 
 
 
@@ -199,31 +176,22 @@
                 </label>
 
 
-
-                <input
-                        type="text"
-                        id="customerName"
-                        th:field="*{customerName}"
-                        maxlength="50"
-                        placeholder="고객명을 입력해 주세요."
-                        autocomplete="off"
-                >
+                <input type="text"
+                       id="customerName"
+                       class="form-control"
+                       th:field="*{customerName}"
+                       maxlength="50"
+                       placeholder="고객명을 입력하세요."
+                       autocomplete="off">
 
 
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('customerName')}"
+                     th:errors="*{customerName}">
 
-                <p class="field-description">
-                    전화 예약 시 확인한 고객 이름을 입력합니다.
-                </p>
+                    고객명을 확인해 주세요.
 
-
-
-                <p
-                        class="field-error"
-                        th:if="${#fields.hasErrors('customerName')}"
-                        th:errors="*{customerName}"
-                >
-                    고객명을 입력해 주세요.
-                </p>
+                </div>
 
 
             </div>
@@ -248,40 +216,38 @@
                 </label>
 
 
-
-                <input
-                        type="tel"
-                        id="phone"
-                        th:field="*{phone}"
-                        maxlength="20"
-                        placeholder="010-1234-5678"
-                        autocomplete="tel"
-                        inputmode="tel"
-                >
+                <input type="text"
+                       id="phone"
+                       class="form-control"
+                       th:field="*{phone}"
+                       maxlength="20"
+                       placeholder="010-1234-5678"
+                       autocomplete="off">
 
 
-
-                <p class="field-description">
-
-                    하이픈을 입력하지 않아도 자동으로
-
-                    <strong>
-                        010-1234-5678
-                    </strong>
-
-                    형식으로 처리됩니다.
-
-                </p>
+                <div class="input-guide">
 
 
+                    <span class="guide-icon">
+                        i
+                    </span>
 
-                <p
-                        class="field-error"
-                        th:if="${#fields.hasErrors('phone')}"
-                        th:errors="*{phone}"
-                >
+
+                    <span>
+                        하이픈 없이 입력해도 등록 과정에서 표준 전화번호 형식으로 처리합니다.
+                    </span>
+
+
+                </div>
+
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('phone')}"
+                     th:errors="*{phone}">
+
                     전화번호를 확인해 주세요.
-                </p>
+
+                </div>
 
 
             </div>
@@ -289,22 +255,44 @@
 
 
             <!-- =================================================
-                 등록될 기본정보 안내
+                 기본 등록 정보 안내
             ================================================== -->
 
-            <div class="default-info-box">
+            <section class="default-info">
 
 
-                <h3>
-                    신규 전화예약 고객 기본 설정
-                </h3>
-
-
-
-                <div class="default-info-grid">
+                <div class="default-info-header">
 
 
                     <div>
+
+                        <p class="default-label">
+                            DEFAULT SETTINGS
+                        </p>
+
+
+                        <h3>
+                            신규 고객 기본 설정
+                        </h3>
+
+                    </div>
+
+
+                    <span class="automatic-badge">
+                        자동 적용
+                    </span>
+
+
+                </div>
+
+
+
+                <div class="default-grid">
+
+
+                    <!-- 고객 유형 -->
+
+                    <div class="default-item">
 
                         <span>
                             고객 유형
@@ -314,11 +302,17 @@
                             비회원
                         </strong>
 
+                        <small>
+                            GUEST
+                        </small>
+
                     </div>
 
 
 
-                    <div>
+                    <!-- 고객 등급 -->
+
+                    <div class="default-item">
 
                         <span>
                             고객 등급
@@ -328,11 +322,37 @@
                             일반
                         </strong>
 
+                        <small>
+                            NORMAL
+                        </small>
+
                     </div>
 
 
 
-                    <div>
+                    <!-- 등급 관리 -->
+
+                    <div class="default-item">
+
+                        <span>
+                            등급 관리
+                        </span>
+
+                        <strong>
+                            자동 관리
+                        </strong>
+
+                        <small>
+                            기본 상태
+                        </small>
+
+                    </div>
+
+
+
+                    <!-- 방문 횟수 -->
+
+                    <div class="default-item">
 
                         <span>
                             방문 횟수
@@ -342,47 +362,49 @@
                             0회
                         </strong>
 
+                        <small>
+                            신규 고객
+                        </small>
+
                     </div>
 
 
 
-                    <div>
+                    <!-- 누적 결제 -->
+
+                    <div class="default-item">
 
                         <span>
-                            누적 결제액
+                            누적 결제
                         </span>
 
                         <strong>
                             0원
                         </strong>
 
+                        <small>
+                            초기값
+                        </small>
+
                     </div>
 
 
 
-                    <div>
+                    <!-- 활성 상태 -->
+
+                    <div class="default-item">
 
                         <span>
-                            고객 상태
+                            활성 상태
                         </span>
 
-                        <strong>
+                        <strong class="active-text">
                             활성
                         </strong>
 
-                    </div>
-
-
-
-                    <div>
-
-                        <span>
-                            등급 관리
-                        </span>
-
-                        <strong>
-                            자동
-                        </strong>
+                        <small>
+                            ACTIVE
+                        </small>
 
                     </div>
 
@@ -390,56 +412,24 @@
                 </div>
 
 
-            </div>
+            </section>
 
 
 
             <!-- =================================================
-                 등록 흐름 안내
+                 등록 완료 안내
             ================================================== -->
 
-            <div class="flow-guide">
+            <div class="registration-guide">
 
 
                 <strong>
-                    등록 후 흐름
+                    등록 후
                 </strong>
 
 
-                <div class="flow-list">
-
-
-                    <span>
-                        고객정보 입력
-                    </span>
-
-
-                    <b>
-                        →
-                    </b>
-
-
-                    <span>
-                        CRM 고객 등록
-                    </span>
-
-
-                    <b>
-                        →
-                    </b>
-
-
-                    <span>
-                        고객관리 목록 복귀
-                    </span>
-
-
-                </div>
-
-
                 <p>
-                    실제 예약 생성은 예약 담당 기능과 통합 후 연결합니다.
-                    현재 화면에서는 고객 CRM 등록만 처리합니다.
+                    고객 등록이 완료되면 해당 고객의 상세 CRM 화면으로 이동합니다.
                 </p>
 
 
@@ -448,26 +438,20 @@
 
 
             <!-- =================================================
-                 버튼
+                 하단 버튼
             ================================================== -->
 
-            <div class="form-actions">
+            <div class="button-area">
 
 
-                <a
-                        class="cancel-button"
-                        th:href="@{/admin/customers}"
-                >
+                <a class="cancel-button"
+                   th:href="@{/admin/customers}">
                     취소
                 </a>
 
 
-
-                <button
-                        type="submit"
-                        id="submitButton"
-                        class="submit-button"
-                >
+                <button type="submit"
+                        class="submit-button">
                     고객 등록
                 </button>
 
@@ -481,70 +465,7 @@
     </section>
 
 
-
-    <!-- =====================================================
-         전화번호 안내
-    ====================================================== -->
-
-    <section class="phone-guide-section">
-
-
-        <h2>
-            전화번호 입력 안내
-        </h2>
-
-
-
-        <div class="phone-example-grid">
-
-
-            <div>
-
-                <span>
-                    이렇게 입력해도
-                </span>
-
-                <strong>
-                    01012345678
-                </strong>
-
-            </div>
-
-
-
-            <div class="arrow">
-                →
-            </div>
-
-
-
-            <div>
-
-                <span>
-                    자동으로
-                </span>
-
-                <strong>
-                    010-1234-5678
-                </strong>
-
-            </div>
-
-
-        </div>
-
-
-
-        <p>
-            고객 조회와 검색도 전화번호의 하이픈 입력 여부와 관계없이
-            동일한 고객을 찾을 수 있도록 처리합니다.
-        </p>
-
-
-    </section>
-
-
-</div>
+</main>
 
 
 </body>

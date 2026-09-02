@@ -1,31 +1,40 @@
 <!DOCTYPE html>
-<html
-        lang="ko"
-        xmlns:th="http://www.thymeleaf.org"
->
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>고객관리</title>
 
 
-    <link
-            rel="stylesheet"
-            th:href="@{/css/customer/list.css}"
-    >
+    <!-- =====================================================
+         3part 고객 CRM 전용 사이드바 CSS
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          th:href="@{/css/customer/customer-sidebar.css}">
 
 
-    <script
-            th:src="@{/js/customer/list.js}"
-            defer
-    ></script>
+    <!-- =====================================================
+         고객 목록 전용 CSS
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          th:href="@{/css/customer/list.css}">
+
+
+    <!-- =====================================================
+         고객 목록 JS
+    ====================================================== -->
+
+    <script th:src="@{/js/customer/list.js}"
+            defer>
+    </script>
 
 </head>
 
@@ -34,10 +43,19 @@
 
 
 <!-- =========================================================
+     3part 고객 CRM 전용 관리자 사이드바
+========================================================= -->
+
+<aside th:replace="~{customer/customer-sidebar :: sidebar('customer')}">
+</aside>
+
+
+
+<!-- =========================================================
      고객관리 전체
 ========================================================= -->
 
-<div class="customer-page">
+<main class="customer-page">
 
 
     <!-- =====================================================
@@ -53,23 +71,25 @@
                 CUSTOMER CRM
             </p>
 
+
             <h1>
-                고객관리
+                고객 관리
             </h1>
 
+
             <p class="page-description">
-                고객 조회부터 상담메모, 시술이력, 고객등급 관리까지
-                고객관리 목록에서 연결합니다.
+                고객 조회부터 상담메모, 시술이력,
+                고객등급까지 관리합니다.
             </p>
 
         </div>
 
 
+
         <!-- 전화예약 고객 등록 -->
-        <a
-                class="create-customer-button"
-                th:href="@{/admin/customers/new}"
-        >
+
+        <a class="create-customer-button"
+           th:href="@{/admin/customers/new}">
             + 전화예약 고객 등록
         </a>
 
@@ -82,18 +102,18 @@
          성공 메시지
     ====================================================== -->
 
-    <div
-            class="alert success"
-            th:if="${message}"
-            th:text="${message}"
-    >
-        고객이 정상적으로 등록되었습니다.
+    <div class="alert success"
+         th:if="${message != null}"
+         th:text="${message}">
+
+        정상적으로 처리되었습니다.
+
     </div>
 
 
 
     <!-- =====================================================
-         검색 / 필터
+         고객 검색
     ====================================================== -->
 
     <section class="search-section">
@@ -101,44 +121,45 @@
 
         <div class="section-title">
 
+
             <h2>
                 고객 검색
             </h2>
 
+
             <span>
-                이름 또는 전화번호로 검색할 수 있습니다.
+                이름 또는 전화번호와 상세 조건으로 검색합니다.
             </span>
+
 
         </div>
 
 
 
-        <form
-                class="search-form"
-                method="get"
-                th:action="@{/admin/customers}"
-        >
+        <form class="search-form"
+              method="get"
+              th:action="@{/admin/customers}">
 
 
             <!-- =============================================
-                 이름 / 전화번호
+                 고객명 / 전화번호
             ============================================== -->
 
             <div class="form-group keyword-group">
+
 
                 <label for="keyword">
                     고객명 / 전화번호
                 </label>
 
 
-                <input
-                        type="text"
-                        id="keyword"
-                        name="keyword"
-                        th:value="${condition.keyword}"
-                        placeholder="예: 홍길동 / 01012345678 / 010-1234-5678"
-                        autocomplete="off"
-                >
+                <input type="text"
+                       id="keyword"
+                       name="keyword"
+                       th:value="${condition.keyword}"
+                       placeholder="홍길동 / 010-1234-5678"
+                       autocomplete="off">
+
 
             </div>
 
@@ -150,35 +171,35 @@
 
             <div class="form-group">
 
+
                 <label for="customerType">
                     고객 유형
                 </label>
 
 
-                <select
-                        id="customerType"
-                        name="customerType"
-                >
+                <select id="customerType"
+                        name="customerType">
+
 
                     <option value="">
                         전체
                     </option>
 
-                    <option
-                            value="MEMBER"
-                            th:selected="${condition.customerType == 'MEMBER'}"
-                    >
+
+                    <option value="MEMBER"
+                            th:selected="${condition.customerType == 'MEMBER'}">
                         회원
                     </option>
 
-                    <option
-                            value="GUEST"
-                            th:selected="${condition.customerType == 'GUEST'}"
-                    >
+
+                    <option value="GUEST"
+                            th:selected="${condition.customerType == 'GUEST'}">
                         비회원
                     </option>
 
+
                 </select>
+
 
             </div>
 
@@ -190,31 +211,33 @@
 
             <div class="form-group">
 
+
                 <label for="gradeCode">
                     고객 등급
                 </label>
 
 
-                <select
-                        id="gradeCode"
-                        name="gradeCode"
-                >
+                <select id="gradeCode"
+                        name="gradeCode">
+
 
                     <option value="">
                         전체
                     </option>
 
 
-                    <option
-                            th:each="grade : ${grades}"
+                    <option th:each="grade : ${grades}"
                             th:value="${grade.gradeCode}"
                             th:text="${grade.gradeName}"
-                            th:selected="${condition.gradeCode == grade.gradeCode}"
-                    >
+                            th:selected="${condition.gradeCode == grade.gradeCode}">
+
                         일반
+
                     </option>
 
+
                 </select>
+
 
             </div>
 
@@ -226,100 +249,98 @@
 
             <div class="form-group">
 
+
                 <label for="activeYn">
                     활성 상태
                 </label>
 
 
-                <select
-                        id="activeYn"
-                        name="activeYn"
-                >
+                <select id="activeYn"
+                        name="activeYn">
+
 
                     <option value="">
                         전체
                     </option>
 
-                    <option
-                            value="Y"
-                            th:selected="${condition.activeYn == 'Y'}"
-                    >
+
+                    <option value="Y"
+                            th:selected="${condition.activeYn == 'Y'}">
                         활성
                     </option>
 
-                    <option
-                            value="N"
-                            th:selected="${condition.activeYn == 'N'}"
-                    >
+
+                    <option value="N"
+                            th:selected="${condition.activeYn == 'N'}">
                         비활성
                     </option>
 
+
                 </select>
+
 
             </div>
 
 
 
             <!-- =============================================
-                 장기 미방문
+                 미방문 기간
             ============================================== -->
 
             <div class="form-group">
+
 
                 <label for="inactiveDays">
                     미방문 기간
                 </label>
 
 
-                <select
-                        id="inactiveDays"
-                        name="inactiveDays"
-                >
+                <select id="inactiveDays"
+                        name="inactiveDays">
+
 
                     <option value="">
                         전체
                     </option>
 
-                    <option
-                            value="30"
-                            th:selected="${condition.inactiveDays == 30}"
-                    >
+
+                    <option value="30"
+                            th:selected="${condition.inactiveDays == 30}">
                         30일 이상
                     </option>
 
-                    <option
-                            value="60"
-                            th:selected="${condition.inactiveDays == 60}"
-                    >
+
+                    <option value="60"
+                            th:selected="${condition.inactiveDays == 60}">
                         60일 이상
                     </option>
 
+
                 </select>
+
 
             </div>
 
 
 
             <!-- =============================================
-                 버튼
+                 검색 버튼
             ============================================== -->
 
             <div class="search-buttons">
 
-                <button
-                        type="submit"
-                        class="search-button"
-                >
+
+                <button type="submit"
+                        class="search-button">
                     검색
                 </button>
 
 
-                <a
-                        class="reset-button"
-                        th:href="@{/admin/customers}"
-                >
+                <a class="reset-button"
+                   th:href="@{/admin/customers}">
                     초기화
                 </a>
+
 
             </div>
 
@@ -332,7 +353,7 @@
 
 
     <!-- =====================================================
-         검색 결과 요약
+         검색 결과
     ====================================================== -->
 
     <section class="result-summary">
@@ -340,47 +361,51 @@
 
         <div>
 
-            <strong
-                    th:text="${totalElements}"
-            >
+
+            <strong th:text="${totalElements}">
                 0
             </strong>
+
 
             <span>
                 명의 고객
             </span>
 
+
         </div>
+
 
 
         <div class="page-info">
 
-            <span
-                    th:if="${totalPages > 0}"
-            >
-                <strong
-                        th:text="${currentPage + 1}"
-                >
+
+            <span th:if="${totalPages > 0}">
+
+
+                <strong th:text="${currentPage + 1}">
                     1
                 </strong>
 
+
                 /
 
-                <span
-                        th:text="${totalPages}"
-                >
+
+                <span th:text="${totalPages}">
                     1
                 </span>
 
+
                 페이지
+
+
             </span>
 
 
-            <span
-                    th:if="${totalPages == 0}"
-            >
+
+            <span th:if="${totalPages == 0}">
                 검색 결과 없음
             </span>
+
 
         </div>
 
@@ -404,45 +429,31 @@
 
                 <thead>
 
+
                 <tr>
 
-                    <th>
-                        고객
-                    </th>
+                    <th>고객</th>
 
-                    <th>
-                        전화번호
-                    </th>
+                    <th>전화번호</th>
 
-                    <th>
-                        유형
-                    </th>
+                    <th>유형</th>
 
-                    <th>
-                        등급
-                    </th>
+                    <th>등급</th>
 
-                    <th>
-                        최근 방문일
-                    </th>
+                    <th>최근 방문일</th>
 
-                    <th>
-                        방문 횟수
-                    </th>
+                    <th>방문 횟수</th>
 
-                    <th>
-                        누적 결제액
-                    </th>
+                    <th>누적 결제액</th>
 
-                    <th>
-                        상태
-                    </th>
+                    <th>상태</th>
 
                     <th class="management-column">
-                        고객관리
+                        고객 관리
                     </th>
 
                 </tr>
+
 
                 </thead>
 
@@ -451,195 +462,231 @@
                 <tbody>
 
 
-                <!-- =========================================
+                <!-- =================================================
                      고객 데이터
-                ========================================== -->
+                ================================================== -->
 
-                <tr
-                        th:each="customer : ${customers}"
-                >
+                <tr th:each="customer : ${customers}">
 
 
-                    <!-- 고객명 -->
+                    <!-- 고객 -->
+
                     <td>
+
 
                         <div class="customer-name-cell">
 
 
-                            <div
-                                    class="customer-avatar"
-                                    th:text="${#strings.substring(customer.customerName, 0, 1)}"
-                            >
+                            <div class="customer-avatar"
+                                 th:text="${customer.customerName != null
+                                 and !#strings.isEmpty(customer.customerName)
+                                 ? #strings.substring(customer.customerName, 0, 1)
+                                 : '?'}">
+
                                 홍
+
                             </div>
+
 
 
                             <div>
 
-                                <strong
-                                        th:text="${customer.customerName}"
-                                >
+
+                                <strong th:text="${customer.customerName}">
                                     홍길동
                                 </strong>
 
+
                                 <small>
+
                                     ID
-                                    <span
-                                            th:text="${customer.customerId}"
-                                    >
+
+                                    <span th:text="${customer.customerId}">
                                         1
                                     </span>
+
                                 </small>
+
 
                             </div>
 
 
                         </div>
+
 
                     </td>
 
 
 
                     <!-- 전화번호 -->
+
                     <td>
 
-                        <span
-                                class="phone-value"
-                                th:attr="data-phone=${customer.phone}"
-                                th:text="${customer.phone}"
-                        >
+
+                        <span class="phone-value"
+                              th:attr="data-phone=${customer.phone}"
+                              th:text="${customer.phone}">
+
                             010-1234-5678
+
                         </span>
+
 
                     </td>
 
 
 
-                    <!-- 회원 유형 -->
+                    <!-- 고객 유형 -->
+
                     <td>
 
-                        <span
-                                class="type-badge"
-                                th:classappend="${customer.customerType == 'MEMBER'}
-                                ? ' member'
-                                : ' guest'"
-                                th:text="${customer.customerType == 'MEMBER'}
-                                ? '회원'
-                                : '비회원'"
-                        >
-                            비회원
+
+                        <span class="type-badge"
+                              th:classappend="${customer.customerType == 'MEMBER'}
+                              ? ' member'
+                              : ' guest'"
+                              th:text="${customer.customerType == 'MEMBER'}
+                              ? '회원'
+                              : '비회원'">
+
+                            회원
+
                         </span>
+
 
                     </td>
 
 
 
                     <!-- 고객 등급 -->
+
                     <td>
 
-                        <div class="grade-cell">
 
-                            <span
-                                    class="grade-badge"
-                                    th:classappend="' grade-' + ${#strings.toLowerCase(customer.customerGrade.gradeCode)}"
-                                    th:text="${customer.customerGrade.gradeName}"
-                            >
+                        <div class="grade-cell"
+                             th:if="${customer.customerGrade != null}">
+
+
+                            <span class="grade-badge"
+                                  th:classappend="${' grade-' +
+                                  #strings.toLowerCase(
+                                      customer.customerGrade.gradeCode
+                                  )}"
+                                  th:text="${customer.customerGrade.gradeName}">
+
                                 일반
+
                             </span>
 
 
-                            <small
-                                    th:if="${customer.gradeManualYn == 'Y'}"
-                            >
+
+                            <small th:if="${customer.gradeManualYn == 'Y'}">
                                 수동
                             </small>
 
+
                         </div>
+
+
+
+                        <span class="empty-value"
+                              th:if="${customer.customerGrade == null}">
+                            -
+                        </span>
+
 
                     </td>
 
 
 
-                    <!-- 최근 방문일 -->
+                    <!-- 최근 방문 -->
+
                     <td>
 
-                        <span
-                                th:if="${customer.lastVisitDate != null}"
-                                th:text="${customer.lastVisitDate}"
-                        >
+
+                        <span th:if="${customer.lastVisitDate != null}"
+                              th:text="${customer.lastVisitDate}">
                             2026-08-31
                         </span>
 
 
-                        <span
-                                class="empty-value"
-                                th:if="${customer.lastVisitDate == null}"
-                        >
+                        <span class="empty-value"
+                              th:if="${customer.lastVisitDate == null}">
                             방문 이력 없음
                         </span>
+
 
                     </td>
 
 
 
                     <!-- 방문 횟수 -->
+
                     <td>
 
-                        <strong
-                                th:text="${customer.visitCount != null
-                                ? customer.visitCount
-                                : 0}"
-                        >
+
+                        <strong th:text="${customer.visitCount != null
+                        ? customer.visitCount
+                        : 0}">
+
                             0
+
                         </strong>
+
 
                         회
 
+
                     </td>
 
 
 
-                    <!-- 누적 결제액 -->
+                    <!-- 누적 결제 -->
+
                     <td>
 
-                        <strong
-                                class="money-value"
+
+                        <strong class="money-value"
                                 th:attr="data-price=${customer.totalPayment}"
                                 th:text="${customer.totalPayment != null
                                 ? customer.totalPayment
-                                : 0}"
-                        >
+                                : 0}">
+
                             0
+
                         </strong>
+
 
                         원
 
+
                     </td>
 
 
 
-                    <!-- 활성상태 -->
+                    <!-- 활성 상태 -->
+
                     <td>
 
-                        <span
-                                class="active-badge"
-                                th:classappend="${customer.activeYn == 'Y'}
-                                ? ' active'
-                                : ' inactive'"
-                                th:text="${customer.activeYn == 'Y'}
-                                ? '활성'
-                                : '비활성'"
-                        >
+
+                        <span class="active-badge"
+                              th:classappend="${customer.activeYn == 'Y'}
+                              ? ' active'
+                              : ' inactive'"
+                              th:text="${customer.activeYn == 'Y'}
+                              ? '활성'
+                              : '비활성'">
+
                             활성
+
                         </span>
+
 
                     </td>
 
 
 
-                    <!-- =====================================
-                         고객 관리 버튼
-                    ====================================== -->
+                    <!-- 고객관리 -->
 
                     <td>
 
@@ -648,45 +695,44 @@
 
 
                             <!-- 상세 -->
-                            <a
-                                    class="manage-button primary"
-                                    th:href="@{/admin/customers/{id}(id=${customer.customerId})}"
-                            >
+
+                            <a class="manage-button primary"
+                               th:href="@{/admin/customers/{id}(
+                                   id=${customer.customerId}
+                               )}">
                                 상세
                             </a>
 
 
 
-                            <!-- 상담메모
-                                 detail.html의 memo-section으로 이동
-                                 다음 detail.html 수정에서 id를 맞출 예정
-                            -->
-                            <a
-                                    class="manage-button"
-                                    th:href="@{/admin/customers/{id}(id=${customer.customerId})} + '#memo-section'"
-                            >
+                            <!-- 상담메모 -->
+
+                            <a class="manage-button"
+                               th:href="@{/admin/customers/{id}/memos(
+                                   id=${customer.customerId}
+                               )}">
                                 상담메모
                             </a>
 
 
 
                             <!-- 시술이력 -->
-                            <a
-                                    class="manage-button"
-                                    th:href="@{/admin/customers/{id}/treatments(id=${customer.customerId})}"
-                            >
+
+                            <a class="manage-button"
+                               th:href="@{/admin/customers/{id}/treatments(
+                                   id=${customer.customerId}
+                               )}">
                                 시술이력
                             </a>
 
 
 
-                            <!-- 등급관리
-                                 detail.html 수정 시 id 연결
-                            -->
-                            <a
-                                    class="manage-button"
-                                    th:href="@{/admin/customers/{id}(id=${customer.customerId})} + '#grade-section'"
-                            >
+                            <!-- 등급관리 -->
+
+                            <a class="manage-button"
+                               th:href="@{/admin/customers/{id}(
+                                   id=${customer.customerId}
+                               )} + '#grade-section'">
                                 등급관리
                             </a>
 
@@ -701,38 +747,40 @@
 
 
 
-                <!-- =========================================
+                <!-- =================================================
                      검색 결과 없음
-                ========================================== -->
+                ================================================== -->
 
-                <tr
-                        th:if="${#lists.isEmpty(customers)}"
-                >
+                <tr th:if="${customers == null or #lists.isEmpty(customers)}">
 
-                    <td
-                            colspan="9"
-                            class="empty-result"
-                    >
+
+                    <td colspan="9"
+                        class="empty-result">
+
 
                         <div class="empty-result-content">
+
 
                             <strong>
                                 검색된 고객이 없습니다.
                             </strong>
 
+
                             <p>
                                 검색 조건을 변경하거나 초기화해 주세요.
                             </p>
 
-                            <a
-                                    th:href="@{/admin/customers}"
-                            >
+
+                            <a th:href="@{/admin/customers}">
                                 전체 고객 보기
                             </a>
 
+
                         </div>
 
+
                     </td>
+
 
                 </tr>
 
@@ -754,82 +802,71 @@
          페이징
     ====================================================== -->
 
-    <nav
-            class="pagination"
-            th:if="${totalPages > 1}"
-            aria-label="고객 목록 페이지"
-    >
+    <nav class="pagination"
+         th:if="${totalPages > 1}"
+         aria-label="고객 목록 페이지">
 
 
-        <!-- =============================================
-             처음
-        ============================================== -->
+        <!-- 처음 -->
 
-        <a
-                class="page-button"
-                th:classappend="${customerPage.first} ? ' disabled'"
-                th:href="${customerPage.first}
-                    ? '#'
-                    : @{/admin/customers(
-                        page=0,
-                        keyword=${condition.keyword},
-                        customerType=${condition.customerType},
-                        gradeCode=${condition.gradeCode},
-                        activeYn=${condition.activeYn},
-                        inactiveDays=${condition.inactiveDays}
-                    )}"
-        >
+        <a class="page-button"
+           th:classappend="${customerPage.first} ? ' disabled' : ''"
+           th:href="${customerPage.first}
+           ? '#'
+           : @{/admin/customers(
+               page=0,
+               keyword=${condition.keyword},
+               customerType=${condition.customerType},
+               gradeCode=${condition.gradeCode},
+               activeYn=${condition.activeYn},
+               inactiveDays=${condition.inactiveDays}
+           )}">
             처음
         </a>
 
 
 
-        <!-- =============================================
-             이전
-        ============================================== -->
+        <!-- 이전 -->
 
-        <a
-                class="page-button"
-                th:classappend="${customerPage.first} ? ' disabled'"
-                th:href="${customerPage.first}
-                    ? '#'
-                    : @{/admin/customers(
-                        page=${currentPage - 1},
-                        keyword=${condition.keyword},
-                        customerType=${condition.customerType},
-                        gradeCode=${condition.gradeCode},
-                        activeYn=${condition.activeYn},
-                        inactiveDays=${condition.inactiveDays}
-                    )}"
-        >
+        <a class="page-button"
+           th:classappend="${customerPage.first} ? ' disabled' : ''"
+           th:href="${customerPage.first}
+           ? '#'
+           : @{/admin/customers(
+               page=${currentPage - 1},
+               keyword=${condition.keyword},
+               customerType=${condition.customerType},
+               gradeCode=${condition.gradeCode},
+               activeYn=${condition.activeYn},
+               inactiveDays=${condition.inactiveDays}
+           )}">
             이전
         </a>
 
 
 
-        <!-- =============================================
-             페이지 번호
-        ============================================== -->
+        <!-- 페이지 번호 -->
 
-        <th:block
-                th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
-        >
+        <th:block th:each="pageNumber :
+                  ${#numbers.sequence(0, totalPages - 1)}">
 
 
-            <a
-                    class="page-number"
-                    th:classappend="${pageNumber == currentPage} ? ' active'"
-                    th:text="${pageNumber + 1}"
-                    th:href="@{/admin/customers(
-                        page=${pageNumber},
-                        keyword=${condition.keyword},
-                        customerType=${condition.customerType},
-                        gradeCode=${condition.gradeCode},
-                        activeYn=${condition.activeYn},
-                        inactiveDays=${condition.inactiveDays}
-                    )}"
-            >
+            <a class="page-number"
+               th:classappend="${pageNumber == currentPage}
+               ? ' active'
+               : ''"
+               th:text="${pageNumber + 1}"
+               th:href="@{/admin/customers(
+                   page=${pageNumber},
+                   keyword=${condition.keyword},
+                   customerType=${condition.customerType},
+                   gradeCode=${condition.gradeCode},
+                   activeYn=${condition.activeYn},
+                   inactiveDays=${condition.inactiveDays}
+               )}">
+
                 1
+
             </a>
 
 
@@ -837,47 +874,39 @@
 
 
 
-        <!-- =============================================
-             다음
-        ============================================== -->
+        <!-- 다음 -->
 
-        <a
-                class="page-button"
-                th:classappend="${customerPage.last} ? ' disabled'"
-                th:href="${customerPage.last}
-                    ? '#'
-                    : @{/admin/customers(
-                        page=${currentPage + 1},
-                        keyword=${condition.keyword},
-                        customerType=${condition.customerType},
-                        gradeCode=${condition.gradeCode},
-                        activeYn=${condition.activeYn},
-                        inactiveDays=${condition.inactiveDays}
-                    )}"
-        >
+        <a class="page-button"
+           th:classappend="${customerPage.last} ? ' disabled' : ''"
+           th:href="${customerPage.last}
+           ? '#'
+           : @{/admin/customers(
+               page=${currentPage + 1},
+               keyword=${condition.keyword},
+               customerType=${condition.customerType},
+               gradeCode=${condition.gradeCode},
+               activeYn=${condition.activeYn},
+               inactiveDays=${condition.inactiveDays}
+           )}">
             다음
         </a>
 
 
 
-        <!-- =============================================
-             마지막
-        ============================================== -->
+        <!-- 마지막 -->
 
-        <a
-                class="page-button"
-                th:classappend="${customerPage.last} ? ' disabled'"
-                th:href="${customerPage.last}
-                    ? '#'
-                    : @{/admin/customers(
-                        page=${totalPages - 1},
-                        keyword=${condition.keyword},
-                        customerType=${condition.customerType},
-                        gradeCode=${condition.gradeCode},
-                        activeYn=${condition.activeYn},
-                        inactiveDays=${condition.inactiveDays}
-                    )}"
-        >
+        <a class="page-button"
+           th:classappend="${customerPage.last} ? ' disabled' : ''"
+           th:href="${customerPage.last}
+           ? '#'
+           : @{/admin/customers(
+               page=${totalPages - 1},
+               keyword=${condition.keyword},
+               customerType=${condition.customerType},
+               gradeCode=${condition.gradeCode},
+               activeYn=${condition.activeYn},
+               inactiveDays=${condition.inactiveDays}
+           )}">
             마지막
         </a>
 
@@ -887,7 +916,7 @@
 
 
     <!-- =====================================================
-         고객관리 안내
+         고객관리 기능 안내
     ====================================================== -->
 
     <section class="management-guide">
@@ -898,61 +927,75 @@
         </h2>
 
 
+
         <div class="guide-grid">
 
 
             <article>
 
+
                 <strong>
                     고객 검색
                 </strong>
 
+
                 <p>
-                    고객명 또는 전화번호를 검색합니다.
-                    전화번호는 하이픈 입력 여부와 관계없이 검색됩니다.
+                    고객명 또는 전화번호로 고객을 검색합니다.
                 </p>
+
 
             </article>
 
 
+
             <article>
+
 
                 <strong>
                     장기 미방문
                 </strong>
 
+
                 <p>
-                    최근 방문일을 기준으로
-                    30일 또는 60일 이상 미방문 고객을 조회합니다.
+                    최근 방문일을 기준으로 미방문 고객을 조회합니다.
                 </p>
+
 
             </article>
 
 
+
             <article>
+
 
                 <strong>
                     상담 및 특이사항
                 </strong>
 
+
                 <p>
-                    상담, 알레르기, 두피, 모발 관련 메모를
-                    고객 상세에서 관리합니다.
+                    상담, 알레르기, 두피,
+                    모발 관련 메모를 관리합니다.
                 </p>
+
 
             </article>
 
 
+
             <article>
+
 
                 <strong>
                     고객 이력
                 </strong>
 
+
                 <p>
-                    고객별 시술 이력을 확인하고,
-                    예약·결제 이력은 담당 파트 통합 후 연결합니다.
+                    고객별 시술 이력과
+                    CRM 정보를 확인합니다.
                 </p>
+
 
             </article>
 
@@ -963,7 +1006,7 @@
     </section>
 
 
-</div>
+</main>
 
 
 </body>

@@ -3,604 +3,817 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <title th:text="'고객 상담 메모 - ' + ${customer.customerName}">
-        고객 상담 메모
-    </title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background: #f7f7f7;
-            color: #222;
-        }
+    <title>고객 상담 메모</title>
 
-        h1 {
-            margin-bottom: 10px;
-        }
 
-        .customer-info {
-            margin-bottom: 25px;
-        }
+    <!-- =====================================================
+         3part 고객 CRM 전용 사이드바 CSS
+    ====================================================== -->
 
-        .box {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
+    <link rel="stylesheet"
+          th:href="@{/css/customer/customer-sidebar.css}">
 
-        .form-row {
-            margin-bottom: 15px;
-        }
 
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
+    <!-- =====================================================
+         상담메모 전용 CSS
+    ====================================================== -->
 
-        select,
-        textarea {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 9px;
-        }
+    <link rel="stylesheet"
+          th:href="@{/css/customer/memo.css}">
 
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        button {
-            padding: 8px 15px;
-            cursor: pointer;
-        }
-
-        .save-button {
-            background: #222;
-            color: white;
-            border: none;
-        }
-
-        .update-button {
-            background: #1976d2;
-            color: white;
-            border: none;
-        }
-
-        .delete-button {
-            background: #d32f2f;
-            color: white;
-            border: none;
-        }
-
-        .memo {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        .important {
-            color: red;
-            font-weight: bold;
-        }
-
-        .error {
-            color: red;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        .meta {
-            color: #777;
-            font-size: 13px;
-            margin-bottom: 15px;
-        }
-
-        .button-area {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .empty {
-            padding: 30px;
-            text-align: center;
-            color: #777;
-        }
-
-        a {
-            color: #1565c0;
-        }
-    </style>
 </head>
 
 
 <body>
 
 
-<!-- =====================================================
-     페이지 제목
-===================================================== -->
+<!-- =========================================================
+     3part 고객 CRM 전용 관리자 사이드바
+========================================================= -->
 
-<h1 th:text="'고객 상담 메모 - ' + ${customer.customerName}">
-    고객 상담 메모
-</h1>
-
-
-<!-- =====================================================
-     고객 기본 정보
-===================================================== -->
-
-<div class="customer-info">
-
-    고객번호:
-    <strong th:text="${customerId}">
-        0
-    </strong>
-
-    &nbsp; | &nbsp;
-
-    고객명:
-    <strong th:text="${customer.customerName}">
-        고객명
-    </strong>
-
-    &nbsp; | &nbsp;
-
-    <a th:href="@{/admin/customers/{customerId}(
-        customerId=${customerId}
-    )}">
-        고객 상세
-    </a>
-
-    &nbsp; | &nbsp;
-
-    <a th:href="@{/admin/customers}">
-        고객 목록으로
-    </a>
-
-</div>
+<aside th:replace="~{customer/customer-sidebar :: sidebar('customer')}">
+</aside>
 
 
-<!-- =====================================================
-     새 상담 메모 등록
-===================================================== -->
 
-<div class="box">
+<!-- =========================================================
+     상담메모 전체
+========================================================= -->
 
-    <h2>
-        새 상담 메모 등록
-    </h2>
+<main class="memo-page">
 
 
-    <form
-            method="post"
-            th:action="@{/admin/customers/{customerId}/memos(
-                customerId=${customerId}
-            )}"
-            th:object="${memoRequest}">
+    <!-- =====================================================
+         페이지 헤더
+    ====================================================== -->
+
+    <header class="memo-header">
 
 
-        <!-- =================================================
-             Spring Security CSRF
-        ================================================== -->
+        <div>
 
-        <input
-                type="hidden"
-                th:if="${_csrf != null}"
-                th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}">
+            <p class="page-label">
+                CUSTOMER MEMO
+            </p>
 
 
-        <!-- =================================================
-             메모 유형
-        ================================================== -->
-
-        <div class="form-row">
-
-            <label for="memoType">
-                메모 유형
-            </label>
+            <h1>
+                고객 상담 메모
+            </h1>
 
 
-            <select
-                    id="memoType"
-                    th:field="*{memoType}">
+            <p class="page-description">
+                상담 내용과 알레르기·두피·모발 관련 특이사항을
+                고객별로 관리합니다.
+            </p>
+
+        </div>
 
 
-                <option value="">
-                    선택
-                </option>
+
+        <div class="header-buttons">
 
 
-                <option value="COUNSELING">
-                    상담
-                </option>
+            <a class="header-button"
+               th:href="@{/admin/customers/{customerId}(
+                   customerId=${customerId}
+               )}">
+                ← 고객 상세
+            </a>
 
 
-                <option value="ALLERGY">
-                    알레르기
-                </option>
+            <a class="header-button primary"
+               th:href="@{/admin/customers}">
+                고객 목록
+            </a>
 
 
-                <option value="SCALP">
-                    두피
-                </option>
+        </div>
 
 
-                <option value="HAIR">
-                    모발
-                </option>
+    </header>
 
 
-                <option value="GENERAL">
-                    일반
-                </option>
+
+    <!-- =====================================================
+         고객 안내
+    ====================================================== -->
+
+    <section class="customer-summary">
 
 
-            </select>
+        <div class="summary-icon">
+            M
+        </div>
 
 
-            <div
-                    class="error"
-                    th:if="${#fields.hasErrors('memoType')}"
-                    th:errors="*{memoType}">
+        <div>
+
+            <span>
+                상담메모 관리 고객
+            </span>
+
+
+            <strong>
+
+                고객번호
+
+                <span th:text="${customerId}">
+                    0
+                </span>
+
+            </strong>
+
+
+            <p>
+                중요한 알레르기·두피·모발 정보는
+                중요 메모로 등록하여 관리할 수 있습니다.
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         새 상담 메모 등록
+    ====================================================== -->
+
+    <section class="memo-panel">
+
+
+        <div class="panel-header">
+
+
+            <div>
+
+                <p class="panel-label">
+                    NEW MEMO
+                </p>
+
+
+                <h2>
+                    새 상담 메모 등록
+                </h2>
+
             </div>
 
+
+            <p>
+                고객 상담 내용 또는 특이사항을 입력합니다.
+            </p>
+
+
         </div>
 
 
+
         <!-- =================================================
-             메모 내용
+             등록 FORM
         ================================================== -->
 
-        <div class="form-row">
-
-            <label for="memoContent">
-                메모 내용
-            </label>
-
-
-            <textarea
-                    id="memoContent"
-                    th:field="*{memoContent}"
-                    placeholder="상담 내용 또는 고객 특이사항을 입력하세요.">
-            </textarea>
+        <form class="memo-create-form"
+              method="post"
+              th:action="@{/admin/customers/{customerId}/memos(
+                  customerId=${customerId}
+              )}"
+              th:object="${memoRequest}">
 
 
-            <div
-                    class="error"
-                    th:if="${#fields.hasErrors('memoContent')}"
-                    th:errors="*{memoContent}">
+            <!-- CSRF -->
+
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+
+
+            <div class="create-form-grid">
+
+
+                <!-- 메모 유형 -->
+
+                <div class="form-group">
+
+
+                    <label for="memoType">
+                        메모 유형
+                    </label>
+
+
+                    <select id="memoType"
+                            th:field="*{memoType}">
+
+
+                        <option value="">
+                            유형 선택
+                        </option>
+
+
+                        <option value="COUNSELING">
+                            상담
+                        </option>
+
+
+                        <option value="ALLERGY">
+                            알레르기
+                        </option>
+
+
+                        <option value="SCALP">
+                            두피
+                        </option>
+
+
+                        <option value="HAIR">
+                            모발
+                        </option>
+
+
+                        <option value="GENERAL">
+                            일반
+                        </option>
+
+
+                    </select>
+
+
+                    <div class="error"
+                         th:if="${#fields.hasErrors('memoType')}"
+                         th:errors="*{memoType}">
+                        메모 유형을 선택해 주세요.
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- 중요 여부 -->
+
+                <div class="form-group">
+
+
+                    <label for="importantYn">
+                        중요 여부
+                    </label>
+
+
+                    <select id="importantYn"
+                            th:field="*{importantYn}">
+
+
+                        <option value="">
+                            선택
+                        </option>
+
+
+                        <option value="N">
+                            일반
+                        </option>
+
+
+                        <option value="Y">
+                            중요
+                        </option>
+
+
+                    </select>
+
+
+                    <div class="error"
+                         th:if="${#fields.hasErrors('importantYn')}"
+                         th:errors="*{importantYn}">
+                        중요 여부를 선택해 주세요.
+                    </div>
+
+
+                </div>
+
+
             </div>
 
-        </div>
 
 
-        <!-- =================================================
-             중요 여부
-        ================================================== -->
+            <!-- 메모 내용 -->
 
-        <div class="form-row">
-
-            <label for="importantYn">
-                중요 여부
-            </label>
+            <div class="form-group memo-content-group">
 
 
-            <select
-                    id="importantYn"
-                    th:field="*{importantYn}">
+                <label for="memoContent">
+                    메모 내용
+                </label>
 
 
-                <option value="">
-                    선택
-                </option>
+                <textarea id="memoContent"
+                          th:field="*{memoContent}"
+                          maxlength="2000"
+                          placeholder="상담 내용 또는 고객 특이사항을 입력하세요.">
+                </textarea>
 
 
-                <option value="N">
-                    일반
-                </option>
+                <div class="content-help">
 
 
-                <option value="Y">
-                    중요
-                </option>
+                    <span>
+                        상담 / 알레르기 / 두피 / 모발 관련 내용을 기록합니다.
+                    </span>
 
 
-            </select>
+                    <span>
+                        최대 2,000자
+                    </span>
 
 
-            <div
-                    class="error"
-                    th:if="${#fields.hasErrors('importantYn')}"
-                    th:errors="*{importantYn}">
+                </div>
+
+
+                <div class="error"
+                     th:if="${#fields.hasErrors('memoContent')}"
+                     th:errors="*{memoContent}">
+                    메모 내용을 입력해 주세요.
+                </div>
+
+
             </div>
 
-        </div>
 
 
-        <!-- =================================================
-             등록 버튼
-        ================================================== -->
+            <!-- 등록 버튼 -->
 
-        <button
-                type="submit"
-                class="save-button">
+            <div class="create-button-area">
 
-            메모 등록
 
-        </button>
+                <button type="submit"
+                        class="save-button">
+                    메모 등록
+                </button>
 
 
-    </form>
+            </div>
 
-</div>
 
+        </form>
 
-<!-- =====================================================
-     등록된 상담 메모 목록
-===================================================== -->
 
-<h2>
-    등록된 상담 메모
-</h2>
+    </section>
 
 
-<div
-        class="memo"
-        th:each="memo : ${memos}">
 
+    <!-- =====================================================
+         등록된 상담 메모
+    ====================================================== -->
 
-    <!-- =================================================
-         메모 기본 정보
-    ================================================== -->
+    <section class="memo-panel">
 
-    <div class="meta">
 
-        메모번호:
+        <div class="panel-header">
 
-        <span th:text="${memo.memoId}">
-            1
-        </span>
 
+            <div>
 
-        &nbsp; | &nbsp;
+                <p class="panel-label">
+                    MEMO HISTORY
+                </p>
 
 
-        작성일:
+                <h2>
+                    등록된 상담 메모
+                </h2>
 
-        <span th:text="${memo.createdAt}">
-            2026-08-26
-        </span>
+            </div>
 
 
-        &nbsp;
+            <p th:if="${memos != null}">
 
+                총
 
-        <span
-                class="important"
-                th:if="${memo.importantYn == 'Y'}">
+                <strong th:text="${#lists.size(memos)}">
+                    0
+                </strong>
 
-            ★ 중요
+                건
 
-        </span>
+            </p>
 
-    </div>
-
-
-    <!-- =================================================
-         메모 수정
-    ================================================== -->
-
-    <form
-            method="post"
-            th:action="@{/admin/customers/{customerId}/memos/{memoId}/update(
-                customerId=${customerId},
-                memoId=${memo.memoId}
-            )}">
-
-
-        <!-- Spring Security CSRF -->
-
-        <input
-                type="hidden"
-                th:if="${_csrf != null}"
-                th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}">
-
-
-        <!-- =================================================
-             수정 - 메모 유형
-        ================================================== -->
-
-        <div class="form-row">
-
-            <label>
-                메모 유형
-            </label>
-
-
-            <select name="memoType">
-
-
-                <option
-                        value="COUNSELING"
-                        th:selected="${memo.memoType == 'COUNSELING'}">
-
-                    상담
-
-                </option>
-
-
-                <option
-                        value="ALLERGY"
-                        th:selected="${memo.memoType == 'ALLERGY'}">
-
-                    알레르기
-
-                </option>
-
-
-                <option
-                        value="SCALP"
-                        th:selected="${memo.memoType == 'SCALP'}">
-
-                    두피
-
-                </option>
-
-
-                <option
-                        value="HAIR"
-                        th:selected="${memo.memoType == 'HAIR'}">
-
-                    모발
-
-                </option>
-
-
-                <option
-                        value="GENERAL"
-                        th:selected="${memo.memoType == 'GENERAL'}">
-
-                    일반
-
-                </option>
-
-
-            </select>
 
         </div>
 
 
+
         <!-- =================================================
-             수정 - 메모 내용
+             메모 목록
         ================================================== -->
 
-        <div class="form-row">
-
-            <label>
-                메모 내용
-            </label>
+        <div class="memo-list">
 
 
-            <textarea
-                    name="memoContent"
-                    th:text="${memo.memoContent}">
-            </textarea>
+            <article class="memo-card"
+                     th:each="memo : ${memos}"
+                     th:classappend="${memo.importantYn == 'Y'}
+                     ? ' important-card'
+                     : ''">
+
+
+                <!-- =========================================
+                     메모 헤더
+                ========================================== -->
+
+                <div class="memo-card-header">
+
+
+                    <div class="memo-meta">
+
+
+                        <!-- 상담 -->
+
+                        <span class="memo-type type-counseling"
+                              th:if="${memo.memoType == 'COUNSELING'}">
+                            상담
+                        </span>
+
+
+                        <!-- 알레르기 -->
+
+                        <span class="memo-type type-allergy"
+                              th:if="${memo.memoType == 'ALLERGY'}">
+                            알레르기
+                        </span>
+
+
+                        <!-- 두피 -->
+
+                        <span class="memo-type type-scalp"
+                              th:if="${memo.memoType == 'SCALP'}">
+                            두피
+                        </span>
+
+
+                        <!-- 모발 -->
+
+                        <span class="memo-type type-hair"
+                              th:if="${memo.memoType == 'HAIR'}">
+                            모발
+                        </span>
+
+
+                        <!-- 일반 -->
+
+                        <span class="memo-type type-general"
+                              th:if="${memo.memoType == 'GENERAL'}">
+                            일반
+                        </span>
+
+
+
+                        <!-- 중요 -->
+
+                        <span class="important-badge"
+                              th:if="${memo.importantYn == 'Y'}">
+                            ★ 중요
+                        </span>
+
+
+                    </div>
+
+
+
+                    <div class="memo-date">
+
+
+                        <span>
+
+                            메모번호
+
+                            <strong th:text="${memo.memoId}">
+                                1
+                            </strong>
+
+                        </span>
+
+
+                        <span class="meta-divider">
+                            ·
+                        </span>
+
+
+                        <span>
+
+                            작성일
+
+                            <strong th:text="${memo.createdAt}">
+                                2026-08-31
+                            </strong>
+
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     메모 수정
+                ================================================== -->
+
+                <form class="memo-update-form"
+                      method="post"
+                      th:action="@{/admin/customers/{customerId}/memos/{memoId}/update(
+                          customerId=${customerId},
+                          memoId=${memo.memoId}
+                      )}">
+
+
+                    <!-- CSRF -->
+
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+
+
+                    <div class="update-form-row">
+
+
+                        <!-- 메모 유형 -->
+
+                        <div class="form-group">
+
+
+                            <label>
+                                메모 유형
+                            </label>
+
+
+                            <select name="memoType">
+
+
+                                <option value="COUNSELING"
+                                        th:selected="${memo.memoType == 'COUNSELING'}">
+                                    상담
+                                </option>
+
+
+                                <option value="ALLERGY"
+                                        th:selected="${memo.memoType == 'ALLERGY'}">
+                                    알레르기
+                                </option>
+
+
+                                <option value="SCALP"
+                                        th:selected="${memo.memoType == 'SCALP'}">
+                                    두피
+                                </option>
+
+
+                                <option value="HAIR"
+                                        th:selected="${memo.memoType == 'HAIR'}">
+                                    모발
+                                </option>
+
+
+                                <option value="GENERAL"
+                                        th:selected="${memo.memoType == 'GENERAL'}">
+                                    일반
+                                </option>
+
+
+                            </select>
+
+
+                        </div>
+
+
+
+                        <!-- 중요 여부 -->
+
+                        <div class="form-group">
+
+
+                            <label>
+                                중요 여부
+                            </label>
+
+
+                            <select name="importantYn">
+
+
+                                <option value="N"
+                                        th:selected="${memo.importantYn == 'N'}">
+                                    일반
+                                </option>
+
+
+                                <option value="Y"
+                                        th:selected="${memo.importantYn == 'Y'}">
+                                    중요
+                                </option>
+
+
+                            </select>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- 메모 내용 -->
+
+                    <div class="form-group">
+
+
+                        <label>
+                            메모 내용
+                        </label>
+
+
+                        <textarea name="memoContent"
+                                  maxlength="2000"
+                                  th:text="${memo.memoContent}">
+                        </textarea>
+
+
+                    </div>
+
+
+
+                    <!-- 수정 저장 -->
+
+                    <div class="memo-action-area">
+
+
+                        <button type="submit"
+                                class="update-button">
+                            수정 저장
+                        </button>
+
+
+                    </div>
+
+
+                </form>
+
+
+
+                <!-- =================================================
+                     삭제
+                ================================================== -->
+
+                <form class="memo-delete-form"
+                      method="post"
+                      th:action="@{/admin/customers/{customerId}/memos/{memoId}/delete(
+                          customerId=${customerId},
+                          memoId=${memo.memoId}
+                      )}">
+
+
+                    <!-- CSRF -->
+
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+
+                    <button type="submit"
+                            class="delete-button"
+                            onclick="return confirm('이 메모를 삭제하시겠습니까?');">
+                        삭제
+                    </button>
+
+
+                </form>
+
+
+            </article>
+
+
+
+            <!-- =================================================
+                 메모 없음
+            ================================================== -->
+
+            <div class="empty-memo"
+                 th:if="${memos == null or #lists.isEmpty(memos)}">
+
+
+                <div class="empty-icon">
+                    M
+                </div>
+
+
+                <strong>
+                    등록된 상담 메모가 없습니다.
+                </strong>
+
+
+                <p>
+                    위의 입력 영역에서 첫 상담메모를 등록해 주세요.
+                </p>
+
+
+            </div>
+
 
         </div>
 
 
-        <!-- =================================================
-             수정 - 중요 여부
-        ================================================== -->
-
-        <div class="form-row">
-
-            <label>
-                중요 여부
-            </label>
+    </section>
 
 
-            <select name="importantYn">
+
+    <!-- =====================================================
+         메모 유형 안내
+    ====================================================== -->
+
+    <section class="memo-guide">
 
 
-                <option
-                        value="N"
-                        th:selected="${memo.importantYn == 'N'}">
+        <div class="guide-item">
 
-                    일반
+            <strong>
+                상담
+            </strong>
 
-                </option>
-
-
-                <option
-                        value="Y"
-                        th:selected="${memo.importantYn == 'Y'}">
-
-                    중요
-
-                </option>
-
-
-            </select>
+            <span>
+                일반적인 상담 내용
+            </span>
 
         </div>
 
 
-        <!-- =================================================
-             수정 버튼
-        ================================================== -->
+        <div class="guide-item">
 
-        <button
-                type="submit"
-                class="update-button">
+            <strong>
+                알레르기
+            </strong>
 
-            수정
+            <span>
+                약제 및 제품 관련 알레르기
+            </span>
 
-        </button>
-
-
-    </form>
+        </div>
 
 
-    <!-- =================================================
-         메모 삭제
-    ================================================== -->
+        <div class="guide-item">
 
-    <form
-            method="post"
-            th:action="@{/admin/customers/{customerId}/memos/{memoId}/delete(
-                customerId=${customerId},
-                memoId=${memo.memoId}
-            )}"
-            style="margin-top: 10px;">
+            <strong>
+                두피
+            </strong>
 
+            <span>
+                민감도 및 두피 특이사항
+            </span>
 
-        <!-- Spring Security CSRF -->
-
-        <input
-                type="hidden"
-                th:if="${_csrf != null}"
-                th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}">
+        </div>
 
 
-        <button
-                type="submit"
-                class="delete-button"
-                onclick="return confirm('이 메모를 삭제하시겠습니까?');">
+        <div class="guide-item">
 
-            삭제
+            <strong>
+                모발
+            </strong>
 
-        </button>
+            <span>
+                손상도 및 모발 특이사항
+            </span>
 
-
-    </form>
-
-</div>
+        </div>
 
 
-<!-- =====================================================
-     등록된 메모가 없는 경우
-===================================================== -->
+        <div class="guide-item">
 
-<div
-        class="box empty"
-        th:if="${#lists.isEmpty(memos)}">
+            <strong>
+                일반
+            </strong>
 
-    등록된 상담 메모가 없습니다.
+            <span>
+                기타 고객 관련 참고사항
+            </span>
 
-</div>
+        </div>
+
+
+    </section>
+
+
+</main>
 
 
 </body>
