@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 public class SecurityConfig {
@@ -51,6 +52,20 @@ public class SecurityConfig {
             LoginFailureHandler loginFailureHandler
     ) throws Exception {
 
+        /*
+         * Thymeleaf에서
+         *
+         * ${_csrf.token}
+         * ${_csrf.headerName}
+         *
+         * 형태로 CSRF 토큰을 사용할 수 있게 한다.
+         */
+        CsrfTokenRequestAttributeHandler csrfHandler =
+                new CsrfTokenRequestAttributeHandler();
+
+        csrfHandler.setCsrfRequestAttributeName("_csrf");
+
+
         http
 
                 /* =================================================
@@ -61,10 +76,20 @@ public class SecurityConfig {
 
 
                 /* =================================================
+                   CSRF
+                ================================================= */
+
+                .csrf(csrf -> csrf
+                        .csrfTokenRequestHandler(csrfHandler)
+                )
+
+
+                /* =================================================
                    URL 권한 설정
                 ================================================= */
 
                 .authorizeHttpRequests(auth -> auth
+
 
                         /*
                          * 로그인하지 않아도 접근 가능
@@ -73,32 +98,64 @@ public class SecurityConfig {
                                 "/",
                                 "/member/signup",
                                 "/member/login",
+
+                                "/reservation",
+                                "/guest-reservation",
+
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
+                                "/uploads/**",
+
                                 "/error"
                         )
                         .permitAll()
 
 
                         /*
-                         * 관리자만 접근 가능
+                         * 비회원도 사용할 수 있는 예약 API
+                         */
+                        .requestMatchers(
+                                "/api/reservations/available-times",
+                                "/api/reservations/service-menus",
+                                "/api/reservations/hair-styles",
+                                "/api/reservations/guest/**"
+                        )
+                        .permitAll()
+
+
+                        /*
+                         * 관리자 전용
+                         *
+                         * /admin/api/reservations
+                         * /admin/api/business-hours
+                         * /admin/api/holidays
+                         * /admin/api/availability-blocks
+                         *
+                         * 모두 여기 포함된다.
                          */
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
 
 
                         /*
-                         * 로그인한 회원만 접근 가능
-                         *
-                         * 마이페이지
-                         * 회원정보 수정
-                         * 회원탈퇴
+                         * 로그인 회원 예약
+                         */
+                        .requestMatchers(
+                                "/api/reservations/me",
+                                "/api/reservations/me/**"
+                        )
+                        .authenticated()
+
+
+                        /*
+                         * 기존 회원 전용
                          */
                         .requestMatchers(
                                 "/mypage/**",
                                 "/member/edit/**",
-                                "/member/withdraw/**"
+                                "/member/withdraw/**",
+                                "/my-reservations"
                         )
                         .authenticated()
 
@@ -161,7 +218,6 @@ public class SecurityConfig {
                          */
                         .failureHandler(loginFailureHandler)
 
-
                         .permitAll()
                 )
 
@@ -198,7 +254,6 @@ public class SecurityConfig {
                          * JSESSIONID 쿠키 삭제
                          */
                         .deleteCookies("JSESSIONID")
-
 
                         .permitAll()
                 )
