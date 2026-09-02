@@ -8,126 +8,135 @@
 
     <link rel="stylesheet"
           th:href="@{/css/operation/salonevent.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin/dashboard-sidebar.css}">
 </head>
 
 <body>
+<div class="salonevent-admin-layout">
 
-<main class="salon-event-page">
+    <!-- 관리자 공통 사이드바 -->
+    <aside th:replace="~{admin/dashboard-sidebar :: sidebar('salonevent')}"></aside>
 
-    <!-- 페이지 제목과 이벤트 등록 버튼 -->
-    <section class="salon-event-header">
-        <div>
-            <h1>이벤트 관리</h1>
-            <p>미용실 이벤트의 진행 기간과 노출 상태를 관리합니다.</p>
-        </div>
+    <div class="salonevent-admin-content">
 
-        <div class="salon-event-header-actions">
-            <a class="primary-button"
-               th:href="@{/admin/salonevent/new}">
-                이벤트 등록
-            </a>
-        </div>
-    </section>
+        <main class="salon-event-page">
 
-    <!-- 등록·수정·상태 변경 완료 메시지 -->
-    <div class="message success-message"
-         th:if="${message != null}"
-         th:text="${message}">
-        처리가 완료되었습니다.
-    </div>
+            <!-- 페이지 제목과 이벤트 등록 버튼 -->
+            <section class="salon-event-header">
+                <div>
+                    <h1>이벤트 관리</h1>
+                    <p>미용실 이벤트의 진행 기간과 노출 상태를 관리합니다.</p>
+                </div>
 
-    <!-- 검색과 사용 여부 필터 -->
-    <section class="event-search-section">
+                <div class="salon-event-header-actions">
+                    <a class="primary-button"
+                       th:href="@{/admin/salonevent/new}">
+                        이벤트 등록
+                    </a>
+                </div>
+            </section>
 
-        <form class="event-search-form"
-              th:action="@{/admin/salonevent}"
-              method="get">
+            <!-- 등록·수정·상태 변경 완료 메시지 -->
+            <div class="message success-message"
+                 th:if="${message != null}"
+                 th:text="${message}">
+                처리가 완료되었습니다.
+            </div>
 
-            <!-- 현재 선택된 사용 여부 조건 유지 -->
-            <input type="hidden"
-                   name="useYn"
-                   th:value="${useYn}">
+            <!-- 검색과 사용 여부 필터 -->
+            <section class="event-search-section">
 
-            <input type="search"
-                   name="keyword"
-                   th:value="${keyword}"
-                   placeholder="이벤트명을 입력해 주세요.">
+                <form class="event-search-form"
+                      th:action="@{/admin/salonevent}"
+                      method="get">
 
-            <button type="submit"
-                    class="search-button">
-                검색
-            </button>
-        </form>
+                    <!-- 현재 선택된 사용 여부 조건 유지 -->
+                    <input type="hidden"
+                           name="useYn"
+                           th:value="${useYn}">
 
-        <div class="event-filter-buttons">
+                    <input type="search"
+                           name="keyword"
+                           th:value="${keyword}"
+                           placeholder="이벤트명을 입력해 주세요.">
 
-            <a th:href="@{/admin/salonevent(keyword=${keyword})}"
-               th:classappend="${useYn == null
+                    <button type="submit"
+                            class="search-button">
+                        검색
+                    </button>
+                </form>
+
+                <div class="event-filter-buttons">
+
+                    <a th:href="@{/admin/salonevent(keyword=${keyword})}"
+                       th:classappend="${useYn == null
                                 or useYn.isBlank()
                                 or useYn == 'ALL'}
                                 ? ' active'">
-                전체
-            </a>
+                        전체
+                    </a>
 
-            <a th:href="@{/admin/salonevent(
+                    <a th:href="@{/admin/salonevent(
                     useYn='Y',
                     keyword=${keyword}
                )}"
-               th:classappend="${useYn == 'Y'}
+                       th:classappend="${useYn == 'Y'}
                                 ? ' active'">
-                사용 중
-            </a>
+                        사용 중
+                    </a>
 
-            <a th:href="@{/admin/salonevent(
+                    <a th:href="@{/admin/salonevent(
                     useYn='N',
                     keyword=${keyword}
                )}"
-               th:classappend="${useYn == 'N'}
+                       th:classappend="${useYn == 'N'}
                                 ? ' active'">
-                사용 중지
-            </a>
+                        사용 중지
+                    </a>
 
-        </div>
-    </section>
+                </div>
+            </section>
 
-    <!-- 이벤트 목록 -->
-    <section class="event-list-section">
+            <!-- 이벤트 목록 -->
+            <section class="event-list-section">
 
-        <div class="event-table-wrap">
-            <table class="event-table">
-                <thead>
-                <tr>
-                    <th>번호</th>
-                    <th>이벤트명</th>
-                    <th>이벤트 유형</th>
-                    <th>진행 기간</th>
-                    <th>진행 상태</th>
-                    <th>노출 상태</th>
-                    <th>관리</th>
-                </tr>
-                </thead>
+                <div class="event-table-wrap">
+                    <table class="event-table">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>이벤트명</th>
+                            <th>이벤트 유형</th>
+                            <th>진행 기간</th>
+                            <th>진행 상태</th>
+                            <th>노출 상태</th>
+                            <th>관리</th>
+                        </tr>
+                        </thead>
 
-                <tbody>
+                        <tbody>
 
-                <tr th:each="event : ${events}">
-                    <td th:text="${event.eventNo}">
-                        1
-                    </td>
+                        <tr th:each="event : ${events}">
+                            <td th:text="${event.eventNo}">
+                                1
+                            </td>
 
-                    <td class="event-title-cell">
-                        <a th:href="@{/admin/salonevent/{no}(
+                            <td class="event-title-cell">
+                                <a th:href="@{/admin/salonevent/{no}(
                                 no=${event.eventNo}
                            )}"
-                           th:text="${event.eventTitle}">
-                            첫 방문 고객 할인 이벤트
-                        </a>
-                    </td>
+                                   th:text="${event.eventTitle}">
+                                    첫 방문 고객 할인 이벤트
+                                </a>
+                            </td>
 
-                    <td th:text="${event.eventTypeName}">
-                        첫 방문
-                    </td>
+                            <td th:text="${event.eventTypeName}">
+                                첫 방문
+                            </td>
 
-                    <td class="event-period-cell">
+                            <td class="event-period-cell">
                         <span th:text="${#temporals.format(
                                 event.startDate,
                                 'yyyy-MM-dd HH:mm'
@@ -135,26 +144,26 @@
                             2026-08-28 10:00
                         </span>
 
-                        <span class="period-separator">~</span>
+                                <span class="period-separator">~</span>
 
-                        <span th:text="${#temporals.format(
+                                <span th:text="${#temporals.format(
                                 event.endDate,
                                 'yyyy-MM-dd HH:mm'
                               )}">
                             2026-09-30 23:59
                         </span>
-                    </td>
+                            </td>
 
-                    <td>
+                            <td>
                         <span class="status-badge"
                               th:classappend="${' status-' +
                                                event.eventStatus.toLowerCase()}"
                               th:text="${event.eventStatusName}">
                             진행 중
                         </span>
-                    </td>
+                            </td>
 
-                    <td>
+                            <td>
                         <span class="use-badge"
                               th:classappend="${event.useYn == 'Y'
                                                ? ' use-active'
@@ -164,42 +173,45 @@
                                        : '숨김'}">
                             노출
                         </span>
-                    </td>
+                            </td>
 
-                    <td>
-                        <div class="table-actions">
-                            <a class="detail-button"
-                               th:href="@{/admin/salonevent/{no}(
+                            <td>
+                                <div class="table-actions">
+                                    <a class="detail-button"
+                                       th:href="@{/admin/salonevent/{no}(
                                     no=${event.eventNo}
                                )}">
-                                상세
-                            </a>
+                                        상세
+                                    </a>
 
-                            <a class="edit-button"
-                               th:href="@{/admin/salonevent/{no}/edit(
+                                    <a class="edit-button"
+                                       th:href="@{/admin/salonevent/{no}/edit(
                                     no=${event.eventNo}
                                )}">
-                                수정
-                            </a>
-                        </div>
-                    </td>
-                </tr>
+                                        수정
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
 
-                <!-- 검색 결과나 등록된 이벤트가 없는 경우 -->
-                <tr th:if="${#lists.isEmpty(events)}">
-                    <td colspan="7"
-                        class="empty-row">
-                        조회된 이벤트가 없습니다.
-                    </td>
-                </tr>
+                        <!-- 검색 결과나 등록된 이벤트가 없는 경우 -->
+                        <tr th:if="${#lists.isEmpty(events)}">
+                            <td colspan="7"
+                                class="empty-row">
+                                조회된 이벤트가 없습니다.
+                            </td>
+                        </tr>
 
-                </tbody>
-            </table>
-        </div>
+                        </tbody>
+                    </table>
+                </div>
 
-    </section>
+            </section>
 
-</main>
+        </main>
+
+    </div>
+</div>
 
 </body>
 </html>

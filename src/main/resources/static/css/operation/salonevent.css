@@ -4,9 +4,10 @@
 }
 
 body {
+    min-height: 100%;
     margin: 0;
     color: #1f2937;
-    background: #f5f7fb;
+    background: #f7f8fa;
     font-family:
             "Pretendard",
             "Noto Sans KR",
@@ -861,4 +862,17 @@ input {
     .event-status-action-section button {
         width: 100%;
     }
+}
+
+/* 관리자 사이드바와 이벤트 화면 배치 */
+.salonevent-admin-layout {
+    min-height: 100vh;
+    background: #f7f8fa;
+}
+
+.salonevent-admin-content {
+    min-width: 0;
+    min-height: 100vh;
+    margin-left: 250px;
+    background: #f7f8fa;
 }
