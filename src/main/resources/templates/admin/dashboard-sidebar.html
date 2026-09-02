@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<!-- 관리자 페이지 공통 사이드바 -->
+<aside class="admin-sidebar"
+       th:fragment="sidebar(activeMenu)">
+
+    <!-- 관리자 로고 -->
+    <a class="sidebar-logo"
+         href="/admin/dashboard"
+        th:href="@{/admin/dashboard}"
+        aria-label="관리자 대시보드로 이동">
+
+        <div class="logo-symbol">
+            S
+        </div>
+
+        <div class="logo-text">
+            <strong>SALON</strong>
+            <span>ADMIN</span>
+        </div>
+
+    </a>
+
+    <!-- 관리자 주요 메뉴 -->
+    <nav class="sidebar-menu">
+
+        <!-- 대시보드 -->
+        <a href="/admin/dashboard"
+           th:href="@{/admin/dashboard}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'dashboard'} ? ' active' : ''">
+
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            </svg>
+
+            <span>대시보드</span>
+        </a>
+
+        <!-- 예약 관리 -->
+        <a href="/admin/reservations"
+           th:href="@{/admin/reservations}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'reservation'} ? ' active' : ''">
+
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <line x1="8" y1="3" x2="8" y2="7"></line>
+                <line x1="16" y1="3" x2="16" y2="7"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+
+            <span>예약 관리</span>
+        </a>
+
+        <!-- 고객 관리 -->
+        <a href="/admin/customers"
+           th:href="@{/admin/customers}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'customer'} ? ' active' : ''">
+
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 21C4 16.5 7.5 14 12 14C16.5 14 20 16.5 20 21"></path>
+            </svg>
+
+            <span>고객 관리</span>
+        </a>
+
+        <!-- 시술 메뉴 관리 -->
+        <a href="/admin/services"
+           th:href="@{/admin/services}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'service'} ? ' active' : ''">
+
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+                <circle cx="6" cy="7" r="3"></circle>
+                <circle cx="6" cy="17" r="3"></circle>
+                <line x1="8.5" y1="8.5" x2="21" y2="17"></line>
+                <line x1="8.5" y1="15.5" x2="21" y2="7"></line>
+            </svg>
+
+            <span>시술 메뉴 관리</span>
+        </a>
+
+        <!-- 이벤트 관리 -->
+        <a href="/admin/salonevent"
+           th:href="@{/admin/salonevent}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'salonevent'} ? ' active' : ''">
+
+            <!-- 달력 아이콘 -->
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <path d="M16 3v4"></path>
+                <path d="M8 3v4"></path>
+                <path d="M3 10h18"></path>
+                <path d="m9 15 2 2 4-4"></path>
+            </svg>
+
+            <span>이벤트 관리</span>
+        </a>
+
+        <!-- 재고 관리 -->
+        <a href="/admin/material"
+           th:href="@{/admin/material}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'material'} ? ' active' : ''">
+
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+                <path d="M4 7L12 3L20 7L20 18L12 22L4 18Z"></path>
+                <path d="M4 7L12 11L20 7"></path>
+                <line x1="12" y1="11" x2="12" y2="22"></line>
+            </svg>
+
+            <span>재고 관리</span>
+        </a>
+
+        <!-- 매출 관리 -->
+        <a href="/admin/sales"
+           th:href="@{/admin/sales}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'sales'} ? ' active' : ''">
+
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+                <line x1="4" y1="20" x2="4" y2="12"></line>
+                <line x1="10" y1="20" x2="10" y2="7"></line>
+                <line x1="16" y1="20" x2="16" y2="10"></line>
+                <line x1="22" y1="20" x2="22" y2="4"></line>
+            </svg>
+
+            <span>매출 관리</span>
+        </a>
+
+    </nav>
+
+    <!-- 사이드바 하단 메뉴 -->
+    <div class="sidebar-bottom">
+
+        <!-- 사용자 화면으로 이동 -->
+        <a href="/"
+           th:href="@{/}"
+           class="sidebar-menu-item">
+
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+                <path d="M14 4H20V10"></path>
+                <path d="M20 4L11 13"></path>
+                <path d="M18 13V19C18 20.1 17.1 21 16 21H5C3.9 21 3 20.1 3 19V8C3 6.9 3.9 6 5 6H11"></path>
+            </svg>
+
+            <span>사용자 화면</span>
+        </a>
+
+        <!-- 로그아웃 -->
+        <a href="/member/logout"
+           th:href="@{/member/logout}"
+           class="sidebar-menu-item">
+
+            <svg class="sidebar-icon" viewBox="0 0 24 24">
+                <path d="M10 4H5C3.9 4 3 4.9 3 6V18C3 19.1 3.9 20 5 20H10"></path>
+                <line x1="13" y1="12" x2="21" y2="12"></line>
+                <polyline points="18,9 21,12 18,15"></polyline>
+            </svg>
+
+            <span>로그아웃</span>
+        </a>
+
+    </div>
+
+</aside>
+
+</body>
+</html>

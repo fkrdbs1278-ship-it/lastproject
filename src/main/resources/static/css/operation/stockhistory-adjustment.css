@@ -1,0 +1,171 @@
+/* 재고 조정 화면 전용 스타일 */
+.adjustment-page,
+.adjustment-page * {
+    box-sizing: border-box;
+}
+
+.adjustment-page {
+    max-width: 1120px;
+}
+
+.adjustment-card {
+    width: 100%;
+    padding: 32px;
+    border: 1px solid #e1e5ec;
+    border-radius: 16px;
+    background-color: #ffffff;
+    box-shadow: 0 10px 28px rgba(31, 41, 55, 0.07);
+}
+
+.adjustment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.form-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.form-field label {
+    color: #313846;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.form-field label span {
+    color: #e34d59;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    width: 100%;
+    border: 1px solid #d6dbe4;
+    border-radius: 10px;
+    outline: none;
+    color: #2f3542;
+    background-color: #ffffff;
+    font-family: inherit;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-field input,
+.form-field select {
+    height: 48px;
+    padding: 0 14px;
+}
+
+.form-field textarea {
+    min-height: 132px;
+    padding: 14px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    border-color: #5c6bc0;
+    box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.12);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+    color: #a2a9b4;
+}
+
+.field-error {
+    margin: 0;
+    color: #d84646;
+    font-size: 13px;
+}
+
+.form-error {
+    padding: 14px 16px;
+    border: 1px solid #f0b8b8;
+    border-radius: 10px;
+    color: #b83f3f;
+    background-color: #fff2f2;
+    font-size: 14px;
+}
+
+.form-error p {
+    margin: 0;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 24px;
+    gap: 10px;
+    border-top: 1px solid #e7eaf0;
+}
+
+.cancel-button,
+.submit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 108px;
+    height: 46px;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.cancel-button {
+    border: 1px solid #cfd5df;
+    color: #596271;
+    background-color: #ffffff;
+}
+
+.cancel-button:hover {
+    border-color: #9da6b5;
+    background-color: #f7f8fa;
+}
+
+.submit-button {
+    border: 0;
+    color: #ffffff;
+    background-color: #5c6bc0;
+}
+
+.submit-button:hover {
+    background-color: #4b5aae;
+}
+
+@media (max-width: 720px) {
+    .adjustment-card {
+        padding: 22px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+    }
+
+    .cancel-button,
+    .submit-button {
+        width: 100%;
+    }
+}

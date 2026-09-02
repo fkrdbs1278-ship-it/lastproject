@@ -1,0 +1,878 @@
+/* 이벤트 관리 페이지 공통 설정 */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+    color: #1f2937;
+    background: #f7f8fa;
+    font-family:
+            "Pretendard",
+            "Noto Sans KR",
+            Arial,
+            sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+/* 이벤트 관리 페이지 영역 */
+.salon-event-page {
+    width: min(1280px, calc(100% - 48px));
+    margin: 0 auto;
+    padding: 48px 0 80px;
+}
+
+/* 페이지 상단 제목 */
+.salon-event-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.page-category {
+    display: block;
+    margin-bottom: 7px;
+    color: #5b6bc7;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.salon-event-header h1 {
+    margin: 0;
+    color: #172033;
+    font-size: 30px;
+    line-height: 1.25;
+}
+
+.salon-event-header p {
+    margin: 8px 0 0;
+    color: #718096;
+    font-size: 14px;
+}
+
+/* 상단 관리 버튼 */
+.salon-event-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 19px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 800;
+    transition:
+            background-color 0.2s,
+            border-color 0.2s,
+            color 0.2s;
+}
+
+.primary-button {
+    color: #ffffff;
+    border: 1px solid #5b6bc7;
+    background: #5b6bc7;
+}
+
+.primary-button:hover {
+    border-color: #4959b4;
+    background: #4959b4;
+}
+
+.secondary-button {
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+}
+
+.secondary-button:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+}
+
+/* 처리 완료 메시지 */
+.message {
+    margin-bottom: 20px;
+    padding: 14px 17px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.success-message {
+    color: #18794e;
+    border: 1px solid #9ed8bd;
+    background: #edf9f2;
+}
+
+/* 검색과 필터 영역 */
+.event-search-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+    padding: 16px;
+    border: 1px solid #e1e7ef;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(30, 41, 59, 0.04);
+}
+
+.event-search-form {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.event-search-form input[type="search"] {
+    width: 270px;
+    height: 42px;
+    padding: 0 14px;
+    color: #1f2937;
+    border: 1px solid #cfd8e5;
+    border-radius: 8px;
+    outline: none;
+    background: #ffffff;
+}
+
+.event-search-form input[type="search"]:focus {
+    border-color: #6677d2;
+    box-shadow: 0 0 0 3px rgba(91, 107, 199, 0.12);
+}
+
+.event-search-form input::placeholder {
+    color: #9aa6b6;
+}
+
+.search-button {
+    height: 42px;
+    padding: 0 18px;
+    color: #ffffff;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    background: #374151;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.search-button:hover {
+    background: #273244;
+}
+
+/* 사용 여부 필터 */
+.event-filter-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.event-filter-buttons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 76px;
+    height: 40px;
+    padding: 0 14px;
+    color: #64748b;
+    border: 1px solid #d8e0ea;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.event-filter-buttons a:hover {
+    color: #4f60be;
+    border-color: #7c8ada;
+}
+
+.event-filter-buttons a.active {
+    color: #ffffff;
+    border-color: #5b6bc7;
+    background: #5b6bc7;
+}
+
+/* 이벤트 목록 영역 */
+.event-list-section {
+    overflow: hidden;
+    border: 1px solid #e1e7ef;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(30, 41, 59, 0.04);
+}
+
+.event-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.event-table {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+}
+
+.event-table th,
+.event-table td {
+    padding: 16px 14px;
+    border-bottom: 1px solid #e8edf3;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.event-table th {
+    color: #536174;
+    background: #f7f9fc;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.event-table td {
+    color: #263244;
+    font-size: 14px;
+}
+
+.event-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.event-table tbody tr:hover {
+    background: #fafbfe;
+}
+
+/* 이벤트명 */
+.event-title-cell {
+    min-width: 220px;
+    text-align: left !important;
+    white-space: normal !important;
+}
+
+.event-title-cell a {
+    color: #172033;
+    font-weight: 800;
+}
+
+.event-title-cell a:hover {
+    color: #5364c3;
+    text-decoration: underline;
+}
+
+/* 이벤트 기간 */
+.event-period-cell {
+    min-width: 260px;
+}
+
+.period-separator {
+    margin: 0 5px;
+    color: #94a3b8;
+}
+
+/* 이벤트 상태 공통 */
+.status-badge,
+.use-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* 진행 예정 */
+.status-scheduled {
+    color: #8a5b14;
+    background: #fff4d6;
+}
+
+/* 진행 중 */
+.status-ongoing {
+    color: #18794e;
+    background: #e4f6eb;
+}
+
+/* 종료 */
+.status-ended {
+    color: #667085;
+    background: #edf0f4;
+}
+
+/* 사용 중지 */
+.status-stopped {
+    color: #b04444;
+    background: #fdeaea;
+}
+
+/* 사용자 화면 노출 */
+.use-active {
+    color: #18794e;
+    background: #e4f6eb;
+}
+
+/* 사용자 화면 숨김 */
+.use-stopped {
+    color: #667085;
+    background: #edf0f4;
+}
+
+/* 상세 및 수정 버튼 */
+.table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
+.detail-button,
+.edit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    height: 34px;
+    padding: 0 11px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.detail-button {
+    color: #5364c3;
+    border: 1px solid #aeb8eb;
+    background: #f7f8ff;
+}
+
+.detail-button:hover {
+    color: #ffffff;
+    border-color: #5b6bc7;
+    background: #5b6bc7;
+}
+
+.edit-button {
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+}
+
+.edit-button:hover {
+    border-color: #94a3b8;
+    background: #f1f5f9;
+}
+
+/* 이벤트가 없는 경우 */
+.empty-row {
+    height: 150px;
+    color: #8a96a8 !important;
+    text-align: center !important;
+}
+
+/* 작은 화면 대응 */
+@media (max-width: 850px) {
+    .salon-event-page {
+        width: min(100% - 28px, 1280px);
+        padding-top: 30px;
+    }
+
+    .salon-event-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .event-search-section {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .event-search-form input[type="search"] {
+        width: 100%;
+    }
+
+    .event-search-form {
+        width: 100%;
+    }
+
+    .event-filter-buttons {
+        flex-wrap: wrap;
+    }
+}
+
+/* =========================================================
+   이벤트 등록·수정 화면
+   ========================================================= */
+
+/* 이벤트 입력 폼 전체 영역 */
+.event-form-section {
+    overflow: hidden;
+    padding: 30px;
+    border: 1px solid #e1e7ef;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(30, 41, 59, 0.05);
+}
+
+/* 입력 항목을 두 줄로 배치 */
+.event-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 20px;
+}
+
+/* 입력 항목 공통 영역 */
+.form-group {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* 입력 항목 제목 */
+.form-group label {
+    margin-bottom: 9px;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.required {
+    color: #e5484d;
+}
+
+/* 입력창·선택창·내용 입력창 공통 */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    color: #1f2937;
+    border: 1px solid #cfd8e5;
+    border-radius: 9px;
+    outline: none;
+    background: #ffffff;
+    transition:
+            border-color 0.2s,
+            box-shadow 0.2s;
+}
+
+.form-group input,
+.form-group select {
+    height: 46px;
+    padding: 0 14px;
+}
+
+.form-group textarea {
+    min-height: 190px;
+    padding: 14px;
+    line-height: 1.65;
+    resize: vertical;
+}
+
+/* 입력창 선택 시 테두리 표시 */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #6677d2;
+    box-shadow: 0 0 0 3px rgba(91, 107, 199, 0.12);
+}
+
+/* 입력 안내 문구 */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #9aa6b6;
+}
+
+.form-help {
+    margin: 7px 0 0;
+    color: #8491a3;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* 개별 입력 오류 메시지 */
+.field-error {
+    margin: 7px 0 0;
+    color: #d83b3b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* 시작일·종료일과 같은 전체 검증 오류 */
+.form-error-summary {
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    color: #c73939;
+    border: 1px solid #f2aaaa;
+    border-radius: 9px;
+    background: #fff1f1;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.form-error-summary p {
+    margin: 0;
+}
+
+.form-error-summary p + p {
+    margin-top: 5px;
+}
+
+/* 등록·수정 하단 버튼 */
+.event-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid #e5eaf1;
+}
+
+.event-form-actions button {
+    cursor: pointer;
+}
+
+/* 날짜 입력 아이콘의 클릭 영역 조정 */
+.form-group input[type="datetime-local"] {
+    cursor: pointer;
+}
+
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+}
+
+/* 자동완성 입력 배경색 보정 */
+.form-group input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+}
+
+/* 작은 화면에서는 입력 항목을 한 줄로 배치 */
+@media (max-width: 750px) {
+    .event-form-section {
+        padding: 22px 18px;
+    }
+
+    .event-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full-width {
+        grid-column: auto;
+    }
+
+    .event-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .event-form-actions .primary-button,
+    .event-form-actions .secondary-button {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+이벤트 상세 화면
+========================================================= */
+
+/* 이벤트 상세 정보 전체 영역 */
+.event-detail-section {
+    overflow: hidden;
+    padding: 30px;
+    border: 1px solid #e1e7ef;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(30, 41, 59, 0.05);
+}
+
+/* 이벤트 제목과 상태 영역 */
+.event-detail-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e5eaf1;
+}
+
+.event-number {
+    display: block;
+    margin-bottom: 8px;
+    color: #728095;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.event-detail-heading h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 25px;
+    line-height: 1.4;
+}
+
+.detail-status-group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+/* 등록된 이벤트 이미지 */
+.event-image-wrap {
+    width: 100%;
+    max-height: 420px;
+    margin-top: 26px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.event-image-wrap img {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+}
+
+/* 이벤트 세부 정보 */
+.event-information-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 26px 0 0;
+    overflow: hidden;
+    border: 1px solid #dce3ec;
+    border-radius: 12px;
+}
+
+.event-information-grid div {
+    min-width: 0;
+    padding: 18px;
+    border-right: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.event-information-grid div:nth-child(3n) {
+    border-right: 0;
+}
+
+.event-information-grid div:nth-last-child(-n + 3) {
+    border-bottom: 0;
+}
+
+.event-information-grid dt {
+    margin-bottom: 8px;
+    color: #778498;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.event-information-grid dd {
+    margin: 0;
+    color: #243044;
+    font-size: 14px;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+/* 이벤트 내용 */
+.event-content-section {
+    margin-top: 28px;
+}
+
+.event-content-section h3,
+.event-image-url-section h3 {
+    margin: 0 0 10px;
+    color: #263244;
+    font-size: 16px;
+}
+
+.event-content {
+    min-height: 150px;
+    padding: 20px;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fafbfc;
+    font-size: 14px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 이미지 주소 */
+.event-image-url-section {
+    margin-top: 24px;
+}
+
+.event-image-url-section a {
+    display: block;
+    overflow: hidden;
+    padding: 14px 16px;
+    color: #5364c3;
+    border: 1px solid #dce3ec;
+    border-radius: 9px;
+    background: #f8f9ff;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.event-image-url-section a:hover {
+    text-decoration: underline;
+}
+
+/* 이벤트 노출 상태 관리 영역 */
+.event-status-action-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    margin-top: 22px;
+    padding: 24px 28px;
+    border: 1px solid #e1e7ef;
+    border-radius: 15px;
+    background: #ffffff;
+    box-shadow: 0 5px 18px rgba(30, 41, 59, 0.05);
+}
+
+.event-status-action-section h2 {
+    margin: 0;
+    color: #263244;
+    font-size: 17px;
+}
+
+.event-status-action-section p {
+    margin: 7px 0 0;
+    color: #7b8798;
+    font-size: 13px;
+}
+
+.event-status-action-section form {
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.event-status-action-section button {
+    cursor: pointer;
+}
+
+/* 사용 중지 버튼 */
+.danger-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    color: #d13c3c;
+    border: 1px solid #ef9a9a;
+    border-radius: 9px;
+    background: #fff7f7;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 800;
+    transition:
+            color 0.2s,
+            border-color 0.2s,
+            background-color 0.2s;
+}
+
+.danger-button:hover {
+    color: #ffffff;
+    border-color: #dc4545;
+    background: #dc4545;
+}
+
+/* 상세 화면 작은 화면 대응 */
+@media (max-width: 850px) {
+    .event-information-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .event-information-grid div {
+        border-right: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .event-information-grid div:nth-child(3n) {
+        border-right: 1px solid #e2e8f0;
+    }
+
+    .event-information-grid div:nth-child(2n) {
+        border-right: 0;
+    }
+
+    .event-information-grid div:nth-last-child(-n + 3) {
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .event-information-grid div:nth-last-child(-n + 2) {
+        border-bottom: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .event-detail-section {
+        padding: 22px 18px;
+    }
+
+    .event-detail-heading {
+        flex-direction: column;
+    }
+
+    .event-information-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .event-information-grid div,
+    .event-information-grid div:nth-child(2n),
+    .event-information-grid div:nth-child(3n),
+    .event-information-grid div:nth-last-child(-n + 2) {
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .event-information-grid div:last-child {
+        border-bottom: 0;
+    }
+
+    .event-status-action-section {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .event-status-action-section button {
+        width: 100%;
+    }
+}
+
+/* 관리자 사이드바와 이벤트 화면 배치 */
+.salonevent-admin-layout {
+    min-height: 100vh;
+    background: #f7f8fa;
+}
+
+.salonevent-admin-content {
+    min-width: 0;
+    min-height: 100vh;
+    margin-left: 250px;
+    background: #f7f8fa;
+}

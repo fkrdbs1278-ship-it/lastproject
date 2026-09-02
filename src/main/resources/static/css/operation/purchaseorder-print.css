@@ -1,0 +1,188 @@
+/* 발주서 인쇄 화면 기본 설정 */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 30px;
+    color: #1f2937;
+    background: #f3f4f6;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+}
+
+.print-page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 18mm;
+    background: #ffffff;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* 인쇄 및 닫기 버튼 */
+.print-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 25px;
+}
+
+.print-actions button {
+    padding: 10px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.print-button {
+    color: #ffffff;
+    border: 1px solid #596bc5;
+    background: #596bc5;
+}
+
+.close-button {
+    color: #374151;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+}
+
+/* 발주서 제목 */
+.document-header {
+    padding-bottom: 18px;
+    text-align: center;
+    border-bottom: 3px double #1f2937;
+}
+
+.document-header h1 {
+    margin: 0;
+    font-size: 32px;
+    letter-spacing: 12px;
+}
+
+.document-header p {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+/* 공통 표 설정 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 11px 10px;
+    border: 1px solid #cbd5e1;
+    font-size: 13px;
+}
+
+th {
+    background: #f1f5f9;
+}
+
+/* 발주 정보 */
+.order-information {
+    margin-top: 28px;
+}
+
+.order-information th {
+    width: 16%;
+    text-align: left;
+}
+
+.order-information td {
+    width: 34%;
+}
+
+/* 품목 표 */
+.order-items {
+    margin-top: 32px;
+}
+
+.order-items h2 {
+    margin: 0 0 10px;
+    font-size: 18px;
+}
+
+.order-items th,
+.order-items td {
+    text-align: center;
+}
+
+.order-items td:nth-child(2) {
+    text-align: left;
+}
+
+.amount,
+.total-amount {
+    text-align: right !important;
+}
+
+.total-amount {
+    color: #111827;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.empty-row {
+    padding: 30px;
+    color: #64748b;
+    text-align: center !important;
+}
+
+/* 담당자 확인란 */
+.signature-section {
+    display: flex;
+    justify-content: flex-end;
+    gap: 45px;
+    margin-top: 55px;
+}
+
+.signature-section div {
+    display: flex;
+    gap: 20px;
+    min-width: 180px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #475569;
+}
+
+.signature-section strong {
+    margin-left: auto;
+}
+
+/* 실제 출력 설정 */
+@page {
+    size: A4;
+    margin: 12mm;
+}
+
+@media print {
+    body {
+        padding: 0;
+        background: #ffffff;
+    }
+
+    .print-page {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    /* 종이에는 버튼을 출력하지 않음 */
+    .print-actions {
+        display: none;
+    }
+
+    table,
+    tr,
+    td,
+    th {
+        break-inside: avoid;
+    }
+}

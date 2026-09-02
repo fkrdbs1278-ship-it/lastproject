@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자재 상세</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/operation/material.css}">
+
+    <!-- 관리자 공통 사이드바 CSS 연결 -->
+    <link rel="stylesheet"
+          th:href="@{/css/admin/dashboard-sidebar.css}">
+</head>
+
+<body>
+<div class="admin-layout material-admin-layout">
+
+    <!-- 관리자 공통 사이드바 -->
+    <aside th:replace="~{admin/dashboard-sidebar
+            :: sidebar('material')}">
+    </aside>
+
+    <!-- 자재 상세 화면 영역 -->
+    <div class="material-admin-content">
+        <main class="material-page material-detail-page">
+
+            <section class="detail-header">
+                <div>
+            <span class="detail-number"
+                  th:text="'자재 번호 ' + ${material.materialNo}">
+                자재 번호 1
+            </span>
+
+                    <h1 th:text="${material.materialName}">
+                        자재명
+                    </h1>
+
+                    <p>등록된 자재의 상세 정보입니다.</p>
+                </div>
+
+                <a class="back-button"
+                   th:href="@{/admin/material}">
+                    목록으로
+                </a>
+            </section>
+
+            <div class="message"
+                 th:if="${message != null}"
+                 th:text="${message}">
+            </div>
+
+            <!-- 현재 재고가 안전 재고 이하일 때 표시 -->
+            <section class="stock-warning"
+                     th:if="${material.lowStock}">
+                <strong>재고가 부족합니다.</strong>
+
+                <span>
+            현재 재고가 안전 재고 이하입니다.
+            입고 또는 재고 조정이 필요합니다.
+        </span>
+            </section>
+
+            <section class="material-detail-card">
+
+                <div class="detail-card-title">
+                    <h2>기본 정보</h2>
+
+                    <span class="status-badge active"
+                          th:if="${material.useYn == 'Y'}">
+                사용 중
+            </span>
+
+                    <span class="status-badge inactive"
+                          th:if="${material.useYn == 'N'}">
+                사용 중지
+            </span>
+                </div>
+
+                <div class="detail-grid">
+
+                    <div class="detail-item">
+                        <span>자재명</span>
+                        <strong th:text="${material.materialName}">
+                            자재명
+                        </strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>자재 분류</span>
+                        <strong th:text="${material.categoryCode != null
+                        ? material.categoryCode : '-'}">
+                            -
+                        </strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>현재 재고</span>
+
+                        <strong th:classappend="${material.lowStock}
+                                ? 'stock-danger'"
+                                th:text="${#numbers.formatDecimal(
+                                material.currentStock, 1, 2
+                        ) + ' ' + material.unitCode}">
+                            1 EA
+                        </strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>안전 재고</span>
+
+                        <strong th:text="${#numbers.formatDecimal(
+                                material.safetyStock, 1, 2
+                        ) + ' ' + material.unitCode}">
+                            1 EA
+                        </strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>기준 구매가</span>
+
+                        <strong th:text="${#numbers.formatInteger(
+                                material.unitPrice, 1, 'COMMA'
+                        ) + '원'}">
+                            0원
+                        </strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>업체</span>
+
+                        <strong th:text="${material.supplierName != null
+                        ? material.supplierName : '-'}">
+                            -
+                        </strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>등록일</span>
+
+                        <strong th:text="${#temporals.format(
+                        material.regdate,
+                        'yyyy-MM-dd HH:mm'
+                )}">
+                            2026-08-26 10:00
+                        </strong>
+                    </div>
+
+                    <div class="detail-item">
+                        <span>최근 수정일</span>
+
+                        <strong th:text="${material.updatedate != null
+                        ? #temporals.format(
+                                material.updatedate,
+                                'yyyy-MM-dd HH:mm'
+                          )
+                        : '-'}">
+                            -
+                        </strong>
+                    </div>
+
+                </div>
+
+                <div class="detail-actions">
+                    <a class="cancel-button"
+                       th:href="@{/admin/material}">
+                        목록
+                    </a>
+
+                    <a class="save-button"
+                       th:href="@{/admin/material/{no}/edit
+               (no=${material.materialNo})}">
+                        정보 수정
+                    </a>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+</div>
+</body>
+</html>
