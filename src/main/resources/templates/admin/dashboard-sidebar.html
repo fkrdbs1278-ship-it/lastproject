@@ -9,7 +9,10 @@
        th:fragment="sidebar(activeMenu)">
 
     <!-- 관리자 로고 -->
-    <div class="sidebar-logo">
+    <a class="sidebar-logo"
+         href="/admin/dashboard"
+        th:href="@{/admin/dashboard}"
+        aria-label="관리자 대시보드로 이동">
 
         <div class="logo-symbol">
             S
@@ -20,7 +23,7 @@
             <span>ADMIN</span>
         </div>
 
-    </div>
+    </a>
 
     <!-- 관리자 주요 메뉴 -->
     <nav class="sidebar-menu">

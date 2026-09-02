@@ -1,4 +1,9 @@
 /* 관리자 공통 사이드바 */
+.admin-sidebar,
+.admin-sidebar * {
+    box-sizing: border-box;
+}
+
 .admin-sidebar {
     position: fixed;
     top: 0;
@@ -23,6 +28,8 @@
 
 /* 관리자 로고 */
 .sidebar-logo {
+    text-decoration: none;
+    color: inherit;
     display: flex;
     align-items: center;
     gap: 12px;

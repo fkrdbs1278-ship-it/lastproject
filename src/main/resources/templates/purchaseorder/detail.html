@@ -8,67 +8,75 @@
 
     <link rel="stylesheet"
           th:href="@{/css/operation/purchaseorder.css}">
+
+    <link rel="stylesheet"
+          th:href="@{/css/admin/dashboard-sidebar.css}">
 </head>
 
 <body>
-<main class="purchase-order-page purchase-order-detail-page">
+<div class="purchaseorder-admin-layout">
 
-    <section class="purchase-order-header">
-        <div>
-            <span class="page-category">매장 운영 관리</span>
-            <h1>발주서 상세</h1>
-            <p>발주서 정보와 발주 품목을 확인하고 관리합니다.</p>
-        </div>
+    <!-- 관리자 공통 사이드바 -->
+    <aside th:replace="~{admin/dashboard-sidebar :: sidebar('material')}"></aside>
 
-        <div class="purchase-order-header-actions">
+    <div class="purchaseorder-admin-content">
+        <main class="purchase-order-page purchase-order-detail-page">
 
-            <!-- 발주서 인쇄 화면을 새 창으로 열기 -->
-            <a class="secondary-button"
-               th:href="@{/admin/purchaseorder/{no}/print(
+            <section class="purchase-order-header">
+                <div>
+                    <h1>발주서 상세</h1>
+                    <p>발주서 정보와 발주 품목을 확인하고 관리합니다.</p>
+                </div>
+
+                <div class="purchase-order-header-actions">
+
+                    <!-- 발주서 인쇄 화면을 새 창으로 열기 -->
+                    <a class="secondary-button"
+                       th:href="@{/admin/purchaseorder/{no}/print(
                     no=${order.purchaseOrderNo}
                )}"
-               target="_blank">
-                발주서 출력
-            </a>
+                       target="_blank">
+                        발주서 출력
+                    </a>
 
-            <a class="secondary-button"
-               th:href="@{/admin/purchaseorder}">
-                목록으로
-            </a>
+                    <a class="secondary-button"
+                       th:href="@{/admin/purchaseorder}">
+                        목록으로
+                    </a>
 
-        </div>
-    </section>
+                </div>
+            </section>
 
-    <!-- 등록 완료 메시지 표시 -->
-    <div class="message"
-         th:if="${message != null}"
-         th:text="${message}">
-    </div>
-
-    <!-- 발주서 기본 정보 -->
-    <section class="detail-card">
-        <div class="section-title">
-            <h2>발주 정보</h2>
-        </div>
-
-        <dl class="detail-grid">
-            <div>
-                <dt>발주서 번호</dt>
-                <dd th:text="${order.purchaseOrderNo}">
-                    1
-                </dd>
+            <!-- 등록 완료 메시지 표시 -->
+            <div class="message"
+                 th:if="${message != null}"
+                 th:text="${message}">
             </div>
 
-            <div>
-                <dt>업체명</dt>
-                <dd th:text="${order.supplierName}">
-                    업체명
-                </dd>
-            </div>
+            <!-- 발주서 기본 정보 -->
+            <section class="detail-card">
+                <div class="section-title">
+                    <h2>발주 정보</h2>
+                </div>
 
-            <div>
-                <dt>발주 상태</dt>
-                <dd>
+                <dl class="detail-grid">
+                    <div>
+                        <dt>발주서 번호</dt>
+                        <dd th:text="${order.purchaseOrderNo}">
+                            1
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>업체명</dt>
+                        <dd th:text="${order.supplierName}">
+                            업체명
+                        </dd>
+                    </div>
+
+                    <div>
+                        <dt>발주 상태</dt>
+                        <dd>
                     <span class="status-badge"
                           th:text="${order.orderStatus == 'REQUESTED' ? '발주 요청' :
                                    order.orderStatus == 'ORDERED' ? '발주 완료' :
@@ -77,384 +85,386 @@
                                    order.orderStatus}">
                         발주 요청
                     </span>
-                </dd>
-            </div>
+                        </dd>
+                    </div>
 
-            <div>
-                <dt>발주일</dt>
-                <dd th:text="${#temporals.format(
+                    <div>
+                        <dt>발주일</dt>
+                        <dd th:text="${#temporals.format(
                         order.orderDate,
                         'yyyy-MM-dd HH:mm'
                 )}">
-                    2026-08-27 10:00
-                </dd>
-            </div>
+                            2026-08-27 10:00
+                        </dd>
+                    </div>
 
-            <div>
-                <dt>입고 예정일</dt>
-                <dd th:text="${order.expectedDate != null
+                    <div>
+                        <dt>입고 예정일</dt>
+                        <dd th:text="${order.expectedDate != null
                         ? #temporals.format(
                             order.expectedDate,
                             'yyyy-MM-dd'
                           )
                         : '-'}">
-                    -
-                </dd>
-            </div>
+                            -
+                        </dd>
+                    </div>
 
-            <div>
-                <dt>총 발주 금액</dt>
-                <dd th:text="${#numbers.formatInteger(
+                    <div>
+                        <dt>총 발주 금액</dt>
+                        <dd th:text="${#numbers.formatInteger(
                         order.totalAmount,
                         1,
                         'COMMA'
                 ) + '원'}">
-                    0원
-                </dd>
-            </div>
+                            0원
+                        </dd>
+                    </div>
 
-            <div class="detail-wide">
-                <dt>메모</dt>
-                <dd th:text="${order.memo != null
+                    <div class="detail-wide">
+                        <dt>메모</dt>
+                        <dd th:text="${order.memo != null
                         and !order.memo.isBlank()
                         ? order.memo
                         : '-'}">
-                    -
-                </dd>
-            </div>
-        </dl>
-    </section>
+                            -
+                        </dd>
+                    </div>
+                </dl>
+            </section>
 
-    <!-- 발주 품목 추가 -->
-    <section class="detail-card"
-             th:if="${order.orderStatus == 'REQUESTED'}">
+            <!-- 발주 품목 추가 -->
+            <section class="detail-card"
+                     th:if="${order.orderStatus == 'REQUESTED'}">
 
-        <div class="section-title">
-            <h2>발주 품목 추가</h2>
-            <p>등록된 자재에서 발주할 품목을 선택합니다.</p>
-        </div>
+                <div class="section-title">
+                    <h2>발주 품목 추가</h2>
+                    <p>등록된 자재에서 발주할 품목을 선택합니다.</p>
+                </div>
 
-        <form class="item-form item-select-form"
-              th:action="@{/admin/purchaseorder/{no}/items(
+                <form class="item-form item-select-form"
+                      th:action="@{/admin/purchaseorder/{no}/items(
                     no=${order.purchaseOrderNo}
               )}"
-              th:object="${purchaseOrderItemRequest}"
-              method="post">
+                      th:object="${purchaseOrderItemRequest}"
+                      method="post">
 
-            <!-- 자재 분류 -->
-            <div class="form-field">
-                <label for="categoryCode">
-                    자재 분류
-                </label>
+                    <!-- 자재 분류 -->
+                    <div class="form-field">
+                        <label for="categoryCode">
+                            자재 분류
+                        </label>
 
-                <select id="categoryCode">
-                    <option value="">
-                        분류를 선택해 주세요.
-                    </option>
+                        <select id="categoryCode">
+                            <option value="">
+                                분류를 선택해 주세요.
+                            </option>
 
-                    <option value="HAIR_COLOR">
-                        염색제
-                    </option>
+                            <option value="HAIR_COLOR">
+                                염색제
+                            </option>
 
-                    <option value="PERM">
-                        펌제
-                    </option>
+                            <option value="PERM">
+                                펌제
+                            </option>
 
-                    <option value="TREATMENT">
-                        클리닉·트리트먼트
-                    </option>
+                            <option value="TREATMENT">
+                                클리닉·트리트먼트
+                            </option>
 
-                    <option value="SHAMPOO">
-                        샴푸·두피케어
-                    </option>
+                            <option value="SHAMPOO">
+                                샴푸·두피케어
+                            </option>
 
-                    <option value="STYLING">
-                        스타일링제
-                    </option>
+                            <option value="STYLING">
+                                스타일링제
+                            </option>
 
-                    <option value="SUPPLIES">
-                        미용 소모품
-                    </option>
+                            <option value="SUPPLIES">
+                                미용 소모품
+                            </option>
 
-                    <option value="ETC">
-                        기타
-                    </option>
-                </select>
-            </div>
+                            <option value="ETC">
+                                기타
+                            </option>
+                        </select>
+                    </div>
 
-            <!-- 자재 선택 -->
-            <div class="form-field material-field">
-                <label for="materialNo">
-                    자재명
-                </label>
+                    <!-- 자재 선택 -->
+                    <div class="form-field material-field">
+                        <label for="materialNo">
+                            자재명
+                        </label>
 
-                <select id="materialNo"
-                        th:field="*{materialNo}"
-                        disabled>
+                        <select id="materialNo"
+                                th:field="*{materialNo}"
+                                disabled>
 
-                    <option value="">
-                        먼저 분류를 선택해 주세요.
-                    </option>
+                            <option value="">
+                                먼저 분류를 선택해 주세요.
+                            </option>
 
-                    <option th:each="material : ${materials}"
-                            th:value="${material.materialNo}"
-                            th:attr="data-category=${material.categoryCode},
+                            <option th:each="material : ${materials}"
+                                    th:value="${material.materialNo}"
+                                    th:attr="data-category=${material.categoryCode},
                                      data-price=${material.unitPrice},
                                      data-unit=${material.unitCode}"
-                            th:text="${material.materialName
+                                    th:text="${material.materialName
                                     + ' (' + material.unitCode + ')'}">
-                        자재명
-                    </option>
-                </select>
+                                자재명
+                            </option>
+                        </select>
 
-                <small class="field-error"
-                       th:if="${#fields.hasErrors('materialNo')}"
-                       th:errors="*{materialNo}">
-                    자재 오류
-                </small>
-            </div>
+                        <small class="field-error"
+                               th:if="${#fields.hasErrors('materialNo')}"
+                               th:errors="*{materialNo}">
+                            자재 오류
+                        </small>
+                    </div>
 
-            <!-- 발주 수량 -->
-            <div class="form-field">
-                <label for="orderQuantity">
-                    발주 수량
-                </label>
+                    <!-- 발주 수량 -->
+                    <div class="form-field">
+                        <label for="orderQuantity">
+                            발주 수량
+                        </label>
 
-                <input id="orderQuantity"
-                       type="number"
-                       min="0.01"
-                       step="0.01"
-                       th:field="*{orderQuantity}"
-                       placeholder="수량 입력">
+                        <input id="orderQuantity"
+                               type="number"
+                               min="0.01"
+                               step="0.01"
+                               th:field="*{orderQuantity}"
+                               placeholder="수량 입력">
 
-                <small class="field-error"
-                       th:if="${#fields.hasErrors('orderQuantity')}"
-                       th:errors="*{orderQuantity}">
-                    수량 오류
-                </small>
-            </div>
+                        <small class="field-error"
+                               th:if="${#fields.hasErrors('orderQuantity')}"
+                               th:errors="*{orderQuantity}">
+                            수량 오류
+                        </small>
+                    </div>
 
-            <!-- 개당 구매가 -->
-            <div class="form-field">
-                <label for="unitPrice">
-                    개당 구매가
-                </label>
+                    <!-- 개당 구매가 -->
+                    <div class="form-field">
+                        <label for="unitPrice">
+                            개당 구매가
+                        </label>
 
-                <input id="unitPrice"
-                       type="number"
-                       min="0"
-                       step="1"
-                       th:field="*{unitPrice}"
-                       placeholder="자재 선택 시 자동 입력"
-                       readonly>
+                        <input id="unitPrice"
+                               type="number"
+                               min="0"
+                               step="1"
+                               th:field="*{unitPrice}"
+                               placeholder="자재 선택 시 자동 입력"
+                               readonly>
 
-                <small class="field-error"
-                       th:if="${#fields.hasErrors('unitPrice')}"
-                       th:errors="*{unitPrice}">
-                    가격 오류
-                </small>
-            </div>
+                        <small class="field-error"
+                               th:if="${#fields.hasErrors('unitPrice')}"
+                               th:errors="*{unitPrice}">
+                            가격 오류
+                        </small>
+                    </div>
 
-            <div class="item-form-footer">
-                <button class="primary-button item-add-button"
-                        type="submit">
-                    품목 추가
-                </button>
+                    <div class="item-form-footer">
+                        <button class="primary-button item-add-button"
+                                type="submit">
+                            품목 추가
+                        </button>
 
-                <div class="item-amount-summary">
-                    <div>
+                        <div class="item-amount-summary">
+                            <div>
                         <span class="item-amount-label">
                             합계
                         </span>
 
-                        <small id="itemAmountFormula">
-                            자재와 수량을 선택해 주세요.
-                        </small>
+                                <small id="itemAmountFormula">
+                                    자재와 수량을 선택해 주세요.
+                                </small>
+                            </div>
+
+                            <strong id="itemAmount">
+                                0원
+                            </strong>
+                        </div>
                     </div>
+                </form>
+            </section>
 
-                    <strong id="itemAmount">
-                        0원
-                    </strong>
+            <!-- 등록된 발주 품목 목록 -->
+            <section class="detail-card">
+                <div class="section-title">
+                    <h2>발주 품목</h2>
                 </div>
-            </div>
-        </form>
-    </section>
 
-    <!-- 등록된 발주 품목 목록 -->
-    <section class="detail-card">
-        <div class="section-title">
-            <h2>발주 품목</h2>
-        </div>
+                <div class="item-table-wrap">
+                    <table class="item-table">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>자재명</th>
+                            <th>발주 수량</th>
+                            <th>입고 수량</th>
+                            <th>개당 구매가</th>
+                            <th>합계</th>
+                        </tr>
+                        </thead>
 
-        <div class="item-table-wrap">
-            <table class="item-table">
-                <thead>
-                <tr>
-                    <th>번호</th>
-                    <th>자재명</th>
-                    <th>발주 수량</th>
-                    <th>입고 수량</th>
-                    <th>개당 구매가</th>
-                    <th>합계</th>
-                </tr>
-                </thead>
+                        <tbody>
+                        <tr th:each="item, itemStat : ${items}">
+                            <td th:text="${itemStat.count}">
+                                1
+                            </td>
 
-                <tbody>
-                <tr th:each="item, itemStat : ${items}">
-                    <td th:text="${itemStat.count}">
-                        1
-                    </td>
+                            <td th:text="${item.materialName}">
+                                자재명
+                            </td>
 
-                    <td th:text="${item.materialName}">
-                        자재명
-                    </td>
-
-                    <td th:text="${#numbers.formatDecimal(
+                            <td th:text="${#numbers.formatDecimal(
                             item.orderQuantity,
                             1,
                             2
                     ) + ' ' + item.unitCode}">
-                        0.00개
-                    </td>
+                                0.00개
+                            </td>
 
-                    <td th:text="${#numbers.formatDecimal(
+                            <td th:text="${#numbers.formatDecimal(
                             item.receivedQuantity,
                             1,
                             2
                     ) + ' ' + item.unitCode}">
-                        0.00개
-                    </td>
+                                0.00개
+                            </td>
 
-                    <td th:text="${#numbers.formatInteger(
+                            <td th:text="${#numbers.formatInteger(
                             item.unitPrice,
                             1,
                             'COMMA'
                     ) + '원'}">
-                        0원
-                    </td>
+                                0원
+                            </td>
 
-                    <td th:text="${#numbers.formatInteger(
+                            <td th:text="${#numbers.formatInteger(
                             item.itemAmount,
                             1,
                             'COMMA'
                     ) + '원'}">
-                        0원
-                    </td>
-                </tr>
+                                0원
+                            </td>
+                        </tr>
 
-                <!-- 등록된 발주 품목이 없을 때 표시 -->
-                <tr th:if="${#lists.isEmpty(items)}">
-                    <td class="empty-message"
-                        colspan="6">
-                        등록된 발주 품목이 없습니다.
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
+                        <!-- 등록된 발주 품목이 없을 때 표시 -->
+                        <tr th:if="${#lists.isEmpty(items)}">
+                            <td class="empty-message"
+                                colspan="6">
+                                등록된 발주 품목이 없습니다.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-    <!-- 업체 출고 완료 후 관리자 입고 처리 -->
-    <section class="detail-card"
-             th:if="${order.orderStatus == 'ORDERED'}">
+            <!-- 업체 출고 완료 후 관리자 입고 처리 -->
+            <section class="detail-card"
+                     th:if="${order.orderStatus == 'ORDERED'}">
 
-        <div class="section-title">
-            <h2>입고 처리</h2>
+                <div class="section-title">
+                    <h2>입고 처리</h2>
 
-            <p>
-                업체에서 출고한 자재의 수량을 확인한 뒤
-                입고 완료 처리합니다.
-            </p>
-        </div>
+                    <p>
+                        업체에서 출고한 자재의 수량을 확인한 뒤
+                        입고 완료 처리합니다.
+                    </p>
+                </div>
 
-        <form th:action="@{/admin/purchaseorder/{no}/receive(
+                <form th:action="@{/admin/purchaseorder/{no}/receive(
                     no=${order.purchaseOrderNo}
               )}"
-              th:object="${purchaseOrderReceiveRequest}"
-              method="post"
-              onsubmit="return confirm(
+                      th:object="${purchaseOrderReceiveRequest}"
+                      method="post"
+                      onsubmit="return confirm(
                     '발주 품목을 입고 완료 처리하시겠습니까?'
               );">
 
-            <div class="item-table-wrap receive-table-wrap">
-                <table class="item-table receive-table">
-                    <thead>
-                    <tr>
-                        <th>자재명</th>
-                        <th>발주 수량</th>
-                        <th>실제 입고 수량</th>
-                    </tr>
-                    </thead>
+                    <div class="item-table-wrap receive-table-wrap">
+                        <table class="item-table receive-table">
+                            <thead>
+                            <tr>
+                                <th>자재명</th>
+                                <th>발주 수량</th>
+                                <th>실제 입고 수량</th>
+                            </tr>
+                            </thead>
 
-                    <tbody>
-                    <tr th:each="item : ${items}">
-                        <td th:text="${item.materialName}">
-                            자재명
-                        </td>
+                            <tbody>
+                            <tr th:each="item : ${items}">
+                                <td th:text="${item.materialName}">
+                                    자재명
+                                </td>
 
-                        <td th:text="${#numbers.formatDecimal(
+                                <td th:text="${#numbers.formatDecimal(
                                 item.orderQuantity,
                                 1,
                                 2
                             ) + ' ' + item.unitCode}">
-                            0.00개
-                        </td>
+                                    0.00개
+                                </td>
 
-                        <td>
-                            <input class="received-quantity-input"
-                                   type="number"
-                                   min="0"
-                                   th:max="${item.orderQuantity}"
-                                   step="0.01"
-                                   th:name="${'receivedQuantities[' + item.purchaseOrderItemNo + ']'}"
-                                   th:value="${item.orderQuantity}"
-                                   required>
+                                <td>
+                                    <input class="received-quantity-input"
+                                           type="number"
+                                           min="0"
+                                           th:max="${item.orderQuantity}"
+                                           step="0.01"
+                                           th:name="${'receivedQuantities[' + item.purchaseOrderItemNo + ']'}"
+                                           th:value="${item.orderQuantity}"
+                                           required>
 
-                            <span th:text="${item.unitCode}">
+                                    <span th:text="${item.unitCode}">
                                 개
                             </span>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-            <button class="primary-button"
-                    type="submit">
-                입고 완료
-            </button>
-        </form>
-    </section>
+                    <button class="primary-button"
+                            type="submit">
+                        입고 완료
+                    </button>
+                </form>
+            </section>
 
-    <!-- 입고 처리가 완료된 발주서 안내 -->
-    <section class="detail-card"
-             th:if="${order.orderStatus == 'RECEIVED'}">
+            <!-- 입고 처리가 완료된 발주서 안내 -->
+            <section class="detail-card"
+                     th:if="${order.orderStatus == 'RECEIVED'}">
 
-        <div class="section-title">
-            <h2>입고 완료</h2>
+                <div class="section-title">
+                    <h2>입고 완료</h2>
 
-            <p>
-                발주 품목의 입고 수량과 자재 재고가 반영되었습니다.
-            </p>
-        </div>
+                    <p>
+                        발주 품목의 입고 수량과 자재 재고가 반영되었습니다.
+                    </p>
+                </div>
 
-        <dl class="detail-grid">
-            <div class="detail-wide">
-                <dt>실제 입고일</dt>
+                <dl class="detail-grid">
+                    <div class="detail-wide">
+                        <dt>실제 입고일</dt>
 
-                <dd th:text="${order.receivedDate != null
+                        <dd th:text="${order.receivedDate != null
                         ? #temporals.format(
                             order.receivedDate,
                             'yyyy-MM-dd HH:mm'
                           )
                         : '-'}">
-                    -
-                </dd>
-            </div>
-        </dl>
-    </section>
+                            -
+                        </dd>
+                    </div>
+                </dl>
+            </section>
 
-</main>
+        </main>
+    </div>
+</div>
 
 <script th:src="@{/js/operation/purchaseorder.js}">
 </script>
