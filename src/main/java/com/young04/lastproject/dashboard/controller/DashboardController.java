@@ -9,6 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 // 관리자 대시보드 화면과 요약 정보를 처리하는 Controller
 @Controller
 @RequiredArgsConstructor
@@ -32,12 +36,12 @@ public class DashboardController {
                 materialService.countLowStockMaterials()
         );
 
-        // 재고 부족 자재 중 대표 1개를 대시보드에 표시
+        // 재고 부족 자재 중 최대 5개를 대시보드에 표시
         model.addAttribute(
                 "lowStockMaterials",
                 materialService.getLowStockMaterials()
                         .stream()
-                        .limit(1)
+                        .limit(5)
                         .toList()
         );
 
@@ -47,21 +51,30 @@ public class DashboardController {
                 purchaseOrderRepository.countByOrderStatus("ORDERED")
         );
 
-        // 입고 예정일이 가장 가까운 발주서 한 건 조회
-        PurchaseOrder pendingReceiptOrder = purchaseOrderRepository
-                .findFirstByOrderStatusOrderByExpectedDateAscOrderDateAsc("ORDERED")
-                .orElse(null);
+        // 입고 예정일이 가까운 발주서 중 최대 5개 조회
+        List<PurchaseOrder> pendingReceiptOrders = purchaseOrderRepository
+                .findTop5ByOrderStatusOrderByExpectedDateAscOrderDateAsc(
+                        "ORDERED"
+                );
 
-        model.addAttribute("pendingReceiptOrder", pendingReceiptOrder);
+        model.addAttribute("pendingReceiptOrders", pendingReceiptOrders);
 
-        // 대표 발주서에 포함된 자재 이름을 화면으로 전달
+        // 각 발주서에 포함된 대표 자재 이름을 화면으로 전달
+        Map<Long, List<String>> pendingReceiptMaterialNames =
+                new LinkedHashMap<>();
+
+        for (PurchaseOrder order : pendingReceiptOrders) {
+            pendingReceiptMaterialNames.put(
+                    order.getPurchaseOrderNo(),
+                    purchaseOrderItemService.getMaterialNames(
+                            order.getPurchaseOrderNo()
+                    )
+            );
+        }
+
         model.addAttribute(
                 "pendingReceiptMaterialNames",
-                pendingReceiptOrder == null
-                        ? java.util.List.of()
-                        : purchaseOrderItemService.getMaterialNames(
-                        pendingReceiptOrder.getPurchaseOrderNo()
-                )
+                pendingReceiptMaterialNames
         );
 
         return "admin/dashboard";

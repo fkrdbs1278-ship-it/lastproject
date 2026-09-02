@@ -37,7 +37,8 @@ public class PurchaseOrderService {
 
     // 전체 발주서를 발주일 최신순으로 조회
     public List<PurchaseOrderResponse> getAllOrders() {
-        return purchaseOrderRepository.findAllByOrderByOrderDateDesc()
+        return purchaseOrderRepository
+                .findAllByOrderByOrderDateDesc(Pageable.unpaged())
                 .stream()
                 .map(PurchaseOrderResponse::from)
                 .toList();
@@ -80,7 +81,10 @@ public class PurchaseOrderService {
             String orderStatus
     ) {
         return purchaseOrderRepository
-                .findByOrderStatusOrderByOrderDateDesc(orderStatus)
+                .findByOrderStatusOrderByOrderDateDesc(
+                        orderStatus,
+                        Pageable.unpaged()
+                )
                 .stream()
                 .map(PurchaseOrderResponse::from)
                 .toList();
@@ -92,7 +96,8 @@ public class PurchaseOrderService {
     ) {
         return purchaseOrderRepository
                 .findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
-                        supplierName
+                        supplierName,
+                        Pageable.unpaged()
                 )
                 .stream()
                 .map(PurchaseOrderResponse::from)
