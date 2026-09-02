@@ -4,6 +4,7 @@ import com.young04.lastproject.material.service.MaterialService;
 import com.young04.lastproject.purchaseorder.repository.PurchaseOrderRepository;
 import com.young04.lastproject.purchaseorder.entity.PurchaseOrder;
 import com.young04.lastproject.purchaseorderitem.service.PurchaseOrderItemService;
+import com.young04.lastproject.salonevent.service.SalonEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,9 @@ public class DashboardController {
 
     // 발주서에 포함된 자재 품목 조회를 담당하는 Service
     private final PurchaseOrderItemService purchaseOrderItemService;
+
+    // 대시보드에 표시할 진행 중 이벤트 조회를 담당하는 Service
+    private final SalonEventService salonEventService;
 
     // 관리자 대시보드 조회
     @GetMapping("/admin/dashboard")
@@ -75,6 +79,12 @@ public class DashboardController {
         model.addAttribute(
                 "pendingReceiptMaterialNames",
                 pendingReceiptMaterialNames
+        );
+
+        // 현재 진행 중이며 노출 중인 이벤트를 종료일이 가까운 순서로 최대 2개 표시
+        model.addAttribute(
+                "activeEvents",
+                salonEventService.getOngoingEventsForDashboard()
         );
 
         return "admin/dashboard";

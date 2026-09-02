@@ -101,6 +101,21 @@ public class SalonEventService {
                 .toList();
     }
 
+    // 관리자 대시보드에 표시할 진행 중 이벤트 최대 2개 조회
+    public List<SalonEventResponse> getOngoingEventsForDashboard() {
+        LocalDateTime now = LocalDateTime.now();
+
+        return salonEventRepository
+                .findTop2ByUseYnAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByEndDateAsc(
+                        "Y",
+                        now,
+                        now
+                )
+                .stream()
+                .map(SalonEventResponse::from)
+                .toList();
+    }
+
     // 신규 이벤트 등록
     @Transactional
     public Long createEvent(SalonEventRequest request) {

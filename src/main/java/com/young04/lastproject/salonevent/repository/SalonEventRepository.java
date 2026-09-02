@@ -35,4 +35,12 @@ public interface SalonEventRepository
             LocalDateTime startDate,
             LocalDateTime endDate
     );
+
+    // 대시보드용 진행 중 이벤트를 종료일이 가까운 순서로 최대 2개 조회
+    List<SalonEvent>
+    findTop2ByUseYnAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByEndDateAsc(
+            String useYn,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    );
 }
