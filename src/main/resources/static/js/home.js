@@ -280,3 +280,107 @@ document.addEventListener(
 
     }
 );
+
+/* =========================================
+   Hairstyle Scroll Reveal
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const cards =
+            document.querySelectorAll(
+                ".reveal-on-scroll"
+            );
+
+
+        if (cards.length === 0) {
+            return;
+        }
+
+
+        /*
+         * IntersectionObserver를
+         * 지원하지 않는 브라우저라면
+         * 그냥 전부 보여준다.
+         */
+        if (
+            !("IntersectionObserver" in window)
+        ) {
+
+            cards.forEach(
+                (card) => {
+
+                    card.classList.add(
+                        "is-visible"
+                    );
+                }
+            );
+
+            return;
+        }
+
+
+        /*
+         * 화면에 사진이 들어오는지 감시
+         */
+        const observer =
+            new IntersectionObserver(
+
+                (entries) => {
+
+                    entries.forEach(
+                        (entry) => {
+
+                            if (
+                                !entry.isIntersecting
+                            ) {
+                                return;
+                            }
+
+
+                            entry.target
+                                .classList
+                                .add(
+                                    "is-visible"
+                                );
+
+
+                            /*
+                             * 한 번 등장한 사진은
+                             * 다시 감시하지 않는다.
+                             */
+                            observer.unobserve(
+                                entry.target
+                            );
+
+                        }
+                    );
+
+                },
+
+                {
+                    threshold: 0.15,
+
+                    rootMargin:
+                        "0px 0px -5% 0px"
+                }
+
+            );
+
+
+        /*
+         * 모든 카드 감시 시작
+         */
+        cards.forEach(
+            (card) => {
+
+                observer.observe(
+                    card
+                );
+            }
+        );
+
+    }
+);
