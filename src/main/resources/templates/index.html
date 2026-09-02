@@ -51,52 +51,241 @@
 <main>
 
 
-    <!-- Hero -->
+    <!-- Main Hero -->
 
-    <section class="hero">
+    <section
+            class="hero"
+            id="heroSlider"
+    >
+
+
+        <!-- Hero Background Images -->
+
+        <div class="hero-backgrounds">
+
+
+            <!-- =================================
+                 관리자 이미지가 있는 경우
+
+                 나중에 관리자 기능 Merge 후
+                 heroSlides를 Controller에서 전달하면
+                 이 부분이 자동으로 사용된다.
+            ================================== -->
+
+            <th:block
+                    th:if="${
+                    heroSlides != null
+                    and !#lists.isEmpty(heroSlides)
+                }"
+            >
+
+                <div
+                        th:each="slide, status : ${heroSlides}"
+                        class="hero-background"
+                        th:classappend="${status.first} ? ' active' : ''"
+                >
+
+                    <img
+                            th:src="${slide.imageUrl}"
+                            th:alt="${
+                            slide.altText != null
+                            ? slide.altText
+                            : 'SALON CRM 메인 이미지'
+                        }"
+                    >
+
+                </div>
+
+            </th:block>
+
+
+            <!-- 관리자 이미지가 없는 경우
+                 기본 Hero 이미지 출력 -->
+
+            <th:block
+                    th:if="${
+                    heroSlides == null
+                    or #lists.isEmpty(heroSlides)
+                }"
+            >
+
+                <div class="hero-background active">
+
+                    <img
+                            th:src="@{/images/hero/hero1.jpg}"
+                            alt="헤어스타일 이미지 1"
+                    >
+
+                </div>
+
+
+                <div class="hero-background">
+
+                    <img
+                            th:src="@{/images/hero/hero2.jpg}"
+                            alt="헤어스타일 이미지 2"
+                    >
+
+                </div>
+
+
+                <div class="hero-background">
+
+                    <img
+                            th:src="@{/images/hero/hero3.jpg}"
+                            alt="헤어스타일 이미지 3"
+                    >
+
+                </div>
+
+
+                <div class="hero-background">
+
+                    <img
+                            th:src="@{/images/hero/hero4.jpg}"
+                            alt="헤어스타일 이미지 4"
+                    >
+
+                </div>
+
+            </th:block>
+
+
+        </div>
+
+
+        <!-- Overlay
+
+             배경 이미지 위에서 글자가
+             잘 보이도록 밝은 레이어를 올린다. -->
+
+        <div class="hero-overlay"></div>
+
+
+        <!-- Hero Content -->
 
         <div class="hero-inner">
 
-            <h1 class="hero-title">
-
-                나에게 어울리는 스타일을
-                찾아보세요.
-
-            </h1>
+            <div class="hero-content">
 
 
-            <p class="hero-description">
-
-                원하는 시술과 헤어스타일을 확인하고
-                편리하게 예약 서비스를 이용해보세요.
-
-            </p>
+                <h1 class="hero-title">
+                    나에게 어울리는 스타일을
+                    찾아보세요.
+                </h1>
 
 
-            <div class="hero-actions">
+                <p class="hero-description">
+                    원하는 시술과 헤어스타일을 확인하고
+                    편리하게 예약 서비스를 이용해보세요.
+                </p>
 
-                <a
-                        th:href="@{/services}"
-                        class="hero-button"
-                >
-
-                    시술 메뉴 보기
-
-                </a>
-
-
-                <a
-                        th:href="@{/hairstyles}"
-                        class="hero-button secondary"
-                >
-
-                    헤어스타일 보기
-
-                </a>
 
             </div>
 
         </div>
+
+
+        <!-- 이전 버튼 -->
+
+        <button
+                type="button"
+                id="heroPrev"
+                class="hero-slider-button hero-slider-prev"
+                aria-label="이전 이미지"
+        >
+            ‹
+        </button>
+
+
+        <!-- 다음 버튼 -->
+
+        <button
+                type="button"
+                id="heroNext"
+                class="hero-slider-button hero-slider-next"
+                aria-label="다음 이미지"
+        >
+            ›
+        </button>
+
+
+        <!-- Slider Dots -->
+
+        <div
+                class="hero-slider-dots"
+                id="heroDots"
+        >
+
+
+            <!-- 관리자 이미지 -->
+
+            <th:block
+                    th:if="${
+                    heroSlides != null
+                    and !#lists.isEmpty(heroSlides)
+                }"
+            >
+
+                <button
+                        th:each="slide, status : ${heroSlides}"
+                        type="button"
+                        class="hero-dot"
+                        th:classappend="${status.first} ? ' active' : ''"
+                        th:attr="
+                        data-slide=${status.index},
+                        aria-label=${status.index + 1 + '번째 이미지'}
+                    "
+                ></button>
+
+            </th:block>
+
+
+            <!-- 기본 이미지 -->
+
+            <th:block
+                    th:if="${
+                    heroSlides == null
+                    or #lists.isEmpty(heroSlides)
+                }"
+            >
+
+                <button
+                        type="button"
+                        class="hero-dot active"
+                        data-slide="0"
+                        aria-label="첫 번째 이미지"
+                ></button>
+
+
+                <button
+                        type="button"
+                        class="hero-dot"
+                        data-slide="1"
+                        aria-label="두 번째 이미지"
+                ></button>
+
+
+                <button
+                        type="button"
+                        class="hero-dot"
+                        data-slide="2"
+                        aria-label="세 번째 이미지"
+                ></button>
+
+
+                <button
+                        type="button"
+                        class="hero-dot"
+                        data-slide="3"
+                        aria-label="네 번째 이미지"
+                ></button>
+
+            </th:block>
+
+
+        </div>
+
 
     </section>
 
@@ -173,6 +362,7 @@
 <footer th:replace="~{layout/footer :: footer}">
 </footer>
 
+<script th:src="@{/js/home.js}"></script>
 
 </body>
 
