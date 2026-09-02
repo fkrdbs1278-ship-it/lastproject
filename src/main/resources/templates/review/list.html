@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>리뷰 | SALON CRM</title>
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+    <!-- 헤더 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <!-- 푸터 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/review/review.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+
+<main class="review-page">
+
+    <div class="review-container">
+
+
+        <!-- 제목 영역 -->
+
+        <section class="review-header">
+
+            <div>
+
+                <h1>
+                    고객 리뷰
+                </h1>
+
+                <p>
+                    SALON CRM을 이용한 고객들의 리뷰입니다.
+                </p>
+
+            </div>
+
+
+            <!-- 로그인 회원에게만 작성 버튼 -->
+
+            <a
+                    th:if="${currentMemberNo != null}"
+                    th:href="@{/reviews/write}"
+                    class="review-write-button"
+            >
+                리뷰 작성
+            </a>
+
+        </section>
+
+
+        <!-- 메시지 -->
+
+        <div
+                th:if="${message}"
+                class="review-message success"
+                th:text="${message}"
+        ></div>
+
+
+        <!-- 리뷰가 없는 경우 -->
+
+        <div
+                th:if="${#lists.isEmpty(reviews)}"
+                class="review-empty"
+        >
+
+            아직 작성된 리뷰가 없습니다.
+
+        </div>
+
+
+        <!-- 리뷰 목록 -->
+
+        <div
+                th:unless="${#lists.isEmpty(reviews)}"
+                class="review-list"
+        >
+
+            <article
+                    th:each="review : ${reviews}"
+                    class="review-card"
+            >
+
+
+                <a
+                        th:href="@{/reviews/{no}(no=${review.no})}"
+                        class="review-card-link"
+                >
+
+
+                    <!-- 작성자 -->
+
+                    <div class="review-card-top">
+
+                        <strong
+                                class="review-author"
+                                th:text="${
+                                    review.nickname != null
+                                    and !#strings.isEmpty(review.nickname)
+                                    ? review.nickname
+                                    : review.memberName
+                                }"
+                        >
+                            작성자
+                        </strong>
+
+
+                        <span
+                                class="review-date"
+                                th:text="${#temporals.format(
+                                    review.regdate,
+                                    'yyyy.MM.dd'
+                                )}"
+                        >
+                            2026.08.31
+                        </span>
+
+                    </div>
+
+
+                    <!-- 별점 -->
+
+                    <div class="review-rating">
+
+                        <span
+                                th:each="score : ${#numbers.sequence(1, 5)}"
+                                th:text="${score <= review.rating ? '★' : '☆'}"
+                        ></span>
+
+                        <span
+                                class="review-rating-number"
+                                th:text="${review.rating + '점'}"
+                        >
+                            5점
+                        </span>
+
+                    </div>
+
+
+                    <!-- 제목 -->
+
+                    <h2
+                            class="review-card-title"
+                            th:text="${
+                                review.title != null
+                                and !#strings.isEmpty(review.title)
+                                ? review.title
+                                : '제목 없는 리뷰'
+                            }"
+                    >
+                        리뷰 제목
+                    </h2>
+
+
+                    <!-- 내용 -->
+
+                    <p
+                            class="review-card-content"
+                            th:text="${review.content}"
+                    >
+                        리뷰 내용
+                    </p>
+
+
+                </a>
+
+            </article>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+</body>
+
+</html>

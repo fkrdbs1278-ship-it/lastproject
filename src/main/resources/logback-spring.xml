@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <!-- =========================================================
+         Spring Boot 기본 Logback 설정
+         콘솔 색상 등을 그대로 사용
+    ========================================================== -->
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+
+    <!-- =========================================================
+         로그인 전용 로그 파일
+    ========================================================== -->
+
+    <appender name="LOGIN_FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- 현재 로그인 로그 -->
+        <file>logs/login.log</file>
+
+
+        <!-- 날짜 + 크기에 따라 파일 분리 -->
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+
+            <fileNamePattern>
+                logs/login.%d{yyyy-MM-dd}.%i.log.gz
+            </fileNamePattern>
+
+            <maxFileSize>10MB</maxFileSize>
+
+            <maxHistory>30</maxHistory>
+
+        </rollingPolicy>
+
+
+        <encoder>
+
+            <pattern>
+                %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %msg%n
+            </pattern>
+
+        </encoder>
+
+    </appender>
+
+
+    <!-- =========================================================
+         로그인 전용 Logger
+
+         @Slf4j(topic = "LOGIN_AUDIT")
+         와 연결됨
+    ========================================================== -->
+
+    <logger
+            name="LOGIN_AUDIT"
+            level="INFO"
+            additivity="false">
+
+        <appender-ref ref="LOGIN_FILE"/>
+
+    </logger>
+
+
+    <!-- =========================================================
+         일반 Spring Boot 콘솔 로그
+    ========================================================== -->
+
+    <root level="INFO">
+
+        <appender-ref ref="CONSOLE"/>
+
+    </root>
+
+</configuration>

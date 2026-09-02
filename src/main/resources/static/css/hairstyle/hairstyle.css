@@ -1,0 +1,420 @@
+/* Hair Style Page */
+
+.hair-page {
+    padding: 60px 20px;
+}
+
+
+.hair-container {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+}
+
+
+/* Header */
+
+.hair-page-header {
+    margin-bottom: 35px;
+}
+
+
+.hair-page-title {
+    margin-bottom: 10px;
+
+    font-size: 32px;
+    font-weight: 700;
+
+    color: #222222;
+}
+
+
+.hair-page-description {
+    color: #777777;
+
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+
+/* Category */
+
+.hair-category {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-bottom: 35px;
+}
+
+
+.hair-category-button {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-width: 80px;
+    height: 42px;
+
+    padding: 0 18px;
+
+    border: 1px solid #dddddd;
+    border-radius: 999px;
+
+    background-color: #ffffff;
+    color: #555555;
+
+    font-size: 14px;
+}
+
+
+.hair-category-button:hover {
+    border-color: #222222;
+    color: #222222;
+}
+
+
+.hair-category-button.active {
+    border-color: #222222;
+
+    background-color: #222222;
+    color: #ffffff;
+
+    font-weight: 700;
+}
+
+
+/* Grid */
+
+.hair-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    gap: 24px;
+}
+
+
+/* Card */
+
+.hair-card {
+    overflow: hidden;
+
+    background-color: #ffffff;
+
+    border: 1px solid #dddddd;
+    border-radius: 14px;
+}
+
+
+.hair-card-link {
+    display: block;
+}
+
+
+.hair-image-area {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+
+    overflow: hidden;
+
+    background-color: #eeeeee;
+}
+
+
+.hair-image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition: transform 0.25s ease;
+}
+
+
+.hair-card:hover .hair-image {
+    transform: scale(1.03);
+}
+
+
+.hair-card-body {
+    padding: 20px;
+}
+
+
+.hair-category-name {
+    margin-bottom: 8px;
+
+    color: #888888;
+
+    font-size: 13px;
+}
+
+
+.hair-title {
+    margin-bottom: 10px;
+
+    color: #222222;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+.hair-description {
+    color: #666666;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* Empty */
+
+.hair-empty {
+    padding: 80px 20px;
+
+    text-align: center;
+
+    color: #777777;
+
+    background-color: #ffffff;
+
+    border: 1px solid #dddddd;
+    border-radius: 14px;
+}
+
+
+/* Detail */
+
+.hair-detail {
+    display: grid;
+
+    grid-template-columns:
+            minmax(0, 1fr) minmax(0, 1fr);
+
+    overflow: hidden;
+
+    background-color: #ffffff;
+
+    border: 1px solid #dddddd;
+    border-radius: 16px;
+}
+
+
+.hair-detail-image-area {
+    min-height: 550px;
+
+    background-color: #eeeeee;
+}
+
+
+.hair-detail-image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.hair-detail-content {
+    padding: 45px;
+}
+
+
+.hair-detail-category {
+    margin-bottom: 12px;
+
+    color: #777777;
+
+    font-size: 14px;
+}
+
+
+.hair-detail-title {
+    margin-bottom: 20px;
+
+    font-size: 32px;
+    font-weight: 700;
+
+    color: #222222;
+}
+
+
+.hair-detail-description {
+    color: #666666;
+
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+
+/* Recommended Services */
+
+.recommended-services {
+    margin-top: 40px;
+    padding-top: 30px;
+
+    border-top: 1px solid #eeeeee;
+}
+
+
+.recommended-title {
+    margin-bottom: 18px;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+.recommended-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.recommended-item {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 14px 16px;
+
+    border: 1px solid #eeeeee;
+    border-radius: 8px;
+
+    background-color: #fafafa;
+}
+
+
+.recommended-item:hover {
+    border-color: #cccccc;
+
+    background-color: #ffffff;
+}
+
+
+.recommended-name {
+    font-weight: 600;
+}
+
+
+.recommended-price {
+    white-space: nowrap;
+
+    font-size: 14px;
+    color: #555555;
+}
+
+
+.recommended-empty {
+    color: #888888;
+
+    font-size: 14px;
+}
+
+
+/* Back */
+
+.hair-back-area {
+    margin-top: 25px;
+}
+
+
+.hair-back-button {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-width: 120px;
+    height: 46px;
+
+    padding: 0 20px;
+
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+.hair-back-button:hover {
+    background-color: #f5f5f5;
+}
+
+
+/* Tablet */
+
+@media (max-width: 900px) {
+
+    .hair-grid {
+        grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+    }
+
+
+    .hair-detail {
+        grid-template-columns: 1fr;
+    }
+
+
+    .hair-detail-image-area {
+        min-height: auto;
+    }
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .hair-page {
+        padding: 40px 16px;
+    }
+
+
+    .hair-page-title {
+        font-size: 27px;
+    }
+
+
+    .hair-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .hair-detail-content {
+        padding: 28px 22px;
+    }
+
+
+    .hair-detail-title {
+        font-size: 26px;
+    }
+
+
+    .recommended-item {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 6px;
+    }
+}

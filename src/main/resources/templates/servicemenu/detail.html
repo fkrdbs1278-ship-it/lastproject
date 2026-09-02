@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title th:text="|${menu.name} | SALON CRM|">
+        시술 상세 | SALON CRM
+    </title>
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/servicemenu/service-menu.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+
+<main class="service-page">
+
+    <div class="service-container">
+
+
+        <section class="service-detail-card">
+
+
+            <!-- Image -->
+
+            <div class="service-detail-image-area">
+
+
+                <img
+                        th:if="${menu.imageUrl != null
+                            and !#strings.isEmpty(menu.imageUrl)}"
+                        th:src="${menu.imageUrl}"
+                        th:alt="${menu.name}"
+                        class="service-detail-image"
+                >
+
+
+                <div
+                        th:unless="${menu.imageUrl != null
+                            and !#strings.isEmpty(menu.imageUrl)}"
+                        class="service-detail-placeholder"
+                >
+                    이미지 준비중
+                </div>
+
+            </div>
+
+
+            <!-- Content -->
+
+            <div class="service-detail-content">
+
+
+                <p
+                        class="service-detail-category"
+                        th:text="${menu.categoryName}"
+                >
+                    커트
+                </p>
+
+
+                <h1
+                        class="service-detail-name"
+                        th:text="${menu.name}"
+                >
+                    기본 커트
+                </h1>
+
+
+                <p
+                        class="service-detail-description"
+                        th:text="${menu.description != null
+                            ? menu.description
+                            : '시술 설명이 준비중입니다.'}"
+                >
+                    시술 설명
+                </p>
+
+
+                <!-- 정보 -->
+
+                <div class="service-detail-info">
+
+
+                    <div class="service-detail-row">
+
+                        <span class="service-detail-label">
+                            가격
+                        </span>
+
+                        <strong
+                                class="service-detail-value"
+                                th:text="|${#numbers.formatInteger(menu.price, 0, 'COMMA')}원|"
+                        >
+                            20,000원
+                        </strong>
+
+                    </div>
+
+
+                    <div class="service-detail-row">
+
+                        <span class="service-detail-label">
+                            예상 소요시간
+                        </span>
+
+                        <strong
+                                class="service-detail-value"
+                                th:text="|약 ${menu.durationMin}분|"
+                        >
+                            약 30분
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- 목록 -->
+
+        <div class="service-back-area">
+
+            <a
+                    th:href="@{/services}"
+                    class="service-back-button"
+            >
+                목록으로
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+
+</body>
+
+</html>

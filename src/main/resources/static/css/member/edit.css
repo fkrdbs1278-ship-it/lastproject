@@ -1,0 +1,251 @@
+/* Member Edit Page */
+
+.member-edit-page {
+    padding: 60px 20px;
+}
+
+
+.member-edit-container {
+    width: 100%;
+    max-width: 700px;
+
+    margin: 0 auto;
+}
+
+
+/* Title */
+
+.member-edit-header {
+    margin-bottom: 30px;
+}
+
+
+.member-edit-title {
+    margin-bottom: 10px;
+
+    font-size: 30px;
+    font-weight: 700;
+
+    color: #222222;
+}
+
+
+.member-edit-description {
+    color: #777777;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* Edit Card */
+
+.member-edit-card {
+    padding: 40px;
+
+    background-color: #ffffff;
+
+    border: 1px solid #dddddd;
+    border-radius: 16px;
+}
+
+
+/* Success Message */
+
+.edit-message {
+    margin-bottom: 24px;
+    padding: 14px 16px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+}
+
+
+.edit-message.success {
+    background-color: #f0f8f2;
+    color: #27723a;
+}
+
+
+/* Form */
+
+.member-edit-form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 22px;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #333333;
+}
+
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 48px;
+
+    padding: 0 14px;
+
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #333333;
+}
+
+
+.form-group input::placeholder {
+    color: #aaaaaa;
+}
+
+
+/* Gender */
+
+.gender-group {
+    display: flex;
+    gap: 24px;
+
+    margin-top: 4px;
+}
+
+
+.gender-option {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 14px;
+}
+
+
+.gender-option input {
+    width: auto;
+    height: auto;
+}
+
+
+/* Password Confirm */
+
+.password-confirm-area {
+    margin-top: 10px;
+    padding-top: 24px;
+
+    border-top: 1px solid #eeeeee;
+}
+
+
+.password-guide {
+    margin-bottom: 12px;
+
+    color: #777777;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+/* Validation Error */
+
+.field-error {
+    color: #c0392b;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+
+/* Button */
+
+.edit-button {
+    width: 100%;
+    height: 52px;
+
+    margin-top: 8px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #222222;
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.edit-button:hover {
+    background-color: #444444;
+}
+
+
+/* Withdraw Link */
+
+.withdraw-area {
+    margin-top: 30px;
+    padding-top: 24px;
+
+    border-top: 1px solid #eeeeee;
+
+    text-align: right;
+}
+
+
+.withdraw-link {
+    color: #999999;
+
+    font-size: 14px;
+}
+
+
+.withdraw-link:hover {
+    color: #c0392b;
+
+    text-decoration: underline;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .member-edit-page {
+        padding: 40px 16px;
+    }
+
+
+    .member-edit-card {
+        padding: 28px 22px;
+    }
+
+
+    .member-edit-title {
+        font-size: 26px;
+    }
+}

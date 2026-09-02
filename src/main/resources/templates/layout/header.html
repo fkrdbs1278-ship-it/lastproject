@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+
+<header th:fragment="header"
+        class="site-header">
+
+    <div class="header-inner">
+
+        <!-- Logo -->
+
+        <a th:href="@{/}"
+           class="logo">
+
+            SALON CRM
+
+        </a>
+
+
+        <!-- 사용자 메뉴 -->
+
+        <nav class="main-nav">
+
+            <a th:href="@{/}">
+                홈
+            </a>
+
+            <!-- STEP 7에서 연결 -->
+            <a th:href="@{/services}">
+                시술 메뉴
+            </a>
+
+            <!-- STEP 8에서 연결 -->
+            <a th:href="@{/hairstyles}">
+                헤어스타일
+            </a>
+
+        </nav>
+
+
+        <!-- 오른쪽 회원 메뉴 -->
+
+        <div class="member-menu">
+
+
+            <!-- 비로그인 상태 -->
+
+            <th:block sec:authorize="isAnonymous()">
+
+                <a th:href="@{/member/login}">
+                    로그인
+                </a>
+
+                <a th:href="@{/member/signup}">
+                    회원가입
+                </a>
+
+            </th:block>
+
+
+            <!-- 로그인 상태 -->
+
+            <th:block sec:authorize="isAuthenticated()">
+
+                <span class="login-user">
+
+                    <strong sec:authentication="name">
+                        member
+                    </strong>
+
+                    님
+
+                </span>
+
+
+                <!-- STEP 10에서 마이페이지로 연결 -->
+                <a th:href="@{/member/mypage}">
+                    마이페이지
+                </a>
+
+
+
+                <!-- ADMIN에게만 표시 -->
+
+                <a sec:authorize="hasRole('ADMIN')"
+                   th:href="@{/admin}">
+                    관리자
+                </a>
+
+
+                <!-- 로그아웃
+                     GET 링크가 아니라 POST Form -->
+
+                <form th:action="@{/member/logout}"
+                      method="post"
+                      class="logout-form">
+
+                    <button type="submit"
+                            class="logout-button">
+
+                        로그아웃
+
+                    </button>
+
+                </form>
+
+            </th:block>
+
+        </div>
+
+    </div>
+
+</header>
+
+</body>
+</html>
