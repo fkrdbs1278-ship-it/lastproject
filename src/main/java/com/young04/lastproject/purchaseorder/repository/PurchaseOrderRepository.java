@@ -6,11 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 // PURCHASE_ORDER 테이블의 조회와 저장을 담당하는 Repository
 public interface PurchaseOrderRepository
         extends JpaRepository<PurchaseOrder, Long> {
+
+    // 자동완성에서 사용할 전체 업체명을 이름순으로 조회
+    List<PurchaseOrder> findAllByOrderBySupplierNameAsc();
 
     // 전체 발주서를 발주일 최신순으로 조회
     List<PurchaseOrder> findAllByOrderByOrderDateDesc();
@@ -34,21 +36,18 @@ public interface PurchaseOrderRepository
     // 선택한 발주 상태의 발주서 개수 조회
     long countByOrderStatus(String orderStatus);
 
-    // 입고 예정일이 가장 가까운 발주서 한 건 조회
-    Optional<PurchaseOrder>
-    findFirstByOrderStatusOrderByExpectedDateAscOrderDateAsc(
+    // 입고 예정일이 가까운 발주서 중 최대 5개 조회
+    List<PurchaseOrder> findTop5ByOrderStatusOrderByExpectedDateAscOrderDateAsc(
             String orderStatus
     );
 
-    // 업체명이 포함된 발주서를 발주일 최신순으로 조회
-    List<PurchaseOrder>
-    findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
+    // 공급업체 이름이 포함된 발주서를 발주일 최신순으로 조회
+    List<PurchaseOrder> findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
             String supplierName
     );
 
-    // 업체명이 포함된 발주서를 발주일 최신순으로 페이징 조회
-    Page<PurchaseOrder>
-    findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
+    // 공급업체 이름이 포함된 발주서를 발주일 최신순으로 페이징 조회
+    Page<PurchaseOrder> findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
             String supplierName,
             Pageable pageable
     );

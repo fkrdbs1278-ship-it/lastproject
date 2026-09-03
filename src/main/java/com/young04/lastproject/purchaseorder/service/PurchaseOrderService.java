@@ -11,10 +11,10 @@ import com.young04.lastproject.purchaseorderitem.repository.PurchaseOrderItemRep
 import com.young04.lastproject.stockhistory.entity.StockHistory;
 import com.young04.lastproject.stockhistory.service.StockHistoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -29,7 +29,7 @@ public class PurchaseOrderService {
     // PURCHASE_ORDER 테이블에 접근하는 Repository
     private final PurchaseOrderRepository purchaseOrderRepository;
 
-    // 발주서에 품목이 등록되어 있는지 확인하는 Repository, 테스트 페이지
+    // 발주서에 품목이 등록되어 있는지 확인하는 Repository
     private final PurchaseOrderItemRepository purchaseOrderItemRepository;
 
     // 발주 입고에 따른 재고 변동 이력을 저장하는 Service
@@ -41,38 +41,6 @@ public class PurchaseOrderService {
                 .stream()
                 .map(PurchaseOrderResponse::from)
                 .toList();
-    }
-
-    // 검색 조건에 맞는 발주서 목록을 페이징 조회
-    public Page<PurchaseOrderResponse> getOrderPage(
-            String orderStatus,
-            String supplierName,
-            Pageable pageable
-    ) {
-        // 업체명이 입력되면 업체명으로 검색
-        if (supplierName != null && !supplierName.isBlank()) {
-            return purchaseOrderRepository
-                    .findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
-                            supplierName,
-                            pageable
-                    )
-                    .map(PurchaseOrderResponse::from);
-        }
-
-        // 발주 상태가 선택되면 해당 상태만 조회
-        if (orderStatus != null && !orderStatus.isBlank()) {
-            return purchaseOrderRepository
-                    .findByOrderStatusOrderByOrderDateDesc(
-                            orderStatus,
-                            pageable
-                    )
-                    .map(PurchaseOrderResponse::from);
-        }
-
-        // 검색 조건이 없으면 전체 발주서를 조회
-        return purchaseOrderRepository
-                .findAllByOrderByOrderDateDesc(pageable)
-                .map(PurchaseOrderResponse::from);
     }
 
     // 선택한 발주 상태의 발주서를 최신순으로 조회
@@ -96,6 +64,52 @@ public class PurchaseOrderService {
                 )
                 .stream()
                 .map(PurchaseOrderResponse::from)
+                .toList();
+    }
+
+    // 검색 조건에 맞는 관리자 발주서 목록을 페이징 조회
+    public Page<PurchaseOrderResponse> getOrderPage(
+            String orderStatus,
+            String supplierName,
+            Pageable pageable
+    ) {
+        // 업체명이 입력되면 업체명으로 검색
+        if (supplierName != null && !supplierName.isBlank()) {
+            return purchaseOrderRepository
+                    .findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
+                            supplierName.trim(),
+                            pageable
+                    )
+                    .map(PurchaseOrderResponse::from);
+        }
+
+        // 발주 상태가 선택되면 해당 상태만 조회
+        if (orderStatus != null && !orderStatus.isBlank()) {
+            return purchaseOrderRepository
+                    .findByOrderStatusOrderByOrderDateDesc(
+                            orderStatus,
+                            pageable
+                    )
+                    .map(PurchaseOrderResponse::from);
+        }
+
+        // 검색 조건이 없으면 전체 발주서를 조회
+        return purchaseOrderRepository
+                .findAllByOrderByOrderDateDesc(pageable)
+                .map(PurchaseOrderResponse::from);
+    }
+
+    // 발주 검색 자동완성에서 사용할 업체명을 중복 없이 조회
+    public List<String> getSupplierNameSuggestions() {
+        return purchaseOrderRepository
+                .findAllByOrderBySupplierNameAsc()
+                .stream()
+                .map(PurchaseOrder::getSupplierName)
+                .filter(supplierName ->
+                        supplierName != null
+                                && !supplierName.isBlank()
+                )
+                .distinct()
                 .toList();
     }
 
@@ -136,7 +150,7 @@ public class PurchaseOrderService {
         return savedOrder.getPurchaseOrderNo();
     }
 
-    // 공급업체가 발주 요청을 확인하고 출고 완료 상태로 변경 , 테스트 페이지
+    // 공급업체가 발주 요청을 확인하고 출고 완료 상태로 변경
     @Transactional
     public void processShipment(Long purchaseOrderNo) {
 
@@ -168,7 +182,7 @@ public class PurchaseOrderService {
         purchaseOrder.setOrderStatus("ORDERED");
     }
 
-    // 공급업체가 발주 요청을 거절 상태로 변경,  테스트 페이지
+    // 공급업체가 발주 요청을 거절 상태로 변경
     @Transactional
     public void rejectOrder(Long purchaseOrderNo) {
 
@@ -270,7 +284,6 @@ public class PurchaseOrderService {
         purchaseOrder.setOrderStatus("RECEIVED");
         purchaseOrder.setReceivedDate(LocalDateTime.now());
     }
-
 
     // 발주서 번호로 Entity를 조회하고 없으면 오류 발생
     private PurchaseOrder findOrder(Long purchaseOrderNo) {

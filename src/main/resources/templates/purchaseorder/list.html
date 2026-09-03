@@ -8,6 +8,10 @@
     <link rel="stylesheet"
           th:href="@{/css/operation/purchaseorder.css}">
 
+    <!-- 목록 검색 자동완성 공통 CSS -->
+    <link rel="stylesheet"
+          th:href="@{/css/admin/adminlistsearch.css}">
+
     <link rel="stylesheet"
           th:href="@{/css/admin/dashboard-sidebar.css}">
 </head>
@@ -53,22 +57,64 @@
             <section class="purchaseorder-filter">
 
                 <!-- 업체명 검색 -->
-                <form class="search-form"
-                      th:action="@{/admin/purchaseorder}"
-                      method="get">
+                <div class="list-search-area"
+                     data-list-autocomplete
+                     data-suggestion-url="/admin/purchaseorder/searchsuggestions">
 
-                    <!-- 현재 선택한 발주 상태 유지 -->
-                    <input type="hidden"
-                           name="orderStatus"
-                           th:value="${orderStatus}">
+                    <form class="search-form"
+                          data-search-role="form"
+                          th:action="@{/admin/purchaseorder}"
+                          method="get">
 
-                    <input type="text"
-                           name="supplierName"
-                           th:value="${supplierName}"
-                           placeholder="업체명을 입력해 주세요.">
+                        <!-- 현재 선택한 발주 상태 유지 -->
+                        <input type="hidden"
+                               name="orderStatus"
+                               th:value="${orderStatus}">
 
-                    <button type="submit">검색</button>
-                </form>
+                        <input type="search"
+                               name="supplierName"
+                               th:value="${supplierName}"
+                               maxlength="100"
+                               autocomplete="off"
+                               aria-expanded="false"
+                               data-search-role="input"
+                               placeholder="업체명을 입력해 주세요.">
+
+                        <button type="submit">검색</button>
+                    </form>
+
+                    <div class="list-search-panel"
+                         data-search-role="panel"
+                         hidden>
+
+                        <!-- 검색창이 비어 있을 때 표시 -->
+                        <div data-search-role="recent-content">
+                            <div class="list-search-header">
+                                <strong>최근 검색어</strong>
+                            </div>
+
+                            <p class="list-search-empty">
+                                최근 검색내역이 없습니다.
+                            </p>
+                        </div>
+
+                        <!-- 업체명을 입력했을 때 표시 -->
+                        <div data-search-role="suggestion-content"
+                             hidden>
+                            <ul class="list-suggestion-list"
+                                data-search-role="suggestion-list">
+                            </ul>
+
+                            <p class="list-search-empty"
+                               data-search-role="suggestion-empty"
+                               hidden>
+                                일치하는 업체가 없습니다.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
 
                 <!-- 발주 상태 선택 -->
                 <nav class="filter-buttons">
@@ -296,5 +342,8 @@
         </main>
     </div>
 </div>
+
+<!-- 목록 검색 자동완성 공통 JS -->
+<script th:src="@{/js/operation/adminlistsearch.js}"></script>
 </body>
 </html>

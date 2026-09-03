@@ -8,10 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 // final 필드의 생성자를 자동으로 생성
 @RequiredArgsConstructor
@@ -66,12 +67,23 @@ public class MaterialController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("useYn", useYn);
         model.addAttribute("lowStock", lowStock);
+        // DB 연결 전에는 최근 검색어 영역만 확인할 수 있도록 빈 목록 전달
+        model.addAttribute("recentSearches", List.of());
         model.addAttribute(
                 "lowStockCount",
                 materialService.countLowStockMaterials()
         );
 
         return "material/list";
+    }
+
+    // 검색창에 입력한 글자와 관련된 자재명을 자동완성으로 전달
+    @GetMapping("/searchsuggestions")
+    @ResponseBody
+    public List<String> materialSearchSuggestions(
+            @RequestParam(required = false) String keyword
+    ) {
+        return materialService.getMaterialNameSuggestions(keyword);
     }
 
     // 자재 상세 화면 표시

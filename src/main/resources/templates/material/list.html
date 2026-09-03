@@ -72,17 +72,95 @@
 
             <section class="material-filter">
 
-                <form class="search-form"
-                      th:action="@{/admin/material}"
-                      method="get">
+                <div class="material-search-area">
 
-                    <input type="text"
-                           name="keyword"
-                           th:value="${keyword}"
-                           placeholder="자재명을 입력해 주세요.">
+                    <form class="search-form"
+                          th:action="@{/admin/material}"
+                          method="get">
 
-                    <button type="submit">검색</button>
-                </form>
+                        <input type="search"
+                               id="materialSearchInput"
+                               name="keyword"
+                               th:value="${keyword}"
+                               maxlength="100"
+                               autocomplete="off"
+                               aria-controls="recentSearchPanel"
+                               aria-expanded="false"
+                               placeholder="자재명을 입력해 주세요.">
+
+                        <button type="submit">검색</button>
+                    </form>
+
+                    <!-- 비로그인은 빈 상태, 로그인 후에는 해당 계정의 최근 검색어를 표시합니다. -->
+                    <div class="recent-search-panel"
+                         id="recentSearchPanel"
+                         hidden>
+
+                        <!-- 검색창이 비어 있을 때 표시 -->
+                        <div id="recentSearchContent">
+                            <div class="recent-search-header">
+                                <strong>최근 검색어</strong>
+
+                                <form th:if="${recentSearches != null
+                                          and !#lists.isEmpty(recentSearches)}"
+                                      th:action="@{/admin/material/searchhistory/clear}"
+                                      method="post">
+                                    <button type="submit"
+                                            class="recent-search-clear">
+                                        전체 삭제
+                                    </button>
+                                </form>
+                            </div>
+
+                            <p class="recent-search-empty"
+                               th:if="${recentSearches == null
+                                    or #lists.isEmpty(recentSearches)}">
+                                최근 검색내역이 없습니다.
+                            </p>
+
+                            <ul class="recent-search-list"
+                                th:if="${recentSearches != null
+                                     and !#lists.isEmpty(recentSearches)}">
+
+                                <li th:each="recentKeyword : ${recentSearches}">
+                                    <a th:href="@{/admin/material(keyword=${recentKeyword})}"
+                                       th:text="${recentKeyword}">
+                                        검색어
+                                    </a>
+
+                                    <form th:action="@{/admin/material/searchhistory/remove}"
+                                          method="post">
+                                        <input type="hidden"
+                                               name="recentKeyword"
+                                               th:value="${recentKeyword}">
+
+                                        <button type="submit"
+                                                class="recent-search-remove"
+                                                th:aria-label="${recentKeyword + ' 검색어 삭제'}">
+                                            ×
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- 검색창에 글자를 입력했을 때 표시 -->
+                        <div id="searchSuggestionContent" hidden>
+
+                            <ul class="search-suggestion-list"
+                                id="searchSuggestionList">
+                            </ul>
+
+                            <p class="recent-search-empty"
+                               id="searchSuggestionEmpty"
+                               hidden>
+                                일치하는 자재가 없습니다.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
 
                 <nav class="filter-buttons">
                     <a th:href="@{/admin/material}"
@@ -285,5 +363,7 @@
     </div>
 
 </div>
+
+<script th:src="@{/js/operation/materiallist.js}"></script>
 </body>
 </html>

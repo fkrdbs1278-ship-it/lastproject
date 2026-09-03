@@ -509,7 +509,7 @@
 
                         <div>
                             <p class="panel-label">STOCK ALERT</p>
-                            <h2>재고 관리 알림</h2>
+                            <h2>재고·발주 알림</h2>
 
                             <p>
                                 확인이 필요한 재고 현황입니다.
@@ -596,31 +596,32 @@
 
                         </div>
 
-                        <!-- 입고 대기 대표 발주 -->
+                        <!-- 입고 대기 발주 최대 5개 -->
                         <div class="stock-list order-detail-list">
 
                             <div class="stock-item"
-                                 th:if="${pendingReceiptOrder != null}">
+                                 th:each="order : ${pendingReceiptOrders}"
+                                 th:with="materialNames=${pendingReceiptMaterialNames[order.purchaseOrderNo]}">
 
                                 <div>
-                                    <strong th:if="${!#lists.isEmpty(pendingReceiptMaterialNames)}"
-                                            th:text="${pendingReceiptMaterialNames[0]
-                                        + (#lists.size(pendingReceiptMaterialNames) > 1
-                                            ? ' 외 ' + (#lists.size(pendingReceiptMaterialNames) - 1) + '개 품목'
+                                    <strong th:if="${!#lists.isEmpty(materialNames)}"
+                                            th:text="${materialNames[0]
+                                        + (#lists.size(materialNames) > 1
+                                            ? ' 외 ' + (#lists.size(materialNames) - 1) + '개 품목'
                                             : '')}">
                                         발주 자재명
                                     </strong>
 
-                                    <strong th:if="${#lists.isEmpty(pendingReceiptMaterialNames)}">
+                                    <strong th:if="${#lists.isEmpty(materialNames)}">
                                         등록된 발주 품목이 없습니다.
                                     </strong>
 
-                                    <span th:text="${pendingReceiptOrder.supplierName}">
+                                    <span th:text="${order.supplierName}">
                                 공급업체명
                             </span>
 
-                                    <span th:text="${pendingReceiptOrder.expectedDate != null
-                                    ? '입고 예정 ' + #temporals.format(pendingReceiptOrder.expectedDate, 'yyyy-MM-dd')
+                                    <span th:text="${order.expectedDate != null
+                                    ? '입고 예정 ' + #temporals.format(order.expectedDate, 'yyyy-MM-dd')
                                     : '입고 예정일 미정'}">
                                 입고 예정일
                             </span>
@@ -631,7 +632,7 @@
 
                             <!-- 현재 입고 대기 발주가 없는 경우 -->
                             <div class="stock-item"
-                                 th:if="${pendingReceiptOrder == null}">
+                                 th:if="${#lists.isEmpty(pendingReceiptOrders)}">
 
                                 <div>
                                     <strong>입고 대기 발주가 없습니다.</strong>
@@ -647,81 +648,138 @@
 
                 </article>
 
-                <!-- 빠른 관리 -->
-                <section class="dashboard-panel quick-panel">
+                <!-- 현재 진행 중인 이벤트 -->
+                <section class="dashboard-panel active-event-panel">
 
                     <div class="panel-header">
-
                         <div>
-                            <p class="panel-label">QUICK MENU</p>
-                            <h2>빠른 관리</h2>
-
-                            <p>
-                                자주 사용하는 관리자 메뉴로 바로 이동합니다.
-                            </p>
+                            <p class="panel-label">ACTIVE EVENT</p>
+                            <h2>현재 진행 중인 이벤트</h2>
+                            <p>매장에서 적용 중인 이벤트입니다.</p>
                         </div>
 
+                        <!-- Controller에서 activeEvents를 전달하면 실제 개수 표시 -->
+                        <span class="panel-count"
+                              th:if="${activeEvents != null}"
+                              th:text="${#lists.size(activeEvents) + '건'}">
+                        0건
+                    </span>
+
+                        <!-- 실제 이벤트 연결 전 더미 개수 -->
+                        <span class="panel-count"
+                              th:if="${activeEvents == null}">
+                        2건
+                    </span>
                     </div>
 
-                    <div class="quick-menu-grid">
+                    <!-- 실제 진행 중인 이벤트 목록 -->
+                    <div class="active-event-list"
+                         th:if="${activeEvents != null
+                              and !#lists.isEmpty(activeEvents)}">
 
-                        <a href="/admin/reservations/new"
-                           th:href="@{/admin/reservations/new}"
-                           class="quick-menu-item">
+                        <a class="active-event-item"
+                           th:each="event, eventStatus : ${activeEvents}"
+                           th:if="${eventStatus.index < 2}"
+                           th:href="@{/admin/salonevent/{no}(no=${event.eventNo})}">
 
-                            <span class="quick-icon">＋</span>
+                            <div class="active-event-information">
+                                <div class="active-event-title-row">
+                                <span class="active-event-type"
+                                      th:text="${event.eventTypeName}">
+                                    이벤트
+                                </span>
 
-                            <div>
-                                <strong>예약 등록</strong>
-                                <p>새로운 예약을 등록합니다.</p>
+                                    <strong th:text="${event.eventTitle}">
+                                        이벤트명
+                                    </strong>
+                                </div>
+
+                                <span class="active-event-period"
+                                      th:text="${#temporals.format(event.startDate, 'yyyy.MM.dd')
+                                          + ' ~ '
+                                          + #temporals.format(event.endDate, 'yyyy.MM.dd')}">
+                                2026.09.01 ~ 2026.09.30
+                            </span>
                             </div>
 
-                            <span class="quick-arrow">→</span>
-                        </a>
+                            <div class="active-event-badges">
+                            <span class="active-event-dday"
+                                  th:attr="data-event-end-date=${#temporals.format(event.endDate, 'yyyy-MM-dd')}">
+                                D-0
+                            </span>
 
-                        <a href="/admin/customers"
-                           th:href="@{/admin/customers}"
-                           class="quick-menu-item">
-
-                            <span class="quick-icon">⌕</span>
-
-                            <div>
-                                <strong>고객 검색</strong>
-                                <p>고객 정보와 방문 이력을 확인합니다.</p>
+                                <span class="active-event-status">진행 중</span>
                             </div>
-
-                            <span class="quick-arrow">→</span>
                         </a>
-
-                        <a href="/admin/material"
-                           th:href="@{/admin/material}"
-                           class="quick-menu-item">
-
-                            <span class="quick-icon">＋</span>
-
-                            <div>
-                                <strong>재고 입고</strong>
-                                <p>입고된 재료의 수량을 등록합니다.</p>
-                            </div>
-
-                            <span class="quick-arrow">→</span>
-                        </a>
-
-                        <a href="/admin/services"
-                           th:href="@{/admin/services}"
-                           class="quick-menu-item">
-
-                            <span class="quick-icon">✂</span>
-
-                            <div>
-                                <strong>시술 메뉴 관리</strong>
-                                <p>시술 메뉴와 가격을 관리합니다.</p>
-                            </div>
-
-                            <span class="quick-arrow">→</span>
-                        </a>
-
                     </div>
+
+                    <!-- 실제 이벤트 연결 전 화면 확인용 더미 목록 -->
+                    <div class="active-event-list"
+                         th:if="${activeEvents == null}">
+
+                        <a href="/admin/salonevent"
+                           th:href="@{/admin/salonevent}"
+                           class="active-event-item">
+
+                            <div class="active-event-information">
+                                <div class="active-event-title-row">
+                                    <span class="active-event-type">시즌</span>
+                                    <strong>가을 클리닉 패키지</strong>
+                                </div>
+
+                                <span class="active-event-period">
+                                2026.09.01 ~ 2026.09.07
+                            </span>
+                            </div>
+
+                            <div class="active-event-badges">
+                            <span class="active-event-dday"
+                                  data-event-end-date="2026-09-07">
+                                D-5
+                            </span>
+
+                                <span class="active-event-status">진행 중</span>
+                            </div>
+                        </a>
+
+                        <a href="/admin/salonevent"
+                           th:href="@{/admin/salonevent}"
+                           class="active-event-item">
+
+                            <div class="active-event-information">
+                                <div class="active-event-title-row">
+                                    <span class="active-event-type">첫 방문</span>
+                                    <strong>첫 방문 고객 할인</strong>
+                                </div>
+
+                                <span class="active-event-period">
+                                2026.09.01 ~ 2026.10.31
+                            </span>
+                            </div>
+
+                            <div class="active-event-badges">
+                            <span class="active-event-dday"
+                                  data-event-end-date="2026-10-31">
+                                D-59
+                            </span>
+
+                                <span class="active-event-status">진행 중</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- 현재 진행 중인 이벤트가 없는 경우 -->
+                    <div class="active-event-empty"
+                         th:if="${activeEvents != null
+                              and #lists.isEmpty(activeEvents)}">
+                        현재 진행 중인 이벤트가 없습니다.
+                    </div>
+
+                    <a href="/admin/salonevent"
+                       th:href="@{/admin/salonevent}"
+                       class="event-management-link">
+                        전체 이벤트 보기 <span>→</span>
+                    </a>
 
                 </section>
 
@@ -729,9 +787,202 @@
 
         </section>
 
+        <!-- 매출 페이지 연결 전 더미 데이터로 표시하는 주간 매출 차트 -->
+        <section class="dashboard-panel sales-chart-panel">
+
+            <div class="sales-chart-header">
+
+                <div class="sales-chart-title">
+                    <p class="panel-label">SALES OVERVIEW</p>
+                    <h2>최근 7일 매출 현황</h2>
+                    <p>결제 완료 금액을 날짜별로 확인합니다.</p>
+                </div>
+
+                <div class="sales-chart-summary">
+                    <span>최근 7일 총매출</span>
+                    <strong id="weeklySalesTotal">3,640,000원</strong>
+
+                    <a href="/admin/payment"
+                       th:href="@{/admin/payment}"
+                       class="sales-management-link">
+                        매출 관리 <span>→</span>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Controller에서 weeklySalesLabels와 weeklySalesAmounts를 전달하면 더미 데이터가 교체된다. -->
+            <div class="sales-chart-frame">
+                <canvas id="weeklySalesChart"
+                        aria-label="최근 7일 날짜별 매출 막대그래프"
+                        role="img"></canvas>
+            </div>
+
+        </section>
+
     </main>
 
 </div>
+
+<!-- 매출 데이터 연결 전 대시보드 차트 표시용 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<!-- 실제 매출 정보가 전달되면 사용하고, 없으면 화면 확인용 더미 데이터를 사용한다. -->
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const serverSalesLabels = /*[[${weeklySalesLabels}]]*/ null;
+        const serverSalesAmounts = /*[[${weeklySalesAmounts}]]*/ null;
+
+        const salesLabels = Array.isArray(serverSalesLabels)
+        && serverSalesLabels.length > 0
+            ? serverSalesLabels
+            : ["8/28 금", "8/29 토", "8/30 일", "8/31 월", "9/1 화", "9/2 수", "9/3 목"];
+
+        const salesAmounts = Array.isArray(serverSalesAmounts)
+        && serverSalesAmounts.length === salesLabels.length
+            ? serverSalesAmounts
+            : [420000, 680000, 0, 510000, 760000, 690000, 580000];
+
+        const totalSales = salesAmounts.reduce(function (total, amount) {
+            return total + Number(amount || 0);
+        }, 0);
+
+        document.getElementById("weeklySalesTotal").textContent
+            = new Intl.NumberFormat("ko-KR").format(totalSales) + "원";
+
+        const chartCanvas = document.getElementById("weeklySalesChart");
+
+        if (!chartCanvas || typeof Chart === "undefined") {
+            return;
+        }
+
+        new Chart(chartCanvas, {
+            type: "bar",
+            data: {
+                labels: salesLabels,
+                datasets: [{
+                    label: "매출",
+                    data: salesAmounts,
+                    backgroundColor: "rgba(176, 111, 141, 0.72)",
+                    hoverBackgroundColor: "rgba(150, 90, 118, 0.9)",
+                    borderRadius: 9,
+                    borderSkipped: false,
+                    maxBarThickness: 54
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: "index",
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        displayColors: false,
+                        backgroundColor: "#2f333a",
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                return new Intl.NumberFormat("ko-KR")
+                                    .format(context.parsed.y) + "원";
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            color: "#777c85",
+                            font: {
+                                size: 11,
+                                weight: "600"
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: "#eceff3",
+                            drawTicks: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            color: "#969ba4",
+                            padding: 12,
+                            callback: function (value) {
+                                if (value === 0) {
+                                    return "0원";
+                                }
+
+                                return new Intl.NumberFormat("ko-KR", {
+                                    notation: "compact",
+                                    maximumFractionDigits: 1
+                                }).format(value) + "원";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<!-- 이벤트 종료일까지 남은 날짜를 계산해 D-day와 종료 임박을 표시한다. -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        document.querySelectorAll("[data-event-end-date]")
+            .forEach(function (badge) {
+                const dateParts = badge.dataset.eventEndDate
+                    .split("-")
+                    .map(Number);
+
+                const endDate = new Date(
+                    dateParts[0],
+                    dateParts[1] - 1,
+                    dateParts[2]
+                );
+
+                const remainingDays = Math.round(
+                    (endDate - today) / (1000 * 60 * 60 * 24)
+                );
+
+                if (remainingDays < 0) {
+                    badge.textContent = "종료";
+                    badge.classList.add("ended");
+                    return;
+                }
+
+                if (remainingDays === 0) {
+                    badge.textContent = "오늘 종료";
+                    badge.classList.add("ending-soon");
+                    return;
+                }
+
+                if (remainingDays <= 7) {
+                    badge.textContent = "종료 임박 D-" + remainingDays;
+                    badge.classList.add("ending-soon");
+                    return;
+                }
+
+                badge.textContent = "D-" + remainingDays;
+            });
+    });
+</script>
 
 </body>
 </html>

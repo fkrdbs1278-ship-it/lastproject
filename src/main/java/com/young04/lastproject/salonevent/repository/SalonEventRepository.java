@@ -13,6 +13,9 @@ public interface SalonEventRepository
     // 관리자용 전체 이벤트 최신 등록순 조회
     List<SalonEvent> findAllByOrderByRegdateDesc();
 
+    // 자동완성에서 사용할 전체 이벤트를 이벤트명순으로 조회
+    List<SalonEvent> findAllByOrderByEventTitleAsc();
+
     // 사용 여부별 이벤트 최신 등록순 조회
     List<SalonEvent> findByUseYnOrderByRegdateDesc(String useYn);
 
@@ -31,6 +34,14 @@ public interface SalonEventRepository
     // 현재 사용자에게 노출할 진행 중 이벤트 조회
     List<SalonEvent>
     findByUseYnAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByStartDateDesc(
+            String useYn,
+            LocalDateTime startDate,
+            LocalDateTime endDate
+    );
+
+    // 대시보드용 진행 중 이벤트를 종료일이 가까운 순서로 최대 2개 조회
+    List<SalonEvent>
+    findTop2ByUseYnAndStartDateLessThanEqualAndEndDateGreaterThanEqualOrderByEndDateAsc(
             String useYn,
             LocalDateTime startDate,
             LocalDateTime endDate

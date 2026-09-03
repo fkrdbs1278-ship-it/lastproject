@@ -121,6 +121,27 @@ public class MaterialService {
                 .toList();
     }
 
+    // 자동완성에서 사용할 자재명을 상태와 관계없이 모두 조회
+    public List<String> getMaterialNameSuggestions(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return materialRepository
+                    .findAllByOrderByMaterialNameAsc()
+                    .stream()
+                    .map(Material::getMaterialName)
+                    .distinct()
+                    .toList();
+        }
+
+        return materialRepository
+                .findByMaterialNameContainingIgnoreCaseOrderByMaterialNameAsc(
+                        keyword.trim()
+                )
+                .stream()
+                .map(Material::getMaterialName)
+                .distinct()
+                .toList();
+    }
+
     // 재고 부족 자재 조회
     public List<MaterialResponse> getLowStockMaterials() {
         return materialRepository.findLowStockMaterials()

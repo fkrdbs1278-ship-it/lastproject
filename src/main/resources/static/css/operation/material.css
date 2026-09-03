@@ -24,10 +24,10 @@ body {
     margin-left: 250px;
 }
 
-/* 대시보드처럼 사이드바 바로 옆에서 콘텐츠 시작 */
+/* 목록 화면도 공통 최대 너비 안에서 가운데 정렬 */
 .material-admin-content .material-list-page {
-    max-width: none;
-    margin: 0;
+    max-width: 1540px;
+    margin: 0 auto;
 }
 
 .material-page,
@@ -37,7 +37,7 @@ body {
 
 .material-page {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1540px;
     min-height: 100vh;
     margin: 0 auto;
     padding: 40px;
@@ -187,6 +187,11 @@ body {
     background-color: #ffffff;
 }
 
+/* 최근 검색어 창의 위치 기준 */
+.material-search-area {
+    position: relative;
+}
+
 .search-form {
     display: flex;
     gap: 8px;
@@ -221,6 +226,155 @@ body {
 
 .search-form button:hover {
     background-color: #343a45;
+}
+
+/* 자재 검색창 아래에 표시되는 최근 검색어 */
+.recent-search-panel {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 9px);
+    left: 0;
+    width: 360px;
+    overflow: hidden;
+    border: 1px solid #dfe3e9;
+    border-radius: 12px;
+    background-color: #ffffff;
+    box-shadow: 0 12px 30px rgba(34, 40, 52, 0.15);
+}
+
+.recent-search-panel[hidden] {
+    display: none;
+}
+
+.recent-search-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 50px;
+    padding: 0 16px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.recent-search-header strong {
+    color: #343a45;
+    font-size: 14px;
+}
+
+.recent-search-header form,
+.recent-search-list form {
+    margin: 0;
+}
+
+.recent-search-clear,
+.recent-search-remove {
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.recent-search-clear {
+    color: #8d949f;
+    font-size: 11px;
+}
+
+.recent-search-clear:hover {
+    color: #5c6bc0;
+    text-decoration: underline;
+}
+
+.recent-search-empty {
+    margin: 0;
+    padding: 28px 16px;
+    color: #969da8;
+    font-size: 13px;
+    text-align: center;
+}
+
+.recent-search-list {
+    margin: 0;
+    padding: 7px 0;
+    list-style: none;
+}
+
+.search-suggestion-list {
+    max-height: 260px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 7px 0;
+    list-style: none;
+}
+
+.recent-search-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 42px;
+    padding: 0 11px 0 16px;
+}
+
+.search-suggestion-list li {
+    min-height: 42px;
+}
+
+.recent-search-list li:hover {
+    background-color: #f7f8fc;
+}
+
+.search-suggestion-button {
+    width: 100%;
+    min-height: 42px;
+    padding: 0 16px;
+    overflow: hidden;
+    border: 0;
+    color: #454c57;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-suggestion-button:hover,
+.search-suggestion-button:focus,
+.search-suggestion-button.active {
+    color: #4f5dab;
+    background-color: #f7f8fc;
+    outline: none;
+}
+
+.recent-search-list a {
+    flex: 1;
+    overflow: hidden;
+    color: #454c57;
+    font-size: 13px;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recent-search-list a:hover {
+    color: #4f5dab;
+}
+
+.recent-search-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    color: #a0a6af;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.recent-search-remove:hover {
+    color: #c84d57;
+    background-color: #fff0f1;
 }
 
 .filter-buttons {
