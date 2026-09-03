@@ -82,7 +82,7 @@ public class AdminReservationService {
                                         reservationNo
                                 )
                                 .stream()
-                                .map(ReservationImageResponse::from)
+                                .map(ReservationImageResponse::forAdmin)
                                 .toList()
                 )
                 .build();

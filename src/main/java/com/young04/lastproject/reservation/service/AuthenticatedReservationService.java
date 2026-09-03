@@ -58,7 +58,7 @@ public class AuthenticatedReservationService {
             String memberId,
             Long reservationNo
     ) {
-        return reservationDetailService.toDetail(
+        return reservationDetailService.toMemberDetail(
                 requireOwnedReservation(
                         memberId,
                         reservationNo

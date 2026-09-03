@@ -18,7 +18,11 @@ public class ReservationDetailService {
     private final HairStyleReader hairStyleReader;
     private final ReservationImageRepository reservationImageRepository;
 
-    public ReservationDetailResponse toDetail(
+    /*
+     * 로그인 회원 본인 상세 응답.
+     * 고객 참고 이미지는 보호된 /api/reservations/me/** URL을 내려준다.
+     */
+    public ReservationDetailResponse toMemberDetail(
             Reservation reservation
     ) {
         HairStyleOptionResponse style =
@@ -48,9 +52,20 @@ public class ReservationDetailService {
                                         reservation.getReservationNo()
                                 )
                                 .stream()
-                                .map(ReservationImageResponse::from)
+                                .map(
+                                        ReservationImageResponse::forMember
+                                )
                                 .toList()
                 )
                 .build();
+    }
+
+    /*
+     * 기존 호출부 호환용.
+     */
+    public ReservationDetailResponse toDetail(
+            Reservation reservation
+    ) {
+        return toMemberDetail(reservation);
     }
 }
