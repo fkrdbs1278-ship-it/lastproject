@@ -1,0 +1,937 @@
+/* =========================================================
+   고객 상세 CRM
+   3part 전용 CSS
+
+   다른 파트 관리자 공통 파일은 수정하지 않음
+========================================================= */
+
+
+/* =========================================================
+   기본 설정
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-width: 1200px;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+
+    background-color: #f5f6f8;
+    color: #1f2228;
+
+    font-family:
+            "Pretendard",
+            "Noto Sans KR",
+            "Malgun Gothic",
+            sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+/* =========================================================
+   고객 상세 전체 영역
+
+   공통 관리자 사이드바가 250px이므로
+   우리 콘텐츠만 오른쪽으로 이동
+========================================================= */
+
+.customer-detail-page {
+    width: calc(100% - 250px);
+    min-height: 100vh;
+
+    margin-left: 250px;
+
+    padding: 38px 44px 55px;
+}
+
+
+/* =========================================================
+   페이지 헤더
+========================================================= */
+
+.detail-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+
+    margin-bottom: 28px;
+}
+
+.page-label,
+.panel-label {
+    margin: 0 0 7px;
+
+    color: #965a76;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+}
+
+.detail-header h1 {
+    margin: 0 0 10px;
+
+    color: #1f2228;
+
+    font-size: 32px;
+    line-height: 1.2;
+    letter-spacing: -1.5px;
+}
+
+.page-description {
+    margin: 0;
+
+    color: #858a94;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   헤더 버튼
+========================================================= */
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 110px;
+    height: 44px;
+
+    padding: 0 17px;
+
+    border: 1px solid #dde1e7;
+    border-radius: 10px;
+
+    background-color: #ffffff;
+
+    color: #565b64;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.header-button:hover {
+    border-color: #b06f8d;
+
+    color: #965a76;
+
+    transform: translateY(-1px);
+}
+
+.header-button.primary {
+    border-color: #a35f7f;
+
+    background-color: #a35f7f;
+
+    color: #ffffff;
+}
+
+.header-button.primary:hover {
+    border-color: #965a76;
+
+    background-color: #965a76;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   완료 메시지
+========================================================= */
+
+.alert {
+    margin-bottom: 20px;
+    padding: 14px 17px;
+
+    border-radius: 11px;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.alert.success {
+    border: 1px solid #cce5d7;
+
+    background-color: #edf7f1;
+
+    color: #4c8469;
+}
+
+
+/* =========================================================
+   고객 요약 카드
+========================================================= */
+
+.customer-summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+
+    margin-bottom: 20px;
+    padding: 23px 25px;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 18px;
+
+    background-color: #ffffff;
+
+    box-shadow: 0 8px 24px rgba(32, 36, 43, 0.05);
+}
+
+
+/* =========================================================
+   고객 프로필
+========================================================= */
+
+.customer-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.customer-avatar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 58px;
+    height: 58px;
+
+    border-radius: 16px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.customer-profile-text {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.customer-name-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.customer-name-line h2 {
+    margin: 0;
+
+    color: #272a30;
+
+    font-size: 21px;
+    letter-spacing: -0.5px;
+}
+
+.customer-profile-text p {
+    margin: 0;
+
+    color: #8b9099;
+
+    font-size: 12px;
+}
+
+.customer-profile-text p strong {
+    color: #60656d;
+}
+
+.divider {
+    margin: 0 5px;
+
+    color: #c7cad0;
+}
+
+
+/* =========================================================
+   회원 / 비회원
+========================================================= */
+
+.customer-type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 52px;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.customer-type-badge.member {
+    background-color: #edf3fa;
+
+    color: #6687b3;
+}
+
+.customer-type-badge.guest {
+    background-color: #f0f1f4;
+
+    color: #777c85;
+}
+
+
+/* =========================================================
+   현재 등급 요약
+========================================================= */
+
+.current-grade-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+
+    min-width: 150px;
+}
+
+.current-grade-summary > span {
+    color: #9297a0;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.current-grade-summary > strong {
+    color: #965a76;
+
+    font-size: 23px;
+    letter-spacing: -0.5px;
+}
+
+.current-grade-summary small {
+    padding: 4px 7px;
+
+    border-radius: 6px;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.current-grade-summary small.manual {
+    background-color: #f5e8ef;
+
+    color: #965a76;
+}
+
+.current-grade-summary small.automatic {
+    background-color: #e9f2ed;
+
+    color: #5e9077;
+}
+
+
+/* =========================================================
+   공통 상세 패널
+========================================================= */
+
+.detail-panel {
+    margin-bottom: 20px;
+    padding: 25px;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 18px;
+
+    background-color: #ffffff;
+
+    box-shadow: 0 8px 24px rgba(32, 36, 43, 0.05);
+}
+
+.panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 22px;
+}
+
+.panel-header h2 {
+    margin: 0;
+
+    color: #24272d;
+
+    font-size: 19px;
+    letter-spacing: -0.5px;
+}
+
+.panel-header > p {
+    margin: 4px 0 0;
+
+    color: #959aa3;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   고객 정보 Grid
+========================================================= */
+
+.customer-info-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(4, minmax(0, 1fr));
+
+    border-top: 1px solid #e5e8ed;
+    border-left: 1px solid #e5e8ed;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    min-height: 83px;
+
+    padding: 16px;
+
+    border-right: 1px solid #e5e8ed;
+    border-bottom: 1px solid #e5e8ed;
+
+    background-color: #ffffff;
+}
+
+.info-item:hover {
+    background-color: #fdfafb;
+}
+
+.info-label {
+    color: #9297a0;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.info-item strong {
+    color: #363940;
+
+    font-size: 13px;
+    line-height: 1.5;
+
+    word-break: break-all;
+}
+
+.info-item strong.manual {
+    color: #965a76;
+}
+
+.info-item strong.automatic {
+    color: #5e9077;
+}
+
+
+/* =========================================================
+   활성 / 비활성
+========================================================= */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+    min-width: 50px;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.status-badge.active {
+    background-color: #e9f2ed;
+
+    color: #5e9077;
+}
+
+.status-badge.inactive {
+    background-color: #fbe9eb;
+
+    color: #c35c65;
+}
+
+
+/* =========================================================
+   등급 기준
+========================================================= */
+
+.grade-rule-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    gap: 13px;
+}
+
+.grade-rule {
+    position: relative;
+
+    min-height: 118px;
+
+    padding: 18px;
+
+    border: 1px solid #e3e6eb;
+    border-radius: 14px;
+
+    background-color: #fafbfc;
+}
+
+.grade-rule > span {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+}
+
+.grade-rule > strong {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #30333a;
+
+    font-size: 17px;
+}
+
+.grade-rule > p {
+    margin: 0;
+
+    color: #8f949d;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+/* 일반 */
+
+.grade-rule.normal > span {
+    color: #777c85;
+}
+
+.grade-rule.normal {
+    border-left: 4px solid #a3a7ad;
+}
+
+
+/* 단골 */
+
+.grade-rule.regular > span {
+    color: #6687b3;
+}
+
+.grade-rule.regular {
+    border-left: 4px solid #6f91bf;
+
+    background-color: #f7fafe;
+}
+
+
+/* VIP */
+
+.grade-rule.vip > span {
+    color: #965a76;
+}
+
+.grade-rule.vip {
+    border-left: 4px solid #b06f8d;
+
+    background-color: #fdf8fa;
+}
+
+
+/* =========================================================
+   등급 안내문
+========================================================= */
+
+.grade-description {
+    margin: 14px 0 0;
+    padding: 11px 13px;
+
+    border-radius: 9px;
+
+    background-color: #f8f9fb;
+
+    color: #858a94;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   등급 관리
+========================================================= */
+
+.grade-management-area {
+    display: grid;
+
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-top: 19px;
+}
+
+.grade-management-block {
+    padding: 19px;
+
+    border: 1px solid #e2e5ea;
+    border-radius: 14px;
+
+    background-color: #fafbfc;
+}
+
+.grade-management-block h3 {
+    margin: 0 0 7px;
+
+    color: #35383f;
+
+    font-size: 14px;
+}
+
+.grade-management-block > p {
+    margin: 0 0 17px;
+
+    color: #9297a0;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   수동 등급 변경 Form
+========================================================= */
+
+.manual-grade-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.manual-grade-form label {
+    color: #636870;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.grade-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grade-input-row select {
+    flex: 1;
+
+    height: 40px;
+
+    padding: 0 11px;
+
+    border: 1px solid #dce0e6;
+    border-radius: 9px;
+
+    outline: none;
+
+    background-color: #ffffff;
+
+    color: #484c54;
+
+    font-size: 11px;
+}
+
+.grade-input-row select:focus {
+    border-color: #b06f8d;
+
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.09);
+}
+
+
+/* =========================================================
+   등급 관리 버튼
+========================================================= */
+
+.grade-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+
+    padding: 0 14px;
+
+    border: 1px solid #d9dde3;
+    border-radius: 9px;
+
+    background-color: #ffffff;
+
+    color: #5d626a;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.grade-button:hover {
+    border-color: #b06f8d;
+
+    background-color: #fcf5f8;
+
+    color: #965a76;
+
+    transform: translateY(-1px);
+}
+
+.grade-button.primary {
+    border-color: #a35f7f;
+
+    background-color: #a35f7f;
+
+    color: #ffffff;
+}
+
+.grade-button.primary:hover {
+    border-color: #965a76;
+
+    background-color: #965a76;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   자동 등급 버튼
+========================================================= */
+
+.automatic-grade-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.automatic-grade-buttons form {
+    margin: 0;
+}
+
+
+/* =========================================================
+   CRM 메뉴
+========================================================= */
+
+.crm-menu-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    gap: 13px;
+}
+
+.crm-menu-card {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    min-height: 100px;
+
+    padding: 18px 42px 18px 17px;
+
+    border: 1px solid #e2e5ea;
+    border-radius: 14px;
+
+    background-color: #fafbfc;
+
+    transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.crm-menu-card:hover {
+    border-color: #d6adbf;
+
+    background-color: #fcf6f9;
+
+    box-shadow: 0 6px 16px rgba(32, 36, 43, 0.05);
+
+    transform: translateY(-2px);
+}
+
+.crm-menu-number {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 11px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.crm-menu-card > div {
+    min-width: 0;
+}
+
+.crm-menu-card strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #363940;
+
+    font-size: 13px;
+}
+
+.crm-menu-card p {
+    margin: 0;
+
+    color: #9297a0;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.crm-arrow {
+    position: absolute;
+
+    top: 50%;
+    right: 16px;
+
+    color: #b5a1aa;
+
+    font-size: 17px;
+
+    transform: translateY(-50%);
+}
+
+
+/* =========================================================
+   앵커 이동시 사이드바/상단과 간격 확보
+========================================================= */
+
+#grade-section,
+#memo-section {
+    scroll-margin-top: 25px;
+}
+
+
+/* =========================================================
+   중간 화면 대응
+========================================================= */
+
+@media (max-width: 1500px) {
+
+    .customer-detail-page {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+
+    .customer-info-grid {
+        grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   작은 화면 대응
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .customer-detail-page {
+        padding-right: 25px;
+        padding-left: 25px;
+    }
+
+    .customer-info-grid {
+        grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+    }
+
+    .grade-management-area {
+        grid-template-columns: 1fr;
+    }
+
+    .crm-menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+}

@@ -1,0 +1,766 @@
+/* =========================================================
+   고객 시술 이력
+   3part 관리자 전용 CSS
+========================================================= */
+
+
+/* =========================================================
+   기본 설정
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-width: 1200px;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+
+    background-color: #f5f6f8;
+    color: #1f2228;
+
+    font-family:
+            "Pretendard",
+            "Noto Sans KR",
+            "Malgun Gothic",
+            sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+
+/* =========================================================
+   시술이력 전체 영역
+   관리자 공통 사이드바 250px 대응
+========================================================= */
+
+.treatment-page {
+    width: calc(100% - 250px);
+    min-height: 100vh;
+
+    margin-left: 250px;
+
+    padding: 38px 44px 55px;
+}
+
+
+/* =========================================================
+   페이지 헤더
+========================================================= */
+
+.treatment-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+
+    margin-bottom: 28px;
+}
+
+.page-label,
+.panel-label {
+    margin: 0 0 7px;
+
+    color: #965a76;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+}
+
+.treatment-header h1 {
+    margin: 0 0 10px;
+
+    color: #1f2228;
+
+    font-size: 32px;
+    line-height: 1.2;
+
+    letter-spacing: -1.5px;
+}
+
+.page-description {
+    margin: 0;
+
+    color: #858a94;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   헤더 버튼
+========================================================= */
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 105px;
+    height: 44px;
+
+    padding: 0 16px;
+
+    border: 1px solid #dde1e7;
+    border-radius: 10px;
+
+    background-color: #ffffff;
+
+    color: #565b64;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.header-button:hover {
+    border-color: #b06f8d;
+
+    color: #965a76;
+
+    transform: translateY(-1px);
+}
+
+.header-button.primary {
+    border-color: #a35f7f;
+
+    background-color: #a35f7f;
+
+    color: #ffffff;
+}
+
+.header-button.primary:hover {
+    border-color: #965a76;
+
+    background-color: #965a76;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   고객 요약 카드
+========================================================= */
+
+.customer-summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+
+    margin-bottom: 20px;
+    padding: 22px 25px;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 18px;
+
+    background-color: #ffffff;
+
+    box-shadow:
+            0 8px 24px rgba(32, 36, 43, 0.05);
+}
+
+
+/* =========================================================
+   고객 프로필
+========================================================= */
+
+.customer-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.customer-avatar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 58px;
+    height: 58px;
+
+    border-radius: 16px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.customer-profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.customer-name-line {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.customer-name-line h2 {
+    margin: 0;
+
+    color: #292c32;
+
+    font-size: 21px;
+
+    letter-spacing: -0.5px;
+}
+
+.customer-profile-info p {
+    margin: 0;
+
+    color: #8b9099;
+
+    font-size: 12px;
+}
+
+.customer-profile-info p strong {
+    color: #60656d;
+}
+
+.divider {
+    margin: 0 5px;
+
+    color: #c7cad0;
+}
+
+
+/* =========================================================
+   회원 / 비회원
+========================================================= */
+
+.customer-type {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 52px;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.customer-type.member {
+    background-color: #edf3fa;
+
+    color: #6687b3;
+}
+
+.customer-type.guest {
+    background-color: #f0f1f4;
+
+    color: #777c85;
+}
+
+
+/* =========================================================
+   시술 이력 개수
+========================================================= */
+
+.treatment-count-box {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+
+    min-width: 150px;
+
+    padding: 16px 19px;
+
+    border-radius: 13px;
+
+    background-color: #f8f3f6;
+
+    text-align: right;
+}
+
+.treatment-count-box > span {
+    margin-right: auto;
+
+    color: #8e939c;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.treatment-count-box > strong {
+    color: #965a76;
+
+    font-size: 25px;
+}
+
+.treatment-count-box > small {
+    color: #965a76;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   시술 이력 패널
+========================================================= */
+
+.treatment-panel {
+    margin-bottom: 20px;
+
+    padding: 25px;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 18px;
+
+    background-color: #ffffff;
+
+    box-shadow:
+            0 8px 24px rgba(32, 36, 43, 0.05);
+}
+
+
+/* =========================================================
+   패널 헤더
+========================================================= */
+
+.panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 22px;
+}
+
+.panel-header h2 {
+    margin: 0;
+
+    color: #24272d;
+
+    font-size: 19px;
+
+    letter-spacing: -0.5px;
+}
+
+.panel-header > p {
+    margin: 4px 0 0;
+
+    color: #959aa3;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   테이블 Wrapper
+========================================================= */
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid #e3e6eb;
+    border-radius: 13px;
+}
+
+
+/* =========================================================
+   시술 이력 테이블
+========================================================= */
+
+.treatment-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background-color: #ffffff;
+}
+
+.treatment-table thead {
+    background-color: #f8f9fb;
+}
+
+.treatment-table th {
+    height: 50px;
+
+    padding: 0 13px;
+
+    border-bottom: 1px solid #e1e5eb;
+
+    color: #70757e;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+.treatment-table td {
+    min-height: 70px;
+
+    padding: 15px 13px;
+
+    border-bottom: 1px solid #eceef2;
+
+    color: #4c5058;
+
+    font-size: 12px;
+
+    vertical-align: middle;
+}
+
+.treatment-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.treatment-table tbody tr {
+    transition:
+            background-color 0.15s ease;
+}
+
+.treatment-table tbody tr:hover {
+    background-color: #fdf9fb;
+}
+
+
+/* =========================================================
+   번호
+========================================================= */
+
+.number-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 34px;
+    height: 28px;
+
+    padding: 0 8px;
+
+    border-radius: 7px;
+
+    background-color: #f0f1f4;
+
+    color: #676c75;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   시술명
+========================================================= */
+
+.treatment-name {
+    color: #30343a;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   날짜
+========================================================= */
+
+.treatment-date {
+    color: #5f646c;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   시술 금액
+========================================================= */
+
+.treatment-price {
+    color: #30343a;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   시술 메모
+========================================================= */
+
+.treatment-memo {
+    min-width: 160px;
+    max-width: 300px;
+
+    color: #70757e;
+
+    font-size: 11px;
+    line-height: 1.55;
+
+    white-space: normal;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   추천일
+========================================================= */
+
+.recommended-date {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 9px;
+
+    border-radius: 7px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.empty-value {
+    color: #a1a6ae;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   시술 이력 없음
+========================================================= */
+
+.empty-treatment {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    min-height: 240px;
+
+    border: 1px dashed #dce0e6;
+    border-radius: 13px;
+
+    background-color: #fafbfc;
+
+    text-align: center;
+}
+
+.empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 3px;
+
+    border-radius: 13px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.empty-treatment strong {
+    color: #4a4e56;
+
+    font-size: 14px;
+}
+
+.empty-treatment p {
+    margin: 0;
+
+    color: #969ba4;
+
+    font-size: 11px;
+}
+
+.empty-treatment a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 35px;
+
+    margin-top: 6px;
+
+    padding: 0 13px;
+
+    border: 1px solid #d9dde3;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+
+    color: #965a76;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease;
+}
+
+.empty-treatment a:hover {
+    border-color: #b06f8d;
+
+    background-color: #fcf5f8;
+}
+
+
+/* =========================================================
+   시술 이력 기능 안내
+========================================================= */
+
+.treatment-guide {
+    display: grid;
+
+    grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    gap: 13px;
+}
+
+.treatment-guide article {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    min-height: 100px;
+
+    padding: 18px;
+
+    border: 1px solid #e2e5ea;
+    border-radius: 14px;
+
+    background-color: #ffffff;
+
+    box-shadow:
+            0 6px 17px rgba(32, 36, 43, 0.035);
+}
+
+.guide-number {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 11px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.treatment-guide article > div {
+    min-width: 0;
+}
+
+.treatment-guide strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #41454c;
+
+    font-size: 12px;
+}
+
+.treatment-guide p {
+    margin: 0;
+
+    color: #9499a2;
+
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   중간 화면 대응
+========================================================= */
+
+@media (max-width: 1450px) {
+
+    .treatment-page {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+
+}
+
+
+/* =========================================================
+   작은 화면 대응
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .treatment-page {
+        padding-right: 25px;
+        padding-left: 25px;
+    }
+
+    .treatment-guide {
+        grid-template-columns: 1fr;
+    }
+
+}

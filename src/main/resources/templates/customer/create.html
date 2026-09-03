@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>전화예약 고객 등록</title>
+
+
+    <!-- =====================================================
+         3part 고객 CRM 전용 사이드바 CSS
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          th:href="@{/css/customer/customer-sidebar.css}">
+
+
+    <!-- =====================================================
+         고객 등록 전용 CSS
+    ====================================================== -->
+
+    <link rel="stylesheet"
+          th:href="@{/css/customer/create.css}">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     3part 고객 CRM 전용 관리자 사이드바
+========================================================= -->
+
+<aside th:replace="~{customer/customer-sidebar :: sidebar('customer')}">
+</aside>
+
+
+
+<!-- =========================================================
+     전화예약 고객 등록
+========================================================= -->
+
+<main class="create-page">
+
+
+    <!-- =====================================================
+         페이지 상단
+    ====================================================== -->
+
+    <header class="create-header">
+
+
+        <div>
+
+            <p class="page-label">
+                CUSTOMER REGISTRATION
+            </p>
+
+
+            <h1>
+                전화예약 고객 등록
+            </h1>
+
+
+            <p class="page-description">
+                전화로 예약한 신규 고객을 고객 CRM에 직접 등록합니다.
+            </p>
+
+        </div>
+
+
+
+        <a class="back-button"
+           th:href="@{/admin/customers}">
+            ← 고객 목록
+        </a>
+
+
+    </header>
+
+
+
+    <!-- =====================================================
+         등록 오류 메시지
+    ====================================================== -->
+
+    <div class="alert error"
+         th:if="${errorMessage != null}"
+         th:text="${errorMessage}">
+
+        고객 등록 중 오류가 발생했습니다.
+
+    </div>
+
+
+
+    <!-- =====================================================
+         고객 등록 카드
+    ====================================================== -->
+
+    <section class="create-panel">
+
+
+        <!-- =================================================
+             카드 제목
+        ================================================== -->
+
+        <div class="panel-header">
+
+
+            <div>
+
+                <p class="panel-label">
+                    NEW CUSTOMER
+                </p>
+
+
+                <h2>
+                    신규 고객 정보
+                </h2>
+
+            </div>
+
+
+            <p>
+                고객명과 전화번호를 입력해 주세요.
+            </p>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             고객 등록 Form
+        ================================================== -->
+
+        <form class="create-form"
+              method="post"
+              th:action="@{/admin/customers/new}"
+              th:object="${customerCreateRequest}">
+
+
+            <!-- =================================================
+                 CSRF
+            ================================================== -->
+
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+
+
+            <!-- =================================================
+                 고객명
+            ================================================== -->
+
+            <div class="form-group">
+
+
+                <label for="customerName">
+
+                    고객명
+
+                    <span class="required">
+                        *
+                    </span>
+
+                </label>
+
+
+                <input type="text"
+                       id="customerName"
+                       class="form-control"
+                       th:field="*{customerName}"
+                       maxlength="50"
+                       placeholder="고객명을 입력하세요."
+                       autocomplete="off">
+
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('customerName')}"
+                     th:errors="*{customerName}">
+
+                    고객명을 확인해 주세요.
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 전화번호
+            ================================================== -->
+
+            <div class="form-group">
+
+
+                <label for="phone">
+
+                    전화번호
+
+                    <span class="required">
+                        *
+                    </span>
+
+                </label>
+
+
+                <input type="text"
+                       id="phone"
+                       class="form-control"
+                       th:field="*{phone}"
+                       maxlength="20"
+                       placeholder="010-1234-5678"
+                       autocomplete="off">
+
+
+                <div class="input-guide">
+
+
+                    <span class="guide-icon">
+                        i
+                    </span>
+
+
+                    <span>
+                        하이픈 없이 입력해도 등록 과정에서 표준 전화번호 형식으로 처리합니다.
+                    </span>
+
+
+                </div>
+
+
+                <div class="field-error"
+                     th:if="${#fields.hasErrors('phone')}"
+                     th:errors="*{phone}">
+
+                    전화번호를 확인해 주세요.
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 기본 등록 정보 안내
+            ================================================== -->
+
+            <section class="default-info">
+
+
+                <div class="default-info-header">
+
+
+                    <div>
+
+                        <p class="default-label">
+                            DEFAULT SETTINGS
+                        </p>
+
+
+                        <h3>
+                            신규 고객 기본 설정
+                        </h3>
+
+                    </div>
+
+
+                    <span class="automatic-badge">
+                        자동 적용
+                    </span>
+
+
+                </div>
+
+
+
+                <div class="default-grid">
+
+
+                    <!-- 고객 유형 -->
+
+                    <div class="default-item">
+
+                        <span>
+                            고객 유형
+                        </span>
+
+                        <strong>
+                            비회원
+                        </strong>
+
+                        <small>
+                            GUEST
+                        </small>
+
+                    </div>
+
+
+
+                    <!-- 고객 등급 -->
+
+                    <div class="default-item">
+
+                        <span>
+                            고객 등급
+                        </span>
+
+                        <strong>
+                            일반
+                        </strong>
+
+                        <small>
+                            NORMAL
+                        </small>
+
+                    </div>
+
+
+
+                    <!-- 등급 관리 -->
+
+                    <div class="default-item">
+
+                        <span>
+                            등급 관리
+                        </span>
+
+                        <strong>
+                            자동 관리
+                        </strong>
+
+                        <small>
+                            기본 상태
+                        </small>
+
+                    </div>
+
+
+
+                    <!-- 방문 횟수 -->
+
+                    <div class="default-item">
+
+                        <span>
+                            방문 횟수
+                        </span>
+
+                        <strong>
+                            0회
+                        </strong>
+
+                        <small>
+                            신규 고객
+                        </small>
+
+                    </div>
+
+
+
+                    <!-- 누적 결제 -->
+
+                    <div class="default-item">
+
+                        <span>
+                            누적 결제
+                        </span>
+
+                        <strong>
+                            0원
+                        </strong>
+
+                        <small>
+                            초기값
+                        </small>
+
+                    </div>
+
+
+
+                    <!-- 활성 상태 -->
+
+                    <div class="default-item">
+
+                        <span>
+                            활성 상태
+                        </span>
+
+                        <strong class="active-text">
+                            활성
+                        </strong>
+
+                        <small>
+                            ACTIVE
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+                 등록 완료 안내
+            ================================================== -->
+
+            <div class="registration-guide">
+
+
+                <strong>
+                    등록 후
+                </strong>
+
+
+                <p>
+                    고객 등록이 완료되면 해당 고객의 상세 CRM 화면으로 이동합니다.
+                </p>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 하단 버튼
+            ================================================== -->
+
+            <div class="button-area">
+
+
+                <a class="cancel-button"
+                   th:href="@{/admin/customers}">
+                    취소
+                </a>
+
+
+                <button type="submit"
+                        class="submit-button">
+                    고객 등록
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </section>
+
+
+</main>
+
+
+</body>
+
+</html>

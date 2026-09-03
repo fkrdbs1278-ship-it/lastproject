@@ -1,0 +1,758 @@
+/* =========================================================
+   개인정보 제공 범위 임시 테스트 화면
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    margin: 0;
+
+    font-family:
+            Arial,
+            "Noto Sans KR",
+            sans-serif;
+
+    background: #f7f7f7;
+
+    color: #222;
+}
+
+
+
+/* =========================================================
+   테스트 배너
+========================================================= */
+
+.test-banner {
+    padding: 9px 15px;
+
+    background: #222;
+
+    color: #fff;
+
+    text-align: center;
+
+    font-size: 13px;
+}
+
+
+
+/* =========================================================
+   전체 컨테이너
+========================================================= */
+
+.page-container {
+    width: min(
+            1000px,
+            calc(100% - 40px)
+    );
+
+    margin: 0 auto;
+
+    padding: 45px 0 70px;
+}
+
+
+
+/* =========================================================
+   페이지 헤더
+========================================================= */
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+
+.page-label {
+    margin: 0 0 8px;
+
+    color: #888;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+.page-header h1 {
+    margin: 0;
+
+    font-size: 34px;
+}
+
+
+.page-description {
+    margin: 12px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+
+/* =========================================================
+   고객 카드
+========================================================= */
+
+.customer-card {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    background: #fff;
+
+    border: 1px solid #e8e8e8;
+
+    border-radius: 14px;
+}
+
+
+.customer-avatar {
+    width: 60px;
+
+    height: 60px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #222;
+
+    border-radius: 50%;
+
+    color: #fff;
+
+    font-size: 22px;
+
+    font-weight: 700;
+}
+
+
+.customer-info {
+    flex: 1;
+}
+
+
+.customer-label {
+    margin: 0 0 5px;
+
+    color: #888;
+
+    font-size: 12px;
+}
+
+
+.customer-info h2 {
+    margin: 0 0 7px;
+
+    font-size: 21px;
+}
+
+
+.customer-info p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+.customer-info strong {
+    color: #333;
+}
+
+
+
+/* =========================================================
+   마이페이지 메뉴
+========================================================= */
+
+.mypage-menu {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    margin-bottom: 35px;
+
+    overflow: hidden;
+
+    background: #fff;
+
+    border: 1px solid #e8e8e8;
+
+    border-radius: 12px;
+}
+
+
+.menu-button {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 50px;
+
+    padding: 15px 10px;
+
+    background: #fff;
+
+    border: 0;
+
+    border-right: 1px solid #eee;
+
+    color: #555;
+
+    font-size: 14px;
+
+    font-family: inherit;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+.menu-button:last-child {
+    border-right: 0;
+}
+
+
+.menu-button:hover {
+    background: #fafafa;
+}
+
+
+.menu-button.active {
+    background: #222;
+
+    color: #fff;
+
+    font-weight: 700;
+
+    cursor: default;
+}
+
+
+.menu-link {
+    text-decoration: none;
+}
+
+
+
+/* =========================================================
+   개인정보 영역
+========================================================= */
+
+.privacy-section {
+    margin-bottom: 30px;
+}
+
+
+.section-header {
+    margin-bottom: 17px;
+}
+
+
+.section-header h2 {
+    margin: 0 0 7px;
+
+    font-size: 23px;
+}
+
+
+.section-header p {
+    margin: 0;
+
+    color: #888;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+
+/* =========================================================
+   회원 동의정보
+========================================================= */
+
+.consent-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.consent-card {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 21px;
+
+    background: #fff;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 12px;
+}
+
+
+.consent-card h3 {
+    margin: 7px 0 5px;
+
+    font-size: 16px;
+}
+
+
+.consent-card p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+
+/* =========================================================
+   필수 / 선택 배지
+========================================================= */
+
+.required-badge,
+.optional-badge {
+    display: inline-block;
+
+    padding: 4px 8px;
+
+    border-radius: 15px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+
+.required-badge {
+    background: #222;
+
+    color: #fff;
+}
+
+
+.optional-badge {
+    background: #eee;
+
+    color: #666;
+}
+
+
+.integration-badge {
+    flex-shrink: 0;
+
+    padding: 7px 10px;
+
+    background: #f1f1f1;
+
+    border-radius: 20px;
+
+    color: #666;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+
+/* =========================================================
+   CRM 개인정보 사용 범위
+========================================================= */
+
+.privacy-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 14px;
+}
+
+
+.scope-card {
+    padding: 21px;
+
+    background: #fff;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 13px;
+}
+
+
+.scope-title-row {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+
+.scope-title-row h3 {
+    margin: 0;
+
+    font-size: 17px;
+}
+
+
+
+/* =========================================================
+   접기 / 보기 버튼
+========================================================= */
+
+.scope-toggle-button {
+    padding: 6px 10px;
+
+    background: #fff;
+
+    border: 1px solid #ddd;
+
+    border-radius: 20px;
+
+    color: #555;
+
+    font-size: 11px;
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+
+.scope-toggle-button:hover {
+    background: #f5f5f5;
+}
+
+
+
+/* =========================================================
+   개인정보 상세
+========================================================= */
+
+.scope-detail {
+    margin-top: 16px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #eee;
+}
+
+
+.scope-detail.collapsed {
+    display: none;
+}
+
+
+.scope-detail ul {
+    margin: 0;
+
+    padding-left: 20px;
+}
+
+
+.scope-detail li {
+    margin-bottom: 8px;
+
+    color: #666;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+.scope-detail li:last-child {
+    margin-bottom: 0;
+}
+
+
+
+/* =========================================================
+   안내 문구
+========================================================= */
+
+.scope-warning {
+    margin: 15px 0 0;
+
+    padding: 12px;
+
+    background: #fafafa;
+
+    border: 1px solid #eee;
+
+    border-radius: 8px;
+
+    color: #777;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+
+/* =========================================================
+   최종 연결 구조
+========================================================= */
+
+.connection-section {
+    padding: 25px;
+
+    margin-top: 30px;
+
+    background: #fff;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 14px;
+
+    text-align: center;
+}
+
+
+.connection-section h2 {
+    margin: 0 0 22px;
+
+    font-size: 20px;
+}
+
+
+.connection-flow {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+
+.flow-item {
+    padding: 12px 15px;
+
+    background: #222;
+
+    border-radius: 8px;
+
+    color: #fff;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.flow-arrow {
+    color: #777;
+
+    font-size: 18px;
+}
+
+
+
+/* =========================================================
+   통합 예정 기능 버튼
+========================================================= */
+
+.integration-info-button {
+    margin-top: 22px;
+
+    padding: 11px 18px;
+
+    background: #fff;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    color: #444;
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+
+.integration-info-button:hover {
+    background: #f5f5f5;
+}
+
+
+
+/* =========================================================
+   개발 안내
+========================================================= */
+
+.test-note {
+    margin-top: 30px;
+
+    padding: 18px 20px;
+
+    border: 1px dashed #bbb;
+
+    border-radius: 10px;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+.test-note strong {
+    color: #333;
+}
+
+
+.test-note p {
+    margin: 5px 0 0;
+}
+
+
+
+/* =========================================================
+   Toast
+========================================================= */
+
+.test-toast {
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 35px;
+
+    z-index: 1000;
+
+    min-width: 280px;
+
+    max-width: calc(100% - 40px);
+
+    padding: 13px 18px;
+
+    background: #222;
+
+    border-radius: 9px;
+
+    color: #fff;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform: translate(-50%, 10px);
+
+    transition:
+            opacity 0.2s ease,
+            transform 0.2s ease,
+            visibility 0.2s ease;
+}
+
+
+.test-toast.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translate(-50%, 0);
+}
+
+
+
+/* =========================================================
+   모바일
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .page-container {
+        width: calc(100% - 24px);
+
+        padding-top: 30px;
+    }
+
+
+    .page-header h1 {
+        font-size: 28px;
+    }
+
+
+    .customer-card {
+        padding: 20px;
+    }
+
+
+    .mypage-menu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+
+    .privacy-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .consent-card {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .connection-flow {
+        flex-direction: column;
+    }
+
+
+    .flow-arrow {
+        line-height: 1;
+    }
+
+}

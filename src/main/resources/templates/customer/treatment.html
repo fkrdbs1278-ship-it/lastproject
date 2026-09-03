@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>고객 시술 이력</title>
+
+
+    <!-- 3part 고객 CRM 전용 사이드바 -->
+    <link rel="stylesheet"
+          th:href="@{/css/customer/customer-sidebar.css}">
+
+
+    <!-- 시술이력 전용 CSS -->
+    <link rel="stylesheet"
+          th:href="@{/css/customer/treatment.css}">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     3part 고객 CRM 전용 사이드바
+========================================================= -->
+
+<aside th:replace="~{customer/customer-sidebar :: sidebar('customer')}">
+</aside>
+
+
+
+<!-- =========================================================
+     시술이력 전체
+========================================================= -->
+
+<main class="treatment-page">
+
+
+    <!-- =====================================================
+         페이지 헤더
+    ====================================================== -->
+
+    <header class="treatment-header">
+
+
+        <div>
+
+            <p class="page-label">
+                TREATMENT HISTORY
+            </p>
+
+
+            <h1>
+                고객 시술 이력
+            </h1>
+
+
+            <p class="page-description">
+                고객별 시술 내역과 다음 추천 방문일을 확인합니다.
+            </p>
+
+        </div>
+
+
+
+        <div class="header-buttons">
+
+
+            <a class="header-button"
+               th:href="@{/admin/customers/{customerId}(customerId=${customerId})}">
+                ← 고객 상세
+            </a>
+
+
+            <a class="header-button"
+               th:href="@{/admin/customers/{customerId}/memos(customerId=${customerId})}">
+                상담 메모
+            </a>
+
+
+            <a class="header-button primary"
+               th:href="@{/admin/customers}">
+                고객 목록
+            </a>
+
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- =====================================================
+         고객 요약
+    ====================================================== -->
+
+    <section class="customer-summary-card">
+
+
+        <div class="customer-profile">
+
+
+            <div class="customer-avatar"
+                 th:text="${customer.customerName != null
+                 and !#strings.isEmpty(customer.customerName)
+                 ? #strings.substring(customer.customerName, 0, 1)
+                 : '?'}">
+
+                홍
+
+            </div>
+
+
+
+            <div class="customer-profile-info">
+
+
+                <div class="customer-name-line">
+
+
+                    <h2 th:text="${customer.customerName}">
+                        홍길동
+                    </h2>
+
+
+                    <span class="customer-type"
+                          th:classappend="${customer.customerType == 'MEMBER'} ? ' member' : ' guest'"
+                          th:text="${customer.customerType == 'MEMBER'} ? '회원' : '비회원'">
+
+                        비회원
+
+                    </span>
+
+
+                </div>
+
+
+
+                <p>
+
+                    고객번호
+
+                    <strong th:text="${customerId}">
+                        1
+                    </strong>
+
+
+                    <span class="divider">
+                        ·
+                    </span>
+
+
+                    <span th:text="${customer.phone}">
+                        010-1234-5678
+                    </span>
+
+                </p>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- 시술이력 건수 -->
+
+        <div class="treatment-count-box">
+
+
+            <span>
+                등록된 시술 이력
+            </span>
+
+
+            <strong th:text="${#lists.size(treatments)}">
+                0
+            </strong>
+
+
+            <small>
+                건
+            </small>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         시술이력 목록
+    ====================================================== -->
+
+    <section class="treatment-panel">
+
+
+        <div class="panel-header">
+
+
+            <div>
+
+                <p class="panel-label">
+                    HISTORY
+                </p>
+
+
+                <h2>
+                    시술 이력
+                </h2>
+
+            </div>
+
+
+            <p>
+                최근 시술부터 순서대로 확인합니다.
+            </p>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             시술이력 존재
+        ================================================== -->
+
+        <div class="table-wrapper"
+             th:if="${treatments != null and !#lists.isEmpty(treatments)}">
+
+
+            <table class="treatment-table">
+
+
+                <thead>
+
+
+                <tr>
+
+                    <th>
+                        시술번호
+                    </th>
+
+                    <th>
+                        예약번호
+                    </th>
+
+                    <th>
+                        메뉴번호
+                    </th>
+
+                    <th>
+                        시술명
+                    </th>
+
+                    <th>
+                        시술일
+                    </th>
+
+                    <th>
+                        시술금액
+                    </th>
+
+                    <th>
+                        시술메모
+                    </th>
+
+                    <th>
+                        다음 추천일
+                    </th>
+
+                </tr>
+
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                <tr th:each="treatment : ${treatments}">
+
+
+                    <!-- 시술번호 -->
+
+                    <td>
+
+                        <span class="number-value"
+                              th:text="${treatment.treatmentId}">
+                            1
+                        </span>
+
+                    </td>
+
+
+
+                    <!-- 예약번호 -->
+
+                    <td>
+
+                        <span th:if="${treatment.reservationNo != null}"
+                              th:text="${treatment.reservationNo}">
+                            1
+                        </span>
+
+
+                        <span class="empty-value"
+                              th:if="${treatment.reservationNo == null}">
+                            -
+                        </span>
+
+                    </td>
+
+
+
+                    <!-- 서비스 메뉴번호 -->
+
+                    <td>
+
+                        <span th:if="${treatment.serviceMenuNo != null}"
+                              th:text="${treatment.serviceMenuNo}">
+                            1
+                        </span>
+
+
+                        <span class="empty-value"
+                              th:if="${treatment.serviceMenuNo == null}">
+                            -
+                        </span>
+
+                    </td>
+
+
+
+                    <!-- 시술명 -->
+
+                    <td>
+
+                        <strong class="treatment-name"
+                                th:text="${treatment.treatmentName}">
+                            여성 커트
+                        </strong>
+
+                    </td>
+
+
+
+                    <!-- 시술일 -->
+
+                    <td>
+
+                        <span class="treatment-date"
+                              th:text="${treatment.treatmentDate}">
+                            2026-08-31
+                        </span>
+
+                    </td>
+
+
+
+                    <!-- 시술금액 -->
+
+                    <td>
+
+                        <strong class="treatment-price"
+                                th:text="${treatment.treatmentPrice != null
+                                ? #numbers.formatInteger(treatment.treatmentPrice, 0, 'COMMA')
+                                : 0}">
+                            35,000
+                        </strong>
+
+                        원
+
+                    </td>
+
+
+
+                    <!-- 시술메모 -->
+
+                    <td>
+
+                        <div class="treatment-memo"
+                             th:if="${treatment.treatmentMemo != null
+                             and !#strings.isEmpty(treatment.treatmentMemo)}"
+                             th:text="${treatment.treatmentMemo}">
+
+                            고객 시술 메모
+
+                        </div>
+
+
+                        <span class="empty-value"
+                              th:if="${treatment.treatmentMemo == null
+                              or #strings.isEmpty(treatment.treatmentMemo)}">
+                            -
+                        </span>
+
+                    </td>
+
+
+
+                    <!-- 다음 추천일 -->
+
+                    <td>
+
+                        <span class="recommended-date"
+                              th:if="${treatment.nextRecommendedDate != null}"
+                              th:text="${treatment.nextRecommendedDate}">
+                            2026-09-30
+                        </span>
+
+
+                        <span class="empty-value"
+                              th:if="${treatment.nextRecommendedDate == null}">
+                            -
+                        </span>
+
+                    </td>
+
+
+                </tr>
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             시술이력 없음
+        ================================================== -->
+
+        <div class="empty-treatment"
+             th:if="${treatments == null or #lists.isEmpty(treatments)}">
+
+
+            <div class="empty-icon">
+                T
+            </div>
+
+
+            <strong>
+                등록된 시술 이력이 없습니다.
+            </strong>
+
+
+            <p>
+                시술 완료 데이터가 등록되면 이곳에서 확인할 수 있습니다.
+            </p>
+
+
+            <a th:href="@{/admin/customers/{customerId}(customerId=${customerId})}">
+                고객 상세로 돌아가기
+            </a>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         기능 안내
+    ====================================================== -->
+
+    <section class="treatment-guide">
+
+
+        <article>
+
+
+            <span class="guide-number">
+                01
+            </span>
+
+
+            <div>
+
+                <strong>
+                    시술 내역
+                </strong>
+
+                <p>
+                    고객에게 진행된 시술명과 시술일을 확인합니다.
+                </p>
+
+            </div>
+
+
+        </article>
+
+
+
+        <article>
+
+
+            <span class="guide-number">
+                02
+            </span>
+
+
+            <div>
+
+                <strong>
+                    시술 메모
+                </strong>
+
+                <p>
+                    시술 당시 기록된 고객 특이사항을 확인합니다.
+                </p>
+
+            </div>
+
+
+        </article>
+
+
+
+        <article>
+
+
+            <span class="guide-number">
+                03
+            </span>
+
+
+            <div>
+
+                <strong>
+                    재방문 관리
+                </strong>
+
+                <p>
+                    다음 추천일을 이용해 재방문 시점을 확인합니다.
+                </p>
+
+            </div>
+
+
+        </article>
+
+
+    </section>
+
+
+</main>
+
+
+</body>
+
+</html>

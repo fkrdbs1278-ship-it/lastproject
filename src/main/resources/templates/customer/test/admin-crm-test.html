@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+
+<html
+        lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
+>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>관리자 CRM 기능 테스트</title>
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/customer/admin-crm-test.css}"
+    >
+
+
+    <script
+            th:src="@{/js/customer/admin-crm-test.js}"
+            defer
+    ></script>
+
+</head>
+
+
+<body>
+
+
+<div class="test-banner">
+
+    관리자 CRM 임시 기능 테스트
+    — QA 고객으로만 실행하세요
+
+</div>
+
+
+
+<main class="page-container">
+
+
+    <!-- ================================================= -->
+    <!-- 헤더 -->
+    <!-- ================================================= -->
+
+    <header class="page-header">
+
+
+        <div>
+
+            <p class="eyebrow">
+                ADMIN CRM TEST
+            </p>
+
+            <h1>
+                고객 CRM 기능 테스트
+            </h1>
+
+            <p>
+                3part에서 단독 구현한 조회·방문·결제 누적 로직을
+                브라우저에서 확인합니다.
+            </p>
+
+        </div>
+
+
+        <div class="header-links">
+
+            <a th:href="@{/admin/customers}">
+                고객 목록
+            </a>
+
+            <a
+                    th:href="@{/admin/customers/{id}(id=${customerId})}"
+            >
+                실제 고객 상세
+            </a>
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- ================================================= -->
+    <!-- 성공 / 오류 메시지 -->
+    <!-- ================================================= -->
+
+    <div
+            th:if="${message}"
+            class="alert success"
+            th:text="${message}"
+    >
+    </div>
+
+
+    <div
+            th:if="${errorMessage}"
+            class="alert error"
+            th:text="${errorMessage}"
+    >
+    </div>
+
+
+
+    <!-- ================================================= -->
+    <!-- 현재 고객 -->
+    <!-- ================================================= -->
+
+    <section class="customer-summary">
+
+
+        <div
+                class="avatar"
+                th:text="${#strings.substring(customer.customerName, 0, 1)}"
+        >
+            고
+        </div>
+
+
+
+        <div class="customer-summary-main">
+
+            <span class="summary-label">
+                현재 테스트 고객
+            </span>
+
+            <h2
+                    th:text="${customer.customerName}"
+            >
+                테스트 고객
+            </h2>
+
+            <p>
+
+                ID
+
+                <strong
+                        th:text="${customer.customerId}"
+                >
+                    7
+                </strong>
+
+                ·
+
+                <span
+                        th:text="${customer.customerType}"
+                >
+                    GUEST
+                </span>
+
+                ·
+
+                <span
+                        th:text="${customer.phone}"
+                >
+                    01012345678
+                </span>
+
+            </p>
+
+        </div>
+
+
+
+        <div class="grade-box">
+
+            <span>
+                현재 등급
+            </span>
+
+            <strong
+                    th:text="${customer.customerGrade.gradeCode}"
+            >
+                VIP
+            </strong>
+
+            <small
+                    th:text="${customer.gradeManualYn == 'Y'
+                    ? '수동 등급'
+                    : '자동 등급'}"
+            >
+                자동 등급
+            </small>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- CRM 현재값 -->
+    <!-- ================================================= -->
+
+    <section class="metrics-grid">
+
+
+        <article class="metric-card">
+
+            <span>
+                방문 횟수
+            </span>
+
+            <strong
+                    th:text="${customer.visitCount}"
+            >
+                0
+            </strong>
+
+            <small>
+                회
+            </small>
+
+        </article>
+
+
+
+        <article class="metric-card">
+
+            <span>
+                최근 방문일
+            </span>
+
+            <strong
+                    class="date-value"
+                    th:text="${customer.lastVisitDate != null
+                    ? customer.lastVisitDate
+                    : '-'}"
+            >
+                -
+            </strong>
+
+        </article>
+
+
+
+        <article class="metric-card">
+
+            <span>
+                누적 결제액
+            </span>
+
+            <strong
+                    class="money-value"
+                    th:attr="data-price=${customer.totalPayment}"
+                    th:text="${customer.totalPayment}"
+            >
+                0
+            </strong>
+
+            <small>
+                원
+            </small>
+
+        </article>
+
+
+
+        <article class="metric-card">
+
+            <span>
+                재방문 권장일
+            </span>
+
+            <strong
+                    class="date-value"
+                    th:text="${customer.revisitRecommendedDate != null
+                    ? customer.revisitRecommendedDate
+                    : '-'}"
+            >
+                -
+            </strong>
+
+        </article>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- TEST 1 전화번호 조회 -->
+    <!-- ================================================= -->
+
+    <section class="test-section">
+
+
+        <div class="section-heading">
+
+
+            <div>
+
+                <span class="step-badge">
+                    TEST 1
+                </span>
+
+                <h2>
+                    전화번호 기준 고객 조회
+                </h2>
+
+            </div>
+
+
+            <span class="status complete">
+                구현 완료
+            </span>
+
+
+        </div>
+
+
+
+        <form
+                class="inline-form"
+                method="get"
+                th:action="@{/test/admin/customers/phone-search}"
+        >
+
+
+            <input
+                    type="hidden"
+                    name="currentCustomerId"
+                    th:value="${customerId}"
+            >
+
+
+            <label>
+
+                전화번호
+
+                <input
+                        type="text"
+                        name="phone"
+                        th:value="${customer.phone}"
+                        placeholder="010-1234-5678"
+                        required
+                >
+
+            </label>
+
+
+            <button type="submit">
+                전화번호로 조회
+            </button>
+
+
+        </form>
+
+
+
+        <p class="help-text">
+
+            하이픈을 입력해도 숫자만 정규화하여
+            CUSTOMER_PROFILE에서 조회합니다.
+
+        </p>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- TEST 2 방문 완료 -->
+    <!-- ================================================= -->
+
+    <section class="test-section">
+
+
+        <div class="section-heading">
+
+
+            <div>
+
+                <span class="step-badge">
+                    TEST 2
+                </span>
+
+                <h2>
+                    방문 완료 처리
+                </h2>
+
+            </div>
+
+
+            <span class="status complete">
+                실제 DB 반영
+            </span>
+
+
+        </div>
+
+
+
+        <form
+                class="action-form db-change-form"
+                method="post"
+                th:action="@{/test/admin/customers/{id}/visit(id=${customerId})}"
+                data-confirm="방문 완료를 실행하면 방문 횟수와 최근 방문일이 실제 DB에 반영됩니다. 계속할까요?"
+        >
+
+
+            <label>
+
+                방문일
+
+                <input
+                        type="date"
+                        name="visitDate"
+                        th:value="${defaultVisitDate}"
+                        required
+                >
+
+            </label>
+
+
+
+            <label>
+
+                재방문 권장일
+
+                <input
+                        type="date"
+                        name="revisitRecommendedDate"
+                        th:value="${defaultRevisitDate}"
+                >
+
+            </label>
+
+
+
+            <button
+                    type="submit"
+                    class="primary-button"
+            >
+                방문 완료 처리
+            </button>
+
+
+        </form>
+
+
+
+        <div class="effect-box">
+
+            <strong>
+                확인 항목
+            </strong>
+
+            <span>
+                VISIT_COUNT + 1
+            </span>
+
+            <span>
+                LAST_VISIT_DATE 변경
+            </span>
+
+            <span>
+                REVISIT_RECOMMENDED_DATE 변경
+            </span>
+
+            <span>
+                자동 등급 재계산
+            </span>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- TEST 3 결제 누적 -->
+    <!-- ================================================= -->
+
+    <section class="test-section">
+
+
+        <div class="section-heading">
+
+
+            <div>
+
+                <span class="step-badge">
+                    TEST 3
+                </span>
+
+                <h2>
+                    결제 금액 누적 처리
+                </h2>
+
+            </div>
+
+
+            <span class="status complete">
+                실제 DB 반영
+            </span>
+
+
+        </div>
+
+
+
+        <form
+                class="action-form db-change-form"
+                method="post"
+                th:action="@{/test/admin/customers/{id}/payment(id=${customerId})}"
+                data-confirm="결제 금액을 실행하면 누적 결제액이 실제 DB에 증가합니다. 계속할까요?"
+        >
+
+
+            <label>
+
+                결제 금액
+
+                <input
+                        type="number"
+                        name="paymentAmount"
+                        min="1"
+                        step="1"
+                        value="35000"
+                        required
+                >
+
+            </label>
+
+
+
+            <button
+                    type="submit"
+                    class="primary-button"
+            >
+                결제 누적 처리
+            </button>
+
+
+        </form>
+
+
+
+        <div class="effect-box">
+
+            <strong>
+                확인 항목
+            </strong>
+
+            <span>
+                TOTAL_PAYMENT 증가
+            </span>
+
+            <span>
+                자동 등급 재계산
+            </span>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- TEST 4 이력 연결상태 -->
+    <!-- ================================================= -->
+
+    <section class="test-section">
+
+
+        <div class="section-heading">
+
+
+            <div>
+
+                <span class="step-badge">
+                    TEST 4
+                </span>
+
+                <h2>
+                    고객별 이력 연결 상태
+                </h2>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="history-status-grid">
+
+
+            <!-- 예약 -->
+            <article class="history-status-card waiting-card">
+
+
+                <div class="history-card-header">
+
+                    <h3>
+                        예약 이력
+                    </h3>
+
+                    <span class="status waiting">
+                        2part 통합 대기
+                    </span>
+
+                </div>
+
+
+                <p>
+                    RESERVATION 데이터와 실제 고객 연결은
+                    예약 파트 통합 후 처리합니다.
+                </p>
+
+
+            </article>
+
+
+
+            <!-- 시술 -->
+            <article class="history-status-card">
+
+
+                <div class="history-card-header">
+
+                    <h3>
+                        시술 이력
+                    </h3>
+
+                    <span class="status complete">
+                        조회 가능
+                    </span>
+
+                </div>
+
+
+                <p>
+
+                    현재 고객의 시술 이력
+
+                    <strong
+                            th:text="${treatmentCount}"
+                    >
+                        0
+                    </strong>
+
+                    건
+
+                </p>
+
+
+                <a
+                        class="sub-link"
+                        th:href="@{/admin/customers/{id}/treatments(id=${customerId})}"
+                >
+                    시술 이력 화면 열기
+                </a>
+
+
+            </article>
+
+
+
+            <!-- 결제 이력 -->
+            <article class="history-status-card waiting-card">
+
+
+                <div class="history-card-header">
+
+                    <h3>
+                        결제 이력
+                    </h3>
+
+                    <span class="status waiting">
+                        4part 통합 대기
+                    </span>
+
+                </div>
+
+
+                <p>
+                    개별 PAYMENT 이력 조회는
+                    결제 파트 통합 후 연결합니다.
+                </p>
+
+
+            </article>
+
+
+        </div>
+
+
+
+        <!-- 실제 시술 이력 미리보기 -->
+
+        <div
+                class="treatment-preview"
+                th:if="${!#lists.isEmpty(treatments)}"
+        >
+
+
+            <h3>
+                실제 시술 이력 미리보기
+            </h3>
+
+
+
+            <div
+                    class="treatment-row"
+                    th:each="treatment : ${treatments}"
+            >
+
+
+                <span
+                        th:text="${treatment.treatmentDate}"
+                >
+                    2026-08-26
+                </span>
+
+
+                <strong
+                        th:text="${treatment.treatmentName}"
+                >
+                    여성 커트
+                </strong>
+
+
+                <span>
+
+                    <b
+                            class="money-value"
+                            th:attr="data-price=${treatment.treatmentPrice}"
+                            th:text="${treatment.treatmentPrice}"
+                    >
+                        35000
+                    </b>
+
+                    원
+
+                </span>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <div
+                class="empty-preview"
+                th:if="${#lists.isEmpty(treatments)}"
+        >
+
+            현재 고객의 시술 이력이 없습니다.
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- 기존 관리자 기능 바로가기 -->
+    <!-- ================================================= -->
+
+    <section class="test-section compact-section">
+
+
+        <div class="section-heading">
+
+
+            <div>
+
+                <span class="step-badge">
+                    OTHER
+                </span>
+
+                <h2>
+                    이미 테스트 가능한 관리자 기능
+                </h2>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="quick-links">
+
+
+            <a th:href="@{/admin/customers}">
+                고객 목록·검색 / 장기 미방문 / 재방문 대상
+            </a>
+
+
+            <a th:href="@{/admin/customers/new}">
+                전화예약 고객 직접 등록
+            </a>
+
+
+            <a
+                    th:href="@{/admin/customers/{id}(id=${customerId})}"
+            >
+                고객 상세 / 상담메모 / 특이사항
+            </a>
+
+
+            <a
+                    th:href="@{/admin/customers/{id}/treatments(id=${customerId})}"
+            >
+                고객별 시술 이력
+            </a>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- 경고 -->
+    <!-- ================================================= -->
+
+    <aside class="warning-box">
+
+        <strong>
+            주의
+        </strong>
+
+        <p>
+
+            TEST 2와 TEST 3은 화면만 흉내 내는 기능이 아니라
+            CUSTOMER_PROFILE의 값을 실제로 변경합니다.
+
+            반복 실행하면 방문 횟수와 누적 결제액이 계속 증가하므로
+            QA용 고객에서만 테스트하세요.
+
+        </p>
+
+    </aside>
+
+
+</main>
+
+
+
+<div
+        id="testToast"
+        class="test-toast"
+        role="status"
+        aria-live="polite"
+>
+</div>
+
+
+</body>
+
+</html>
