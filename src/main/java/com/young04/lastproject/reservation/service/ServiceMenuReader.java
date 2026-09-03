@@ -38,12 +38,20 @@ public class ServiceMenuReader {
         }
     }
 
+    /*
+     * 예약 화면용 목록.
+     * Phase 통합테스트 전용 메뉴는 DB에 남겨두되 UI에서는 숨긴다.
+     *
+     * 이렇게 하면 PHASE2_TEST_CUT_30을 삭제/비활성화하지 않아도
+     * 기존 Phase5 테스트와 실제 예약 화면을 동시에 유지할 수 있다.
+     */
     public List<ServiceMenuOptionResponse> getActiveServiceMenus() {
         @SuppressWarnings("unchecked")
         List<Object[]> rows = entityManager.createNativeQuery("""
                 SELECT NO, CATEGORY, NAME, PRICE, DURATION_MIN
                 FROM SERVICE_MENU
                 WHERE ACTIVE_YN = 'Y'
+                  AND UPPER(NAME) NOT LIKE 'PHASE%TEST%'
                 ORDER BY DISPLAY_ORDER ASC, NO ASC
                 """)
                 .getResultList();

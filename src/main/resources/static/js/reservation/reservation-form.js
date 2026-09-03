@@ -306,8 +306,27 @@
         const data = new FormData();
         data.append("file", file);
 
+        let uploadUrl;
+
+        if (isLoggedIn) {
+            uploadUrl =
+                `/api/reservations/me/${reservationNo}/images`;
+        } else {
+            /*
+             * 비회원 참고 이미지도 예약번호만으로 업로드할 수 없도록
+             * 예약에 저장된 전화번호를 함께 검증한다.
+             */
+            data.append(
+                "guestPhone",
+                guestPhoneInput.value.trim()
+            );
+
+            uploadUrl =
+                `/api/reservations/guest/${reservationNo}/images`;
+        }
+
         const response = await fetch(
-            `/api/reservations/${reservationNo}/images`,
+            uploadUrl,
             {
                 method: "POST",
                 headers: csrfHeaders(),

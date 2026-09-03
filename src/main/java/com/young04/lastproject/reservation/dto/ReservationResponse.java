@@ -33,7 +33,18 @@ public class ReservationResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    /*
+     * 화면에서 상태별 버튼 노출을 결정할 수 있도록 서버 정책도 함께 전달한다.
+     * REQUESTED / CONFIRMED만 변경·취소 가능.
+     */
+    private boolean modifiable;
+    private boolean cancelable;
+
     public static ReservationResponse from(Reservation r) {
+        boolean active =
+                r.getStatus() == ReservationStatus.REQUESTED
+                        || r.getStatus() == ReservationStatus.CONFIRMED;
+
         return ReservationResponse.builder()
                 .reservationNo(r.getReservationNo())
                 .memberNo(r.getMemberNo())
@@ -56,6 +67,8 @@ public class ReservationResponse {
                 .canceledAt(r.getCanceledAt())
                 .createdAt(r.getCreatedAt())
                 .updatedAt(r.getUpdatedAt())
+                .modifiable(active)
+                .cancelable(active)
                 .build();
     }
 }
