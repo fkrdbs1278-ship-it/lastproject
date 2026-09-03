@@ -62,6 +62,20 @@ public class SalonEventService {
                 .toList();
     }
 
+    // 이벤트 검색 자동완성에서 사용할 이벤트명을 중복 없이 조회
+    public List<String> getEventTitleSuggestions() {
+        return salonEventRepository
+                .findAllByOrderByEventTitleAsc()
+                .stream()
+                .map(SalonEvent::getEventTitle)
+                .filter(eventTitle ->
+                        eventTitle != null
+                                && !eventTitle.isBlank()
+                )
+                .distinct()
+                .toList();
+    }
+
     // 이벤트 번호로 상세 정보 조회
     public SalonEventResponse getEvent(Long eventNo) {
         return SalonEventResponse.from(

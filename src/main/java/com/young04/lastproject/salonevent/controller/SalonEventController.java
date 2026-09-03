@@ -10,6 +10,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 // 관리자 이벤트 화면 요청과 응답을 처리하는 Controller
 @Controller
 @RequiredArgsConstructor
@@ -35,6 +37,13 @@ public class SalonEventController {
         model.addAttribute("keyword", keyword);
 
         return "salonevent/list";
+    }
+
+    // 이벤트 검색 자동완성에서 사용할 이벤트명 목록 전달
+    @GetMapping("/searchsuggestions")
+    @ResponseBody
+    public List<String> eventTitleSuggestions() {
+        return salonEventService.getEventTitleSuggestions();
     }
 
     // 신규 이벤트 등록 화면

@@ -13,6 +13,9 @@ public interface MaterialRepository extends JpaRepository <Material, Long>{
     // 전체 자재를 최근 등록순으로 조회
     List<Material> findAllByOrderByMaterialNoDesc();
 
+    // 자동완성에서 사용할 전체 자재를 자재명순으로 조회
+    List<Material> findAllByOrderByMaterialNameAsc();
+
     // 사용 여부에 따라 자재 조회
     List<Material> findByUseYnOrderByMaterialNoDesc(String useYn);
 
@@ -34,6 +37,11 @@ public interface MaterialRepository extends JpaRepository <Material, Long>{
     Page<Material> findByMaterialNameContainingIgnoreCase(
             String keyword,
             Pageable pageable
+    );
+
+    // 입력 중인 글자가 포함된 자재명을 상태와 관계없이 모두 조회
+    List<Material> findByMaterialNameContainingIgnoreCaseOrderByMaterialNameAsc(
+            String keyword
     );
 
 

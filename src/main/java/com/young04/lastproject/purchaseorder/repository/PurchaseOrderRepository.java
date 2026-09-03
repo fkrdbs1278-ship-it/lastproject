@@ -11,12 +11,23 @@ import java.util.List;
 public interface PurchaseOrderRepository
         extends JpaRepository<PurchaseOrder, Long> {
 
+    // 자동완성에서 사용할 전체 업체명을 이름순으로 조회
+    List<PurchaseOrder> findAllByOrderBySupplierNameAsc();
+
     // 전체 발주서를 발주일 최신순으로 조회
+    List<PurchaseOrder> findAllByOrderByOrderDateDesc();
+
+    // 전체 발주서를 발주일 최신순으로 페이징 조회
     Page<PurchaseOrder> findAllByOrderByOrderDateDesc(
             Pageable pageable
     );
 
     // 선택한 발주 상태의 발주서를 발주일 최신순으로 조회
+    List<PurchaseOrder> findByOrderStatusOrderByOrderDateDesc(
+            String orderStatus
+    );
+
+    // 선택한 발주 상태의 발주서를 발주일 최신순으로 페이징 조회
     Page<PurchaseOrder> findByOrderStatusOrderByOrderDateDesc(
             String orderStatus,
             Pageable pageable
@@ -31,6 +42,11 @@ public interface PurchaseOrderRepository
     );
 
     // 공급업체 이름이 포함된 발주서를 발주일 최신순으로 조회
+    List<PurchaseOrder> findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
+            String supplierName
+    );
+
+    // 공급업체 이름이 포함된 발주서를 발주일 최신순으로 페이징 조회
     Page<PurchaseOrder> findBySupplierNameContainingIgnoreCaseOrderByOrderDateDesc(
             String supplierName,
             Pageable pageable

@@ -1,8 +1,8 @@
 package com.young04.lastproject.purchaseorder.controller;
 
 import com.young04.lastproject.material.service.MaterialService;
-import com.young04.lastproject.purchaseorder.dto.PurchaseOrderRequest;
 import com.young04.lastproject.purchaseorder.dto.PurchaseOrderReceiveRequest;
+import com.young04.lastproject.purchaseorder.dto.PurchaseOrderRequest;
 import com.young04.lastproject.purchaseorder.dto.PurchaseOrderResponse;
 import com.young04.lastproject.purchaseorder.service.PurchaseOrderService;
 import com.young04.lastproject.purchaseorderitem.dto.PurchaseOrderItemCreateRequest;
@@ -10,6 +10,8 @@ import com.young04.lastproject.purchaseorderitem.dto.PurchaseOrderItemResponse;
 import com.young04.lastproject.purchaseorderitem.service.PurchaseOrderItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,9 +21,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class PurchaseOrderController {
     // 발주할 자재 목록 조회를 담당하는 Service
     private final MaterialService materialService;
 
-    // 전체·상태별·업체명별 발주서 목록을 페이징 조회
+    // 전체·상태별·공급업체별 발주서 목록 조회
     @GetMapping
     public String list(
             @RequestParam(required = false) String orderStatus,
@@ -48,37 +49,35 @@ public class PurchaseOrderController {
             @RequestParam(defaultValue = "0") int page,
             Model model
     ) {
-        // 잘못된 음수 페이지가 들어오면 첫 페이지로 변경
-        int pageNumber = Math.max(page, 0);
-
-        // 한 페이지에 발주서 10개 표시
-        PageRequest pageRequest = PageRequest.of(pageNumber, 10);
-
-        // 검색 조건과 페이지 정보를 이용하여 발주서 조회
+        // 관리자 발주 목록은 한 페이지에 10개씩 조회
         Page<PurchaseOrderResponse> orderPage =
                 purchaseOrderService.getOrderPage(
                         orderStatus,
                         supplierName,
-                        pageRequest
+                        PageRequest.of(Math.max(page, 0), 10)
                 );
 
-        // 현재 페이지에 표시할 발주서 목록 전달
-        model.addAttribute(
-                "orders",
-                orderPage.getContent()
-        );
+        // 조회한 발주서 목록을 화면으로 전달
+        model.addAttribute("orders", orderPage.getContent());
 
-        // 페이지 번호와 이전·다음 버튼 출력에 사용할 정보 전달
+        // 페이지 번호와 이전·다음 버튼 처리에 사용할 페이지 정보
         model.addAttribute("orderPage", orderPage);
 
-        // 현재 선택한 발주 상태 유지
+        // 현재 선택한 발주 상태를 화면으로 전달
         model.addAttribute("orderStatus", orderStatus);
 
-        // 현재 검색한 업체명 유지
+        // 현재 검색한 공급업체명을 화면으로 전달
         model.addAttribute("supplierName", supplierName);
 
         // 발주서 목록 HTML로 이동
         return "purchaseorder/list";
+    }
+
+    // 발주 검색 자동완성에서 사용할 업체명 목록 전달
+    @GetMapping("/searchsuggestions")
+    @ResponseBody
+    public List<String> supplierNameSuggestions() {
+        return purchaseOrderService.getSupplierNameSuggestions();
     }
 
     // 발주서 등록 화면 이동
@@ -129,33 +128,32 @@ public class PurchaseOrderController {
             @PathVariable Long purchaseOrderNo,
             Model model
     ) {
-        // 발주서 번호로 기본 정보를 조회
+        // 발주서 번호로 상세 정보를 조회
         PurchaseOrderResponse order =
                 purchaseOrderService.getOrder(purchaseOrderNo);
 
-        // 해당 발주서에 포함된 품목 조회
-        List<PurchaseOrderItemResponse> items =
-                purchaseOrderItemService.getItems(purchaseOrderNo);
-
-        // 조회한 발주서 기본 정보를 화면으로 전달
+        // 조회한 발주서 정보를 화면으로 전달
         model.addAttribute("order", order);
 
-        // 발주 품목 목록을 화면으로 전달
-        model.addAttribute("items", items);
+        // 발주서에 등록된 품목을 화면으로 전달
+        model.addAttribute(
+                "items",
+                purchaseOrderItemService.getItems(purchaseOrderNo)
+        );
 
-        // 사용 중인 자재 목록을 품목 선택란으로 전달
+        // 사용 중인 자재를 품목 선택란으로 전달
         model.addAttribute(
                 "materials",
                 materialService.getMaterialsByUseYn("Y")
         );
 
-        // 품목 등록에 사용할 빈 입력 DTO를 화면으로 전달
+        // 품목 등록에 사용할 빈 입력 DTO 전달
         model.addAttribute(
                 "purchaseOrderItemRequest",
                 new PurchaseOrderItemCreateRequest()
         );
 
-        // 품목별 실제 입고 수량을 받을 빈 DTO를 화면으로 전달
+        // 입고 처리에 사용할 빈 입력 DTO 전달
         model.addAttribute(
                 "purchaseOrderReceiveRequest",
                 new PurchaseOrderReceiveRequest()
@@ -171,16 +169,14 @@ public class PurchaseOrderController {
             @PathVariable Long purchaseOrderNo,
             Model model
     ) {
-        // 발주서 기본 정보 조회
-        PurchaseOrderResponse order =
-                purchaseOrderService.getOrder(purchaseOrderNo);
-
-        // 발주서에 등록된 품목 조회
-        List<PurchaseOrderItemResponse> items =
-                purchaseOrderItemService.getItems(purchaseOrderNo);
-
-        model.addAttribute("order", order);
-        model.addAttribute("items", items);
+        model.addAttribute(
+                "order",
+                purchaseOrderService.getOrder(purchaseOrderNo)
+        );
+        model.addAttribute(
+                "items",
+                purchaseOrderItemService.getItems(purchaseOrderNo)
+        );
 
         return "purchaseorder/print";
     }
@@ -196,21 +192,23 @@ public class PurchaseOrderController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
-        // 입력값 검증 실패 시 필요한 상세 정보를 다시 전달
+        // 입력값 검증 실패 시 상세 화면에 필요한 정보를 다시 전달
         if (bindingResult.hasErrors()) {
             model.addAttribute(
                     "order",
                     purchaseOrderService.getOrder(purchaseOrderNo)
             );
-
             model.addAttribute(
                     "items",
                     purchaseOrderItemService.getItems(purchaseOrderNo)
             );
-
             model.addAttribute(
                     "materials",
                     materialService.getMaterialsByUseYn("Y")
+            );
+            model.addAttribute(
+                    "purchaseOrderReceiveRequest",
+                    new PurchaseOrderReceiveRequest()
             );
 
             return "purchaseorder/detail";
@@ -222,13 +220,11 @@ public class PurchaseOrderController {
                 request
         );
 
-        // 등록 완료 메시지를 한 번만 전달
         redirectAttributes.addFlashAttribute(
                 "message",
                 "발주 품목이 추가되었습니다."
         );
 
-        // 해당 발주서 상세 화면으로 다시 이동
         return "redirect:/admin/purchaseorder/" + purchaseOrderNo;
     }
 
@@ -240,16 +236,13 @@ public class PurchaseOrderController {
             PurchaseOrderReceiveRequest request,
             RedirectAttributes redirectAttributes
     ) {
-        // 발주 품목의 입고 수량과 자재 재고를 반영
         purchaseOrderService.receiveOrder(purchaseOrderNo, request);
 
-        // 입고 완료 메시지를 한 번만 전달
         redirectAttributes.addFlashAttribute(
                 "message",
                 "입고가 완료되어 자재 재고에 반영되었습니다."
         );
 
-        // 입고 처리한 발주서 상세 화면으로 다시 이동
         return "redirect:/admin/purchaseorder/" + purchaseOrderNo;
     }
 }
