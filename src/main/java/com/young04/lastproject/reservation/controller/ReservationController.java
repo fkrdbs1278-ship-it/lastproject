@@ -23,6 +23,7 @@ public class ReservationController {
     private final AvailableTimeService availableTimeService;
     private final ServiceMenuReader serviceMenuReader;
     private final HairStyleReader hairStyleReader;
+    private final SalonEventReader salonEventReader;
 
     /*
      * 공개 예약 생성은 비회원 전용입니다.
@@ -147,6 +148,13 @@ public class ReservationController {
                 hairStyleReader.getActiveStylesForService(
                         serviceMenuNo
                 )
+        );
+    }
+
+    @GetMapping("/events")
+    public ResponseEntity<List<SalonEventOptionResponse>> events() {
+        return ResponseEntity.ok(
+                salonEventReader.getOngoingEvents()
         );
     }
 

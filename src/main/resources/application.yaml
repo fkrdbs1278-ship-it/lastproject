@@ -57,5 +57,7 @@ logging:
     com.example.lastproject: debug
 
 
+#file:
+#  upload-dir: ${FILE_UPLOAD_DIR:uploads}
 file:
-  upload-dir: ${FILE_UPLOAD_DIR:uploads}
+  upload-dir: D:/kim/lastproject-upload

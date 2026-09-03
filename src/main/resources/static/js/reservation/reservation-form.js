@@ -247,7 +247,7 @@
                 return showMessage("예약자 이름 형식을 확인해주세요.", true);
             }
 
-            if (!/^01[016789]-?\d{3,4}-?\d{4}$/.test(phone)) {
+            if (!/^010-?\d{4}-?\d{4}$/.test(phone)) {
                 return showMessage("휴대전화 번호 형식을 확인해주세요.", true);
             }
         }
@@ -257,8 +257,7 @@
 
         try {
             const requestBody = {
-                memberNo: isLoggedIn ? memberNo : null,
-                guestName: isLoggedIn ? null : guestNameInput.value.trim(),
+                                guestName: isLoggedIn ? null : guestNameInput.value.trim(),
                 guestPhone: isLoggedIn ? null : guestPhoneInput.value.trim(),
                 serviceMenuNo: selectedMenuNo,
                 hairStyleNo: selectedHairStyleNo,
@@ -267,7 +266,7 @@
                 reservationSource: "ONLINE"
             };
 
-            const response = await fetch("/api/reservations", {
+            const response = await fetch(isLoggedIn ? "/api/reservations/me" : "/api/reservations", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
