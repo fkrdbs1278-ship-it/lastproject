@@ -2,6 +2,7 @@ package com.young04.lastproject.reservation.controller;
 
 import com.young04.lastproject.reservation.dto.MemberReservationInfo;
 import com.young04.lastproject.reservation.service.ReservationMemberReader;
+import com.young04.lastproject.reservation.service.SalonEventReader;
 import com.young04.lastproject.reservation.service.ServiceMenuReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import java.security.Principal;
 public class ReservationPageController {
 
     private final ServiceMenuReader serviceMenuReader;
+    private final SalonEventReader salonEventReader;
     private final ReservationMemberReader reservationMemberReader;
 
     @GetMapping("/reservation")
@@ -24,6 +26,11 @@ public class ReservationPageController {
     ) {
         MemberReservationInfo member =
                 resolveMember(principal);
+
+        model.addAttribute(
+                "ongoingEvents",
+                salonEventReader.getOngoingEvents()
+        );
 
         model.addAttribute(
                 "serviceMenus",

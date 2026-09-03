@@ -26,6 +26,39 @@
     </section>
 
     <section class="reservation-grid">
+
+<section class="panel">
+    <div class="section-title-row">
+        <h2>진행 중 이벤트</h2>
+    </div>
+
+    <div th:if="${#lists.isEmpty(ongoingEvents)}" class="empty-box">
+        현재 진행 중인 이벤트가 없습니다.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(ongoingEvents)}" class="menu-list">
+        <article class="menu-card"
+                 th:each="event : ${ongoingEvents}">
+            <span class="menu-content">
+                <span class="menu-category"
+                      th:text="${event.eventType}">GENERAL</span>
+
+                <strong th:text="${event.title}">이벤트 제목</strong>
+
+                <span th:if="${event.content != null}"
+                      th:text="${event.content}">이벤트 내용</span>
+
+                <span>
+                    <span th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd')}">2026-09-01</span>
+                    ~
+                    <span th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd')}">2026-09-30</span>
+                </span>
+            </span>
+        </article>
+    </div>
+</section>
+
+
         <div class="panel">
             <div class="section-title-row">
                 <h2>1. 시술 선택</h2>
