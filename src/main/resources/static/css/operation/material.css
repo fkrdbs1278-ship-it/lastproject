@@ -24,10 +24,10 @@ body {
     margin-left: 250px;
 }
 
-/* 대시보드처럼 사이드바 바로 옆에서 콘텐츠 시작 */
+/* 목록 화면도 공통 최대 너비 안에서 가운데 정렬 */
 .material-admin-content .material-list-page {
-    max-width: none;
-    margin: 0;
+    max-width: 1540px;
+    margin: 0 auto;
 }
 
 .material-page,
@@ -37,7 +37,7 @@ body {
 
 .material-page {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1540px;
     min-height: 100vh;
     margin: 0 auto;
     padding: 40px;

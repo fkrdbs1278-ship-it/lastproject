@@ -1125,6 +1125,80 @@ a {
     font-weight: 800;
 }
 
+/* 예약·운영 현황 아래에 한 줄로 표시하는 매출 차트 */
+.sales-chart-panel {
+    overflow: hidden;
+    margin-bottom: 20px;
+    padding: 27px 30px 30px;
+}
+
+.sales-chart-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.sales-chart-title h2 {
+    margin-bottom: 8px;
+    color: #24272d;
+    font-size: 19px;
+    letter-spacing: -0.5px;
+}
+
+.sales-chart-title > p:not(.panel-label) {
+    color: #959aa3;
+    font-size: 12px;
+}
+
+.sales-chart-summary {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+    column-gap: 13px;
+    row-gap: 7px;
+    flex-shrink: 0;
+}
+
+.sales-chart-summary > span {
+    color: #8b9099;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.sales-chart-summary > strong {
+    color: #25272d;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+}
+
+.sales-management-link {
+    grid-column: 1 / -1;
+    justify-self: end;
+    color: var(--rose-dark);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.sales-management-link:hover {
+    text-decoration: underline;
+}
+
+/* 넓은 화면에서도 그래프가 좌우로 과하게 늘어나지 않도록 폭을 제한 */
+.sales-chart-frame {
+    position: relative;
+    width: 100%;
+    max-width: 1280px;
+    height: 335px;
+    margin: 24px auto 0;
+    padding: 6px 10px 0;
+}
+
+.sales-chart-frame canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 /* 화면이 좁아질 때 */
 @media (max-width: 1450px) {
     .dashboard-content {
@@ -1145,6 +1219,10 @@ a {
         min-height: auto;
     }
 
+    .sales-chart-frame {
+        max-width: 1120px;
+    }
+
 }
 
 @media (max-width: 900px) {
@@ -1156,5 +1234,17 @@ a {
 
     .stock-alert-panel {
         height: auto;
+    }
+
+    .sales-chart-header {
+        flex-direction: column;
+    }
+
+    .sales-chart-summary {
+        align-self: stretch;
+    }
+
+    .sales-management-link {
+        justify-self: start;
     }
 }

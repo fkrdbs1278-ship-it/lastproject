@@ -24,10 +24,10 @@ body {
     margin-left: 250px;
 }
 
-/* 이력 목록은 사이드바 오른쪽 영역 전체 너비 사용 */
+/* 이력 목록도 공통 최대 너비 안에서 가운데 정렬 */
 .stockhistory-admin-content .stockhistory-list-page {
-    max-width: none;
-    margin: 0;
+    max-width: 1540px;
+    margin: 0 auto;
 }
 
 .stockhistory-page,
@@ -37,7 +37,7 @@ body {
 
 .stockhistory-page {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1540px;
     min-height: 100vh;
     margin: 0 auto;
     padding: 40px;

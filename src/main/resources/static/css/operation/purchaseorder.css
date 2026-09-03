@@ -1,4 +1,4 @@
-html,
+
 body {
     min-height: 100%;
     margin: 0;
@@ -25,7 +25,7 @@ body {
 
 .purchaseorder-page {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1540px;
     min-height: 100vh;
     margin: 0 auto;
     padding: 40px;
@@ -372,7 +372,7 @@ body {
 
 .purchase-order-page {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1540px;
     min-height: 100vh;
     margin: 0 auto;
     padding: 40px;

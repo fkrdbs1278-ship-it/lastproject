@@ -787,9 +787,157 @@
 
         </section>
 
+        <!-- 매출 페이지 연결 전 더미 데이터로 표시하는 주간 매출 차트 -->
+        <section class="dashboard-panel sales-chart-panel">
+
+            <div class="sales-chart-header">
+
+                <div class="sales-chart-title">
+                    <p class="panel-label">SALES OVERVIEW</p>
+                    <h2>최근 7일 매출 현황</h2>
+                    <p>결제 완료 금액을 날짜별로 확인합니다.</p>
+                </div>
+
+                <div class="sales-chart-summary">
+                    <span>최근 7일 총매출</span>
+                    <strong id="weeklySalesTotal">3,640,000원</strong>
+
+                    <a href="/admin/payment"
+                       th:href="@{/admin/payment}"
+                       class="sales-management-link">
+                        매출 관리 <span>→</span>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Controller에서 weeklySalesLabels와 weeklySalesAmounts를 전달하면 더미 데이터가 교체된다. -->
+            <div class="sales-chart-frame">
+                <canvas id="weeklySalesChart"
+                        aria-label="최근 7일 날짜별 매출 막대그래프"
+                        role="img"></canvas>
+            </div>
+
+        </section>
+
     </main>
 
 </div>
+
+<!-- 매출 데이터 연결 전 대시보드 차트 표시용 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<!-- 실제 매출 정보가 전달되면 사용하고, 없으면 화면 확인용 더미 데이터를 사용한다. -->
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const serverSalesLabels = /*[[${weeklySalesLabels}]]*/ null;
+        const serverSalesAmounts = /*[[${weeklySalesAmounts}]]*/ null;
+
+        const salesLabels = Array.isArray(serverSalesLabels)
+        && serverSalesLabels.length > 0
+            ? serverSalesLabels
+            : ["8/28 금", "8/29 토", "8/30 일", "8/31 월", "9/1 화", "9/2 수", "9/3 목"];
+
+        const salesAmounts = Array.isArray(serverSalesAmounts)
+        && serverSalesAmounts.length === salesLabels.length
+            ? serverSalesAmounts
+            : [420000, 680000, 0, 510000, 760000, 690000, 580000];
+
+        const totalSales = salesAmounts.reduce(function (total, amount) {
+            return total + Number(amount || 0);
+        }, 0);
+
+        document.getElementById("weeklySalesTotal").textContent
+            = new Intl.NumberFormat("ko-KR").format(totalSales) + "원";
+
+        const chartCanvas = document.getElementById("weeklySalesChart");
+
+        if (!chartCanvas || typeof Chart === "undefined") {
+            return;
+        }
+
+        new Chart(chartCanvas, {
+            type: "bar",
+            data: {
+                labels: salesLabels,
+                datasets: [{
+                    label: "매출",
+                    data: salesAmounts,
+                    backgroundColor: "rgba(176, 111, 141, 0.72)",
+                    hoverBackgroundColor: "rgba(150, 90, 118, 0.9)",
+                    borderRadius: 9,
+                    borderSkipped: false,
+                    maxBarThickness: 54
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: "index",
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        displayColors: false,
+                        backgroundColor: "#2f333a",
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                return new Intl.NumberFormat("ko-KR")
+                                    .format(context.parsed.y) + "원";
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            color: "#777c85",
+                            font: {
+                                size: 11,
+                                weight: "600"
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: "#eceff3",
+                            drawTicks: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            color: "#969ba4",
+                            padding: 12,
+                            callback: function (value) {
+                                if (value === 0) {
+                                    return "0원";
+                                }
+
+                                return new Intl.NumberFormat("ko-KR", {
+                                    notation: "compact",
+                                    maximumFractionDigits: 1
+                                }).format(value) + "원";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 
 <!-- 이벤트 종료일까지 남은 날짜를 계산해 D-day와 종료 임박을 표시한다. -->
 <script>
