@@ -61,3 +61,25 @@ logging:
 #  upload-dir: ${FILE_UPLOAD_DIR:uploads}
 file:
   upload-dir: D:/kim/lastproject-upload
+
+# 예약 문자 알림
+#
+# 기본값 log:
+# - 실제 문자를 보내지 않고 로그로만 발송 내용을 확인합니다.
+#
+# 실제 NAVER Cloud SENS 사용:
+# RESERVATION_SMS_PROVIDER=naver-sens
+# NAVER_SENS_SERVICE_ID=...
+# NAVER_SENS_ACCESS_KEY=...
+# NAVER_SENS_SECRET_KEY=...
+# NAVER_SENS_SENDER=등록된발신번호
+reservation:
+  sms:
+    provider: ${RESERVATION_SMS_PROVIDER:log}
+
+    naver-sens:
+      service-id: ${NAVER_SENS_SERVICE_ID:}
+      access-key: ${NAVER_SENS_ACCESS_KEY:}
+      secret-key: ${NAVER_SENS_SECRET_KEY:}
+      sender: ${NAVER_SENS_SENDER:}
+
