@@ -716,3 +716,34 @@ select:focus {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+
+/* =========================================================
+   Phase 8.1 - 예약 불가 사유 안내
+   ========================================================= */
+
+.availability-notice {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0 14px;
+}
+
+.availability-notice-item {
+    padding: 11px 13px;
+    border: 1px solid #e5ddd4;
+    border-radius: 10px;
+    background: #faf7f3;
+    line-height: 1.5;
+}
+
+.availability-holiday {
+    font-weight: 700;
+}
+
+.availability-personal {
+    font-weight: 600;
+}
+
+.availability-closed {
+    font-weight: 700;
+}

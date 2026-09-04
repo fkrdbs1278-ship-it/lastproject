@@ -9,6 +9,7 @@
     const dateInput = document.getElementById("reservationDate");
     const timeSection = document.getElementById("timeSection");
     const timeSlots = document.getElementById("timeSlots");
+    const availabilityNotice = document.getElementById("availabilityNotice");
     const hairStyleList = document.getElementById("hairStyleList");
     const submitButton = document.getElementById("submitReservation");
     const summary = document.getElementById("reservationSummary");
@@ -191,48 +192,162 @@
             `<div class="loading-box">예약 가능 시간을 조회 중입니다.</div>`;
         timeSection.classList.remove("hidden");
 
+        availabilityNotice?.classList.add("hidden");
+        if (availabilityNotice) {
+            availabilityNotice.innerHTML = "";
+        }
+
         const params = new URLSearchParams({
             date: selectedDate,
             serviceMenuNo: String(selectedMenuNo)
         });
 
-        const response = await fetch(
-            `/api/reservations/available-times?${params}`
-        );
-        const body = await readJson(response);
+        try {
+            const [timeResponse, noticeResponse] =
+                await Promise.all([
+                    fetch(`/api/reservations/available-times?${params}`),
+                    fetch(
+                        `/api/reservations/availability-notices?` +
+                        new URLSearchParams({ date: selectedDate })
+                    )
+                ]);
 
-        if (!response.ok) {
-            timeSlots.innerHTML =
-                `<div class="empty-box">${escapeHtml(body.message || "조회 실패")}</div>`;
-            return;
-        }
+            const timeBody = await readJson(timeResponse);
+            const noticeBody = await readJson(noticeResponse);
 
-        timeSlots.innerHTML = "";
+            if (!timeResponse.ok) {
+                timeSlots.innerHTML =
+                    `<div class="empty-box">${escapeHtml(timeBody.message || "조회 실패")}</div>`;
+                return;
+            }
 
-        if (!body.length) {
-            timeSlots.innerHTML =
-                `<div class="empty-box">예약 가능한 시간이 없습니다.</div>`;
-            return;
-        }
+            if (noticeResponse.ok) {
+                renderAvailabilityNotice(
+                    availabilityNotice,
+                    noticeBody
+                );
+            }
 
-        body.forEach(time => {
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "time-button";
-            button.textContent = String(time.startTime).slice(0, 5);
+            timeSlots.innerHTML = "";
 
-            button.addEventListener("click", () => {
-                document.querySelectorAll(".time-button")
-                    .forEach(item => item.classList.remove("selected"));
+            if (!Array.isArray(timeBody)
+                    || timeBody.length === 0) {
+                const customerMessage =
+                    bestUnavailableMessage(noticeBody);
 
-                button.classList.add("selected");
-                selectedStartTime = String(time.startTime).slice(0, 5);
-                updateSummary();
+                timeSlots.innerHTML =
+                    `<div class="empty-box">${
+                        escapeHtml(
+                            customerMessage
+                                || "예약 가능한 시간이 없습니다."
+                        )
+                    }</div>`;
+                return;
+            }
+
+            timeBody.forEach(time => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "time-button";
+                button.textContent =
+                    String(time.startTime).slice(0, 5);
+
+                button.addEventListener("click", () => {
+                    document.querySelectorAll(".time-button")
+                        .forEach(item =>
+                            item.classList.remove("selected")
+                        );
+
+                    button.classList.add("selected");
+                    selectedStartTime =
+                        String(time.startTime).slice(0, 5);
+                    updateSummary();
+                });
+
+                timeSlots.appendChild(button);
             });
-
-            timeSlots.appendChild(button);
-        });
+        } catch (error) {
+            timeSlots.innerHTML =
+                `<div class="empty-box">예약 정보를 불러오지 못했습니다.</div>`;
+        }
     }
+
+    function renderAvailabilityNotice(
+            container,
+            notice
+    ) {
+        if (!container || !notice) return;
+
+        const lines = [];
+
+        const hasAllDayNotice =
+            (notice.notices || [])
+                .some(item => item.allDay);
+
+        if (notice.openDay === false
+                && notice.dayMessage
+                && !hasAllDayNotice) {
+            lines.push({
+                type: "closed",
+                text: notice.dayMessage
+            });
+        }
+
+        (notice.notices || []).forEach(item => {
+            let text = item.message || item.title || "";
+
+            if (!item.allDay
+                    && item.startTime
+                    && item.endTime) {
+                text +=
+                    ` (${String(item.startTime).slice(0, 5)}` +
+                    ` ~ ${String(item.endTime).slice(0, 5)})`;
+            }
+
+            lines.push({
+                type:
+                    item.noticeType === "PERSONAL"
+                        ? "personal"
+                        : "holiday",
+                text
+            });
+        });
+
+        if (!lines.length) {
+            container.classList.add("hidden");
+            container.innerHTML = "";
+            return;
+        }
+
+        container.innerHTML = lines
+            .map(line => `
+                <div class="availability-notice-item availability-${line.type}">
+                    ${escapeHtml(line.text)}
+                </div>
+            `)
+            .join("");
+
+        container.classList.remove("hidden");
+    }
+
+    function bestUnavailableMessage(notice) {
+        if (!notice) return null;
+
+        const allDay =
+            (notice.notices || [])
+                .find(item => item.allDay);
+
+        if (allDay) {
+            return allDay.message || allDay.title;
+        }
+
+        if (notice.openDay === false) {
+            return notice.dayMessage || "정기 휴무일입니다.";
+        }
+
+        return null;
+    }
+
 
     async function submitReservation() {
         if (!selectedMenuNo || !selectedDate || !selectedStartTime) {

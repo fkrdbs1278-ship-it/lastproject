@@ -21,6 +21,7 @@
     const editServiceMenu = document.getElementById("editServiceMenu");
     const editDate = document.getElementById("editDate");
     const editTimeSlots = document.getElementById("editTimeSlots");
+    const editAvailabilityNotice = document.getElementById("editAvailabilityNotice");
     const editRequestMemo = document.getElementById("editRequestMemo");
 
     let serviceMenus = [];
@@ -351,6 +352,11 @@
         if (!serviceMenuNo || !date) {
             editTimeSlots.innerHTML =
                 `<div class="empty-box">시술과 날짜를 선택해주세요.</div>`;
+
+            editAvailabilityNotice?.classList.add("hidden");
+            if (editAvailabilityNotice) {
+                editAvailabilityNotice.innerHTML = "";
+            }
             return;
         }
 
@@ -358,31 +364,46 @@
             `<div class="loading-box">예약 가능 시간을 불러오는 중입니다.</div>`;
 
         try {
-            const response = await fetch(
-                `/api/reservations/available-times?` +
-                new URLSearchParams({
-                    date,
-                    serviceMenuNo: String(serviceMenuNo)
-                })
-            );
+            const [timeResponse, noticeResponse] =
+                await Promise.all([
+                    fetch(
+                        `/api/reservations/available-times?` +
+                        new URLSearchParams({
+                            date,
+                            serviceMenuNo: String(serviceMenuNo)
+                        })
+                    ),
+                    fetch(
+                        `/api/reservations/availability-notices?` +
+                        new URLSearchParams({ date })
+                    )
+                ]);
 
-            const body = await readJson(response);
+            const timeBody = await readJson(timeResponse);
+            const noticeBody = await readJson(noticeResponse);
 
-            if (!response.ok) {
-                throw new Error(body.message || "예약 가능 시간 조회에 실패했습니다.");
+            if (!timeResponse.ok) {
+                throw new Error(
+                    timeBody.message || "예약 가능 시간 조회에 실패했습니다."
+                );
             }
 
-            const slots = Array.isArray(body) ? body : [];
+            if (noticeResponse.ok) {
+                renderAvailabilityNotice(
+                    editAvailabilityNotice,
+                    noticeBody
+                );
+            }
 
-            /*
-             * 현재 예약 시간을 편집할 때는 자기 자신의 기존 예약 때문에
-             * available-times에서 빠질 수 있다.
-             * 동일 날짜/동일 시술인 경우 현재 시간을 선택지에 보강한다.
-             */
+            const slots =
+                Array.isArray(timeBody) ? timeBody : [];
+
             const currentStart =
-                String(editingDetail?.reservation?.startAt || "").slice(11, 16);
+                String(editingDetail?.reservation?.startAt || "")
+                    .slice(11, 16);
             const currentDate =
-                String(editingDetail?.reservation?.startAt || "").slice(0, 10);
+                String(editingDetail?.reservation?.startAt || "")
+                    .slice(0, 10);
             const currentService =
                 Number(editingDetail?.reservation?.serviceMenuNo);
 
@@ -390,16 +411,25 @@
                 currentStart &&
                 currentDate === date &&
                 currentService === serviceMenuNo &&
-                !slots.some(slot => timeValue(slot.startTime) === currentStart)) {
+                !slots.some(slot =>
+                    timeValue(slot.startTime) === currentStart
+                )) {
                 slots.unshift({
                     startTime: currentStart,
-                    endTime: String(editingDetail.reservation.endAt || "").slice(11, 16)
+                    endTime:
+                        String(editingDetail.reservation.endAt || "")
+                            .slice(11, 16)
                 });
             }
 
             if (!slots.length) {
                 editTimeSlots.innerHTML =
-                    `<div class="empty-box">예약 가능한 시간이 없습니다.</div>`;
+                    `<div class="empty-box">${
+                        escapeHtml(
+                            bestUnavailableMessage(noticeBody)
+                                || "예약 가능한 시간이 없습니다."
+                        )
+                    }</div>`;
                 selectedEditTime = null;
                 return;
             }
@@ -410,7 +440,9 @@
                 const start = timeValue(slot.startTime);
                 const end = timeValue(slot.endTime);
 
-                const button = document.createElement("button");
+                const button =
+                    document.createElement("button");
+
                 button.type = "button";
                 button.className = "time-button";
                 button.textContent = `${start} ~ ${end}`;
@@ -421,8 +453,13 @@
 
                 button.addEventListener("click", () => {
                     selectedEditTime = start;
-                    editTimeSlots.querySelectorAll(".time-button")
-                        .forEach(el => el.classList.remove("selected"));
+
+                    editTimeSlots
+                        .querySelectorAll(".time-button")
+                        .forEach(el =>
+                            el.classList.remove("selected")
+                        );
+
                     button.classList.add("selected");
                 });
 
@@ -433,6 +470,84 @@
                 `<div class="empty-box">${escapeHtml(error.message)}</div>`;
         }
     }
+
+    function renderAvailabilityNotice(
+            container,
+            notice
+    ) {
+        if (!container || !notice) return;
+
+        const lines = [];
+
+        const hasAllDayNotice =
+            (notice.notices || [])
+                .some(item => item.allDay);
+
+        if (notice.openDay === false
+                && notice.dayMessage
+                && !hasAllDayNotice) {
+            lines.push({
+                type: "closed",
+                text: notice.dayMessage
+            });
+        }
+
+        (notice.notices || []).forEach(item => {
+            let text =
+                item.message || item.title || "";
+
+            if (!item.allDay &&
+                item.startTime &&
+                item.endTime) {
+                text +=
+                    ` (${String(item.startTime).slice(0, 5)}` +
+                    ` ~ ${String(item.endTime).slice(0, 5)})`;
+            }
+
+            lines.push({
+                type:
+                    item.noticeType === "PERSONAL"
+                        ? "personal"
+                        : "holiday",
+                text
+            });
+        });
+
+        if (!lines.length) {
+            container.classList.add("hidden");
+            container.innerHTML = "";
+            return;
+        }
+
+        container.innerHTML =
+            lines.map(line => `
+                <div class="availability-notice-item availability-${line.type}">
+                    ${escapeHtml(line.text)}
+                </div>
+            `).join("");
+
+        container.classList.remove("hidden");
+    }
+
+    function bestUnavailableMessage(notice) {
+        if (!notice) return null;
+
+        const allDay =
+            (notice.notices || [])
+                .find(item => item.allDay);
+
+        if (allDay) {
+            return allDay.message || allDay.title;
+        }
+
+        if (notice.openDay === false) {
+            return notice.dayMessage
+                || "정기 휴무일입니다.";
+        }
+
+        return null;
+    }
+
 
     async function saveEdit() {
         const reservationNo = Number(editReservationNo.value);
