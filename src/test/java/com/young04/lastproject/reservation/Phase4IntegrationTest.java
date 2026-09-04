@@ -32,14 +32,26 @@ class Phase4IntegrationTest {
         assertThat(menus)
                 .isNotEmpty();
 
+        // 실제 예약 화면에는 테스트용 메뉴가 노출되면 안 된다.
         assertThat(menus)
-                .anySatisfy(menu -> {
-                    assertThat(menu.getName())
-                            .isEqualTo("PHASE2_TEST_CUT_30");
+                .extracting(
+                        ServiceMenuOptionResponse::getName
+                )
+                .doesNotContain(
+                        "PHASE2_TEST_CUT_30"
+                );
 
-                    assertThat(menu.getDurationMin())
-                            .isEqualTo(30);
-                });
+        // 실제 서비스 메뉴는 정상 조회되어야 한다.
+        assertThat(menus)
+                .extracting(
+                        ServiceMenuOptionResponse::getName
+                )
+                .contains(
+                        "커트",
+                        "펌",
+                        "컬러",
+                        "클리닉"
+                );
     }
 
     @Test
