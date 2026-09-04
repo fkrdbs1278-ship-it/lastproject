@@ -57,6 +57,72 @@
         </div>
     </section>
 
+
+    <div id="memberDetailOverlay" class="detail-overlay hidden">
+        <div class="detail-modal">
+            <div class="section-title-row">
+                <h2 id="memberDetailTitle">예약 상세</h2>
+                <button id="closeMemberDetail"
+                        type="button"
+                        class="secondary-button">
+                    닫기
+                </button>
+            </div>
+
+            <div id="memberDetailContent"></div>
+        </div>
+    </div>
+
+    <div id="memberEditOverlay" class="detail-overlay hidden">
+        <div class="detail-modal">
+            <div class="section-title-row">
+                <h2>예약 변경</h2>
+                <button id="closeMemberEdit"
+                        type="button"
+                        class="secondary-button">
+                    닫기
+                </button>
+            </div>
+
+            <form id="memberEditForm">
+                <input type="hidden" id="editReservationNo">
+
+                <label class="field">
+                    <span>시술</span>
+                    <select id="editServiceMenu" required></select>
+                </label>
+
+                <label class="field">
+                    <span>날짜</span>
+                    <input id="editDate" type="date" required>
+                </label>
+
+                <div class="field">
+                    <span>예약 가능 시간</span>
+                    <div id="editTimeSlots" class="time-slots"></div>
+                </div>
+
+                <label class="field">
+                    <span>요청사항</span>
+                    <textarea id="editRequestMemo"
+                              rows="4"
+                              maxlength="500"></textarea>
+                </label>
+
+                <div class="modal-actions">
+                    <button type="submit" class="primary-button">
+                        변경 저장
+                    </button>
+                    <button type="button"
+                            id="cancelMemberEdit"
+                            class="secondary-button">
+                        취소
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="messageBox"
          class="message-box hidden"
          role="alert"></div>

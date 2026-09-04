@@ -13,7 +13,7 @@
         const guestPhone =
             document.getElementById("lookupGuestPhone").value.trim();
 
-        if (!reservationNo || !/^01[016789]-?\d{3,4}-?\d{4}$/.test(guestPhone)) {
+        if (!reservationNo || !/^010-?\d{4}-?\d{4}$/.test(guestPhone)) {
             return showMessage("예약번호와 휴대전화 번호를 확인해주세요.", true);
         }
 
