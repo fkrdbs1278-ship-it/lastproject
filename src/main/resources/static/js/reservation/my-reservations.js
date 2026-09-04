@@ -24,7 +24,7 @@
 
         try {
             const response = await fetch(
-                `/api/reservations/member/${memberNo}`
+                "/api/reservations/me"
             );
 
             const body = await readJson(response);
@@ -54,6 +54,7 @@
             item.className = "reservation-item";
 
             const canCancel =
+                reservation.cancelable === true ||
                 reservation.status === "REQUESTED" ||
                 reservation.status === "CONFIRMED";
 
@@ -123,7 +124,7 @@
             const params = new URLSearchParams({ reason });
 
             const response = await fetch(
-                `/api/reservations/${reservationNo}/cancel?${params.toString()}`,
+                `/api/reservations/me/${reservationNo}/cancel?${params.toString()}`,
                 {
                     method: "POST",
                     headers: csrfHeaders()

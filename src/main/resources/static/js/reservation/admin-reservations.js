@@ -60,7 +60,7 @@
 
         try {
             const response = await fetch(
-                `/api/admin/reservations?${buildParams()}`
+                `/admin/api/reservations?${buildParams()}`
             );
             const body = await readJson(response);
 
@@ -145,7 +145,7 @@
     async function openDetail(reservationNo) {
         try {
             const response = await fetch(
-                `/api/admin/reservations/${reservationNo}`
+                `/admin/api/reservations/${reservationNo}`
             );
             const body = await readJson(response);
 
@@ -208,7 +208,7 @@
 
     async function changeStatus(reservationNo, action) {
         await postAction(
-            `/api/admin/reservations/${reservationNo}/${action}`
+            `/admin/api/reservations/${reservationNo}/${action}`
         );
     }
 
@@ -218,7 +218,7 @@
         if (!reason.trim()) return showMessage("취소 사유를 입력해주세요.", true);
 
         await postAction(
-            `/api/admin/reservations/${reservationNo}/cancel?` +
+            `/admin/api/reservations/${reservationNo}/cancel?` +
             new URLSearchParams({ reason: reason.trim() })
         );
     }
@@ -231,7 +231,7 @@
         if (adminMemo === null) return;
 
         await postAction(
-            `/api/admin/reservations/${reservationNo}/no-show?` +
+            `/admin/api/reservations/${reservationNo}/no-show?` +
             new URLSearchParams({
                 reason: reason.trim(),
                 adminMemo: adminMemo.trim()

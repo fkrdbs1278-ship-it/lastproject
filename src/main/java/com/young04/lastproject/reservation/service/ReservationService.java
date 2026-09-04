@@ -5,6 +5,8 @@ import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.*;
 import com.young04.lastproject.reservation.exception.*;
 import com.young04.lastproject.reservation.repository.ReservationRepository;
+import com.young04.lastproject.reservation.notification.ReservationNotificationPublisher;
+import com.young04.lastproject.reservation.notification.ReservationNotificationType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class ReservationService {
     private final ServiceMenuReader serviceMenuReader;
     private final HairStyleReader hairStyleReader;
     private final BusinessHourRepository businessHourRepository;
+    private final ReservationNotificationPublisher notificationPublisher;
 
     @Transactional
     public ReservationResponse createReservation(
@@ -91,9 +94,26 @@ public class ReservationService {
                     );
         }
 
-        return ReservationResponse.from(
-                reservationRepository.save(reservation)
-        );
+        Reservation saved =
+                reservationRepository.save(reservation);
+
+        /*
+         * 온라인 비회원은 예약번호를 잊어버리지 않도록
+         * 예약 접수 직후 문자를 발송한다.
+         *
+         * 관리자 전화 예약(PHONE)은 생성 직후 CONFIRMED 처리되므로
+         * 접수/확정 문자가 연속으로 2건 발송되지 않게 CREATED는 생략한다.
+         */
+        if (saved.getCustomerType() == CustomerType.GUEST
+                && saved.getReservationSource()
+                        == ReservationSource.ONLINE) {
+            notificationPublisher.publishGuest(
+                    ReservationNotificationType.CREATED,
+                    saved
+            );
+        }
+
+        return ReservationResponse.from(saved);
     }
 
     @Transactional
@@ -148,6 +168,11 @@ public class ReservationService {
                 request.getRequestMemo()
         );
 
+        notificationPublisher.publishGuest(
+                ReservationNotificationType.UPDATED,
+                reservation
+        );
+
         return ReservationResponse.from(reservation);
     }
 
@@ -166,6 +191,12 @@ public class ReservationService {
         }
 
         reservation.confirm();
+
+        notificationPublisher.publishGuest(
+                ReservationNotificationType.CONFIRMED,
+                reservation
+        );
+
         return ReservationResponse.from(reservation);
     }
 
@@ -201,6 +232,11 @@ public class ReservationService {
         reservation.cancel(
                 normalizeCancelReason(reason),
                 canceledBy
+        );
+
+        notificationPublisher.publishGuest(
+                ReservationNotificationType.CANCELED,
+                reservation
         );
 
         return ReservationResponse.from(reservation);
@@ -261,6 +297,11 @@ public class ReservationService {
                         request.getReason()
                 ),
                 CanceledBy.USER
+        );
+
+        notificationPublisher.publishGuest(
+                ReservationNotificationType.CANCELED,
+                reservation
         );
 
         return ReservationResponse.from(reservation);
