@@ -104,10 +104,9 @@ public class ReservationService {
          * 관리자 전화 예약(PHONE)은 생성 직후 CONFIRMED 처리되므로
          * 접수/확정 문자가 연속으로 2건 발송되지 않게 CREATED는 생략한다.
          */
-        if (saved.getCustomerType() == CustomerType.GUEST
-                && saved.getReservationSource()
-                        == ReservationSource.ONLINE) {
-            notificationPublisher.publishGuest(
+        if (saved.getReservationSource()
+                == ReservationSource.ONLINE) {
+            notificationPublisher.publish(
                     ReservationNotificationType.CREATED,
                     saved
             );
@@ -131,6 +130,11 @@ public class ReservationService {
                 request.getHairStyleNo(),
                 request.getStartAt(),
                 request.getRequestMemo()
+        );
+
+        notificationPublisher.publish(
+                ReservationNotificationType.UPDATED,
+                reservation
         );
 
         return ReservationResponse.from(reservation);
@@ -168,7 +172,7 @@ public class ReservationService {
                 request.getRequestMemo()
         );
 
-        notificationPublisher.publishGuest(
+        notificationPublisher.publish(
                 ReservationNotificationType.UPDATED,
                 reservation
         );
@@ -192,7 +196,7 @@ public class ReservationService {
 
         reservation.confirm();
 
-        notificationPublisher.publishGuest(
+        notificationPublisher.publish(
                 ReservationNotificationType.CONFIRMED,
                 reservation
         );
@@ -215,6 +219,12 @@ public class ReservationService {
         }
 
         reservation.complete();
+
+        notificationPublisher.publish(
+                ReservationNotificationType.COMPLETED,
+                reservation
+        );
+
         return ReservationResponse.from(reservation);
     }
 
@@ -234,7 +244,7 @@ public class ReservationService {
                 canceledBy
         );
 
-        notificationPublisher.publishGuest(
+        notificationPublisher.publish(
                 ReservationNotificationType.CANCELED,
                 reservation
         );
@@ -299,7 +309,7 @@ public class ReservationService {
                 CanceledBy.USER
         );
 
-        notificationPublisher.publishGuest(
+        notificationPublisher.publish(
                 ReservationNotificationType.CANCELED,
                 reservation
         );

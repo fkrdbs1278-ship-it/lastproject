@@ -1,6 +1,6 @@
-package com.young04.lastproject.reservation.notification;
+package com.young04.lastproject.global.sms.sender;
 
-public interface ReservationSmsSender {
+public interface SmsSender {
 
     void send(
             String to,

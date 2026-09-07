@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record ReservationNotificationEvent(
         ReservationNotificationType type,
         Long reservationNo,
-        String guestPhone,
+        String phone,
         String serviceName,
         LocalDateTime startAt,
         ReservationStatus status,
@@ -17,12 +17,13 @@ public record ReservationNotificationEvent(
 
     public static ReservationNotificationEvent from(
             ReservationNotificationType type,
-            Reservation reservation
+            Reservation reservation,
+            String phone
     ) {
         return new ReservationNotificationEvent(
                 type,
                 reservation.getReservationNo(),
-                reservation.getGuestPhone(),
+                phone,
                 reservation.getServiceNameSnapshot(),
                 reservation.getStartAt(),
                 reservation.getStatus(),

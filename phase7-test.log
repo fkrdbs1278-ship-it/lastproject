@@ -4,17 +4,22 @@
 > Task :compileTestJava UP-TO-DATE
 > Task :processTestResources UP-TO-DATE
 > Task :testClasses UP-TO-DATE
-Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
-2026-09-03T15:51:54.253+09:00  INFO 14896 --- [lastproject] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2026-09-03T15:51:54.255+09:00  INFO 14896 --- [lastproject] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-09-03T15:51:54.280+09:00  INFO 14896 --- [lastproject] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
 
 > Task :test
 
-Phase7IntegrationTest > 회원_참고이미지는_보호된_API_URL을_사용한다() FAILED
-    java.lang.IllegalStateException at Phase7IntegrationTest.java:164
+Phase7IntegrationTest > 비회원_참고이미지는_전화번호가_일치해야_업로드할수있다() FAILED
+    java.lang.IllegalStateException at DefaultCacheAwareContextLoaderDelegate.java:195
+        Caused by: org.springframework.beans.factory.BeanCreationException at AbstractAutowireCapableBeanFactory.java:1815
+            Caused by: org.hibernate.service.spi.ServiceException at AbstractServiceRegistryImpl.java:273
+                Caused by: org.hibernate.HibernateException at DialectFactoryImpl.java:190
 
-3 tests completed, 1 failed
+Phase7IntegrationTest > 회원_참고이미지는_보호된_API_URL을_사용한다() FAILED
+    java.lang.IllegalStateException at DefaultCacheAwareContextLoaderDelegate.java:157
+
+Phase7IntegrationTest > 예약화면_시술목록에서는_PHASE_TEST_메뉴를_숨긴다() FAILED
+    java.lang.IllegalStateException at DefaultCacheAwareContextLoaderDelegate.java:157
+
+3 tests completed, 3 failed
 
 > Task :test FAILED
 
@@ -168,5 +173,5 @@ Caused by: org.gradle.api.internal.exceptions.MarkedVerificationException: There
 	... 30 more
 
 
-BUILD FAILED in 11s
+BUILD FAILED in 6s
 5 actionable tasks: 1 executed, 4 up-to-date
