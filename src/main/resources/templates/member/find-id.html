@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+
+    <title>아이디 찾기 | SALON CRM</title>
+
+
+    <!-- CSRF -->
+
+    <meta
+            name="_csrf"
+            th:content="${_csrf.token}"
+    >
+
+    <meta
+            name="_csrf_header"
+            th:content="${_csrf.headerName}"
+    >
+
+
+    <!-- 공통 CSS -->
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+
+    <!-- 아이디 찾기 CSS -->
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/member/find-id.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<main class="recovery-page">
+
+    <div class="recovery-container">
+
+
+        <!-- Logo -->
+
+        <div class="auth-logo-area">
+
+            <a
+                    th:href="@{/}"
+                    class="auth-logo"
+            >
+                SALON CRM
+            </a>
+
+        </div>
+
+
+        <!-- Card -->
+
+        <section class="recovery-card">
+
+
+            <h1 class="recovery-title">
+                아이디 찾기
+            </h1>
+
+
+            <p class="recovery-description">
+                회원정보와 휴대전화 인증을 통해
+                아이디를 확인할 수 있습니다.
+            </p>
+
+
+            <!-- 이름 -->
+
+            <div class="form-group">
+
+                <label for="findIdName">
+                    이름
+                </label>
+
+
+                <input
+                        type="text"
+                        id="findIdName"
+                        placeholder="이름을 입력해주세요."
+                        maxlength="50"
+                        autocomplete="name"
+                >
+
+            </div>
+
+
+            <!-- 전화번호 -->
+
+            <div class="form-group">
+
+                <label for="findIdPhone">
+                    휴대전화번호
+                </label>
+
+
+                <div class="verification-row">
+
+                    <input
+                            type="tel"
+                            id="findIdPhone"
+                            placeholder="010-1234-5678"
+                            inputmode="numeric"
+                            autocomplete="tel"
+                            maxlength="13"
+                    >
+
+
+                    <button
+                            type="button"
+                            id="findIdSendButton"
+                            class="verification-button"
+                    >
+                        인증번호 받기
+                    </button>
+
+                </div>
+
+
+                <p class="field-help">
+                    숫자만 입력해도 자동으로 하이픈(-)이 추가됩니다.
+                </p>
+
+
+                <p
+                        id="findIdSendMessage"
+                        class="verification-message"
+                        aria-live="polite"
+                ></p>
+
+            </div>
+
+
+            <!-- 인증번호 -->
+
+            <div
+                    class="form-group"
+                    id="findIdCodeGroup"
+                    hidden
+            >
+
+                <label for="findIdCode">
+                    인증번호
+                </label>
+
+
+                <div class="verification-row">
+
+                    <input
+                            type="text"
+                            id="findIdCode"
+                            placeholder="6자리 인증번호"
+                            inputmode="numeric"
+                            autocomplete="one-time-code"
+                            maxlength="6"
+                    >
+
+
+                    <button
+                            type="button"
+                            id="findIdVerifyButton"
+                            class="verification-button"
+                    >
+                        인증 확인
+                    </button>
+
+                </div>
+
+
+                <div class="verification-status">
+
+                    <span
+                            id="findIdTimer"
+                            class="verification-timer"
+                    ></span>
+
+
+                    <span
+                            id="findIdVerifyMessage"
+                            class="verification-message"
+                            aria-live="polite"
+                    ></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- 아이디 찾기 버튼 -->
+
+            <button
+                    type="button"
+                    id="findIdButton"
+                    class="recovery-submit-button"
+                    disabled
+            >
+                아이디 찾기
+            </button>
+
+
+            <!-- 결과 -->
+
+            <div
+                    id="findIdResult"
+                    class="recovery-result"
+                    hidden
+            >
+
+                <p class="result-label">
+                    회원님의 아이디
+                </p>
+
+
+                <div
+                        id="findIdResultIds"
+                        class="result-ids"
+                ></div>
+
+            </div>
+
+
+            <!-- 하단 메뉴 -->
+
+            <div class="recovery-bottom">
+
+                <a
+                        th:href="@{/member/login}"
+                >
+                    로그인
+                </a>
+
+
+                <span>
+                    |
+                </span>
+
+
+                <a
+                        th:href="@{/member/signup}"
+                >
+                    회원가입
+                </a>
+
+            </div>
+
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<script
+        th:src="@{/js/member/find-id.js}"
+></script>
+
+
+</body>
+
+</html>

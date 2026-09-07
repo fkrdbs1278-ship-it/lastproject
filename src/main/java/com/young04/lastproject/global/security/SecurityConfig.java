@@ -67,6 +67,8 @@ public class SecurityConfig {
                                 "/",
                                 "/member/signup",
                                 "/member/login",
+                                "/member/find-id",
+                                "/member/find-id/**",
                                 "/member/phone-verification/**",
                                 "/css/**",
                                 "/js/**",
