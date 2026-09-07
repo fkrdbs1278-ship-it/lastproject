@@ -15,9 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
-    /* =========================================================
-       회원 번호 PK
-    ========================================================= */
+    /* 회원 번호 PK */
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +23,7 @@ public class Member {
     private Long no;
 
 
-    /* =========================================================
-       로그인 정보
-    ========================================================= */
+    /* 로그인 정보 */
 
     @Column(
             name = "MEMBER_ID",
@@ -46,9 +42,7 @@ public class Member {
     private String password;
 
 
-    /* =========================================================
-       회원 기본 정보
-    ========================================================= */
+    /* 회원 기본 정보 */
 
     @Column(
             name = "NAME",
@@ -92,11 +86,9 @@ public class Member {
     private String gender;
 
 
-    /* =========================================================
-       권한
+    /* 권한
        USER  : 일반 사용자
-       ADMIN : 관리자
-    ========================================================= */
+       ADMIN : 관리자 */
 
     @Enumerated(EnumType.STRING)
     @Column(
@@ -107,12 +99,10 @@ public class Member {
     private MemberRole role;
 
 
-    /* =========================================================
-       회원 상태
+    /* 회원 상태
        ACTIVE    : 정상
        BLOCKED   : 차단
-       WITHDRAWN : 탈퇴
-    ========================================================= */
+       WITHDRAWN : 탈퇴 */
 
     @Enumerated(EnumType.STRING)
     @Column(
@@ -123,12 +113,10 @@ public class Member {
     private MemberStatus status;
 
 
-    /* =========================================================
-       약관 동의
+    /* 약관 동의
 
        DB 컬럼이 VARCHAR2가 아닌 CHAR(1)이므로
-       columnDefinition을 반드시 CHAR(1)로 설정
-    ========================================================= */
+       columnDefinition을 반드시 CHAR(1)로 설정 */
 
     @Column(
             name = "AGREE_TERMS_YN",
@@ -146,9 +134,7 @@ public class Member {
     private String agreePrivacyYn;
 
 
-    /* =========================================================
-       로그인 관리
-    ========================================================= */
+    /* 로그인 관리 */
 
     @Column(
             name = "LOGIN_FAIL_COUNT",
@@ -161,9 +147,7 @@ public class Member {
     private LocalDateTime lastLoginDate;
 
 
-    /* =========================================================
-       날짜 정보
-    ========================================================= */
+    /* 날짜 정보 */
 
     @Column(
             name = "REGDATE",
@@ -180,8 +164,7 @@ public class Member {
     private LocalDateTime withdrawDate;
 
 
-    /* =========================================================
-       회원 생성
+    /* 회원 생성
 
        Member.builder()
              .memberId(...)
@@ -189,8 +172,7 @@ public class Member {
              ...
              .build()
 
-       형식으로 사용
-    ========================================================= */
+       형식으로 사용 */
 
     @Builder
     public Member(
@@ -255,10 +237,15 @@ public class Member {
             this.withdrawDate = LocalDateTime.now();
     }
 
+    /* 비밀번호 변경 */
+    public void changePassword(
+            String encodedPassword
+    ) {
+        this.password = encodedPassword;
+    }
 
-    /* =========================================================
-    로그인 성공 처리
-    ========================================================= */
+
+    /* 로그인 성공 처리 */
 
     public void loginSuccess() {
 
@@ -270,9 +257,7 @@ public class Member {
     }
 
 
-    /* =========================================================
-    로그인 실패 처리
-    ========================================================= */
+    /* 로그인 실패 처리 */
 
     public void loginFailure() {
 
@@ -283,12 +268,10 @@ public class Member {
         this.loginFailCount++;
     }
 
-    /* =========================================================
-       INSERT 직전 자동 실행
+    /* INSERT 직전 자동 실행
 
        혹시 Java에서 값이 빠져도
-       DB에 NULL이 들어가지 않도록 기본값 설정
-    ========================================================= */
+       DB에 NULL이 들어가지 않도록 기본값 설정 */
 
     @PrePersist
     protected void prePersist() {
@@ -319,9 +302,7 @@ public class Member {
     }
 
 
-    /* =========================================================
-       UPDATE 직전 자동 실행
-    ========================================================= */
+    /* UPDATE 직전 자동 실행 */
 
     @PreUpdate
     protected void preUpdate() {

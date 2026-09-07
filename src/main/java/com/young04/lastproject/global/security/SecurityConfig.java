@@ -69,6 +69,8 @@ public class SecurityConfig {
                                 "/member/login",
                                 "/member/find-id",
                                 "/member/find-id/**",
+                                "/member/reset-password",
+                                "/member/reset-password/**",
                                 "/member/phone-verification/**",
                                 "/css/**",
                                 "/js/**",

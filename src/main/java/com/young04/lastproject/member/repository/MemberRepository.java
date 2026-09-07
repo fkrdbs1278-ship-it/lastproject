@@ -71,4 +71,20 @@ public interface MemberRepository
     );
 
 
+    /*  아이디 + 휴대전화번호로 회원 조회
+
+        전화번호의 '-'는 제거하고 비교한다. */
+
+    @Query("""
+        select m
+        from Member m
+        where m.memberId = :memberId
+          and replace(m.phone, '-', '') = :phoneDigits
+        """)
+    Optional<Member> findByMemberIdAndPhoneDigits(
+            @Param("memberId") String memberId,
+            @Param("phoneDigits") String phoneDigits
+    );
+
+
 }

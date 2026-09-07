@@ -5,6 +5,8 @@ import com.young04.lastproject.member.dto.recovery.FindIdResponse;
 import com.young04.lastproject.member.exception.MemberRecoveryException;
 import com.young04.lastproject.member.exception.PhoneVerificationException;
 import com.young04.lastproject.member.service.MemberRecoveryService;
+import com.young04.lastproject.member.dto.recovery.ResetPasswordRequest;
+import com.young04.lastproject.member.dto.recovery.ResetPasswordResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -105,4 +107,90 @@ public class MemberRecoveryController {
                     );
         }
     }
+
+    /* 비밀번호 재설정 화면 */
+
+    @GetMapping("/reset-password")
+    public String resetPasswordPage() {
+
+        return "member/reset-password";
+    }
+
+
+    /* =비밀번호 재설정 처리 */
+
+    @PostMapping("/reset-password")
+    @ResponseBody
+    public ResponseEntity<ResetPasswordResponse>
+    resetPassword(
+
+            @Valid
+            @RequestBody
+            ResetPasswordRequest request,
+
+            BindingResult bindingResult
+
+    ) {
+
+        /* =====================================
+            DTO 검증 실패
+        ===================================== */
+
+        if (bindingResult.hasErrors()) {
+
+            String message =
+                    bindingResult
+                            .getAllErrors()
+                            .get(0)
+                            .getDefaultMessage();
+
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            new ResetPasswordResponse(
+                                    false,
+                                    message
+                            )
+                    );
+        }
+
+
+        try {
+
+            memberRecoveryService
+                    .resetPassword(
+                            request.getMemberId(),
+                            request.getPhone(),
+                            request.getNewPassword(),
+                            request.getNewPasswordCheck()
+                    );
+
+
+            return ResponseEntity.ok(
+                    new ResetPasswordResponse(
+                            true,
+                            "비밀번호가 변경되었습니다."
+                    )
+            );
+
+
+        } catch (
+                PhoneVerificationException
+                | MemberRecoveryException e
+        ) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            new ResetPasswordResponse(
+                                    false,
+                                    e.getMessage()
+                            )
+                    );
+        }
+    }
+
+
+
 }

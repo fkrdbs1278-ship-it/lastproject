@@ -6,6 +6,7 @@ import com.young04.lastproject.member.exception.PhoneVerificationException;
 import com.young04.lastproject.member.repository.MemberRepository;
 import com.young04.lastproject.member.verification.PhoneVerificationPurpose;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +18,9 @@ import java.util.List;
 public class MemberRecoveryService {
 
     private final MemberRepository memberRepository;
-
     private final PhoneVerificationService
             phoneVerificationService;
-
+    private final PasswordEncoder passwordEncoder;
 
     /* 아이디 찾기 */
 
@@ -124,6 +124,112 @@ public class MemberRecoveryService {
 
         return maskedMemberIds;
     }
+
+    /*  비밀번호 재설정 */
+
+    @Transactional
+    public void resetPassword(
+            String memberId,
+            String phone,
+            String newPassword,
+            String newPasswordCheck
+    ) {
+
+    /* 1. 새 비밀번호 일치 확인 */
+
+        if (
+                !newPassword.equals(
+                        newPasswordCheck
+                )
+        ) {
+
+            throw new MemberRecoveryException(
+                    "새 비밀번호와 비밀번호 확인이 일치하지 않습니다."
+            );
+        }
+
+
+    /* 2. RESET_PASSWORD 휴대전화 인증 확인 */
+
+        if (
+                !phoneVerificationService
+                        .isVerified(
+                                phone,
+                                PhoneVerificationPurpose.RESET_PASSWORD
+                        )
+        ) {
+
+            throw new PhoneVerificationException(
+                    "휴대전화 인증을 완료해주세요."
+            );
+        }
+
+
+    /* 3. 입력값 정리 */
+
+        String normalizedMemberId =
+                memberId.trim();
+
+
+        String phoneDigits =
+                phone.replaceAll(
+                        "\\D",
+                        ""
+                );
+
+
+    /* 4. 아이디 + 전화번호 회원 조회 */
+
+        Member member =
+                memberRepository
+                        .findByMemberIdAndPhoneDigits(
+                                normalizedMemberId,
+                                phoneDigits
+                        )
+                        .orElseThrow(
+                                () ->
+                                        new MemberRecoveryException(
+                                                "입력한 회원정보를 확인해주세요."
+                                        )
+                        );
+
+
+    /* 5. 새 비밀번호 BCrypt 암호화 */
+
+        String encodedPassword =
+                passwordEncoder.encode(
+                        newPassword
+                );
+
+
+    /* 6. Entity 비밀번호 변경
+
+       @Transactional + Dirty Checking */
+
+        member.changePassword(
+                encodedPassword
+        );
+
+
+    /* 7. 인증정보 사용 처리 */
+
+        boolean consumed =
+                phoneVerificationService
+                        .consumeVerification(
+                                phone,
+                                PhoneVerificationPurpose.RESET_PASSWORD
+                        );
+
+
+        if (!consumed) {
+
+            throw new PhoneVerificationException(
+                    "휴대전화 인증이 만료되었습니다. 다시 인증해주세요."
+            );
+        }
+    }
+
+
 
 
     /* 아이디 마스킹 */
