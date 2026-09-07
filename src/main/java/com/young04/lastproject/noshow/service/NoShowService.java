@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class NoShowService {
@@ -24,7 +26,7 @@ public class NoShowService {
             String reason,
             String adminMemo
     ) {
-        Reservation reservation = reservationRepository.findById(reservationNo)
+        Reservation reservation = reservationRepository.findByIdForUpdate(reservationNo)
                 .orElseThrow(() ->
                         new ReservationNotFoundException(reservationNo)
                 );
@@ -32,6 +34,13 @@ public class NoShowService {
         if (reservation.getStatus() != ReservationStatus.CONFIRMED) {
             throw new InvalidReservationStatusException(
                     "CONFIRMED 상태의 예약만 노쇼 처리할 수 있습니다."
+            );
+        }
+
+        if (reservation.getStartAt()
+                .isAfter(LocalDateTime.now())) {
+            throw new InvalidReservationStatusException(
+                    "예약 시작 전에는 노쇼 처리할 수 없습니다."
             );
         }
 

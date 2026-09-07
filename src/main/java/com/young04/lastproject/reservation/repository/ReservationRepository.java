@@ -3,7 +3,9 @@ package com.young04.lastproject.reservation.repository;
 import com.young04.lastproject.reservation.entity.CustomerType;
 import com.young04.lastproject.reservation.entity.Reservation;
 import com.young04.lastproject.reservation.entity.ReservationStatus;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -29,6 +31,30 @@ public interface ReservationRepository
     Optional<Reservation> findByReservationNoAndMemberNo(
             Long reservationNo,
             Long memberNo
+    );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select r
+            from Reservation r
+            where r.reservationNo = :reservationNo
+            """)
+    Optional<Reservation> findByIdForUpdate(
+            @Param("reservationNo") Long reservationNo
+    );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select r
+            from Reservation r
+            where r.reservationNo = :reservationNo
+              and r.customerType = :customerType
+              and r.guestPhone = :guestPhone
+            """)
+    Optional<Reservation> findGuestForUpdate(
+            @Param("reservationNo") Long reservationNo,
+            @Param("customerType") CustomerType customerType,
+            @Param("guestPhone") String guestPhone
     );
 
     Optional<Reservation>

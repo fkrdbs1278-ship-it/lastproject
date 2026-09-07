@@ -121,7 +121,7 @@ public class ReservationService {
             ReservationUpdateRequest request
     ) {
         Reservation reservation =
-                getReservation(reservationNo);
+                getReservationForUpdate(reservationNo);
 
         updateReservationEntity(
                 reservation,
@@ -151,7 +151,7 @@ public class ReservationService {
 
         Reservation reservation =
                 reservationRepository
-                        .findByReservationNoAndCustomerTypeAndGuestPhone(
+                        .findGuestForUpdate(
                                 request.getReservationNo(),
                                 CustomerType.GUEST,
                                 phone
@@ -185,7 +185,7 @@ public class ReservationService {
             Long reservationNo
     ) {
         Reservation reservation =
-                getReservation(reservationNo);
+                getReservationForUpdate(reservationNo);
 
         if (reservation.getStatus()
                 != ReservationStatus.REQUESTED) {
@@ -209,12 +209,19 @@ public class ReservationService {
             Long reservationNo
     ) {
         Reservation reservation =
-                getReservation(reservationNo);
+                getReservationForUpdate(reservationNo);
 
         if (reservation.getStatus()
                 != ReservationStatus.CONFIRMED) {
             throw new InvalidReservationStatusException(
                     "CONFIRMED 상태의 예약만 시술 완료 처리할 수 있습니다."
+            );
+        }
+
+        if (reservation.getStartAt()
+                .isAfter(LocalDateTime.now())) {
+            throw new InvalidReservationStatusException(
+                    "예약 시작 전에는 시술 완료 처리할 수 없습니다."
             );
         }
 
@@ -235,9 +242,12 @@ public class ReservationService {
             CanceledBy canceledBy
     ) {
         Reservation reservation =
-                getReservation(reservationNo);
+                getReservationForUpdate(reservationNo);
 
-        validateCancelable(reservation);
+        validateCancelable(
+                reservation,
+                canceledBy
+        );
 
         reservation.cancel(
                 normalizeCancelReason(reason),
@@ -288,7 +298,7 @@ public class ReservationService {
 
         Reservation reservation =
                 reservationRepository
-                        .findByReservationNoAndCustomerTypeAndGuestPhone(
+                        .findGuestForUpdate(
                                 request.getReservationNo(),
                                 CustomerType.GUEST,
                                 phone
@@ -300,7 +310,10 @@ public class ReservationService {
                                         )
                         );
 
-        validateCancelable(reservation);
+        validateCancelable(
+                reservation,
+                CanceledBy.USER
+        );
 
         reservation.cancel(
                 normalizeCancelReason(
@@ -442,6 +455,19 @@ public class ReservationService {
                 );
     }
 
+    private Reservation getReservationForUpdate(
+            Long reservationNo
+    ) {
+        return reservationRepository
+                .findByIdForUpdate(reservationNo)
+                .orElseThrow(
+                        () ->
+                                new ReservationNotFoundException(
+                                        reservationNo
+                                )
+                );
+    }
+
     private void validateModifiable(
             Reservation reservation
     ) {
@@ -456,7 +482,8 @@ public class ReservationService {
     }
 
     private void validateCancelable(
-            Reservation reservation
+            Reservation reservation,
+            CanceledBy canceledBy
     ) {
         if (reservation.getStatus()
                 == ReservationStatus.COMPLETED
@@ -466,6 +493,14 @@ public class ReservationService {
                 == ReservationStatus.NO_SHOW) {
             throw new InvalidReservationStatusException(
                     "현재 상태에서는 예약을 취소할 수 없습니다."
+            );
+        }
+
+        if (canceledBy == CanceledBy.USER
+                && !reservation.getStartAt()
+                        .isAfter(LocalDateTime.now())) {
+            throw new InvalidReservationStatusException(
+                    "예약 시간이 지난 후에는 고객이 직접 취소할 수 없습니다. 미용실에 문의해주세요."
             );
         }
     }
