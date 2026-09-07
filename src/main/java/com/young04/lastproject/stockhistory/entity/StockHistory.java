@@ -30,6 +30,10 @@ public class StockHistory {
     @Column(name = "QUANTITY", nullable = false, precision = 12, scale = 2)
     private BigDecimal quantity;
 
+    // 재고 변동 당시 사용한 재고 단위
+    @Column(name = "UNIT_CODE", length = 20)
+    private String unitCode;
+
     @Column(name = "BEFORE_STOCK", nullable = false, precision = 12, scale = 2)
     private BigDecimal beforeStock;
 

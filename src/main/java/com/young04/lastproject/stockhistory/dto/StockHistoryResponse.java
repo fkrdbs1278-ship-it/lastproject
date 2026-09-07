@@ -14,7 +14,12 @@ public class StockHistoryResponse {
     private Long stockHistoryNo;
     private Long materialNo;
     private String movementType;
+
     private BigDecimal quantity;
+
+    // 재고 변동 당시 사용한 재고 단위
+    private String unitCode;
+
     private BigDecimal beforeStock;
     private BigDecimal afterStock;
     private String referenceType;
@@ -23,11 +28,16 @@ public class StockHistoryResponse {
     private LocalDateTime regdate;
 
     public static StockHistoryResponse from(StockHistory stockHistory) {
+
         return StockHistoryResponse.builder()
                 .stockHistoryNo(stockHistory.getStockHistoryNo())
                 .materialNo(stockHistory.getMaterialNo())
                 .movementType(stockHistory.getMovementType())
                 .quantity(stockHistory.getQuantity())
+
+                // 재고 단위 포함
+                .unitCode(stockHistory.getUnitCode())
+
                 .beforeStock(stockHistory.getBeforeStock())
                 .afterStock(stockHistory.getAfterStock())
                 .referenceType(stockHistory.getReferenceType())

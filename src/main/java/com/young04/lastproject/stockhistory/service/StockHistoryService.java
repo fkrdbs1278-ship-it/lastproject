@@ -98,7 +98,11 @@ public class StockHistoryService {
         StockHistory stockHistory = new StockHistory();
         stockHistory.setMaterialNo(material.getMaterialNo());
         stockHistory.setMovementType(movementType);
+
+        // 재고 변동 당시 단위 저장
         stockHistory.setQuantity(quantity);
+
+        stockHistory.setUnitCode(material.getUnitCode());
         stockHistory.setBeforeStock(beforeStock);
         stockHistory.setAfterStock(afterStock);
         stockHistory.setReferenceType("MANUAL");

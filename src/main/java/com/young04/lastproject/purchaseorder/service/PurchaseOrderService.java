@@ -269,7 +269,10 @@ public class PurchaseOrderService {
                 StockHistory stockHistory = new StockHistory();
                 stockHistory.setMaterialNo(material.getMaterialNo());
                 stockHistory.setMovementType("PURCHASE_IN");
+
                 stockHistory.setQuantity(receivedQuantity);
+                stockHistory.setUnitCode(material.getUnitCode());
+
                 stockHistory.setBeforeStock(beforeStock);
                 stockHistory.setAfterStock(afterStock);
                 stockHistory.setReferenceType("PURCHASE_ORDER");

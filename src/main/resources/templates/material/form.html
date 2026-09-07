@@ -2,13 +2,13 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title th:text="${editMode}
-            ? '자재 수정'
-            : '자재 등록'">
+    <title th:text="${editMode} ? '자재 수정' : '자재 등록'">
         자재 등록
     </title>
 
+    <!-- 자재 화면 CSS 연결 -->
     <link rel="stylesheet"
           th:href="@{/css/operation/material.css}">
 
@@ -20,24 +20,21 @@
 <body>
 <div class="admin-layout material-admin-layout">
 
-    <!-- 관리자 공통 사이드바 -->
-    <aside th:replace="~{admin/dashboard-sidebar
-            :: sidebar('material')}">
+    <!-- 관리자 공통 사이드바 표시 -->
+    <aside th:replace="~{admin/dashboard-sidebar :: sidebar('material')}">
     </aside>
 
-    <!-- 자재 등록·수정 화면 영역 -->
+    <!-- 자재 등록·수정 화면 -->
     <div class="material-admin-content">
         <main class="material-page material-form-page">
 
+            <!-- 화면 제목과 목록 이동 -->
             <section class="form-header">
                 <div>
-                    <h1 th:text="${editMode}
-                    ? '자재 수정'
-                    : '자재 등록'">
+                    <h1 th:text="${editMode} ? '자재 수정' : '자재 등록'">
                         자재 등록
                     </h1>
-
-                    <p>자재의 기본 정보와 재고 기준을 입력합니다.</p>
+                    <p>자재의 기본 정보와 용량, 재고 기준을 입력합니다.</p>
                 </div>
 
                 <a class="back-button"
@@ -48,41 +45,55 @@
 
             <section class="material-form-wrap">
 
-                <!-- 등록과 수정 여부에 따라 전송 주소 변경 -->
+                <!-- 등록·수정 여부에 따라 저장 주소 변경 -->
                 <form class="material-form"
                       method="post"
                       th:object="${materialRequest}"
                       th:action="${editMode}
-                    ? @{/admin/material/{no}/edit(no=${materialNo})}
-                    : @{/admin/material}">
+                          ? @{/admin/material/{no}/edit(no=${materialNo})}
+                          : @{/admin/material}">
 
                     <div class="form-grid">
 
-                        <div class="form-group">
-                            <label for="categoryCode">
-                                자재 분류 <span>*</span>
+                        <!-- 자재명 입력 -->
+                        <div class="form-group full">
+                            <label for="materialName">
+                                자재명 <span>*</span>
                             </label>
+
+                            <input id="materialName"
+                                   type="text"
+                                   maxlength="100"
+                                   required
+                                   th:field="*{materialName}"
+                                   th:classappend="${#fields.hasErrors('materialName')} ? 'input-error'"
+                                   placeholder="예: 두피 케어 샴푸 500ml"
+                                   aria-describedby="capacityHelp capacityStatus">
+
+                            <small id="capacityHelp">이름 입력 후 Tab을 누르면 첫 번째 용량을 자동 입력합니다. 추가·증정 제품의 용량은 사용하지 않습니다.</small>
+                            <p id="capacityStatus" role="status" aria-live="polite">내용량과 사용 단위는 직접 수정할 수 있습니다.</p>
+
+                            <p class="field-error"
+                               th:if="${#fields.hasErrors('materialName')}"
+                               th:errors="*{materialName}">
+                            </p>
+                        </div>
+
+                        <!-- 자재 분류 선택 -->
+                        <div class="form-group">
+                            <label for="categoryCode">자재 분류</label>
 
                             <select id="categoryCode"
                                     th:field="*{categoryCode}"
-                                    th:classappend="${#fields.hasErrors('categoryCode')}
-	                                    ? 'input-error'">
-                                <option value="">자재 종류를 선택해 주세요.</option>
-                                <option value="HAIR_COLOR">염색제 (HAIR_COLOR)</option>
-                                <option value="PERM">펌제 (PERM)</option>
-                                <option value="TREATMENT">
-                                    클리닉·트리트먼트 (TREATMENT)
-                                </option>
-                                <option value="SHAMPOO">
-                                    샴푸·두피케어 (SHAMPOO)
-                                </option>
-                                <option value="STYLING">
-                                    스타일링제 (STYLING)
-                                </option>
-                                <option value="SUPPLIES">
-                                    미용 소모품 (SUPPLIES)
-                                </option>
-                                <option value="ETC">기타 (ETC)</option>
+                                    th:classappend="${#fields.hasErrors('categoryCode')} ? 'input-error'">
+                                <option value="">자재 분류를 선택해 주세요.</option>
+                                <option value="HAIR_COLOR">염색제</option>
+                                <option value="PERM">펌제</option>
+                                <option value="TREATMENT">클리닉·트리트먼트</option>
+                                <option value="SHAMPOO">샴푸·두피케어</option>
+                                <option value="STYLING">스타일링제</option>
+                                <option value="SUPPLIES">미용 소모품</option>
+                                <option value="ETC">기타</option>
                             </select>
 
                             <p class="field-error"
@@ -91,24 +102,27 @@
                             </p>
                         </div>
 
+                        <!-- 구매와 현재 재고에 적용할 단위 선택 -->
                         <div class="form-group">
                             <label for="unitCode">
-                                재고 단위 <span>*</span>
+                                구매·재고 단위 <span>*</span>
                             </label>
 
                             <select id="unitCode"
+                                    required
                                     th:field="*{unitCode}"
-                                    th:classappend="${#fields.hasErrors('unitCode')}
-	                                    ? 'input-error'">
-                                <option value="">재고 단위를 선택해 주세요.</option>
-                                <option value="EA">개 (EA)</option>
-                                <option value="BTL">병 (BTL)</option>
-                                <option value="TUB">통 (TUB)</option>
-                                <option value="PACK">팩 (PACK)</option>
-                                <option value="ROLL">롤 (ROLL)</option>
-                                <option value="BOX">박스 (BOX)</option>
-                                <option value="SET">세트 (SET)</option>
+                                    th:classappend="${#fields.hasErrors('unitCode')} ? 'input-error'">
+                                <option value="">단위를 선택해 주세요.</option>
+                                <option value="EA">개</option>
+                                <option value="BTL">병</option>
+                                <option value="TUB">통</option>
+                                <option value="PACK">팩</option>
+                                <option value="ROLL">롤</option>
+                                <option value="BOX">박스</option>
+                                <option value="SET">세트</option>
                             </select>
+
+                            <small>구매할 때와 현재 재고를 셀 때 사용하는 단위입니다.</small>
 
                             <p class="field-error"
                                th:if="${#fields.hasErrors('unitCode')}"
@@ -116,38 +130,72 @@
                             </p>
                         </div>
 
-                        <div class="form-group full">
-                            <label for="materialName">
-                                자재명 <span>*</span>
+                        <!-- 구매 단위 하나에 포함된 내용량 입력 -->
+                        <div class="form-group">
+                            <label for="contentQuantity">
+                                구매 단위당 내용량 <span>*</span>
                             </label>
 
-                            <input id="materialName"
-                                   type="text"
-                                   th:field="*{materialName}"
-                                   th:classappend="${#fields.hasErrors('materialName')}
-                                   ? 'input-error'"
-                                   placeholder="예: 염색약 브라운">
+                            <input id="contentQuantity"
+                                   type="number"
+                                   min="0.01"
+                                   max="9999999999.99"
+                                   step="0.01"
+                                   required
+                                   th:field="*{contentQuantity}"
+                                   th:classappend="${#fields.hasErrors('contentQuantity')} ? 'input-error'"
+                                   placeholder="예: 500">
+
+                            <small>이름에서 자동 입력됩니다. 용량이 없거나 묶음 제품이면 구매 단위에 맞게 직접 입력해 주세요.</small>
 
                             <p class="field-error"
-                               th:if="${#fields.hasErrors('materialName')}"
-                               th:errors="*{materialName}">
+                               th:if="${#fields.hasErrors('contentQuantity')}"
+                               th:errors="*{contentQuantity}">
                             </p>
                         </div>
 
+                        <!-- 내용량에 적용할 사용 단위 선택 -->
+                        <div class="form-group">
+                            <label for="usageUnitCode">
+                                사용 단위 <span>*</span>
+                            </label>
+
+                            <select id="usageUnitCode"
+                                    required
+                                    th:field="*{usageUnitCode}"
+                                    th:classappend="${#fields.hasErrors('usageUnitCode')} ? 'input-error'">
+                                <option value="">사용 단위를 선택해 주세요.</option>
+                                <option value="ML">ml</option>
+                                <option value="G">g</option>
+                                <option value="EA">개</option>
+                            </select>
+
+                            <small>장갑 1박스가 100개라면 내용량은 100, 사용 단위는 개입니다.</small>
+
+                            <p class="field-error"
+                               th:if="${#fields.hasErrors('usageUnitCode')}"
+                               th:errors="*{usageUnitCode}">
+                            </p>
+                        </div>
+
+                        <!-- 현재 재고는 등록 시에만 입력 -->
                         <div class="form-group">
                             <label for="currentStock">
                                 현재 재고 <span>*</span>
                             </label>
 
-                            <!-- 수정 화면에서는 재고 이력 없이 변경하지 못하도록 제한 -->
                             <input id="currentStock"
                                    type="number"
                                    min="0"
                                    step="1"
+                                   required
                                    th:field="*{currentStock}"
                                    th:readonly="${editMode}"
-                                   th:classappend="${#fields.hasErrors('currentStock')}
-                                   ? 'input-error'">
+                                   th:classappend="${#fields.hasErrors('currentStock')} ? 'input-error'">
+
+                            <small th:unless="${editMode}">
+                                선택한 구매·재고 단위로 입력합니다. 샴푸 2통이면 2입니다.
+                            </small>
 
                             <small th:if="${editMode}">
                                 현재 재고는 재고 조정 화면에서 변경할 수 있습니다.
@@ -159,6 +207,7 @@
                             </p>
                         </div>
 
+                        <!-- 재고 부족 판단 기준 입력 -->
                         <div class="form-group">
                             <label for="safetyStock">
                                 안전 재고 <span>*</span>
@@ -168,9 +217,11 @@
                                    type="number"
                                    min="0"
                                    step="1"
+                                   required
                                    th:field="*{safetyStock}"
-                                   th:classappend="${#fields.hasErrors('safetyStock')}
-                                   ? 'input-error'">
+                                   th:classappend="${#fields.hasErrors('safetyStock')} ? 'input-error'">
+
+                            <small>구매·재고 단위 기준이며, 이 수량 이하이면 재고 부족으로 표시합니다.</small>
 
                             <p class="field-error"
                                th:if="${#fields.hasErrors('safetyStock')}"
@@ -178,6 +229,7 @@
                             </p>
                         </div>
 
+                        <!-- 구매 단위 하나의 가격 입력 -->
                         <div class="form-group">
                             <label for="unitPrice">
                                 개당 구매가 <span>*</span>
@@ -186,11 +238,14 @@
                             <input id="unitPrice"
                                    type="number"
                                    min="0"
+                                   max="999999999999"
                                    step="1"
+                                   required
                                    th:field="*{unitPrice}"
-                                   th:classappend="${#fields.hasErrors('unitPrice')}
-                                   ? 'input-error'"
-                                   placeholder="0">
+                                   th:classappend="${#fields.hasErrors('unitPrice')} ? 'input-error'"
+                                   placeholder="예: 10000">
+
+                            <small>선택한 단위 1개 기준 가격입니다. 통이면 1통, 박스면 1박스 가격입니다.</small>
 
                             <p class="field-error"
                                th:if="${#fields.hasErrors('unitPrice')}"
@@ -198,14 +253,15 @@
                             </p>
                         </div>
 
+                        <!-- 구매 업체명 입력 -->
                         <div class="form-group">
                             <label for="supplierName">업체명</label>
 
                             <input id="supplierName"
                                    type="text"
+                                   maxlength="100"
                                    th:field="*{supplierName}"
-                                   th:classappend="${#fields.hasErrors('supplierName')}
-                                   ? 'input-error'"
+                                   th:classappend="${#fields.hasErrors('supplierName')} ? 'input-error'"
                                    placeholder="업체명을 입력해 주세요.">
 
                             <p class="field-error"
@@ -214,16 +270,16 @@
                             </p>
                         </div>
 
+                        <!-- 자재 사용 상태 선택 -->
                         <div class="form-group">
                             <label for="useYn">
                                 사용 여부 <span>*</span>
                             </label>
 
                             <select id="useYn"
+                                    required
                                     th:field="*{useYn}"
-                                    th:classappend="${#fields.hasErrors('useYn')}
-                                    ? 'input-error'">
-
+                                    th:classappend="${#fields.hasErrors('useYn')} ? 'input-error'">
                                 <option value="Y">사용 중</option>
                                 <option value="N">사용 중지</option>
                             </select>
@@ -236,19 +292,18 @@
 
                     </div>
 
+                    <!-- 취소와 저장 버튼 -->
                     <div class="form-actions">
                         <a class="cancel-button"
                            th:href="${editMode}
-                        ? @{/admin/material/{no}(no=${materialNo})}
-                        : @{/admin/material}">
+                               ? @{/admin/material/{no}(no=${materialNo})}
+                               : @{/admin/material}">
                             취소
                         </a>
 
                         <button class="save-button"
                                 type="submit"
-                                th:text="${editMode}
-                                ? '수정 완료'
-                                : '등록하기'">
+                                th:text="${editMode} ? '수정 완료' : '등록하기'">
                             등록하기
                         </button>
                     </div>
@@ -260,5 +315,7 @@
     </div>
 
 </div>
+<!-- 자재명에서 내용량과 사용 단위 자동 입력 -->
+<script th:src="@{/js/operation/material.js}" defer></script>
 </body>
 </html>

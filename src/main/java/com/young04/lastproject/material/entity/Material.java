@@ -32,6 +32,26 @@ public class Material {
     @Column(name = "UNIT_CODE", length = 20, nullable = false)
     private String unitCode;
 
+    // 구매 단위 1개에 들어 있는 용량 또는 수량
+    @Column(
+            name = "CONTENT_QUANTITY",
+            precision = 12,
+            scale = 2
+    )
+    private BigDecimal contentQuantity;
+
+    // 시술에서 사용하는 단위: ML(ml), G(g), EA(개)
+    @Column(name = "USAGE_UNIT_CODE", length = 20)
+    private String usageUnitCode;
+
+    // 현재 개봉해서 사용 중인 자재의 남은 양
+    @Column(
+            name = "OPEN_REMAINING_QUANTITY",
+            precision = 12,
+            scale = 2
+    )
+    private BigDecimal openRemainingQuantity;
+
     @Column(
             name = "CURRENT_STOCK",
             precision = 12,
@@ -146,5 +166,56 @@ public class Material {
     @PreUpdate
     protected void onUpdate() {
         updatedate = LocalDateTime.now();
+    }
+
+    // 자재의 구매 단위당 내용량과 사용 단위를 설정
+    public void updateUsageInfo(
+            BigDecimal contentQuantity,
+            String usageUnitCode
+    ) {
+        this.contentQuantity = contentQuantity;
+        this.usageUnitCode = usageUnitCode;
+    }
+
+    // 구매 수량을 등록된 내용량 기준의 사용 수량으로 환산
+    public BigDecimal convertToUsageQuantity(BigDecimal purchaseQuantity) {
+        if (purchaseQuantity == null
+                || purchaseQuantity.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException(
+                    "구매 수량은 0 이상이어야 합니다."
+            );
+        }
+
+        if (contentQuantity == null
+                || contentQuantity.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException(
+                    materialName + ": 구매 단위당 내용량을 먼저 등록해 주세요."
+            );
+        }
+
+        if (!"ML".equals(usageUnitCode)
+                && !"G".equals(usageUnitCode)
+                && !"EA".equals(usageUnitCode)) {
+            throw new IllegalStateException(
+                    materialName + ": 사용 단위를 먼저 등록해 주세요."
+            );
+        }
+
+        BigDecimal usageQuantity = purchaseQuantity.multiply(contentQuantity);
+
+        // 소수점 두 자리를 넘는 수량은 반올림하지 않고 입력 확인 요청
+        if (usageQuantity.stripTrailingZeros().scale() > 2) {
+            throw new IllegalArgumentException(
+                    "환산된 수량은 소수점 두 자리까지 저장할 수 있습니다."
+            );
+        }
+
+        if (usageQuantity.compareTo(new BigDecimal("9999999999.99")) > 0) {
+            throw new IllegalArgumentException(
+                    "환산된 수량이 저장 가능한 범위를 초과했습니다."
+            );
+        }
+
+        return usageQuantity;
     }
 }

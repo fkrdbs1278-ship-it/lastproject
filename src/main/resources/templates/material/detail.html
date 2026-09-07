@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>자재 상세</title>
 
     <link rel="stylesheet"
@@ -93,6 +94,16 @@
                         </strong>
                     </div>
 
+                    <!-- 구매 단위 하나의 내용량 표시: 현재 재고와는 별도 정보 -->
+                    <div class="detail-item">
+                        <span>구매 단위당 내용량</span>
+                        <strong th:if="${material.contentQuantity != null and !#strings.isEmpty(material.usageUnitCode)}">
+                            <th:block th:text="${material.contentQuantity.stripTrailingZeros().toPlainString()}">500</th:block>
+                            <th:block th:text="${material.usageUnitCode == 'ML' ? 'ml' : (material.usageUnitCode == 'G' ? 'g' : (material.usageUnitCode == 'EA' ? '개' : material.usageUnitCode))}">ml</th:block>
+                        </strong>
+                        <strong th:unless="${material.contentQuantity != null and !#strings.isEmpty(material.usageUnitCode)}">미등록</strong>
+                    </div>
+
                     <div class="detail-item">
                         <span>현재 재고</span>
 
@@ -116,7 +127,7 @@
                     </div>
 
                     <div class="detail-item">
-                        <span>기준 구매가</span>
+                        <span>개당 구매가</span>
 
                         <strong th:text="${#numbers.formatInteger(
                                 material.unitPrice, 1, 'COMMA'
@@ -126,7 +137,7 @@
                     </div>
 
                     <div class="detail-item">
-                        <span>업체</span>
+                        <span>업체명</span>
 
                         <strong th:text="${material.supplierName != null
                         ? material.supplierName : '-'}">
@@ -181,3 +192,4 @@
 </div>
 </body>
 </html>
+
