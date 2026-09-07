@@ -5,6 +5,7 @@ import com.young04.lastproject.purchaseorder.repository.PurchaseOrderRepository;
 import com.young04.lastproject.purchaseorder.entity.PurchaseOrder;
 import com.young04.lastproject.purchaseorderitem.service.PurchaseOrderItemService;
 import com.young04.lastproject.salonevent.service.SalonEventService;
+import com.young04.lastproject.dashboard.repository.DashboardStatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,9 +31,18 @@ public class DashboardController {
     // 대시보드에 표시할 진행 중 이벤트 조회를 담당하는 Service
     private final SalonEventService salonEventService;
 
+    // 대시보드 통계 조회
+    private final DashboardStatisticsRepository dashboardStatisticsRepository;
+
     // 관리자 대시보드 조회
     @GetMapping("/admin/dashboard")
     public String dashboard(Model model) {
+
+        // 이번 달 방문 고객 수
+        model.addAttribute(
+                "monthlyVisitCount",
+                dashboardStatisticsRepository.countMonthlyVisitCustomers()
+        );
 
         // 재고 부족 자재 전체 개수
         model.addAttribute(

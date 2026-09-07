@@ -91,24 +91,22 @@
                 <div class="card-decoration"></div>
             </article>
 
-            <!-- 재고 부족 -->
-            <article class="summary-card stock-card">
+            <!-- 이번 달 방문 고객 -->
+            <article class="summary-card visit-card">
 
-                <div class="summary-icon">!</div>
+                <div class="summary-icon">↻</div>
 
                 <div class="summary-content">
-                    <p class="summary-title">재고 부족</p>
+                    <p class="summary-title">이번 달 방문 고객</p>
+
                     <strong class="summary-number"
-                            th:text="${lowStockCount + '개 품목'}">
-                        0개 품목
+                            th:text="${monthlyVisitCount + '명'}">
+                        0명
                     </strong>
 
-                    <a href="/admin/material"
-                       th:href="@{/admin/material}"
-                       class="summary-link">
-
-                        부족 품목 확인
-                    </a>
+                    <p class="summary-description">
+                        이번 달 시술 완료 고객
+                    </p>
                 </div>
 
                 <div class="card-decoration"></div>
@@ -787,36 +785,124 @@
 
         </section>
 
-        <!-- 매출 페이지 연결 전 더미 데이터로 표시하는 주간 매출 차트 -->
-        <section class="dashboard-panel sales-chart-panel">
+        <!-- 최근 매출 현황과 인기 시술을 같은 비율의 좌우 영역으로 표시 -->
+        <section class="sales-insight-grid">
 
-            <div class="sales-chart-header">
+            <!-- 최근 7일 매출 -->
+            <article class="dashboard-panel sales-chart-panel">
 
-                <div class="sales-chart-title">
-                    <p class="panel-label">SALES OVERVIEW</p>
-                    <h2>최근 7일 매출 현황</h2>
-                    <p>결제 완료 금액을 날짜별로 확인합니다.</p>
+                <div class="sales-chart-header">
+
+                    <div class="sales-chart-title">
+                        <p class="panel-label">SALES OVERVIEW</p>
+                        <h2>최근 7일 매출 현황</h2>
+                        <p>결제 완료 금액을 날짜별로 확인합니다.</p>
+                    </div>
+
+                    <div class="sales-chart-summary">
+                        <span>최근 7일 총매출</span>
+                        <strong id="weeklySalesTotal">3,640,000원</strong>
+
+                        <a href="/admin/payment"
+                           th:href="@{/admin/payment}"
+                           class="sales-management-link">
+                            매출 관리 <span>→</span>
+                        </a>
+                    </div>
+
                 </div>
 
-                <div class="sales-chart-summary">
-                    <span>최근 7일 총매출</span>
-                    <strong id="weeklySalesTotal">3,640,000원</strong>
-
-                    <a href="/admin/payment"
-                       th:href="@{/admin/payment}"
-                       class="sales-management-link">
-                        매출 관리 <span>→</span>
-                    </a>
+                <!-- Controller에서 weeklySalesLabels와 weeklySalesAmounts를 전달하면 더미 데이터가 교체된다. -->
+                <div class="sales-chart-frame">
+                    <canvas id="weeklySalesChart"
+                            aria-label="최근 7일 날짜별 매출 막대그래프"
+                            role="img"></canvas>
                 </div>
 
-            </div>
+            </article>
 
-            <!-- Controller에서 weeklySalesLabels와 weeklySalesAmounts를 전달하면 더미 데이터가 교체된다. -->
-            <div class="sales-chart-frame">
-                <canvas id="weeklySalesChart"
-                        aria-label="최근 7일 날짜별 매출 막대그래프"
-                        role="img"></canvas>
-            </div>
+            <!-- 인기 시술 TOP 5 -->
+            <article class="dashboard-panel popular-service-panel">
+
+                <div class="popular-service-header">
+
+                    <div>
+                        <p class="panel-label">POPULAR SERVICE</p>
+                        <h2>인기 시술 TOP 5</h2>
+                        <p>이번 달 시술 완료 건수 기준입니다.</p>
+                    </div>
+
+                    <span class="popular-service-period">이번 달</span>
+
+                </div>
+
+                <!-- 실제 시술 통계 연결 전 화면 확인용 더미 데이터 -->
+                <div class="popular-service-list">
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank first">1</span>
+
+                        <div class="popular-service-info">
+                            <strong>남성 커트</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">38건</strong>
+                    </div>
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank">2</span>
+
+                        <div class="popular-service-info">
+                            <strong>여성 커트</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">31건</strong>
+                    </div>
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank">3</span>
+
+                        <div class="popular-service-info">
+                            <strong>전체 염색</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">24건</strong>
+                    </div>
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank">4</span>
+
+                        <div class="popular-service-info">
+                            <strong>남성 펌</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">19건</strong>
+                    </div>
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank">5</span>
+
+                        <div class="popular-service-info">
+                            <strong>헤어 클리닉</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">14건</strong>
+                    </div>
+
+                </div>
+
+                <a href="/admin/payment"
+                   th:href="@{/admin/payment}"
+                   class="popular-service-link">
+                    시술 통계 보기 <span>→</span>
+                </a>
+
+            </article>
 
         </section>
 
