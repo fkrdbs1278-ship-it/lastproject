@@ -215,6 +215,11 @@ public class MaterialController {
         request.setMaterialName(material.getMaterialName());
         request.setCategoryCode(material.getCategoryCode());
         request.setUnitCode(material.getUnitCode());
+
+        // 저장된 내용량과 사용 단위를 수정 화면에 전달
+        request.setContentQuantity(material.getContentQuantity());
+        request.setUsageUnitCode(material.getUsageUnitCode());
+
         request.setCurrentStock(material.getCurrentStock());
         request.setSafetyStock(material.getSafetyStock());
         request.setUnitPrice(material.getUnitPrice());

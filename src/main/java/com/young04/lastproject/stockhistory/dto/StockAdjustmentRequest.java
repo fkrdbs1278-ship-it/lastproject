@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Digits;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,11 +28,16 @@ public class StockAdjustmentRequest {
     )
     private String movementType;
 
-    // 실제로 증가하거나 감소할 재고 수량
+    // 현재 재고와 같은 단위로로 증가하거나 감소할 수량
     @NotNull(message = "수량을 입력해 주세요.")
     @DecimalMin(
             value = "1",
-            message = "수량은 0보다 커야 합니다."
+            message = "수량은 1 이상 입력해 주세요."
+    )
+    @Digits(
+            integer = 10,
+            fraction = 2,
+            message = "수량은 정수 10자리, 소수점 2자리까지 입력할 수 있습니다."
     )
     private BigDecimal quantity;
 

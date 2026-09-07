@@ -169,6 +169,12 @@ public class MaterialService {
                 request.getUseYn()
         );
 
+        // 신규 자재의 내용량과 사용 단위를 설정
+        material.updateUsageInfo(
+                request.getContentQuantity(),
+                request.getUsageUnitCode()
+        );
+
         Material savedMaterial = materialRepository.save(material);
 
         return MaterialResponse.from(savedMaterial);
@@ -191,6 +197,16 @@ public class MaterialService {
                 request.getSupplierName(),
                 request.getUseYn()
         );
+
+        // 전달된 용량 정보가 있을 때 내용량과 사용 단위를 함께 수정
+        if (request.getContentQuantity() != null
+                && request.getUsageUnitCode() != null
+                && !request.getUsageUnitCode().isBlank()) {
+            material.updateUsageInfo(
+                    request.getContentQuantity(),
+                    request.getUsageUnitCode()
+            );
+        }
 
         return MaterialResponse.from(material);
     }

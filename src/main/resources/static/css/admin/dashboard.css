@@ -277,6 +277,21 @@ a {
     background-color: #f8dfd1;
 }
 
+
+/* 이번 달 방문 고객 카드 */
+.visit-card .summary-icon {
+    background-color: var(--rose-light);
+    color: var(--rose);
+}
+
+.revisit-card .card-decoration {
+    background-color: #eddae4;
+}
+
+.revisit-card .summary-number {
+    font-size: 23px;
+}
+
 /* 중앙 영역 */
 .dashboard-grid {
     display: grid;
@@ -1125,10 +1140,20 @@ a {
     font-weight: 800;
 }
 
-/* 예약·운영 현황 아래에 한 줄로 표시하는 매출 차트 */
-.sales-chart-panel {
-    overflow: hidden;
+/* 매출 현황 + 인기 시술 영역 */
+.sales-insight-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(400px, 1fr);
+    gap: 20px;
+
     margin-bottom: 20px;
+}
+
+
+/* 최근 7일 매출 */
+.sales-chart-panel {
+    min-width: 0;
+    overflow: hidden;
     padding: 27px 30px 30px;
 }
 
@@ -1141,13 +1166,16 @@ a {
 
 .sales-chart-title h2 {
     margin-bottom: 8px;
+
     color: #24272d;
+
     font-size: 19px;
     letter-spacing: -0.5px;
 }
 
 .sales-chart-title > p:not(.panel-label) {
     color: #959aa3;
+
     font-size: 12px;
 }
 
@@ -1155,19 +1183,23 @@ a {
     display: grid;
     grid-template-columns: auto auto;
     align-items: center;
+
     column-gap: 13px;
     row-gap: 7px;
+
     flex-shrink: 0;
 }
 
 .sales-chart-summary > span {
     color: #8b9099;
+
     font-size: 11px;
     font-weight: 700;
 }
 
 .sales-chart-summary > strong {
     color: #25272d;
+
     font-size: 20px;
     letter-spacing: -0.5px;
 }
@@ -1175,7 +1207,9 @@ a {
 .sales-management-link {
     grid-column: 1 / -1;
     justify-self: end;
+
     color: var(--rose-dark);
+
     font-size: 11px;
     font-weight: 800;
 }
@@ -1184,13 +1218,15 @@ a {
     text-decoration: underline;
 }
 
-/* 넓은 화면에서도 그래프가 좌우로 과하게 늘어나지 않도록 폭을 제한 */
+
+/* 최근 7일 매출 그래프 */
 .sales-chart-frame {
     position: relative;
+
     width: 100%;
-    max-width: 1280px;
     height: 335px;
-    margin: 24px auto 0;
+
+    margin-top: 24px;
     padding: 6px 10px 0;
 }
 
@@ -1198,6 +1234,160 @@ a {
     width: 100% !important;
     height: 100% !important;
 }
+
+
+/* 인기 시술 TOP 5 */
+.popular-service-panel {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    padding: 27px 25px 24px;
+}
+
+.popular-service-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.popular-service-header h2 {
+    margin-bottom: 8px;
+
+    color: #24272d;
+
+    font-size: 19px;
+    letter-spacing: -0.5px;
+}
+
+.popular-service-header p:not(.panel-label) {
+    color: #959aa3;
+
+    font-size: 12px;
+}
+
+.popular-service-period {
+    flex-shrink: 0;
+
+    padding: 7px 10px;
+
+    border-radius: 8px;
+    background-color: var(--rose-light);
+
+    color: var(--rose-dark);
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+/* 인기 시술 목록 */
+.popular-service-list {
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 24px;
+
+    border: 1px solid #e4e7ec;
+    border-radius: 13px;
+    background-color: #fbfcfd;
+}
+
+.popular-service-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-height: 60px;
+    padding: 10px 13px;
+
+    border-bottom: 1px solid #e9ebef;
+}
+
+.popular-service-item:last-child {
+    border-bottom: 0;
+}
+
+
+/* 인기 시술 순위 */
+.popular-rank {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 31px;
+    height: 31px;
+
+    border-radius: 9px;
+    background-color: #eef2f7;
+
+    color: #6f7f93;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.popular-rank.first {
+    background-color: var(--rose-light);
+    color: var(--rose-dark);
+}
+
+
+/* 인기 시술 정보 */
+.popular-service-info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+
+    min-width: 0;
+}
+
+.popular-service-info strong {
+    overflow: hidden;
+
+    color: #34363c;
+
+    font-size: 13px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.popular-service-info span {
+    color: #979ca5;
+
+    font-size: 10px;
+}
+
+.popular-service-count {
+    flex-shrink: 0;
+
+    color: #3f434a;
+
+    font-size: 13px;
+}
+
+
+/* 시술 통계 이동 */
+.popular-service-link {
+    align-self: flex-end;
+
+    margin-top: auto;
+    padding-top: 17px;
+
+    color: var(--rose-dark);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.popular-service-link:hover {
+    text-decoration: underline;
+}
+
 
 /* 화면이 좁아질 때 */
 @media (max-width: 1450px) {
@@ -1210,7 +1400,8 @@ a {
         grid-template-columns: repeat(3, 1fr);
     }
 
-    .dashboard-grid {
+    .dashboard-grid,
+    .sales-insight-grid {
         grid-template-columns: 1fr;
     }
 
