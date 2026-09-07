@@ -54,3 +54,12 @@ logging:
 
 file:
   upload-dir: ${FILE_UPLOAD_DIR:uploads}
+
+
+sms:
+  provider: ${SMS_PROVIDER:log}
+
+  solapi:
+    api-key: ${SOLAPI_API_KEY:}
+    api-secret: ${SOLAPI_API_SECRET:}
+    sender: ${SOLAPI_SENDER:}

@@ -39,9 +39,7 @@ public class SecurityConfig {
     }
 
 
-    /* =========================================================
-       Security 설정
-    ========================================================= */
+    /* Security 설정 */
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -53,16 +51,12 @@ public class SecurityConfig {
 
         http
 
-                /* =================================================
-                   AuthenticationProvider 등록
-                ================================================= */
+                /* AuthenticationProvider 등록 */
 
                 .authenticationProvider(authenticationProvider)
 
 
-                /* =================================================
-                   URL 권한 설정
-                ================================================= */
+                /* URL 권한 설정 */
 
                 .authorizeHttpRequests(auth -> auth
 
@@ -73,6 +67,7 @@ public class SecurityConfig {
                                 "/",
                                 "/member/signup",
                                 "/member/login",
+                                "/member/phone-verification/**",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",

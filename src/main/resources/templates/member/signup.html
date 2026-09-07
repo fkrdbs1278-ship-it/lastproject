@@ -15,6 +15,21 @@
     <title>회원가입 | SALON CRM</title>
 
 
+    <!-- CSRF -->
+
+    <meta
+            name="_csrf"
+            th:content="${_csrf.token}"
+    >
+
+    <meta
+            name="_csrf_header"
+            th:content="${_csrf.headerName}"
+    >
+
+
+
+
     <!-- 공통 CSS -->
     <link
             rel="stylesheet"
@@ -339,19 +354,37 @@
                         전화번호
                     </label>
 
-                    <input
-                            type="tel"
-                            id="phone"
-                            th:field="*{phone}"
-                            placeholder="010-1234-5678"
-                            inputmode="numeric"
-                            autocomplete="tel"
-                            maxlength="13"
-                    >
+
+                    <!-- 전화번호 입력 + 인증번호 발송 버튼 -->
+
+                    <div class="phone-verification-row">
+
+                        <input
+                                type="tel"
+                                id="phone"
+                                th:field="*{phone}"
+                                placeholder="010-1234-5678"
+                                inputmode="numeric"
+                                autocomplete="tel"
+                                maxlength="13"
+                        >
+
+
+                        <button
+                                type="button"
+                                id="phoneSendButton"
+                                class="phone-verification-button"
+                        >
+                            인증번호 받기
+                        </button>
+
+                    </div>
+
 
                     <p class="field-help">
                         숫자만 입력해도 자동으로 하이픈(-)이 추가됩니다.
                     </p>
+
 
                     <p
                             class="field-error"
@@ -360,6 +393,68 @@
                     >
                         전화번호 오류
                     </p>
+
+
+                    <!-- 인증번호 발송 결과 메시지 -->
+
+                    <p
+                            id="phoneSendMessage"
+                            class="phone-verification-message"
+                            aria-live="polite"
+                    ></p>
+
+                </div>
+
+                <!-- 전화번호 인증번호 -->
+                <div
+                        class="form-group phone-code-group"
+                        id="phoneCodeGroup"
+                        hidden
+                >
+
+                    <label for="phoneVerificationCode">
+                        인증번호
+                    </label>
+
+
+                    <div class="phone-verification-row">
+
+                        <input
+                                type="text"
+                                id="phoneVerificationCode"
+                                placeholder="6자리 인증번호"
+                                inputmode="numeric"
+                                maxlength="6"
+                                autocomplete="one-time-code"
+                        >
+
+
+                        <button
+                                type="button"
+                                id="phoneVerifyButton"
+                                class="phone-verification-button"
+                        >
+                            인증 확인
+                        </button>
+
+                    </div>
+
+
+                    <div class="phone-verification-status">
+
+                <span
+                        id="phoneTimer"
+                        class="phone-verification-timer"
+                ></span>
+
+
+                        <span
+                                id="phoneVerifyMessage"
+                                class="phone-verification-message"
+                                aria-live="polite"
+                        ></span>
+
+                    </div>
 
                 </div>
 

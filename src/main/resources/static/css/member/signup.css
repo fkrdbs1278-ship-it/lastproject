@@ -433,3 +433,137 @@
         font-size: 25px;
     }
 }
+
+
+/* Phone Verification */
+
+.phone-verification-row {
+    display: flex;
+
+    align-items: stretch;
+
+    gap: 10px;
+}
+
+
+.phone-verification-row input {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+/* 인증번호 받기 / 인증 확인 */
+
+.phone-verification-button {
+    flex-shrink: 0;
+
+    min-width: 125px;
+
+    padding: 0 16px;
+
+    border: 1px solid #333333;
+    border-radius: 8px;
+
+    background-color: #333333;
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            opacity 0.2s ease;
+}
+
+
+.phone-verification-button:hover:not(:disabled) {
+    background-color: #555555;
+}
+
+
+.phone-verification-button:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+}
+
+
+/* 인증번호 영역 */
+
+.phone-code-group {
+    margin-top: 8px;
+}
+
+
+/* 인증번호 Timer + Message */
+
+.phone-verification-status {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-top: 8px;
+}
+
+
+.phone-verification-timer {
+    color: #666666;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.phone-verification-message {
+    display: block;
+
+    margin-top: 7px;
+
+    color: #777777;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* 성공 */
+
+.phone-verification-message.success {
+    color: #16803b;
+
+    font-weight: 700;
+}
+
+
+/* 실패 */
+
+.phone-verification-message.error {
+    color: #d93025;
+
+    font-weight: 600;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .phone-verification-row {
+        flex-direction: column;
+    }
+
+
+    .phone-verification-button {
+        width: 100%;
+
+        min-height: 44px;
+    }
+}
