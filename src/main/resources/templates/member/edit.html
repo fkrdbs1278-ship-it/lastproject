@@ -12,6 +12,16 @@
             content="width=device-width, initial-scale=1.0"
     >
 
+    <meta
+            name="_csrf"
+            th:content="${_csrf.token}"
+    >
+
+    <meta
+            name="_csrf_header"
+            th:content="${_csrf.headerName}"
+    >
+
     <title>회원정보 수정 | SALON CRM</title>
 
 
@@ -196,15 +206,52 @@
                         전화번호
                     </label>
 
-                    <input
-                            type="tel"
-                            id="phone"
-                            th:field="*{phone}"
-                            placeholder="010-1234-5678"
-                            inputmode="numeric"
-                            autocomplete="tel"
-                            maxlength="13"
-                    >
+
+                    <!-- 전화번호 입력 + 인증번호 받기 버튼 -->
+
+                    <div class="phone-verification-row">
+
+                        <input
+                                type="tel"
+                                id="phone"
+                                th:field="*{phone}"
+                                placeholder="010-1234-5678"
+                                inputmode="numeric"
+                                autocomplete="tel"
+                                maxlength="13"
+                        >
+
+
+                        <button
+                                type="button"
+                                id="updatePhoneSendButton"
+                                class="phone-verification-button"
+                                hidden
+                        >
+                            인증번호 받기
+                        </button>
+
+                    </div>
+
+
+                    <!-- 전화번호 설명 -->
+
+                    <p class="field-help">
+                        숫자만 입력해도 자동으로 하이픈(-)이 추가됩니다.
+                        전화번호를 변경하는 경우 새 번호 인증이 필요합니다.
+                    </p>
+
+
+                    <!-- 전화번호 변경/인증 안내 메시지 -->
+
+                    <p
+                            id="updatePhoneChangeMessage"
+                            class="phone-verification-message"
+                            aria-live="polite"
+                    ></p>
+
+
+                    <!-- 기존 서버 Validation 오류 -->
 
                     <p
                             class="field-error"
@@ -214,11 +261,63 @@
                         전화번호 오류
                     </p>
 
-                    <p class="field-help">
-                        숫자만 입력해도 자동으로 하이픈(-)이 추가됩니다.
-                    </p>
+                </div>
+
+                <!-- 변경 전화번호 인증 -->
+
+                <div
+                        class="form-group phone-code-group"
+                        id="updatePhoneCodeGroup"
+                        hidden
+                >
+
+                    <label for="updatePhoneCode">
+                        인증번호
+                    </label>
+
+
+                    <div class="phone-verification-row">
+
+                        <input
+                                type="text"
+                                id="updatePhoneCode"
+                                placeholder="6자리 인증번호"
+                                inputmode="numeric"
+                                maxlength="6"
+                                autocomplete="one-time-code"
+                        >
+
+
+                        <button
+                                type="button"
+                                id="updatePhoneVerifyButton"
+                                class="phone-verification-button"
+                        >
+                            인증 확인
+                        </button>
+
+                    </div>
+
+
+                    <div class="phone-verification-status">
+
+                        <span
+                                id="updatePhoneTimer"
+                                class="phone-verification-timer"
+                        ></span>
+
+
+                        <span
+                                id="updatePhoneVerifyMessage"
+                                class="phone-verification-message"
+                                aria-live="polite"
+                        ></span>
+
+                    </div>
 
                 </div>
+
+
 
 
                 <!-- 생년월일 -->

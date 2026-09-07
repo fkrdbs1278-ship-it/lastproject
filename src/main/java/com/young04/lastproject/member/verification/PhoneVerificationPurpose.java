@@ -9,5 +9,8 @@ public enum PhoneVerificationPurpose {
     FIND_ID,
 
     /* 비밀번호 재설정 */
-    RESET_PASSWORD
+    RESET_PASSWORD,
+
+    /* 회원정보 수정 - 휴대전화번호 변경 */
+    UPDATE_PHONE
 }

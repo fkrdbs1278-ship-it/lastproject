@@ -204,6 +204,21 @@
 
             </form>
 
+            <div class="login-recovery-links">
+
+                <a th:href="@{/member/find-id}">
+                    아이디 찾기
+                </a>
+
+                <span>
+                    |
+                </span>
+
+                <a th:href="@{/member/reset-password}">
+                    비밀번호 찾기
+                </a>
+
+            </div>
 
             <!-- Signup Link -->
 
@@ -218,22 +233,6 @@
                         class="signup-link"
                 >
                     회원가입
-                </a>
-
-            </div>
-
-            <div class="login-recovery-links">
-
-                <a th:href="@{/member/find-id}">
-                    아이디 찾기
-                </a>
-
-                <span>
-                    |
-                </span>
-
-                <a th:href="@{/member/reset-password}">
-                    비밀번호 찾기
                 </a>
 
             </div>

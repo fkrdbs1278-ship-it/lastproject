@@ -385,6 +385,9 @@ public class MemberService {
 
             return false;
         }
+
+
+
         /* 생년월일 검사
 
         허용 범위:
@@ -393,6 +396,48 @@ public class MemberService {
         validateBirthDate(
                 request.getBirthDate()
         );
+
+
+        /* 휴대전화번호 변경 여부 확인 */
+
+        String currentPhoneDigits =
+                member.getPhone()
+                        .replaceAll(
+                                "\\D",
+                                ""
+                        );
+
+
+        String newPhoneDigits =
+                request.getPhone()
+                        .replaceAll(
+                                "\\D",
+                                ""
+                        );
+
+
+        boolean phoneChanged =
+                !currentPhoneDigits.equals(
+                        newPhoneDigits
+                );
+
+
+        /* 전화번호가 변경된 경우
+        새 전화번호 인증 필수 */
+
+        if (
+                phoneChanged
+                        && !phoneVerificationService
+                        .isVerified(
+                                request.getPhone(),
+                                PhoneVerificationPurpose.UPDATE_PHONE
+                        )
+        ) {
+
+            throw new PhoneVerificationException(
+                    "변경할 휴대전화번호의 인증을 완료해주세요."
+            );
+        }
 
 
         String email =
@@ -415,7 +460,7 @@ public class MemberService {
         }
 
 
-        /* 회원정보 수정= */
+        /* 회원정보 수정 */
 
         member.updateProfile(
                 request
@@ -439,13 +484,33 @@ public class MemberService {
                 )
         );
 
+        /* 전화번호 변경 인증 사용 완료 */
+
+        if (phoneChanged) {
+
+            boolean consumed =
+                    phoneVerificationService
+                            .consumeVerification(
+                                    request.getPhone(),
+                                    PhoneVerificationPurpose.UPDATE_PHONE
+                            );
+
+
+            if (!consumed) {
+
+                throw new PhoneVerificationException(
+                        "휴대전화 인증이 만료되었습니다. 다시 인증해주세요."
+                );
+            }
+        }
+
+
+
 
         /*
          * @Transactional 안에서 관리 중인 Entity이므로
          * JPA Dirty Checking으로 UPDATE된다.
-         *
          * memberRepository.save(member);
-         *
          * 를 별도로 호출하지 않아도 된다.
          */
 
