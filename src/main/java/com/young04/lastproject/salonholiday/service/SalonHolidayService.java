@@ -1,5 +1,6 @@
 package com.young04.lastproject.salonholiday.service;
 
+import com.young04.lastproject.reservation.service.OperatingScheduleConflictService;
 import com.young04.lastproject.salonholiday.dto.SalonHolidayRequest;
 import com.young04.lastproject.salonholiday.dto.SalonHolidayResponse;
 import com.young04.lastproject.salonholiday.entity.SalonHoliday;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,6 +19,7 @@ import java.util.List;
 public class SalonHolidayService {
 
     private final SalonHolidayRepository salonHolidayRepository;
+    private final OperatingScheduleConflictService operatingScheduleConflictService;
 
 
     /*
@@ -41,6 +44,10 @@ public class SalonHolidayService {
     @Transactional
     public SalonHoliday createHoliday(SalonHolidayRequest request) {
         validatePeriod(request);
+        protectExistingReservations(
+                request.getStartAt(),
+                request.getEndAt()
+        );
 
         return salonHolidayRepository.save(
                 SalonHoliday.create(
@@ -67,6 +74,10 @@ public class SalonHolidayService {
     ) {
 
         validatePeriod(request);
+        protectExistingReservations(
+                request.getStartAt(),
+                request.getEndAt()
+        );
 
         SalonHoliday holiday =
                 getHoliday(salonHolidayNo);
@@ -122,6 +133,19 @@ public class SalonHolidayService {
      * 휴일 기간 검증
      * =========================================================
      */
+    private void protectExistingReservations(
+            LocalDateTime startAt,
+            LocalDateTime endAt
+    ) {
+        operatingScheduleConflictService
+                .lockScheduleRange(startAt, endAt);
+        operatingScheduleConflictService
+                .assertNoActiveReservationOverlap(
+                        startAt,
+                        endAt
+                );
+    }
+
     private void validatePeriod(
             SalonHolidayRequest request
     ) {

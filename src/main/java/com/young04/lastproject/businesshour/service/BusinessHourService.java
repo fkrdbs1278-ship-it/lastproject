@@ -4,6 +4,7 @@ import com.young04.lastproject.businesshour.dto.BusinessHourResponse;
 import com.young04.lastproject.businesshour.dto.BusinessHourUpdateRequest;
 import com.young04.lastproject.businesshour.entity.BusinessHour;
 import com.young04.lastproject.businesshour.repository.BusinessHourRepository;
+import com.young04.lastproject.reservation.service.OperatingScheduleConflictService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.List;
 public class BusinessHourService {
 
     private final BusinessHourRepository businessHourRepository;
+    private final OperatingScheduleConflictService operatingScheduleConflictService;
 
     public List<BusinessHour> getBusinessHours() {
         return businessHourRepository.findAll()
@@ -49,10 +51,26 @@ public class BusinessHourService {
             Integer dayOfWeek,
             BusinessHourUpdateRequest request
     ) {
-        BusinessHour hour =
-                getBusinessHour(dayOfWeek);
-
+        validateDayOfWeek(dayOfWeek);
         validate(request);
+
+        BusinessHour hour =
+                businessHourRepository
+                        .findByDayOfWeekForUpdate(dayOfWeek)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "영업시간 정보가 없습니다. dayOfWeek="
+                                                + dayOfWeek
+                                )
+                        );
+
+        operatingScheduleConflictService
+                .assertBusinessHourChangeSafe(
+                        dayOfWeek,
+                        request.isOpen(),
+                        request.getOpenTime(),
+                        request.getCloseTime()
+                );
 
         hour.changeBusinessHour(
                 request.isOpen(),

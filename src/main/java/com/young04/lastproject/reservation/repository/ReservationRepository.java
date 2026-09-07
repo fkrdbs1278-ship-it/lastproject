@@ -20,6 +20,12 @@ public interface ReservationRepository
             Long memberNo
     );
 
+    List<Reservation>
+    findByStatusInAndStartAtGreaterThanEqualOrderByStartAtAsc(
+            Collection<ReservationStatus> statuses,
+            LocalDateTime startAt
+    );
+
     Optional<Reservation> findByReservationNoAndMemberNo(
             Long reservationNo,
             Long memberNo
