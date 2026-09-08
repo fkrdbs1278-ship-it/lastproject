@@ -263,3 +263,46 @@
     }
 
 }
+
+
+/* =========================================
+   Login Recovery Links
+========================================= */
+
+.login-recovery-links {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 18px;
+
+    color: #aaaaaa;
+
+    font-size: 13px;
+}
+
+
+.login-recovery-links a {
+    color: #555555;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition: color 0.2s ease;
+}
+
+
+.login-recovery-links a:hover {
+    color: #111111;
+
+    text-decoration: underline;
+}
+
+
+.login-recovery-links span {
+    color: #cccccc;
+}

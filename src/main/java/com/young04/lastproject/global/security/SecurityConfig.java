@@ -102,6 +102,11 @@ public class SecurityConfig {
                                 "/reservation",
                                 "/guest-reservation",
 
+                                "/member/find-id",
+                                "/member/find-id/**",
+                                "/member/reset-password",
+                                "/member/reset-password/**",
+                                "/member/phone-verification/**",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",

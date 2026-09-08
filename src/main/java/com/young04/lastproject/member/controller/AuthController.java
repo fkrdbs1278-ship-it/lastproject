@@ -6,6 +6,9 @@ import com.young04.lastproject.global.exception.member.InvalidBirthDateException
 import com.young04.lastproject.global.exception.member.PasswordMismatchException;
 import com.young04.lastproject.member.dto.SignupRequest;
 import com.young04.lastproject.member.service.MemberService;
+
+import com.young04.lastproject.member.exception.PhoneVerificationException;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -136,6 +139,18 @@ public class AuthController {
 
             return "member/signup";
         }
+
+        catch (PhoneVerificationException e) {
+
+            bindingResult.rejectValue(
+                    "phone",
+                    "phoneVerification",
+                    e.getMessage()
+            );
+
+            return "member/signup";
+        }
+
 
 
         /* 회원가입 성공= */

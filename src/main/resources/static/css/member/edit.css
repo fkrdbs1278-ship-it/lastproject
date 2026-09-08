@@ -249,3 +249,82 @@
         font-size: 26px;
     }
 }
+
+/* =========================================
+   전화번호 인증 버튼
+========================================= */
+
+.phone-verification-row {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+
+
+.phone-verification-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+
+/* 인증번호 받기 / 인증 확인 공통 버튼 */
+
+.phone-verification-button {
+    min-width: 130px;
+    height: 44px;
+
+    padding: 0 16px;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: #222222;
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            transform 0.15s ease,
+            opacity 0.2s ease;
+}
+
+
+.phone-verification-button:hover:not(:disabled) {
+    background-color: #444444;
+}
+
+
+.phone-verification-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+
+.phone-verification-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* hidden 버튼은 확실하게 숨김 */
+
+.phone-code-group[hidden],
+#updatePhoneCodeGroup[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 600px) {
+
+    .phone-verification-row {
+        flex-direction: column;
+    }
+
+
+    .phone-verification-button {
+        width: 100%;
+    }
+}

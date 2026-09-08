@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* =========================================================
-       요소
-    ========================================================= */
+    /* 요소 */
 
     const signupForm =
         document.querySelector("#signupForm");
@@ -30,9 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector("#birthDate");
 
 
-    /* =========================================================
-       비밀번호 조건 표시 요소
-    ========================================================= */
+    /* 비밀번호 조건 표시 요소 */
 
     const passwordRules = {
 
@@ -56,9 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
 
-    /* =========================================================
-       비밀번호 조건 검사
-    ========================================================= */
+    /* 비밀번호 조건 검사 */
 
     function validatePassword() {
 
@@ -124,9 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       비밀번호 확인
-    ========================================================= */
+    /* 비밀번호 확인 */
 
     function validatePasswordMatch() {
 
@@ -200,9 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         }
     }
-    /* =========================================================
-    비밀번호 보기 / 숨기기
-    ========================================================= */
+    /* 비밀번호 보기 / 숨기기 */
 
     function setupPasswordToggle(
         input,
@@ -265,9 +255,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    /* =========================================================
-       전화번호 자동 하이픈
-    ========================================================= */
+    /* 전화번호 자동 하이픈 */
 
     function formatPhoneNumber(value) {
 
@@ -353,12 +341,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       생년월일
+    /* 생년월일
 
        최소 : 1900-01-01
-       최대 : 어제
-    ========================================================= */
+       최대 : 어제 */
 
     function formatDateForInput(date) {
 
@@ -417,9 +403,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* =========================================================
-       Event
-    ========================================================= */
+    /* Event */
 
     if (password) {
 
@@ -446,9 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
     validatePassword();
     validatePasswordMatch();
 
-    /* =========================================================
-    회원가입 중복 제출 방지
-    ========================================================= */
+    /* 회원가입 중복 제출 방지 */
 
     if (signupForm && signupButton) {
 
@@ -488,9 +470,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    /* =========================================================
-       브라우저 뒤로가기 시 버튼 상태 복구
-    ========================================================= */
+    /* 브라우저 뒤로가기 시 버튼 상태 복구 */
 
     window.addEventListener(
         "pageshow",
@@ -511,8 +491,820 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     );
 
-
-
-
-
 });
+
+
+/* 휴대전화 인증 */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        /* 요소 찾기 */
+
+        const phoneInput =
+            document.querySelector("#phone");
+
+        const sendButton =
+            document.querySelector("#phoneSendButton");
+
+        const codeGroup =
+            document.querySelector("#phoneCodeGroup");
+
+        const codeInput =
+            document.querySelector("#phoneVerificationCode");
+
+        const verifyButton =
+            document.querySelector("#phoneVerifyButton");
+
+        const sendMessage =
+            document.querySelector("#phoneSendMessage");
+
+        const verifyMessage =
+            document.querySelector("#phoneVerifyMessage");
+
+        const timerElement =
+            document.querySelector("#phoneTimer");
+
+
+        /*
+         * 필요한 요소가 없으면
+         * 휴대전화 인증 JS 실행 중지
+         */
+        if (
+            !phoneInput ||
+            !sendButton ||
+            !codeGroup ||
+            !codeInput ||
+            !verifyButton
+        ) {
+            return;
+        }
+
+
+        /* CSRF Token */
+
+        const csrfToken =
+            document
+                .querySelector('meta[name="_csrf"]')
+                ?.getAttribute("content");
+
+
+        const csrfHeader =
+            document
+                .querySelector('meta[name="_csrf_header"]')
+                ?.getAttribute("content");
+
+
+        /* 상태 */
+
+        let verificationTimer = null;
+
+        let resendTimer = null;
+
+        let remainingSeconds = 0;
+
+        /*
+         * 마지막으로 인증번호를 받은 전화번호
+         */
+        let requestedPhone = null;
+
+        /*
+         * 최종 인증 완료된 전화번호
+         */
+        let verifiedPhone = null;
+
+
+        /* 전화번호 숫자만 추출
+
+           010-1234-5678
+                 ↓
+           01012345678 */
+
+        function normalizePhone(value) {
+
+            if (!value) {
+                return "";
+            }
+
+            return value.replace(
+                /\D/g,
+                ""
+            );
+        }
+
+
+        /* 전화번호 형식 검사 */
+
+        function isValidPhone(value) {
+
+            const phone =
+                normalizePhone(value);
+
+
+            return /^01[016789]\d{7,8}$/
+                .test(phone);
+        }
+
+
+        /* Fetch Header 생성 */
+
+        function createHeaders() {
+
+            const headers = {
+                "Content-Type":
+                    "application/json"
+            };
+
+
+            /*
+             * Spring Security CSRF
+             */
+            if (
+                csrfToken &&
+                csrfHeader
+            ) {
+
+                headers[csrfHeader] =
+                    csrfToken;
+            }
+
+
+            return headers;
+        }
+
+
+        /* 인증번호 3분 Timer */
+
+        function startVerificationTimer() {
+
+            stopVerificationTimer();
+
+
+            remainingSeconds =
+                180;
+
+
+            updateVerificationTimer();
+
+
+            verificationTimer =
+                setInterval(
+                    () => {
+
+                        remainingSeconds--;
+
+
+                        updateVerificationTimer();
+
+
+                        if (
+                            remainingSeconds <= 0
+                        ) {
+
+                            stopVerificationTimer();
+
+
+                            if (timerElement) {
+
+                                timerElement.textContent =
+                                    "인증시간이 만료되었습니다.";
+                            }
+
+
+                            verifyButton.disabled =
+                                true;
+
+
+                            if (verifyMessage) {
+
+                                verifyMessage.textContent =
+                                    "인증번호를 다시 요청해주세요.";
+
+                                verifyMessage.className =
+                                    "phone-verification-message error";
+                            }
+                        }
+
+                    },
+                    1000
+                );
+        }
+
+
+        function updateVerificationTimer() {
+
+            if (!timerElement) {
+                return;
+            }
+
+
+            const minutes =
+                Math.floor(
+                    remainingSeconds / 60
+                );
+
+
+            const seconds =
+                remainingSeconds % 60;
+
+
+            timerElement.textContent =
+                "남은 시간 "
+                + String(minutes)
+                    .padStart(2, "0")
+                + ":"
+                + String(seconds)
+                    .padStart(2, "0");
+        }
+
+
+        function stopVerificationTimer() {
+
+            if (
+                verificationTimer !== null
+            ) {
+
+                clearInterval(
+                    verificationTimer
+                );
+
+
+                verificationTimer =
+                    null;
+            }
+        }
+
+
+        /* 인증번호 재발송 60초 제한 */
+
+        function startResendCooldown() {
+
+            /*
+             * 기존 재전송 Timer가 있으면 정리
+             */
+            if (
+                resendTimer !== null
+            ) {
+
+                clearInterval(
+                    resendTimer
+                );
+
+                resendTimer = null;
+            }
+
+
+            let resendSeconds =
+                60;
+
+
+            sendButton.disabled =
+                true;
+
+
+            sendButton.textContent =
+                `재전송 ${resendSeconds}초`;
+
+
+            resendTimer =
+                setInterval(
+                    () => {
+
+                        resendSeconds--;
+
+
+                        if (
+                            resendSeconds <= 0
+                        ) {
+
+                            clearInterval(
+                                resendTimer
+                            );
+
+
+                            resendTimer =
+                                null;
+
+
+                            sendButton.disabled =
+                                false;
+
+
+                            sendButton.textContent =
+                                "인증번호 다시 받기";
+
+
+                            return;
+                        }
+
+
+                        sendButton.textContent =
+                            `재전송 ${resendSeconds}초`;
+
+                    },
+                    1000
+                );
+        }
+
+
+        /* 인증번호 발송 */
+
+        sendButton.addEventListener(
+            "click",
+            async () => {
+
+                const phone =
+                    phoneInput.value;
+
+
+                /*
+                 * 전화번호 형식 확인
+                 */
+                if (
+                    !isValidPhone(phone)
+                ) {
+
+                    if (sendMessage) {
+
+                        sendMessage.textContent =
+                            "올바른 휴대전화번호를 입력해주세요.";
+
+                        sendMessage.className =
+                            "phone-verification-message error";
+                    }
+
+
+                    phoneInput.focus();
+
+
+                    return;
+                }
+
+
+                sendButton.disabled =
+                    true;
+
+
+                if (sendMessage) {
+
+                    sendMessage.textContent =
+                        "인증번호를 발송하고 있습니다...";
+
+                    sendMessage.className =
+                        "phone-verification-message";
+                }
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/member/phone-verification/send",
+                            {
+
+                                method:
+                                    "POST",
+
+                                headers:
+                                    createHeaders(),
+
+                                body:
+                                    JSON.stringify(
+                                        {
+
+                                            phone:
+                                            phone,
+
+                                            purpose:
+                                                "SIGNUP"
+
+                                        }
+                                    )
+
+                            }
+                        );
+
+
+                    const result =
+                        await response.json();
+
+
+                    /*
+                     * 서버에서 실패 응답
+                     */
+                    if (
+                        !response.ok ||
+                        !result.success
+                    ) {
+
+                        if (sendMessage) {
+
+                            sendMessage.textContent =
+                                result.message
+                                || "인증번호 발송에 실패했습니다.";
+
+                            sendMessage.className =
+                                "phone-verification-message error";
+                        }
+
+
+                        sendButton.disabled =
+                            false;
+
+
+                        return;
+                    }
+
+
+                    /* 발송 성공 */
+
+                    requestedPhone =
+                        normalizePhone(phone);
+
+
+                    verifiedPhone =
+                        null;
+
+
+                    if (sendMessage) {
+
+                        sendMessage.textContent =
+                            "인증번호를 발송했습니다.";
+
+                        sendMessage.className =
+                            "phone-verification-message success";
+                    }
+
+
+                    /*
+                     * 인증번호 입력 영역 표시
+                     */
+                    codeGroup.hidden =
+                        false;
+
+
+                    codeInput.disabled =
+                        false;
+
+
+                    codeInput.value =
+                        "";
+
+
+                    verifyButton.disabled =
+                        false;
+
+
+                    if (verifyMessage) {
+
+                        verifyMessage.textContent =
+                            "";
+
+                        verifyMessage.className =
+                            "phone-verification-message";
+                    }
+
+
+                    codeInput.focus();
+
+
+                    /*
+                     * 인증번호 3분
+                     */
+                    startVerificationTimer();
+
+
+                    /*
+                     * 재전송 60초
+                     */
+                    startResendCooldown();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "휴대전화 인증번호 발송 오류:",
+                        error
+                    );
+
+
+                    if (sendMessage) {
+
+                        sendMessage.textContent =
+                            "문자 발송 중 오류가 발생했습니다.";
+
+                        sendMessage.className =
+                            "phone-verification-message error";
+                    }
+
+
+                    sendButton.disabled =
+                        false;
+                }
+
+            }
+        );
+
+
+        /* 인증번호 입력은 숫자만 */
+
+        codeInput.addEventListener(
+            "input",
+            () => {
+
+                codeInput.value =
+                    codeInput.value
+                        .replace(
+                            /\D/g,
+                            ""
+                        )
+                        .slice(
+                            0,
+                            6
+                        );
+            }
+        );
+
+
+        /* 인증번호 확인 */
+
+        verifyButton.addEventListener(
+            "click",
+            async () => {
+
+                const phone =
+                    phoneInput.value;
+
+
+                const currentPhone =
+                    normalizePhone(phone);
+
+
+                const code =
+                    codeInput.value
+                        .trim();
+
+
+                /*
+                 * 전화번호를 인증번호 발송 후
+                 * 변경했는지 확인
+                 */
+                if (
+                    requestedPhone === null ||
+                    requestedPhone !== currentPhone
+                ) {
+
+                    if (verifyMessage) {
+
+                        verifyMessage.textContent =
+                            "전화번호가 변경되었습니다. 인증번호를 다시 받아주세요.";
+
+                        verifyMessage.className =
+                            "phone-verification-message error";
+                    }
+
+
+                    return;
+                }
+
+
+                /*
+                 * 인증번호 형식
+                 */
+                if (
+                    !/^\d{6}$/.test(code)
+                ) {
+
+                    if (verifyMessage) {
+
+                        verifyMessage.textContent =
+                            "6자리 인증번호를 입력해주세요.";
+
+                        verifyMessage.className =
+                            "phone-verification-message error";
+                    }
+
+
+                    codeInput.focus();
+
+
+                    return;
+                }
+
+
+                verifyButton.disabled =
+                    true;
+
+
+                if (verifyMessage) {
+
+                    verifyMessage.textContent =
+                        "인증번호를 확인하고 있습니다...";
+
+                    verifyMessage.className =
+                        "phone-verification-message";
+                }
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/member/phone-verification/verify",
+                            {
+
+                                method:
+                                    "POST",
+
+                                headers:
+                                    createHeaders(),
+
+                                body:
+                                    JSON.stringify(
+                                        {
+
+                                            phone:
+                                            phone,
+
+                                            code:
+                                            code,
+
+                                            purpose:
+                                                "SIGNUP"
+
+                                        }
+                                    )
+
+                            }
+                        );
+
+
+                    const result =
+                        await response.json();
+
+
+                    /*
+                     * 인증 실패
+                     */
+                    if (
+                        !response.ok ||
+                        !result.success
+                    ) {
+
+                        if (verifyMessage) {
+
+                            verifyMessage.textContent =
+                                result.message
+                                || "인증번호가 일치하지 않습니다.";
+
+                            verifyMessage.className =
+                                "phone-verification-message error";
+                        }
+
+
+                        verifyButton.disabled =
+                            false;
+
+
+                        return;
+                    }
+
+
+                    /* 인증 성공 */
+
+                    verifiedPhone =
+                        currentPhone;
+
+
+                    stopVerificationTimer();
+
+
+                    if (timerElement) {
+
+                        timerElement.textContent =
+                            "";
+                    }
+
+
+                    if (verifyMessage) {
+
+                        verifyMessage.textContent =
+                            "휴대전화 인증이 완료되었습니다. ✓";
+
+                        verifyMessage.className =
+                            "phone-verification-message success";
+                    }
+
+
+                    codeInput.disabled =
+                        true;
+
+
+                    verifyButton.disabled =
+                        true;
+
+
+                } catch (error) {
+
+                    console.error(
+                        "휴대전화 인증 확인 오류:",
+                        error
+                    );
+
+
+                    if (verifyMessage) {
+
+                        verifyMessage.textContent =
+                            "인증번호 확인 중 오류가 발생했습니다.";
+
+                        verifyMessage.className =
+                            "phone-verification-message error";
+                    }
+
+
+                    verifyButton.disabled =
+                        false;
+                }
+
+            }
+        );
+
+
+        /* 전화번호가 변경되면 인증 상태 취소 */
+
+        phoneInput.addEventListener(
+            "input",
+            () => {
+
+                const currentPhone =
+                    normalizePhone(
+                        phoneInput.value
+                    );
+
+
+                /*
+                 * 인증번호를 받은 뒤
+                 * 전화번호가 바뀐 경우
+                 */
+                if (
+                    requestedPhone !== null &&
+                    currentPhone !== requestedPhone
+                ) {
+
+                    requestedPhone =
+                        null;
+
+
+                    verifiedPhone =
+                        null;
+
+
+                    stopVerificationTimer();
+
+
+                    codeGroup.hidden =
+                        true;
+
+
+                    codeInput.value =
+                        "";
+
+
+                    codeInput.disabled =
+                        false;
+
+
+                    verifyButton.disabled =
+                        false;
+
+
+                    if (timerElement) {
+
+                        timerElement.textContent =
+                            "";
+                    }
+
+
+                    if (verifyMessage) {
+
+                        verifyMessage.textContent =
+                            "";
+                    }
+
+
+                    if (sendMessage) {
+
+                        sendMessage.textContent =
+                            "전화번호가 변경되었습니다. 다시 인증해주세요.";
+
+                        sendMessage.className =
+                            "phone-verification-message error";
+                    }
+                }
+
+            }
+        );
+
+    }
+);
