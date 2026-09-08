@@ -235,6 +235,33 @@ document.addEventListener(
             }
         );
 
+        memberIdInput.addEventListener(
+            "input",
+            () => {
+
+                /*
+                 * 회원정보 확인 후에는
+                 * input이 disabled라 변경할 수 없으므로
+                 * 주로 인증 진행 중 아이디 변경을 처리한다.
+                 */
+
+                verifiedPhone =
+                    null;
+
+
+                newPasswordArea.hidden =
+                    true;
+
+
+                resetButton.disabled =
+                    true;
+
+
+                resultMessage.textContent =
+                    "";
+            }
+        );
+
 
         /* 인증번호 숫자만 */
 
@@ -715,8 +742,106 @@ document.addEventListener(
                     }
 
 
+                    /* =========================================
+                        휴대전화 인증 성공 후
+                        아이디 + 전화번호 회원정보 확인
+                    ========================================= */
+
+                    verifyMessage.textContent =
+                        "회원정보를 확인하고 있습니다...";
+
+                    verifyMessage.className =
+                        "verification-message";
+
+
+                    const memberId =
+                        memberIdInput.value.trim();
+
+
+                    const memberResponse =
+                        await fetch(
+                            "/member/reset-password/validate-member",
+                            {
+
+                                method:
+                                    "POST",
+
+                                headers:
+                                    createHeaders(),
+
+                                body:
+                                    JSON.stringify(
+                                        {
+
+                                            memberId:
+                                            memberId,
+
+                                            phone:
+                                            phone
+
+                                        }
+                                    )
+
+                            }
+                        );
+
+
+                    const memberResult =
+                        await memberResponse.json();
+
+
+                    /* 회원정보 불일치 */
+
+                    if (
+                        !memberResponse.ok ||
+                        !memberResult.success
+                    ) {
+
+                        verifiedPhone =
+                            null;
+
+
+                        newPasswordArea.hidden =
+                            true;
+
+
+                        verifyMessage.textContent =
+                            memberResult.message
+                            || "입력한 회원정보를 확인해주세요.";
+
+
+                        verifyMessage.className =
+                            "verification-message error";
+
+
+                        /*
+                         * 아이디를 고칠 수 있도록
+                         * 입력창은 그대로 활성화
+                         */
+
+                        memberIdInput.disabled =
+                            false;
+
+
+                        phoneInput.disabled =
+                            false;
+
+
+                        verifyButton.disabled =
+                            false;
+
+
+                        return;
+                    }
+
+
+                    /* =========================================
+                       회원정보까지 정상 확인
+                    ========================================= */
+
                     verifiedPhone =
                         currentPhone;
+
 
                     memberIdInput.disabled =
                         true;
@@ -734,7 +859,8 @@ document.addEventListener(
 
 
                     verifyMessage.textContent =
-                        "휴대전화 인증이 완료되었습니다. ✓";
+                        "회원정보 확인이 완료되었습니다. ✓";
+
 
                     verifyMessage.className =
                         "verification-message success";
@@ -749,9 +875,10 @@ document.addEventListener(
 
 
                     /*
-                     * 인증 성공 후
+                     * 회원정보 확인까지 성공한 경우에만
                      * 새 비밀번호 영역 표시
                      */
+
                     newPasswordArea.hidden =
                         false;
 

@@ -2,16 +2,15 @@ package com.young04.lastproject.member.controller;
 
 import com.young04.lastproject.member.dto.recovery.FindIdRequest;
 import com.young04.lastproject.member.dto.recovery.FindIdResponse;
-import com.young04.lastproject.member.exception.MemberRecoveryException;
-import com.young04.lastproject.member.exception.PhoneVerificationException;
-import com.young04.lastproject.member.service.MemberRecoveryService;
 import com.young04.lastproject.member.dto.recovery.ResetPasswordRequest;
 import com.young04.lastproject.member.dto.recovery.ResetPasswordResponse;
+import com.young04.lastproject.member.service.MemberRecoveryService;
+import com.young04.lastproject.member.dto.recovery.ResetPasswordMemberCheckRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -72,41 +71,23 @@ public class MemberRecoveryController {
         }
 
 
-        try {
-
-            List<String> memberIds =
-                    memberRecoveryService
-                            .findMemberIds(
-                                    request.getName(),
-                                    request.getPhone()
-                            );
+        List<String> memberIds =
+                memberRecoveryService
+                        .findMemberIds(
+                                request.getName(),
+                                request.getPhone()
+                        );
 
 
-            return ResponseEntity.ok(
-                    new FindIdResponse(
-                            true,
-                            "아이디를 찾았습니다.",
-                            memberIds
-                    )
-            );
-
-
-        } catch (
-                PhoneVerificationException
-                | MemberRecoveryException e
-        ) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(
-                            new FindIdResponse(
-                                    false,
-                                    e.getMessage(),
-                                    List.of()
-                            )
-                    );
-        }
+        return ResponseEntity.ok(
+                new FindIdResponse(
+                        true,
+                        "아이디를 찾았습니다.",
+                        memberIds
+                )
+        );
     }
+
 
     /* 비밀번호 재설정 화면 */
 
@@ -117,24 +98,22 @@ public class MemberRecoveryController {
     }
 
 
-    /* =비밀번호 재설정 처리 */
+    /* 비밀번호 재설정 전 회원정보 확인 */
 
-    @PostMapping("/reset-password")
+    @PostMapping("/reset-password/validate-member")
     @ResponseBody
     public ResponseEntity<ResetPasswordResponse>
-    resetPassword(
+    validateResetPasswordMember(
 
             @Valid
             @RequestBody
-            ResetPasswordRequest request,
+            ResetPasswordMemberCheckRequest request,
 
             BindingResult bindingResult
 
     ) {
 
-        /* =====================================
-            DTO 검증 실패
-        ===================================== */
+        /* DTO 검증 실패 */
 
         if (bindingResult.hasErrors()) {
 
@@ -156,41 +135,76 @@ public class MemberRecoveryController {
         }
 
 
-        try {
-
-            memberRecoveryService
-                    .resetPassword(
-                            request.getMemberId(),
-                            request.getPhone(),
-                            request.getNewPassword(),
-                            request.getNewPasswordCheck()
-                    );
+        memberRecoveryService
+                .validateResetPasswordMember(
+                        request.getMemberId(),
+                        request.getPhone()
+                );
 
 
-            return ResponseEntity.ok(
-                    new ResetPasswordResponse(
-                            true,
-                            "비밀번호가 변경되었습니다."
-                    )
-            );
+        return ResponseEntity.ok(
+                new ResetPasswordResponse(
+                        true,
+                        "회원정보가 확인되었습니다."
+                )
+        );
+    }
 
 
-        } catch (
-                PhoneVerificationException
-                | MemberRecoveryException e
-        ) {
+
+
+
+    /* 비밀번호 재설정 처리 */
+
+    @PostMapping("/reset-password")
+    @ResponseBody
+    public ResponseEntity<ResetPasswordResponse>
+    resetPassword(
+
+            @Valid
+            @RequestBody
+            ResetPasswordRequest request,
+
+            BindingResult bindingResult
+
+    ) {
+
+        /* DTO 검증 실패 */
+
+        if (bindingResult.hasErrors()) {
+
+            String message =
+                    bindingResult
+                            .getAllErrors()
+                            .get(0)
+                            .getDefaultMessage();
+
 
             return ResponseEntity
                     .badRequest()
                     .body(
                             new ResetPasswordResponse(
                                     false,
-                                    e.getMessage()
+                                    message
                             )
                     );
         }
+
+
+        memberRecoveryService
+                .resetPassword(
+                        request.getMemberId(),
+                        request.getPhone(),
+                        request.getNewPassword(),
+                        request.getNewPasswordCheck()
+                );
+
+
+        return ResponseEntity.ok(
+                new ResetPasswordResponse(
+                        true,
+                        "비밀번호가 변경되었습니다."
+                )
+        );
     }
-
-
-
 }

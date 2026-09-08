@@ -125,6 +125,62 @@ public class MemberRecoveryService {
         return maskedMemberIds;
     }
 
+
+
+    /* 비밀번호 재설정 전 회원정보 확인 */
+
+    public void validateResetPasswordMember(
+            String memberId,
+            String phone
+    ) {
+
+        /* 1. RESET_PASSWORD 휴대전화 인증 확인 */
+
+        if (
+                !phoneVerificationService
+                        .isVerified(
+                                phone,
+                                PhoneVerificationPurpose.RESET_PASSWORD
+                        )
+        ) {
+
+            throw new PhoneVerificationException(
+                    "휴대전화 인증을 완료해주세요."
+            );
+        }
+
+
+        /* 2. 입력값 정리 */
+
+        String normalizedMemberId =
+                memberId.trim();
+
+
+        String phoneDigits =
+                phone.replaceAll(
+                        "\\D",
+                        ""
+                );
+
+
+        /* 3. 아이디 + 전화번호 회원 조회 */
+
+        memberRepository
+                .findByMemberIdAndPhoneDigits(
+                        normalizedMemberId,
+                        phoneDigits
+                )
+                .orElseThrow(
+                        () ->
+                                new MemberRecoveryException(
+                                        "입력한 회원정보를 확인해주세요."
+                                )
+                );
+    }
+
+
+
+
     /*  비밀번호 재설정 */
 
     @Transactional

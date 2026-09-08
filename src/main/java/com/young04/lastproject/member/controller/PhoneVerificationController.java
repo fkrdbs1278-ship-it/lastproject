@@ -60,36 +60,19 @@ public class PhoneVerificationController {
         }
 
 
-        try {
-
-            phoneVerificationService
-                    .sendVerificationCode(
-                            request.getPhone(),
-                            request.getPurpose()
-                    );
+        phoneVerificationService
+                .sendVerificationCode(
+                        request.getPhone(),
+                        request.getPurpose()
+                );
 
 
-            return ResponseEntity.ok(
-                    new PhoneVerificationResponse(
-                            true,
-                            "인증번호를 발송했습니다."
-                    )
-            );
-
-
-        } catch (
-                PhoneVerificationException e
-        ) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(
-                            new PhoneVerificationResponse(
-                                    false,
-                                    e.getMessage()
-                            )
-                    );
-        }
+        return ResponseEntity.ok(
+                new PhoneVerificationResponse(
+                        true,
+                        "인증번호를 발송했습니다."
+                )
+        );
     }
 
 
@@ -130,36 +113,19 @@ public class PhoneVerificationController {
         }
 
 
-        try {
-
-            phoneVerificationService
-                    .verifyCode(
-                            request.getPhone(),
-                            request.getPurpose(),
-                            request.getCode()
-                    );
+        phoneVerificationService
+                .verifyCode(
+                        request.getPhone(),
+                        request.getPurpose(),
+                        request.getCode()
+                );
 
 
-            return ResponseEntity.ok(
-                    new PhoneVerificationResponse(
-                            true,
-                            "휴대전화 인증이 완료되었습니다."
-                    )
-            );
-
-
-        } catch (
-                PhoneVerificationException e
-        ) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(
-                            new PhoneVerificationResponse(
-                                    false,
-                                    e.getMessage()
-                            )
-                    );
-        }
+        return ResponseEntity.ok(
+                new PhoneVerificationResponse(
+                        true,
+                        "휴대전화 인증이 완료되었습니다."
+                )
+        );
     }
 }
