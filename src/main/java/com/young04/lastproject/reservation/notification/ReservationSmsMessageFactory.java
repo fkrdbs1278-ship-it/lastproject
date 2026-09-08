@@ -18,6 +18,7 @@ public class ReservationSmsMessageFactory {
             case CONFIRMED -> "미용실 예약 확정";
             case UPDATED -> "미용실 예약 변경";
             case CANCELED -> "미용실 예약 취소";
+            case COMPLETED -> "미용실 시술 완료";
         };
     }
 
@@ -66,6 +67,7 @@ public class ReservationSmsMessageFactory {
             case CONFIRMED -> "예약이 확정되었습니다.";
             case UPDATED -> "예약 정보가 변경되었습니다.";
             case CANCELED -> "예약이 취소되었습니다.";
+            case COMPLETED -> "시술이 완료되었습니다. 이용해주셔서 감사합니다.";
         };
     }
 

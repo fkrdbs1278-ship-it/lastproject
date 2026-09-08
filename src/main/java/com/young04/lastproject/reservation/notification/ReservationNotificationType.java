@@ -4,5 +4,6 @@ public enum ReservationNotificationType {
     CREATED,
     CONFIRMED,
     UPDATED,
-    CANCELED
+    CANCELED,
+    COMPLETED
 }

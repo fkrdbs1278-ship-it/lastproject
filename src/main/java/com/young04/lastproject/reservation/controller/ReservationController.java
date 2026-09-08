@@ -24,6 +24,7 @@ public class ReservationController {
     private final ServiceMenuReader serviceMenuReader;
     private final HairStyleReader hairStyleReader;
     private final SalonEventReader salonEventReader;
+    private final AvailabilityNoticeService availabilityNoticeService;
 
     /*
      * 공개 예약 생성은 비회원 전용입니다.
@@ -115,6 +116,17 @@ public class ReservationController {
                                 reservationNo,
                                 reason
                         )
+        );
+    }
+
+    @GetMapping("/availability-notices")
+    public ResponseEntity<AvailabilityNoticeResponse> availabilityNotices(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date
+    ) {
+        return ResponseEntity.ok(
+                availabilityNoticeService.getNotice(date)
         );
     }
 

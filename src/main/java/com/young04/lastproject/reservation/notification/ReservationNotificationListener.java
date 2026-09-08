@@ -1,5 +1,6 @@
 package com.young04.lastproject.reservation.notification;
 
+import com.young04.lastproject.global.sms.sender.SmsSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class ReservationNotificationListener {
 
-    private final ReservationSmsSender smsSender;
+    private final SmsSender smsSender;
     private final ReservationSmsMessageFactory messageFactory;
 
     /*
@@ -27,7 +28,7 @@ public class ReservationNotificationListener {
     ) {
         try {
             smsSender.send(
-                    event.guestPhone(),
+                    event.phone(),
                     messageFactory.subject(event),
                     messageFactory.content(event)
             );

@@ -406,6 +406,7 @@
 
                     <div class="field">
                         <span>예약 가능 시간</span>
+                        <div id="phoneAvailabilityNotice" class="availability-notice hidden"></div>
                         <div id="phoneTimeSlots" class="time-slots">
                             <div class="empty-box">날짜를 선택해주세요.</div>
                         </div>
@@ -470,12 +471,19 @@
             document.getElementById("phoneReservationDate")?.value;
         const container =
             document.getElementById("phoneTimeSlots");
+        const noticeContainer =
+            document.getElementById("phoneAvailabilityNotice");
 
         if (!container) return;
 
         if (!serviceMenuNo || !date) {
             container.innerHTML =
                 `<div class="empty-box">시술과 날짜를 선택해주세요.</div>`;
+
+            noticeContainer?.classList.add("hidden");
+            if (noticeContainer) {
+                noticeContainer.innerHTML = "";
+            }
             return;
         }
 
@@ -483,41 +491,71 @@
             `<div class="loading-box">예약 가능 시간을 조회하는 중입니다.</div>`;
 
         try {
-            const response = await fetch(
-                `/api/reservations/available-times?` +
-                new URLSearchParams({
-                    date,
-                    serviceMenuNo: String(serviceMenuNo)
-                })
-            );
+            const [timeResponse, noticeResponse] =
+                await Promise.all([
+                    fetch(
+                        `/api/reservations/available-times?` +
+                        new URLSearchParams({
+                            date,
+                            serviceMenuNo: String(serviceMenuNo)
+                        })
+                    ),
+                    fetch(
+                        `/api/reservations/availability-notices?` +
+                        new URLSearchParams({ date })
+                    )
+                ]);
 
-            const body = await readJson(response);
+            const timeBody = await readJson(timeResponse);
+            const noticeBody = await readJson(noticeResponse);
 
-            if (!response.ok) {
-                throw new Error(body.message || "예약 가능 시간 조회에 실패했습니다.");
+            if (!timeResponse.ok) {
+                throw new Error(
+                    timeBody.message || "예약 가능 시간 조회에 실패했습니다."
+                );
             }
 
-            if (!Array.isArray(body) || !body.length) {
+            if (noticeResponse.ok) {
+                renderAvailabilityNotice(
+                    noticeContainer,
+                    noticeBody
+                );
+            }
+
+            if (!Array.isArray(timeBody)
+                    || timeBody.length === 0) {
                 container.innerHTML =
-                    `<div class="empty-box">예약 가능한 시간이 없습니다.</div>`;
+                    `<div class="empty-box">${
+                        escapeHtml(
+                            bestUnavailableMessage(noticeBody)
+                                || "예약 가능한 시간이 없습니다."
+                        )
+                    }</div>`;
                 return;
             }
 
             container.innerHTML = "";
 
-            body.forEach(slot => {
+            timeBody.forEach(slot => {
                 const start = timeValue(slot.startTime);
                 const end = timeValue(slot.endTime);
 
-                const button = document.createElement("button");
+                const button =
+                    document.createElement("button");
+
                 button.type = "button";
                 button.className = "time-button";
                 button.textContent = `${start} ~ ${end}`;
 
                 button.addEventListener("click", () => {
                     phoneSelectedTime = start;
-                    container.querySelectorAll(".time-button")
-                        .forEach(el => el.classList.remove("selected"));
+
+                    container
+                        .querySelectorAll(".time-button")
+                        .forEach(el =>
+                            el.classList.remove("selected")
+                        );
+
                     button.classList.add("selected");
                 });
 
@@ -528,6 +566,84 @@
                 `<div class="empty-box">${escapeHtml(error.message)}</div>`;
         }
     }
+
+    function renderAvailabilityNotice(
+            container,
+            notice
+    ) {
+        if (!container || !notice) return;
+
+        const lines = [];
+
+        const hasAllDayNotice =
+            (notice.notices || [])
+                .some(item => item.allDay);
+
+        if (notice.openDay === false
+                && notice.dayMessage
+                && !hasAllDayNotice) {
+            lines.push({
+                type: "closed",
+                text: notice.dayMessage
+            });
+        }
+
+        (notice.notices || []).forEach(item => {
+            let text =
+                item.message || item.title || "";
+
+            if (!item.allDay &&
+                item.startTime &&
+                item.endTime) {
+                text +=
+                    ` (${String(item.startTime).slice(0, 5)}` +
+                    ` ~ ${String(item.endTime).slice(0, 5)})`;
+            }
+
+            lines.push({
+                type:
+                    item.noticeType === "PERSONAL"
+                        ? "personal"
+                        : "holiday",
+                text
+            });
+        });
+
+        if (!lines.length) {
+            container.classList.add("hidden");
+            container.innerHTML = "";
+            return;
+        }
+
+        container.innerHTML =
+            lines.map(line => `
+                <div class="availability-notice-item availability-${line.type}">
+                    ${escapeHtml(line.text)}
+                </div>
+            `).join("");
+
+        container.classList.remove("hidden");
+    }
+
+    function bestUnavailableMessage(notice) {
+        if (!notice) return null;
+
+        const allDay =
+            (notice.notices || [])
+                .find(item => item.allDay);
+
+        if (allDay) {
+            return allDay.message || allDay.title;
+        }
+
+        if (notice.openDay === false) {
+            return notice.dayMessage
+                || "정기 휴무일입니다.";
+        }
+
+        return null;
+    }
+
 
     async function submitPhoneReservation() {
         const guestName =

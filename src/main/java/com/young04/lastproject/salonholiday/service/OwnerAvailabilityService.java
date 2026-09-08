@@ -1,5 +1,6 @@
 package com.young04.lastproject.salonholiday.service;
 
+import com.young04.lastproject.reservation.service.OperatingScheduleConflictService;
 import com.young04.lastproject.salonholiday.dto.OwnerAvailabilityBlockRequest;
 import com.young04.lastproject.salonholiday.dto.SalonHolidayResponse;
 import com.young04.lastproject.salonholiday.entity.HolidayType;
@@ -19,6 +20,7 @@ import java.util.List;
 public class OwnerAvailabilityService {
 
     private final SalonHolidayRepository salonHolidayRepository;
+    private final OperatingScheduleConflictService operatingScheduleConflictService;
 
 
     /*
@@ -62,6 +64,10 @@ public class OwnerAvailabilityService {
                 request.getStartAt(),
                 request.getEndAt()
         );
+        protectExistingReservations(
+                request.getStartAt(),
+                request.getEndAt()
+        );
 
         SalonHoliday saved =
                 salonHolidayRepository.save(
@@ -91,6 +97,10 @@ public class OwnerAvailabilityService {
     ) {
 
         validatePeriod(
+                request.getStartAt(),
+                request.getEndAt()
+        );
+        protectExistingReservations(
                 request.getStartAt(),
                 request.getEndAt()
         );
@@ -164,6 +174,19 @@ public class OwnerAvailabilityService {
      * 시작/종료 시간 검증
      * =========================================================
      */
+    private void protectExistingReservations(
+            LocalDateTime startAt,
+            LocalDateTime endAt
+    ) {
+        operatingScheduleConflictService
+                .lockScheduleRange(startAt, endAt);
+        operatingScheduleConflictService
+                .assertNoActiveReservationOverlap(
+                        startAt,
+                        endAt
+                );
+    }
+
     private void validatePeriod(
             LocalDateTime startAt,
             LocalDateTime endAt
