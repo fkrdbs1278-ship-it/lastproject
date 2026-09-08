@@ -64,10 +64,16 @@
 
                 <div class="summary-content">
                     <p class="summary-title">오늘 예약</p>
-                    <strong class="summary-number">12건</strong>
+                    <strong class="summary-number"
+                            th:text="${reservationSummary.todayCount + '건'}">
+                        0건
+                    </strong>
 
                     <p class="summary-description">
-                        오늘 예정된 전체 예약
+                        남은 예약
+                        <strong th:text="${reservationSummary.todayRemainingCount + '건'}">
+                            0건
+                        </strong>
                     </p>
                 </div>
 
@@ -114,13 +120,47 @@
 
         </section>
 
+        <!-- 2part 예약 운영 바로가기 -->
+        <section class="reservation-quick-actions">
+
+            <a th:href="@{/admin/reservations}"
+               class="reservation-quick-link">
+                <strong>예약 관리</strong>
+                <span>전체 예약 조회·상태 변경</span>
+            </a>
+
+            <a th:href="@{/admin/reservations(tool='phone')}"
+               class="reservation-quick-link">
+                <strong>전화 예약</strong>
+                <span>관리자 전화 예약 등록</span>
+            </a>
+
+            <a th:href="@{/admin/reservations(tool='business-hours')}"
+               class="reservation-quick-link">
+                <strong>영업시간</strong>
+                <span>영업시간·정기휴무 관리</span>
+            </a>
+
+            <a th:href="@{/admin/reservations(tool='holidays')}"
+               class="reservation-quick-link">
+                <strong>휴일 관리</strong>
+                <span>임시 휴일·휴가 등록</span>
+            </a>
+
+            <a th:href="@{/admin/reservations(tool='availability-blocks')}"
+               class="reservation-quick-link">
+                <strong>개인 일정</strong>
+                <span>예약 불가 시간 관리</span>
+            </a>
+
+        </section>
+
         <!-- 예약 일정과 재고 알림 -->
         <section class="dashboard-grid">
 
-            <!-- 이번 주 예약 일정 -->
+            <!-- 이번 주 실제 예약 일정 -->
             <article class="dashboard-panel reservation-calendar-panel">
 
-                <!-- 예약 일정 상단 -->
                 <div class="calendar-panel-header">
 
                     <div>
@@ -128,374 +168,106 @@
                         <h2>이번 주 예약 일정</h2>
 
                         <p class="calendar-summary">
-                            이번 주 예약 <strong>14건</strong>
+                            이번 주 예약
+                            <strong th:text="${reservationSummary.weekCount + '건'}">
+                                0건
+                            </strong>
                             <span></span>
-                            오늘 예약 <strong>3건</strong>
+                            오늘 예약
+                            <strong th:text="${reservationSummary.todayCount + '건'}">
+                                0건
+                            </strong>
                             <span></span>
-                            남은 예약 <strong>2건</strong>
+                            남은 예약
+                            <strong th:text="${reservationSummary.todayRemainingCount + '건'}">
+                                0건
+                            </strong>
                         </p>
                     </div>
 
                     <div class="calendar-controller">
 
                         <strong class="calendar-range">
-                            2026년 8월 24일 ~ 8월 30일
+                            <span th:text="${#temporals.format(reservationSummary.weekStart, 'yyyy.MM.dd')}">
+                                2026.09.07
+                            </span>
+                            ~
+                            <span th:text="${#temporals.format(reservationSummary.weekEnd, 'yyyy.MM.dd')}">
+                                2026.09.13
+                            </span>
                         </strong>
 
                         <div class="calendar-buttons">
-
-                            <!-- 주간 이동 기능을 연결한 후 이전·오늘·다음 버튼을 추가한다. -->
-
-                            <a href="/admin/reservations"
-                               th:href="@{/admin/reservations}"
+                            <a th:href="@{/admin/reservations}"
                                class="calendar-all-button">
                                 전체 예약 보기
                                 <span>→</span>
                             </a>
-
                         </div>
 
                     </div>
 
                 </div>
 
-                <!-- 주간 예약표 -->
-                <div class="schedule-calendar">
+                <div class="dashboard-reservation-list"
+                     th:if="${!#lists.isEmpty(reservationSummary.weekReservations)}">
 
-                    <!-- 요일과 날짜 -->
-                    <div class="schedule-header">
+                    <a class="dashboard-reservation-item"
+                       th:each="reservation : ${reservationSummary.weekReservations}"
+                       th:href="@{/admin/reservations(reservationNo=${reservation.reservationNo})}">
 
-                        <div class="time-heading">시간</div>
-
-                        <div class="day-heading">
-                            <span>월</span>
-                            <strong>24</strong>
-                            <small>2건</small>
+                        <div class="dashboard-reservation-date">
+                            <strong th:text="${#temporals.format(reservation.startAt, 'MM.dd')}">
+                                09.08
+                            </strong>
+                            <span th:text="${#temporals.format(reservation.startAt, 'E')}">
+                                월
+                            </span>
                         </div>
 
-                        <div class="day-heading">
-                            <span>화</span>
-                            <strong>25</strong>
-                            <small>3건</small>
+                        <div class="dashboard-reservation-main">
+                            <strong th:text="${reservation.serviceName}">
+                                커트
+                            </strong>
+
+                            <span>
+                                <span th:text="${reservation.customerLabel}">
+                                    회원 예약
+                                </span>
+                                ·
+                                <span th:text="${#temporals.format(reservation.startAt, 'HH:mm')}">
+                                    10:00
+                                </span>
+                                ~
+                                <span th:text="${#temporals.format(reservation.endAt, 'HH:mm')}">
+                                    10:30
+                                </span>
+                            </span>
                         </div>
 
-                        <div class="day-heading">
-                            <span>수</span>
-                            <strong>26</strong>
-                            <small>2건</small>
-                        </div>
-
-                        <div class="day-heading today">
-                            <span>목</span>
-                            <strong>27</strong>
-                            <small>3건</small>
-                        </div>
-
-                        <div class="day-heading">
-                            <span>금</span>
-                            <strong>28</strong>
-                            <small>1건</small>
-                        </div>
-
-                        <div class="day-heading saturday">
-                            <span>토</span>
-                            <strong>29</strong>
-                            <small>3건</small>
-                        </div>
-
-                        <div class="day-heading sunday">
-                            <span>일</span>
-                            <strong>30</strong>
-                            <small>휴무</small>
-                        </div>
-
-                    </div>
-
-                    <!-- 10시 -->
-                    <div class="schedule-row">
-
-                        <div class="schedule-time">10:00</div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>김○○</strong>
-                                <span>여성 커트</span>
-                                <small>10:00 · 60분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>박○○</strong>
-                                <span>전체 염색</span>
-                                <small>10:00 · 120분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell today-column">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>이○○</strong>
-                                <span>남성 커트</span>
-                                <small>10:00 · 60분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell holiday-cell"></div>
-
-                    </div>
-
-                    <!-- 11시 -->
-                    <div class="schedule-row">
-
-                        <div class="schedule-time">11:00</div>
-
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>최○○</strong>
-                                <span>볼륨 펌</span>
-                                <small>11:00 · 120분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell today-column"></div>
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>김○○</strong>
-                                <span>뿌리 염색</span>
-                                <small>11:00 · 90분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell holiday-cell"></div>
-
-                    </div>
-
-                    <!-- 점심시간 -->
-                    <div class="schedule-row lunch-row">
-
-                        <div class="schedule-time">12:00</div>
-
-                        <div class="lunch-cell">
-                            <span>점심시간</span>
-                        </div>
-
-                        <div class="schedule-cell holiday-cell"></div>
-
-                    </div>
-
-                    <!-- 13시 -->
-                    <div class="schedule-row">
-
-                        <div class="schedule-time">13:00</div>
-
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block completed-reservation">
-
-                                <strong>정○○</strong>
-                                <span>여성 커트</span>
-                                <small>13:00 · 60분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell today-column">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>한○○</strong>
-                                <span>헤어 클리닉</span>
-                                <small>13:00 · 90분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell holiday-cell">
-                            <span class="holiday-text">정기 휴무</span>
-                        </div>
-
-                    </div>
-
-                    <!-- 14시 -->
-                    <div class="schedule-row">
-
-                        <div class="schedule-time">14:00</div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>윤○○</strong>
-                                <span>레이어드 커트</span>
-                                <small>14:00 · 60분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell today-column"></div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>서○○</strong>
-                                <span>셋팅 펌</span>
-                                <small>14:00 · 120분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell holiday-cell"></div>
-
-                    </div>
-
-                    <!-- 15시 -->
-                    <div class="schedule-row">
-
-                        <div class="schedule-time">15:00</div>
-
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>이○○</strong>
-                                <span>남성 펌</span>
-                                <small>15:00 · 120분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell today-column"></div>
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>임○○</strong>
-                                <span>헤어 클리닉</span>
-                                <small>15:00 · 90분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell holiday-cell"></div>
-
-                    </div>
-
-                    <!-- 16시 -->
-                    <div class="schedule-row">
-
-                        <div class="schedule-time">16:00</div>
-
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>송○○</strong>
-                                <span>전체 염색</span>
-                                <small>16:00 · 120분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell today-column"></div>
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell holiday-cell"></div>
-
-                    </div>
-
-                    <!-- 17시 -->
-                    <div class="schedule-row">
-
-                        <div class="schedule-time">17:00</div>
-
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell"></div>
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell today-column">
-                            <button type="button"
-                                    class="reservation-block reserved-reservation">
-
-                                <strong>강○○</strong>
-                                <span>여성 커트</span>
-                                <small>17:00 · 60분</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell"></div>
-
-                        <div class="schedule-cell">
-                            <button type="button"
-                                    class="reservation-block no-show-reservation">
-
-                                <strong>조○○</strong>
-                                <span>남성 커트</span>
-                                <small>17:00 · 노쇼</small>
-                            </button>
-                        </div>
-
-                        <div class="schedule-cell holiday-cell"></div>
-
-                    </div>
+                        <span class="dashboard-reservation-status"
+                              th:classappend="${' status-' + #strings.toLowerCase(reservation.status.name())}"
+                              th:text="${
+                                  reservation.status.name() == 'REQUESTED' ? '접수' :
+                                  reservation.status.name() == 'CONFIRMED' ? '확정' :
+                                  reservation.status.name() == 'COMPLETED' ? '완료' :
+                                  reservation.status.name() == 'NO_SHOW' ? '노쇼' :
+                                  reservation.status.name()
+                              }">
+                            접수
+                        </span>
+
+                    </a>
 
                 </div>
 
-                <!-- 예약 상태 안내 -->
-                <div class="calendar-bottom">
-
-                    <div class="calendar-legend">
-
-                        <span>
-                            <i class="calendar-legend-color reserved-color"></i>
-                            예약
-                        </span>
-
-                        <span>
-                            <i class="calendar-legend-color completed-color"></i>
-                            시술 완료
-                        </span>
-
-                        <span>
-                            <i class="calendar-legend-color no-show-color"></i>
-                            노쇼
-                        </span>
-
-                    </div>
-
+                <div class="dashboard-reservation-empty"
+                     th:if="${#lists.isEmpty(reservationSummary.weekReservations)}">
+                    이번 주 예약이 없습니다.
                 </div>
 
             </article>
+
 
             <!-- 오른쪽 운영 관리 영역 -->
             <div class="dashboard-side-column">

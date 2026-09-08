@@ -94,6 +94,13 @@ public interface ReservationRepository
             @Param("activeStatuses") Collection<ReservationStatus> activeStatuses
     );
 
+    List<Reservation>
+    findByStartAtGreaterThanEqualAndStartAtLessThanAndStatusNotOrderByStartAtAsc(
+            LocalDateTime rangeStart,
+            LocalDateTime rangeEnd,
+            ReservationStatus excludedStatus
+    );
+
     @Query("""
             select r
             from Reservation r

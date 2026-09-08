@@ -1439,3 +1439,147 @@ a {
         justify-self: start;
     }
 }
+
+/* =========================================================
+   1234 Merge - 2part 예약 기능 연결
+   ========================================================= */
+
+.reservation-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.reservation-quick-link {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 82px;
+    padding: 16px;
+    border: 1px solid #e7e1db;
+    border-radius: 14px;
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+}
+
+.reservation-quick-link:hover {
+    transform: translateY(-1px);
+}
+
+.reservation-quick-link strong {
+    font-size: 15px;
+}
+
+.reservation-quick-link span {
+    font-size: 12px;
+    opacity: 0.72;
+}
+
+.dashboard-reservation-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.dashboard-reservation-item {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 13px 14px;
+    border: 1px solid #ece6e0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+}
+
+.dashboard-reservation-item:hover {
+    border-color: #cfc5bc;
+}
+
+.dashboard-reservation-date {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dashboard-reservation-date strong {
+    font-size: 14px;
+}
+
+.dashboard-reservation-date span {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.dashboard-reservation-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.dashboard-reservation-main strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dashboard-reservation-main span {
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.dashboard-reservation-status {
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    white-space: nowrap;
+    background: #f3f0ed;
+}
+
+.dashboard-reservation-status.status-requested {
+    font-weight: 700;
+}
+
+.dashboard-reservation-status.status-confirmed {
+    font-weight: 700;
+}
+
+.dashboard-reservation-status.status-completed,
+.dashboard-reservation-status.status-no_show {
+    opacity: 0.72;
+}
+
+.dashboard-reservation-empty {
+    margin-top: 18px;
+    padding: 32px 16px;
+    border: 1px dashed #ddd4cc;
+    border-radius: 12px;
+    text-align: center;
+    opacity: 0.75;
+}
+
+@media (max-width: 1100px) {
+    .reservation-quick-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .reservation-quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-reservation-item {
+        grid-template-columns: 54px minmax(0, 1fr);
+    }
+
+    .dashboard-reservation-status {
+        grid-column: 2;
+        justify-self: start;
+    }
+}

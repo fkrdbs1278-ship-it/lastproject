@@ -198,8 +198,7 @@ class CustomerProfileServiceTest {
         CustomerProfile result =
                 customerProfileService.completeVisit(
                         customerId,
-                        visitDate,
-                        revisitDate
+                        visitDate
                 );
 
 
@@ -217,13 +216,6 @@ class CustomerProfileServiceTest {
                 visitDate,
                 result.getLastVisitDate()
         );
-
-
-        assertEquals(
-                revisitDate,
-                result.getRevisitRecommendedDate()
-        );
-
 
         assertSame(
                 normalGrade,
@@ -423,8 +415,7 @@ class CustomerProfileServiceTest {
 
         customerProfileService.completeVisit(
                 customerId,
-                visitDate,
-                revisitDate
+                visitDate
         );
 
 
@@ -454,13 +445,6 @@ class CustomerProfileServiceTest {
                 visitDate,
                 customer.getLastVisitDate()
         );
-
-
-        assertEquals(
-                revisitDate,
-                customer.getRevisitRecommendedDate()
-        );
-
 
         assertEquals(
                 new BigDecimal(

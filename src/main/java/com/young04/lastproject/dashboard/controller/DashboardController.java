@@ -1,6 +1,7 @@
 package com.young04.lastproject.dashboard.controller;
 
 import com.young04.lastproject.material.service.MaterialService;
+import com.young04.lastproject.reservation.service.ReservationDashboardService;
 import com.young04.lastproject.purchaseorder.repository.PurchaseOrderRepository;
 import com.young04.lastproject.purchaseorder.entity.PurchaseOrder;
 import com.young04.lastproject.purchaseorderitem.service.PurchaseOrderItemService;
@@ -34,9 +35,21 @@ public class DashboardController {
     // 대시보드 통계 조회
     private final DashboardStatisticsRepository dashboardStatisticsRepository;
 
+    // 예약 도메인의 실제 예약 현황 조회
+    private final ReservationDashboardService reservationDashboardService;
+
     // 관리자 대시보드 조회
     @GetMapping("/admin/dashboard")
     public String dashboard(Model model) {
+
+        // 실제 예약 현황
+        var reservationSummary =
+                reservationDashboardService.getSummary();
+
+        model.addAttribute(
+                "reservationSummary",
+                reservationSummary
+        );
 
         // 이번 달 방문 고객 수
         model.addAttribute(

@@ -175,18 +175,39 @@ class Phase2ServiceIntegrationTest {
 
     @Test
     void 확정예약을_시술완료로_변경한다() {
-        ReservationResponse created =
-                reservationService.createReservation(
-                        memberRequest(MONDAY.atTime(13, 30))
+
+        LocalDateTime pastStart =
+                LocalDateTime.now()
+                        .minusHours(2);
+
+        Reservation reservation =
+                Reservation.createMemberReservation(
+                        memberNo,
+                        serviceMenuNo,
+                        "PHASE2_TEST_CUT_30",
+                        30,
+                        pastStart,
+                        pastStart.plusMinutes(30),
+                        "시술 완료 테스트",
+                        ReservationSource.ONLINE
                 );
 
-        reservationService.confirmReservation(created.getReservationNo());
+        reservation.confirm();
+
+        Reservation saved =
+                reservationRepository.saveAndFlush(
+                        reservation
+                );
 
         ReservationResponse completed =
-                reservationService.completeReservation(created.getReservationNo());
+                reservationService.completeReservation(
+                        saved.getReservationNo()
+                );
 
         assertThat(completed.getStatus())
-                .isEqualTo(ReservationStatus.COMPLETED);
+                .isEqualTo(
+                        ReservationStatus.COMPLETED
+                );
     }
 
     @Test
@@ -209,29 +230,53 @@ class Phase2ServiceIntegrationTest {
 
     @Test
     void 확정예약을_노쇼처리한다() {
-        ReservationResponse created =
-                reservationService.createReservation(
-                        memberRequest(MONDAY.atTime(16, 0))
+
+        LocalDateTime pastStart =
+                LocalDateTime.now()
+                        .minusHours(2);
+
+        Reservation reservation =
+                Reservation.createMemberReservation(
+                        memberNo,
+                        serviceMenuNo,
+                        "PHASE2_TEST_CUT_30",
+                        30,
+                        pastStart,
+                        pastStart.plusMinutes(30),
+                        "노쇼 테스트",
+                        ReservationSource.ONLINE
                 );
 
-        reservationService.confirmReservation(created.getReservationNo());
+        reservation.confirm();
+
+        Reservation saved =
+                reservationRepository.saveAndFlush(
+                        reservation
+                );
 
         NoShow noShow =
                 noShowService.markNoShow(
-                        created.getReservationNo(),
+                        saved.getReservationNo(),
                         "예약시간 미방문",
                         "테스트 노쇼 처리"
                 );
 
         entityManager.flush();
 
-        Reservation reservation =
-                reservationRepository.findById(created.getReservationNo())
+        Reservation result =
+                reservationRepository
+                        .findById(
+                                saved.getReservationNo()
+                        )
                         .orElseThrow();
 
-        assertThat(noShow.getNoShowNo()).isNotNull();
-        assertThat(reservation.getStatus())
-                .isEqualTo(ReservationStatus.NO_SHOW);
+        assertThat(noShow.getNoShowNo())
+                .isNotNull();
+
+        assertThat(result.getStatus())
+                .isEqualTo(
+                        ReservationStatus.NO_SHOW
+                );
     }
 
     private ReservationCreateRequest memberRequest(LocalDateTime startAt) {

@@ -75,7 +75,44 @@
     document.getElementById("openAvailabilityBlocks")
         ?.addEventListener("click", openAvailabilityBlocks);
 
-    loadReservations();
+    initializeFromQuery();
+
+    async function initializeFromQuery() {
+        await loadReservations();
+
+        const params =
+            new URLSearchParams(window.location.search);
+
+        const tool =
+            params.get("tool");
+
+        if (tool === "phone") {
+            await openPhoneReservation();
+            return;
+        }
+
+        if (tool === "business-hours") {
+            await openBusinessHours();
+            return;
+        }
+
+        if (tool === "holidays") {
+            await openHolidays();
+            return;
+        }
+
+        if (tool === "availability-blocks") {
+            await openAvailabilityBlocks();
+            return;
+        }
+
+        const reservationNo =
+            Number(params.get("reservationNo"));
+
+        if (reservationNo > 0) {
+            await openDetail(reservationNo);
+        }
+    }
 
     async function loadReservations() {
         tbody.innerHTML =

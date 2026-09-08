@@ -304,23 +304,26 @@
             <div class="mypage-menu-grid">
 
 
-                <!-- 예약 -->
+                <!-- 예약 내역 -->
 
-                <div class="mypage-menu-card">
+                <a
+                        th:href="@{/my-reservations}"
+                        class="mypage-menu-card mypage-menu-link"
+                >
 
                     <h3>
                         예약 내역
                     </h3>
 
                     <p>
-                        예약한 시술을 확인합니다.
+                        예약 상태, 일정, 변경 및 취소 내역을 확인합니다.
                     </p>
 
-                    <span class="mypage-menu-ready">
-                        준비 중
+                    <span class="mypage-menu-arrow">
+                        보기 →
                     </span>
 
-                </div>
+                </a>
 
 
                 <!-- 결제 -->
