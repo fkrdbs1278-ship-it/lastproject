@@ -3,7 +3,6 @@ package com.young04.lastproject.member.controller;
 import com.young04.lastproject.member.dto.phone.PhoneVerificationCheckRequest;
 import com.young04.lastproject.member.dto.phone.PhoneVerificationResponse;
 import com.young04.lastproject.member.dto.phone.PhoneVerificationSendRequest;
-import com.young04.lastproject.member.exception.PhoneVerificationException;
 import com.young04.lastproject.member.service.PhoneVerificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
