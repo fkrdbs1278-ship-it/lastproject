@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>관리자 대시보드</title>
+
+    <!-- 공통 사이드바 CSS -->
+    <link rel="stylesheet"
+          href="/css/admin/dashboard-sidebar.css"
+          th:href="@{/css/admin/dashboard-sidebar.css}">
+
+    <!-- 대시보드 전용 CSS -->
+    <link rel="stylesheet"
+          href="/css/admin/dashboard.css"
+          th:href="@{/css/admin/dashboard.css}">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- 관리자 공통 사이드바 -->
+    <aside th:replace="~{admin/dashboard-sidebar :: sidebar('dashboard')}"></aside>
+
+    <!-- 대시보드 콘텐츠 -->
+    <main class="dashboard-content">
+
+        <!-- 페이지 상단 -->
+        <header class="dashboard-header">
+
+            <div class="header-title">
+                <p class="page-label">SALON ADMIN</p>
+
+                <h1>관리자 대시보드</h1>
+
+                <p class="page-description">
+                    오늘의 예약과 매장 운영 현황을 확인하세요.
+                </p>
+            </div>
+
+            <a href="/"
+               th:href="@{/}"
+               class="site-button">
+
+                사용자 사이트로 이동
+                <span>↗</span>
+            </a>
+
+        </header>
+
+        <!-- 상단 요약 카드 -->
+        <section class="summary-grid">
+
+            <!-- 오늘 예약 -->
+            <article class="summary-card reservation-card">
+
+                <div class="summary-icon">□</div>
+
+                <div class="summary-content">
+                    <p class="summary-title">오늘 예약</p>
+                    <strong class="summary-number">12건</strong>
+
+                    <p class="summary-description">
+                        오늘 예정된 전체 예약
+                    </p>
+                </div>
+
+                <div class="card-decoration"></div>
+            </article>
+
+            <!-- 오늘 매출 -->
+            <article class="summary-card sales-card">
+
+                <div class="summary-icon">₩</div>
+
+                <div class="summary-content">
+                    <p class="summary-title">오늘 매출</p>
+                    <strong class="summary-number">580,000원</strong>
+
+                    <p class="summary-description">
+                        오늘 결제 완료 7건
+                    </p>
+                </div>
+
+                <div class="card-decoration"></div>
+            </article>
+
+            <!-- 이번 달 방문 고객 -->
+            <article class="summary-card visit-card">
+
+                <div class="summary-icon">↻</div>
+
+                <div class="summary-content">
+                    <p class="summary-title">이번 달 방문 고객</p>
+
+                    <strong class="summary-number"
+                            th:text="${monthlyVisitCount + '명'}">
+                        0명
+                    </strong>
+
+                    <p class="summary-description">
+                        이번 달 시술 완료 고객
+                    </p>
+                </div>
+
+                <div class="card-decoration"></div>
+            </article>
+
+        </section>
+
+        <!-- 예약 일정과 재고 알림 -->
+        <section class="dashboard-grid">
+
+            <!-- 이번 주 예약 일정 -->
+            <article class="dashboard-panel reservation-calendar-panel">
+
+                <!-- 예약 일정 상단 -->
+                <div class="calendar-panel-header">
+
+                    <div>
+                        <p class="panel-label">RESERVATION SCHEDULE</p>
+                        <h2>이번 주 예약 일정</h2>
+
+                        <p class="calendar-summary">
+                            이번 주 예약 <strong>14건</strong>
+                            <span></span>
+                            오늘 예약 <strong>3건</strong>
+                            <span></span>
+                            남은 예약 <strong>2건</strong>
+                        </p>
+                    </div>
+
+                    <div class="calendar-controller">
+
+                        <strong class="calendar-range">
+                            2026년 8월 24일 ~ 8월 30일
+                        </strong>
+
+                        <div class="calendar-buttons">
+
+                            <!-- 주간 이동 기능을 연결한 후 이전·오늘·다음 버튼을 추가한다. -->
+
+                            <a href="/admin/reservations"
+                               th:href="@{/admin/reservations}"
+                               class="calendar-all-button">
+                                전체 예약 보기
+                                <span>→</span>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- 주간 예약표 -->
+                <div class="schedule-calendar">
+
+                    <!-- 요일과 날짜 -->
+                    <div class="schedule-header">
+
+                        <div class="time-heading">시간</div>
+
+                        <div class="day-heading">
+                            <span>월</span>
+                            <strong>24</strong>
+                            <small>2건</small>
+                        </div>
+
+                        <div class="day-heading">
+                            <span>화</span>
+                            <strong>25</strong>
+                            <small>3건</small>
+                        </div>
+
+                        <div class="day-heading">
+                            <span>수</span>
+                            <strong>26</strong>
+                            <small>2건</small>
+                        </div>
+
+                        <div class="day-heading today">
+                            <span>목</span>
+                            <strong>27</strong>
+                            <small>3건</small>
+                        </div>
+
+                        <div class="day-heading">
+                            <span>금</span>
+                            <strong>28</strong>
+                            <small>1건</small>
+                        </div>
+
+                        <div class="day-heading saturday">
+                            <span>토</span>
+                            <strong>29</strong>
+                            <small>3건</small>
+                        </div>
+
+                        <div class="day-heading sunday">
+                            <span>일</span>
+                            <strong>30</strong>
+                            <small>휴무</small>
+                        </div>
+
+                    </div>
+
+                    <!-- 10시 -->
+                    <div class="schedule-row">
+
+                        <div class="schedule-time">10:00</div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>김○○</strong>
+                                <span>여성 커트</span>
+                                <small>10:00 · 60분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>박○○</strong>
+                                <span>전체 염색</span>
+                                <small>10:00 · 120분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell today-column">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>이○○</strong>
+                                <span>남성 커트</span>
+                                <small>10:00 · 60분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell holiday-cell"></div>
+
+                    </div>
+
+                    <!-- 11시 -->
+                    <div class="schedule-row">
+
+                        <div class="schedule-time">11:00</div>
+
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>최○○</strong>
+                                <span>볼륨 펌</span>
+                                <small>11:00 · 120분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell today-column"></div>
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>김○○</strong>
+                                <span>뿌리 염색</span>
+                                <small>11:00 · 90분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell holiday-cell"></div>
+
+                    </div>
+
+                    <!-- 점심시간 -->
+                    <div class="schedule-row lunch-row">
+
+                        <div class="schedule-time">12:00</div>
+
+                        <div class="lunch-cell">
+                            <span>점심시간</span>
+                        </div>
+
+                        <div class="schedule-cell holiday-cell"></div>
+
+                    </div>
+
+                    <!-- 13시 -->
+                    <div class="schedule-row">
+
+                        <div class="schedule-time">13:00</div>
+
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block completed-reservation">
+
+                                <strong>정○○</strong>
+                                <span>여성 커트</span>
+                                <small>13:00 · 60분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell today-column">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>한○○</strong>
+                                <span>헤어 클리닉</span>
+                                <small>13:00 · 90분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell holiday-cell">
+                            <span class="holiday-text">정기 휴무</span>
+                        </div>
+
+                    </div>
+
+                    <!-- 14시 -->
+                    <div class="schedule-row">
+
+                        <div class="schedule-time">14:00</div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>윤○○</strong>
+                                <span>레이어드 커트</span>
+                                <small>14:00 · 60분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell today-column"></div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>서○○</strong>
+                                <span>셋팅 펌</span>
+                                <small>14:00 · 120분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell holiday-cell"></div>
+
+                    </div>
+
+                    <!-- 15시 -->
+                    <div class="schedule-row">
+
+                        <div class="schedule-time">15:00</div>
+
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>이○○</strong>
+                                <span>남성 펌</span>
+                                <small>15:00 · 120분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell today-column"></div>
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>임○○</strong>
+                                <span>헤어 클리닉</span>
+                                <small>15:00 · 90분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell holiday-cell"></div>
+
+                    </div>
+
+                    <!-- 16시 -->
+                    <div class="schedule-row">
+
+                        <div class="schedule-time">16:00</div>
+
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>송○○</strong>
+                                <span>전체 염색</span>
+                                <small>16:00 · 120분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell today-column"></div>
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell holiday-cell"></div>
+
+                    </div>
+
+                    <!-- 17시 -->
+                    <div class="schedule-row">
+
+                        <div class="schedule-time">17:00</div>
+
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell"></div>
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell today-column">
+                            <button type="button"
+                                    class="reservation-block reserved-reservation">
+
+                                <strong>강○○</strong>
+                                <span>여성 커트</span>
+                                <small>17:00 · 60분</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell"></div>
+
+                        <div class="schedule-cell">
+                            <button type="button"
+                                    class="reservation-block no-show-reservation">
+
+                                <strong>조○○</strong>
+                                <span>남성 커트</span>
+                                <small>17:00 · 노쇼</small>
+                            </button>
+                        </div>
+
+                        <div class="schedule-cell holiday-cell"></div>
+
+                    </div>
+
+                </div>
+
+                <!-- 예약 상태 안내 -->
+                <div class="calendar-bottom">
+
+                    <div class="calendar-legend">
+
+                        <span>
+                            <i class="calendar-legend-color reserved-color"></i>
+                            예약
+                        </span>
+
+                        <span>
+                            <i class="calendar-legend-color completed-color"></i>
+                            시술 완료
+                        </span>
+
+                        <span>
+                            <i class="calendar-legend-color no-show-color"></i>
+                            노쇼
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+            <!-- 오른쪽 운영 관리 영역 -->
+            <div class="dashboard-side-column">
+
+                <!-- 재고 관리 알림 -->
+                <article class="dashboard-panel stock-alert-panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <p class="panel-label">STOCK ALERT</p>
+                            <h2>재고·발주 알림</h2>
+
+                            <p>
+                                확인이 필요한 재고 현황입니다.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="stock-summary">
+
+                        <!-- 재고 부족 블록을 누르면 자재 관리 화면으로 이동 -->
+                        <a href="/admin/material"
+                           th:href="@{/admin/material}"
+                           class="stock-summary-box shortage">
+
+                            <span class="stock-summary-icon">!</span>
+
+                            <div>
+                                <p>재고 부족</p>
+
+                                <strong th:text="${lowStockCount + '건'}">
+                                    0건
+                                </strong>
+                            </div>
+
+                        </a>
+
+                        <!-- 입고 대기 블록을 누르면 발주 관리 화면으로 이동 -->
+                        <a href="/admin/purchaseorder"
+                           th:href="@{/admin/purchaseorder}"
+                           class="stock-summary-box order">
+
+                            <span class="stock-summary-icon">□</span>
+
+                            <div>
+                                <p>입고 대기</p>
+
+                                <strong th:text="${pendingReceiptCount + '건'}">
+                                    0건
+                                </strong>
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                    <div class="stock-detail-grid">
+
+                        <!-- 재고 부족 대표 품목 -->
+                        <div class="stock-list">
+
+                            <div class="stock-item"
+                                 th:each="material : ${lowStockMaterials}">
+
+                                <div>
+                                    <strong th:text="${material.materialName}">
+                                        자재명
+                                    </strong>
+
+                                    <span th:text="${'현재 재고 '
+                                    + #numbers.formatDecimal(
+                                        material.currentStock,
+                                        1,
+                                        0
+                                      )}">
+                                현재 재고 0
+                            </span>
+                                </div>
+
+                                <span class="stock-badge danger">부족</span>
+                            </div>
+
+                            <!-- 현재 재고 부족 자재가 없는 경우 -->
+                            <div class="stock-item"
+                                 th:if="${#lists.isEmpty(lowStockMaterials)}">
+
+                                <div>
+                                    <strong>재고 상태가 안전합니다.</strong>
+                                    <span>현재 부족한 자재가 없습니다.</span>
+                                </div>
+
+                                <span class="stock-badge warning">정상</span>
+                            </div>
+
+                        </div>
+
+                        <!-- 입고 대기 발주 최대 5개 -->
+                        <div class="stock-list order-detail-list">
+
+                            <div class="stock-item"
+                                 th:each="order : ${pendingReceiptOrders}"
+                                 th:with="materialNames=${pendingReceiptMaterialNames[order.purchaseOrderNo]}">
+
+                                <div>
+                                    <strong th:if="${!#lists.isEmpty(materialNames)}"
+                                            th:text="${materialNames[0]
+                                        + (#lists.size(materialNames) > 1
+                                            ? ' 외 ' + (#lists.size(materialNames) - 1) + '개 품목'
+                                            : '')}">
+                                        발주 자재명
+                                    </strong>
+
+                                    <strong th:if="${#lists.isEmpty(materialNames)}">
+                                        등록된 발주 품목이 없습니다.
+                                    </strong>
+
+                                    <span th:text="${order.supplierName}">
+                                공급업체명
+                            </span>
+
+                                    <span th:text="${order.expectedDate != null
+                                    ? '입고 예정 ' + #temporals.format(order.expectedDate, 'yyyy-MM-dd')
+                                    : '입고 예정일 미정'}">
+                                입고 예정일
+                            </span>
+                                </div>
+
+                                <span class="stock-badge waiting">대기</span>
+                            </div>
+
+                            <!-- 현재 입고 대기 발주가 없는 경우 -->
+                            <div class="stock-item"
+                                 th:if="${#lists.isEmpty(pendingReceiptOrders)}">
+
+                                <div>
+                                    <strong>입고 대기 발주가 없습니다.</strong>
+                                    <span>현재 모든 발주가 처리되었습니다.</span>
+                                </div>
+
+                                <span class="stock-badge warning">완료</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+                <!-- 현재 진행 중인 이벤트 -->
+                <section class="dashboard-panel active-event-panel">
+
+                    <div class="panel-header">
+                        <div>
+                            <p class="panel-label">ACTIVE EVENT</p>
+                            <h2>현재 진행 중인 이벤트</h2>
+                            <p>매장에서 적용 중인 이벤트입니다.</p>
+                        </div>
+
+                        <!-- Controller에서 activeEvents를 전달하면 실제 개수 표시 -->
+                        <span class="panel-count"
+                              th:if="${activeEvents != null}"
+                              th:text="${#lists.size(activeEvents) + '건'}">
+                        0건
+                    </span>
+
+                        <!-- 실제 이벤트 연결 전 더미 개수 -->
+                        <span class="panel-count"
+                              th:if="${activeEvents == null}">
+                        2건
+                    </span>
+                    </div>
+
+                    <!-- 실제 진행 중인 이벤트 목록 -->
+                    <div class="active-event-list"
+                         th:if="${activeEvents != null
+                              and !#lists.isEmpty(activeEvents)}">
+
+                        <a class="active-event-item"
+                           th:each="event, eventStatus : ${activeEvents}"
+                           th:if="${eventStatus.index < 2}"
+                           th:href="@{/admin/salonevent/{no}(no=${event.eventNo})}">
+
+                            <div class="active-event-information">
+                                <div class="active-event-title-row">
+                                <span class="active-event-type"
+                                      th:text="${event.eventTypeName}">
+                                    이벤트
+                                </span>
+
+                                    <strong th:text="${event.eventTitle}">
+                                        이벤트명
+                                    </strong>
+                                </div>
+
+                                <span class="active-event-period"
+                                      th:text="${#temporals.format(event.startDate, 'yyyy.MM.dd')
+                                          + ' ~ '
+                                          + #temporals.format(event.endDate, 'yyyy.MM.dd')}">
+                                2026.09.01 ~ 2026.09.30
+                            </span>
+                            </div>
+
+                            <div class="active-event-badges">
+                            <span class="active-event-dday"
+                                  th:attr="data-event-end-date=${#temporals.format(event.endDate, 'yyyy-MM-dd')}">
+                                D-0
+                            </span>
+
+                                <span class="active-event-status">진행 중</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- 실제 이벤트 연결 전 화면 확인용 더미 목록 -->
+                    <div class="active-event-list"
+                         th:if="${activeEvents == null}">
+
+                        <a href="/admin/salonevent"
+                           th:href="@{/admin/salonevent}"
+                           class="active-event-item">
+
+                            <div class="active-event-information">
+                                <div class="active-event-title-row">
+                                    <span class="active-event-type">시즌</span>
+                                    <strong>가을 클리닉 패키지</strong>
+                                </div>
+
+                                <span class="active-event-period">
+                                2026.09.01 ~ 2026.09.07
+                            </span>
+                            </div>
+
+                            <div class="active-event-badges">
+                            <span class="active-event-dday"
+                                  data-event-end-date="2026-09-07">
+                                D-5
+                            </span>
+
+                                <span class="active-event-status">진행 중</span>
+                            </div>
+                        </a>
+
+                        <a href="/admin/salonevent"
+                           th:href="@{/admin/salonevent}"
+                           class="active-event-item">
+
+                            <div class="active-event-information">
+                                <div class="active-event-title-row">
+                                    <span class="active-event-type">첫 방문</span>
+                                    <strong>첫 방문 고객 할인</strong>
+                                </div>
+
+                                <span class="active-event-period">
+                                2026.09.01 ~ 2026.10.31
+                            </span>
+                            </div>
+
+                            <div class="active-event-badges">
+                            <span class="active-event-dday"
+                                  data-event-end-date="2026-10-31">
+                                D-59
+                            </span>
+
+                                <span class="active-event-status">진행 중</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- 현재 진행 중인 이벤트가 없는 경우 -->
+                    <div class="active-event-empty"
+                         th:if="${activeEvents != null
+                              and #lists.isEmpty(activeEvents)}">
+                        현재 진행 중인 이벤트가 없습니다.
+                    </div>
+
+                    <a href="/admin/salonevent"
+                       th:href="@{/admin/salonevent}"
+                       class="event-management-link">
+                        전체 이벤트 보기 <span>→</span>
+                    </a>
+
+                </section>
+
+            </div>
+
+        </section>
+
+        <!-- 최근 매출 현황과 인기 시술을 같은 비율의 좌우 영역으로 표시 -->
+        <section class="sales-insight-grid">
+
+            <!-- 최근 7일 매출 -->
+            <article class="dashboard-panel sales-chart-panel">
+
+                <div class="sales-chart-header">
+
+                    <div class="sales-chart-title">
+                        <p class="panel-label">SALES OVERVIEW</p>
+                        <h2>최근 7일 매출 현황</h2>
+                        <p>결제 완료 금액을 날짜별로 확인합니다.</p>
+                    </div>
+
+                    <div class="sales-chart-summary">
+                        <span>최근 7일 총매출</span>
+                        <strong id="weeklySalesTotal">3,640,000원</strong>
+
+                        <a href="/admin/payment"
+                           th:href="@{/admin/payment}"
+                           class="sales-management-link">
+                            매출 관리 <span>→</span>
+                        </a>
+                    </div>
+
+                </div>
+
+                <!-- Controller에서 weeklySalesLabels와 weeklySalesAmounts를 전달하면 더미 데이터가 교체된다. -->
+                <div class="sales-chart-frame">
+                    <canvas id="weeklySalesChart"
+                            aria-label="최근 7일 날짜별 매출 막대그래프"
+                            role="img"></canvas>
+                </div>
+
+            </article>
+
+            <!-- 인기 시술 TOP 5 -->
+            <article class="dashboard-panel popular-service-panel">
+
+                <div class="popular-service-header">
+
+                    <div>
+                        <p class="panel-label">POPULAR SERVICE</p>
+                        <h2>인기 시술 TOP 5</h2>
+                        <p>이번 달 시술 완료 건수 기준입니다.</p>
+                    </div>
+
+                    <span class="popular-service-period">이번 달</span>
+
+                </div>
+
+                <!-- 실제 시술 통계 연결 전 화면 확인용 더미 데이터 -->
+                <div class="popular-service-list">
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank first">1</span>
+
+                        <div class="popular-service-info">
+                            <strong>남성 커트</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">38건</strong>
+                    </div>
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank">2</span>
+
+                        <div class="popular-service-info">
+                            <strong>여성 커트</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">31건</strong>
+                    </div>
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank">3</span>
+
+                        <div class="popular-service-info">
+                            <strong>전체 염색</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">24건</strong>
+                    </div>
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank">4</span>
+
+                        <div class="popular-service-info">
+                            <strong>남성 펌</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">19건</strong>
+                    </div>
+
+                    <div class="popular-service-item">
+                        <span class="popular-rank">5</span>
+
+                        <div class="popular-service-info">
+                            <strong>헤어 클리닉</strong>
+                            <span>시술 완료</span>
+                        </div>
+
+                        <strong class="popular-service-count">14건</strong>
+                    </div>
+
+                </div>
+
+                <a href="/admin/payment"
+                   th:href="@{/admin/payment}"
+                   class="popular-service-link">
+                    시술 통계 보기 <span>→</span>
+                </a>
+
+            </article>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- 매출 데이터 연결 전 대시보드 차트 표시용 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<!-- 실제 매출 정보가 전달되면 사용하고, 없으면 화면 확인용 더미 데이터를 사용한다. -->
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        const serverSalesLabels = /*[[${weeklySalesLabels}]]*/ null;
+        const serverSalesAmounts = /*[[${weeklySalesAmounts}]]*/ null;
+
+        const salesLabels = Array.isArray(serverSalesLabels)
+        && serverSalesLabels.length > 0
+            ? serverSalesLabels
+            : ["8/28 금", "8/29 토", "8/30 일", "8/31 월", "9/1 화", "9/2 수", "9/3 목"];
+
+        const salesAmounts = Array.isArray(serverSalesAmounts)
+        && serverSalesAmounts.length === salesLabels.length
+            ? serverSalesAmounts
+            : [420000, 680000, 0, 510000, 760000, 690000, 580000];
+
+        const totalSales = salesAmounts.reduce(function (total, amount) {
+            return total + Number(amount || 0);
+        }, 0);
+
+        document.getElementById("weeklySalesTotal").textContent
+            = new Intl.NumberFormat("ko-KR").format(totalSales) + "원";
+
+        const chartCanvas = document.getElementById("weeklySalesChart");
+
+        if (!chartCanvas || typeof Chart === "undefined") {
+            return;
+        }
+
+        new Chart(chartCanvas, {
+            type: "bar",
+            data: {
+                labels: salesLabels,
+                datasets: [{
+                    label: "매출",
+                    data: salesAmounts,
+                    backgroundColor: "rgba(176, 111, 141, 0.72)",
+                    hoverBackgroundColor: "rgba(150, 90, 118, 0.9)",
+                    borderRadius: 9,
+                    borderSkipped: false,
+                    maxBarThickness: 54
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: "index",
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        displayColors: false,
+                        backgroundColor: "#2f333a",
+                        padding: 12,
+                        callbacks: {
+                            label: function (context) {
+                                return new Intl.NumberFormat("ko-KR")
+                                    .format(context.parsed.y) + "원";
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            color: "#777c85",
+                            font: {
+                                size: 11,
+                                weight: "600"
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: "#eceff3",
+                            drawTicks: false
+                        },
+                        border: {
+                            display: false
+                        },
+                        ticks: {
+                            color: "#969ba4",
+                            padding: 12,
+                            callback: function (value) {
+                                if (value === 0) {
+                                    return "0원";
+                                }
+
+                                return new Intl.NumberFormat("ko-KR", {
+                                    notation: "compact",
+                                    maximumFractionDigits: 1
+                                }).format(value) + "원";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<!-- 이벤트 종료일까지 남은 날짜를 계산해 D-day와 종료 임박을 표시한다. -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        document.querySelectorAll("[data-event-end-date]")
+            .forEach(function (badge) {
+                const dateParts = badge.dataset.eventEndDate
+                    .split("-")
+                    .map(Number);
+
+                const endDate = new Date(
+                    dateParts[0],
+                    dateParts[1] - 1,
+                    dateParts[2]
+                );
+
+                const remainingDays = Math.round(
+                    (endDate - today) / (1000 * 60 * 60 * 24)
+                );
+
+                if (remainingDays < 0) {
+                    badge.textContent = "종료";
+                    badge.classList.add("ended");
+                    return;
+                }
+
+                if (remainingDays === 0) {
+                    badge.textContent = "오늘 종료";
+                    badge.classList.add("ending-soon");
+                    return;
+                }
+
+                if (remainingDays <= 7) {
+                    badge.textContent = "종료 임박 D-" + remainingDays;
+                    badge.classList.add("ending-soon");
+                    return;
+                }
+
+                badge.textContent = "D-" + remainingDays;
+            });
+    });
+</script>
+
+</body>
+</html>

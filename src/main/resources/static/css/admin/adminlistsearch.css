@@ -1,0 +1,106 @@
+/* 관리자 목록 검색 자동완성 공통 영역 */
+.list-search-area,
+.list-search-area * {
+    box-sizing: border-box;
+}
+
+.list-search-area {
+    position: relative;
+    z-index: 30;
+    flex: 0 0 auto;
+}
+
+.list-search-area > form {
+    width: max-content;
+}
+
+.list-search-panel[hidden],
+.list-search-panel [hidden] {
+    display: none !important;
+}
+
+.list-search-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    min-width: 320px;
+    overflow: hidden;
+    border: 1px solid #dce2eb;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 12px 28px rgba(30, 41, 59, 0.14);
+}
+
+.list-search-header {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 15px;
+    color: #273244;
+    border-bottom: 1px solid #e7ebf1;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.list-suggestion-list {
+    max-height: 240px;
+    margin: 0;
+    padding: 7px 0;
+    overflow-y: auto;
+    list-style: none;
+}
+
+.list-suggestion-list li {
+    margin: 0;
+    padding: 0;
+}
+
+.list-suggestion-button {
+    display: block;
+    width: 100%;
+    min-height: 38px;
+    padding: 9px 15px;
+    color: #3d4858;
+    border: 0;
+    background: transparent;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.list-suggestion-button:hover,
+.list-suggestion-button:focus,
+.list-suggestion-button.active {
+    color: #4f5dab;
+    outline: none;
+    background: #f4f6fc;
+}
+
+.list-search-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 82px;
+    margin: 0;
+    padding: 18px;
+    color: #98a2b3;
+    font-size: 13px;
+    text-align: center;
+}
+
+@media (max-width: 800px) {
+    .list-search-area,
+    .list-search-area > form {
+        width: 100%;
+    }
+
+    .list-search-area > form input[type="search"] {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .list-search-panel {
+        min-width: 0;
+    }
+}

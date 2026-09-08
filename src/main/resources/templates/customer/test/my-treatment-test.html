@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+
+<html
+        lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
+>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>내 시술 이력</title>
+
+
+    <!-- ================================================= -->
+    <!-- CSS -->
+    <!-- ================================================= -->
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/customer/my-treatment-test.css}"
+    >
+
+
+    <!-- ================================================= -->
+    <!-- JavaScript -->
+    <!-- ================================================= -->
+
+    <script
+            th:src="@{/js/customer/my-treatment-test.js}"
+            defer
+    ></script>
+
+</head>
+
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- 테스트 안내 -->
+<!-- ===================================================== -->
+
+<div class="test-banner">
+
+    임시 고객 마이페이지 테스트 화면
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- 전체 페이지 -->
+<!-- ===================================================== -->
+
+<div class="page-container">
+
+
+    <!-- ================================================= -->
+    <!-- 페이지 헤더 -->
+    <!-- ================================================= -->
+
+    <header class="page-header">
+
+        <div>
+
+            <p class="page-label">
+                MY PAGE
+            </p>
+
+            <h1>
+                내 시술 이력
+            </h1>
+
+            <p class="page-description">
+                지금까지 받은 시술과 다음 추천 방문일을 확인할 수 있습니다.
+            </p>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ================================================= -->
+    <!-- 고객 정보 -->
+    <!-- ================================================= -->
+
+    <section class="customer-card">
+
+
+        <div class="customer-avatar">
+
+            <span
+                    th:text="${#strings.substring(customer.customerName, 0, 1)}"
+            >
+                홍
+            </span>
+
+        </div>
+
+
+        <div class="customer-info">
+
+            <p class="customer-label">
+                고객
+            </p>
+
+
+            <h2
+                    th:text="${customer.customerName}"
+            >
+                테스트 고객
+            </h2>
+
+
+            <p>
+
+                총 시술 이력
+
+                <strong
+                        th:text="${treatmentCount}"
+                >
+                    0
+                </strong>
+
+                건
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- 마이페이지 메뉴 -->
+    <!-- ================================================= -->
+
+    <nav class="mypage-menu">
+
+
+        <button
+                type="button"
+                class="menu-button future-menu-button"
+                data-menu-name="예약 내역"
+        >
+            예약 내역
+        </button>
+
+
+        <button
+                type="button"
+                class="menu-button active"
+        >
+            시술 이력
+        </button>
+
+
+        <button
+                type="button"
+                class="menu-button future-menu-button"
+                data-menu-name="활동 내역"
+        >
+            활동 내역
+        </button>
+
+
+        <button
+                type="button"
+                class="menu-button future-menu-button"
+                data-menu-name="개인정보"
+        >
+            개인정보
+        </button>
+
+
+    </nav>
+
+
+
+    <!-- ================================================= -->
+    <!-- 시술이력 영역 -->
+    <!-- ================================================= -->
+
+    <section class="history-section">
+
+
+        <!-- ============================================= -->
+        <!-- 제목 + 정렬 -->
+        <!-- ============================================= -->
+
+        <div class="section-header">
+
+
+            <div>
+
+                <h2>
+                    시술 이력
+                </h2>
+
+                <p>
+                    시술 기록을 최신순 또는 오래된순으로 확인할 수 있습니다.
+                </p>
+
+            </div>
+
+
+            <div class="section-actions">
+
+                <label
+                        for="historySort"
+                        class="sort-label"
+                >
+                    정렬
+                </label>
+
+
+                <select
+                        id="historySort"
+                        class="sort-select"
+                >
+
+                    <option value="latest">
+                        최신순
+                    </option>
+
+                    <option value="oldest">
+                        오래된순
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ============================================= -->
+        <!-- 시술이력 있음 -->
+        <!-- ============================================= -->
+
+        <div
+                class="history-list"
+                th:if="${!#lists.isEmpty(treatments)}"
+        >
+
+
+            <article
+                    class="history-card"
+                    th:each="treatment : ${treatments}"
+                    th:attr="data-treatment-date=${treatment.treatmentDate}"
+            >
+
+
+                <!-- ===================================== -->
+                <!-- 시술일 -->
+                <!-- ===================================== -->
+
+                <div class="history-date">
+
+
+                    <span class="date-label">
+                        시술일
+                    </span>
+
+
+                    <strong
+                            th:text="${treatment.treatmentDate}"
+                    >
+                        2026-08-26
+                    </strong>
+
+
+                </div>
+
+
+
+                <!-- ===================================== -->
+                <!-- 시술 내용 -->
+                <!-- ===================================== -->
+
+                <div class="history-content">
+
+
+                    <!-- 제목 -->
+                    <div class="history-title-row">
+
+
+                        <h3
+                                th:text="${treatment.treatmentName}"
+                        >
+                            여성 커트
+                        </h3>
+
+
+                        <div class="history-title-actions">
+
+
+                            <span class="complete-badge">
+                                시술 완료
+                            </span>
+
+
+                            <button
+                                    type="button"
+                                    class="toggle-detail-button"
+                                    aria-expanded="true"
+                            >
+                                상세 접기
+                            </button>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- 상세 -->
+                    <div class="history-detail">
+
+
+                        <!-- 시술 금액 -->
+                        <div class="detail-row">
+
+
+                            <span class="detail-label">
+                                시술 금액
+                            </span>
+
+
+                            <strong>
+
+                                <span
+                                        class="price-value"
+                                        th:attr="data-price=${treatment.treatmentPrice}"
+                                        th:text="${treatment.treatmentPrice}"
+                                >
+                                    35000
+                                </span>
+
+                                원
+
+                            </strong>
+
+
+                        </div>
+
+
+
+                        <!-- 시술 메모 -->
+                        <div class="detail-row">
+
+
+                            <span class="detail-label">
+                                시술 메모
+                            </span>
+
+
+                            <span
+                                    th:text="${treatment.treatmentMemo != null
+                                                and !#strings.isEmpty(treatment.treatmentMemo)
+                                                ? treatment.treatmentMemo
+                                                : '등록된 메모가 없습니다.'}"
+                            >
+                                두피가 민감하여 자극 강한 제품 주의
+                            </span>
+
+
+                        </div>
+
+
+
+                        <!-- 다음 추천 방문일 -->
+                        <div class="detail-row recommendation">
+
+
+                            <span class="detail-label">
+                                다음 추천 방문일
+                            </span>
+
+
+                            <strong
+                                    th:text="${treatment.nextRecommendedDate != null
+                                                ? treatment.nextRecommendedDate
+                                                : '미정'}"
+                            >
+                                2026-09-25
+                            </strong>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+
+        <!-- ============================================= -->
+        <!-- 시술이력 없음 -->
+        <!-- ============================================= -->
+
+        <div
+                class="empty-card"
+                th:if="${#lists.isEmpty(treatments)}"
+        >
+
+
+            <div class="empty-icon">
+                ✂
+            </div>
+
+
+            <h3>
+                아직 시술 이력이 없습니다.
+            </h3>
+
+
+            <p>
+                시술 완료 후 이곳에서 내 시술 기록을 확인할 수 있습니다.
+            </p>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- 개발 안내 -->
+    <!-- ================================================= -->
+
+    <div class="test-note">
+
+
+        <strong>
+            개발용 테스트 화면
+        </strong>
+
+
+        <p>
+            현재는 customerId를 URL로 직접 전달합니다.
+            회원 기능 통합 후에는 로그인한 회원의 MEMBER_NO를 기준으로
+            본인의 시술 이력을 자동 조회하도록 변경합니다.
+        </p>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ===================================================== -->
+<!-- 임시 알림 -->
+<!-- ===================================================== -->
+
+<div
+        id="testToast"
+        class="test-toast"
+        role="status"
+        aria-live="polite"
+>
+</div>
+
+
+</body>
+
+</html>
