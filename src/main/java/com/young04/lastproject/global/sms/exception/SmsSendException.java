@@ -1,4 +1,4 @@
-package com.young04.lastproject.global.sms;
+package com.young04.lastproject.global.sms.exception;
 
 public class SmsSendException extends RuntimeException {
 

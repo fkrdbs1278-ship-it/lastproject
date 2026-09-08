@@ -1,8 +1,9 @@
-package com.young04.lastproject.global.sms;
+package com.young04.lastproject.global.sms.sender;
 
 import com.solapi.sdk.SolapiClient;
 import com.solapi.sdk.message.model.Message;
 import com.solapi.sdk.message.service.DefaultMessageService;
+import com.young04.lastproject.global.sms.exception.SmsSendException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
