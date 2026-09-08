@@ -747,3 +747,33 @@ select:focus {
 .availability-closed {
     font-weight: 700;
 }
+
+/* =========================================================
+   관리자 예약 화면 - 공통 사이드바 배치
+   ========================================================= */
+
+.admin-layout {
+    min-height: 100vh;
+}
+
+/* 고정 사이드바 250px만큼 예약 화면을 오른쪽으로 이동 */
+.admin-layout .reservation-page {
+    width: calc(100% - 250px);
+    max-width: none;
+
+    min-height: 100vh;
+
+    margin-left: 250px;
+    margin-right: 0;
+
+    padding: 48px 40px 80px;
+}
+
+/* 예약 화면 내부 내용은 너무 넓어지지 않도록 제한 */
+.admin-layout .reservation-page > section,
+.admin-layout .reservation-page > .page-heading {
+    width: 100%;
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+}
