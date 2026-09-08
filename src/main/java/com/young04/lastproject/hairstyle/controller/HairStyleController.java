@@ -28,6 +28,7 @@ public class HairStyleController {
        /hairstyles?category=MEDIUM
        /hairstyles?category=LONG
        /hairstyles?category=MEN
+       /hairstyles?category=WOMEN
        /hairstyles?category=ETC
     ========================================================= */
 

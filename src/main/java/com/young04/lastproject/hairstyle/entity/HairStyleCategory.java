@@ -6,5 +6,6 @@ public enum HairStyleCategory {
     MEDIUM,
     LONG,
     MEN,
+    WOMEN,
     ETC
 }

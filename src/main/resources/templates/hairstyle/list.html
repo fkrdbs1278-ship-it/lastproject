@@ -123,6 +123,16 @@
                 남성
             </a>
 
+            <a
+                    th:href="@{/hairstyles(category='WOMEN')}"
+                    class="hair-category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'WOMEN'
+                        ? 'active' : ''}"
+            >
+                여성
+            </a>
+
 
             <a
                     th:href="@{/hairstyles(category='ETC')}"

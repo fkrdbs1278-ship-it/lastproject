@@ -64,6 +64,8 @@ public class HairStyleResponse {
 
             case MEN -> "남성";
 
+            case WOMEN -> "여성";
+
             case ETC -> "기타";
         };
     }
