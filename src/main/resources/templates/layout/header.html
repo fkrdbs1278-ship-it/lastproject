@@ -29,8 +29,8 @@
             </a>
 
             <!-- STEP 7에서 연결 -->
-            <a th:href="@{/services}">
-                시술 메뉴
+            <a th:href="@{/reservation}">
+                예약하기
             </a>
 
             <!-- STEP 8에서 연결 -->
@@ -86,7 +86,7 @@
                 <!-- ADMIN에게만 표시 -->
 
                 <a sec:authorize="hasRole('ADMIN')"
-                   th:href="@{/admin}">
+                   th:href="@{/admin/dashboard}">
                     관리자
                 </a>
 
