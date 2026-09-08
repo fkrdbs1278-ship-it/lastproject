@@ -99,4 +99,11 @@ public class DashboardController {
 
         return "admin/dashboard";
     }
+
+    // 관리자 전체 예약 현황 조회
+    @GetMapping("/admin/reservationoverview")
+    public String reservationOverview() {
+
+        return "reservationoverview/list";
+    }
 }

@@ -27,14 +27,24 @@ public class SalonEventController {
             @RequestParam(required = false) String keyword,
             Model model
     ) {
+
         model.addAttribute(
                 "events",
-                salonEventService.getEvents(useYn, keyword)
+                salonEventService.getEvents(
+                        useYn,
+                        keyword
+                )
         );
 
-        // 검색 후에도 선택한 검색 조건을 화면에 유지
-        model.addAttribute("useYn", useYn);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute(
+                "useYn",
+                useYn
+        );
+
+        model.addAttribute(
+                "keyword",
+                keyword
+        );
 
         return "salonevent/list";
     }
@@ -43,12 +53,15 @@ public class SalonEventController {
     @GetMapping("/searchsuggestions")
     @ResponseBody
     public List<String> eventTitleSuggestions() {
-        return salonEventService.getEventTitleSuggestions();
+
+        return salonEventService
+                .getEventTitleSuggestions();
     }
 
     // 신규 이벤트 등록 화면
     @GetMapping("/new")
     public String createForm(Model model) {
+
         SalonEventRequest eventRequest =
                 new SalonEventRequest();
 
@@ -59,7 +72,10 @@ public class SalonEventController {
                 eventRequest
         );
 
-        model.addAttribute("formMode", "create");
+        model.addAttribute(
+                "formMode",
+                "create"
+        );
 
         return "salonevent/form";
     }
@@ -74,31 +90,43 @@ public class SalonEventController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
+
         if (bindingResult.hasErrors()) {
-            model.addAttribute("formMode", "create");
+
+            model.addAttribute(
+                    "formMode",
+                    "create"
+            );
 
             return "salonevent/form";
         }
 
         try {
+
             Long eventNo =
-                    salonEventService.createEvent(eventRequest);
+                    salonEventService.createEvent(
+                            eventRequest
+                    );
 
             redirectAttributes.addFlashAttribute(
                     "message",
                     "이벤트가 등록되었습니다."
             );
 
-            return "redirect:/admin/salonevent/" + eventNo;
+            return "redirect:/admin/salonevent/"
+                    + eventNo;
 
         } catch (IllegalArgumentException exception) {
-            // 서비스에서 검사한 이벤트 기간 오류를 화면에 표시
+
             bindingResult.reject(
                     "eventPeriod",
                     exception.getMessage()
             );
 
-            model.addAttribute("formMode", "create");
+            model.addAttribute(
+                    "formMode",
+                    "create"
+            );
 
             return "salonevent/form";
         }
@@ -110,9 +138,12 @@ public class SalonEventController {
             @PathVariable Long eventNo,
             Model model
     ) {
+
         model.addAttribute(
                 "event",
-                salonEventService.getEvent(eventNo)
+                salonEventService.getEvent(
+                        eventNo
+                )
         );
 
         return "salonevent/detail";
@@ -124,13 +155,23 @@ public class SalonEventController {
             @PathVariable Long eventNo,
             Model model
     ) {
+
         model.addAttribute(
                 "eventRequest",
-                salonEventService.getEventForEdit(eventNo)
+                salonEventService.getEventForEdit(
+                        eventNo
+                )
         );
 
-        model.addAttribute("eventNo", eventNo);
-        model.addAttribute("formMode", "edit");
+        model.addAttribute(
+                "eventNo",
+                eventNo
+        );
+
+        model.addAttribute(
+                "formMode",
+                "edit"
+        );
 
         return "salonevent/form";
     }
@@ -146,14 +187,24 @@ public class SalonEventController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
+
         if (bindingResult.hasErrors()) {
-            model.addAttribute("eventNo", eventNo);
-            model.addAttribute("formMode", "edit");
+
+            model.addAttribute(
+                    "eventNo",
+                    eventNo
+            );
+
+            model.addAttribute(
+                    "formMode",
+                    "edit"
+            );
 
             return "salonevent/form";
         }
 
         try {
+
             salonEventService.updateEvent(
                     eventNo,
                     eventRequest
@@ -164,17 +215,25 @@ public class SalonEventController {
                     "이벤트가 수정되었습니다."
             );
 
-            return "redirect:/admin/salonevent/" + eventNo;
+            return "redirect:/admin/salonevent/"
+                    + eventNo;
 
         } catch (IllegalArgumentException exception) {
-            // 서비스에서 검사한 이벤트 기간 오류를 화면에 표시
+
             bindingResult.reject(
                     "eventPeriod",
                     exception.getMessage()
             );
 
-            model.addAttribute("eventNo", eventNo);
-            model.addAttribute("formMode", "edit");
+            model.addAttribute(
+                    "eventNo",
+                    eventNo
+            );
+
+            model.addAttribute(
+                    "formMode",
+                    "edit"
+            );
 
             return "salonevent/form";
         }
@@ -186,14 +245,18 @@ public class SalonEventController {
             @PathVariable Long eventNo,
             RedirectAttributes redirectAttributes
     ) {
-        salonEventService.stopEvent(eventNo);
+
+        salonEventService.stopEvent(
+                eventNo
+        );
 
         redirectAttributes.addFlashAttribute(
                 "message",
                 "이벤트가 사용 중지되었습니다."
         );
 
-        return "redirect:/admin/salonevent/" + eventNo;
+        return "redirect:/admin/salonevent/"
+                + eventNo;
     }
 
     // 사용 중지된 이벤트를 다시 노출
@@ -202,13 +265,17 @@ public class SalonEventController {
             @PathVariable Long eventNo,
             RedirectAttributes redirectAttributes
     ) {
-        salonEventService.resumeEvent(eventNo);
+
+        salonEventService.resumeEvent(
+                eventNo
+        );
 
         redirectAttributes.addFlashAttribute(
                 "message",
                 "이벤트가 다시 사용 상태로 변경되었습니다."
         );
 
-        return "redirect:/admin/salonevent/" + eventNo;
+        return "redirect:/admin/salonevent/"
+                + eventNo;
     }
 }

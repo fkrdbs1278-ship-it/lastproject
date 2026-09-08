@@ -60,6 +60,7 @@ public class MaterialController {
                 "materials",
                 materialPage.getContent()
         );
+
         model.addAttribute("materialPage", materialPage);
         model.addAttribute("currentPage", materialPage.getNumber());
         model.addAttribute("startPage", startPage);
@@ -67,8 +68,10 @@ public class MaterialController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("useYn", useYn);
         model.addAttribute("lowStock", lowStock);
+
         // DB 연결 전에는 최근 검색어 영역만 확인할 수 있도록 빈 목록 전달
         model.addAttribute("recentSearches", List.of());
+
         model.addAttribute(
                 "lowStockCount",
                 materialService.countLowStockMaterials()
@@ -92,6 +95,7 @@ public class MaterialController {
             @PathVariable Long materialNo,
             Model model
     ) {
+
         model.addAttribute(
                 "material",
                 materialService.getMaterial(materialNo)
@@ -103,7 +107,12 @@ public class MaterialController {
     // 자재 등록 화면 표시
     @GetMapping("/new")
     public String createForm(Model model) {
-        model.addAttribute("materialRequest", new MaterialRequest());
+
+        model.addAttribute(
+                "materialRequest",
+                new MaterialRequest()
+        );
+
         model.addAttribute("editMode", false);
 
         return "material/form";
@@ -117,7 +126,9 @@ public class MaterialController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
+
         if (bindingResult.hasErrors()) {
+
             model.addAttribute("editMode", false);
 
             return "material/form";
@@ -139,13 +150,18 @@ public class MaterialController {
             @PathVariable Long materialNo,
             Model model
     ) {
+
         MaterialResponse material =
                 materialService.getMaterial(materialNo);
 
         MaterialRequest materialRequest =
                 convertToRequest(material);
 
-        model.addAttribute("materialRequest", materialRequest);
+        model.addAttribute(
+                "materialRequest",
+                materialRequest
+        );
+
         model.addAttribute("materialNo", materialNo);
         model.addAttribute("editMode", true);
 
@@ -161,14 +177,19 @@ public class MaterialController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
+
         if (bindingResult.hasErrors()) {
+
             model.addAttribute("materialNo", materialNo);
             model.addAttribute("editMode", true);
 
             return "material/form";
         }
 
-        materialService.updateMaterial(materialNo, materialRequest);
+        materialService.updateMaterial(
+                materialNo,
+                materialRequest
+        );
 
         redirectAttributes.addFlashAttribute(
                 "message",
@@ -184,18 +205,19 @@ public class MaterialController {
             @PathVariable Long materialNo,
             RedirectAttributes redirectAttributes
     ) {
+
         try {
+
             // 사용 중지된 자재와 연결 이력 삭제
             materialService.deleteMaterial(materialNo);
 
-            // 삭제 성공 메시지 전달
             redirectAttributes.addFlashAttribute(
                     "message",
                     "자재가 삭제되었습니다."
             );
 
         } catch (IllegalStateException exception) {
-            // 사용 중이거나 다른 업무 내역에 연결되어 있으면 삭제 실패 안내
+
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
                     exception.getMessage()
@@ -210,23 +232,51 @@ public class MaterialController {
     private MaterialRequest convertToRequest(
             MaterialResponse material
     ) {
-        MaterialRequest request = new MaterialRequest();
 
-        request.setMaterialName(material.getMaterialName());
-        request.setCategoryCode(material.getCategoryCode());
-        request.setUnitCode(material.getUnitCode());
+        MaterialRequest request =
+                new MaterialRequest();
+
+        request.setMaterialName(
+                material.getMaterialName()
+        );
+
+        request.setCategoryCode(
+                material.getCategoryCode()
+        );
+
+        request.setUnitCode(
+                material.getUnitCode()
+        );
 
         // 저장된 내용량과 사용 단위를 수정 화면에 전달
-        request.setContentQuantity(material.getContentQuantity());
-        request.setUsageUnitCode(material.getUsageUnitCode());
+        request.setContentQuantity(
+                material.getContentQuantity()
+        );
 
-        request.setCurrentStock(material.getCurrentStock());
-        request.setSafetyStock(material.getSafetyStock());
-        request.setUnitPrice(material.getUnitPrice());
-        request.setSupplierName(material.getSupplierName());
-        request.setUseYn(material.getUseYn());
+        request.setUsageUnitCode(
+                material.getUsageUnitCode()
+        );
+
+        request.setCurrentStock(
+                material.getCurrentStock()
+        );
+
+        request.setSafetyStock(
+                material.getSafetyStock()
+        );
+
+        request.setUnitPrice(
+                material.getUnitPrice()
+        );
+
+        request.setSupplierName(
+                material.getSupplierName()
+        );
+
+        request.setUseYn(
+                material.getUseYn()
+        );
 
         return request;
     }
-
 }

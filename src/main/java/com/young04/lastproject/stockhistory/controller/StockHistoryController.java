@@ -30,19 +30,28 @@ public class StockHistoryController {
             @RequestParam(required = false) Long materialNo,
             Model model
     ) {
+
         if (materialNo == null) {
+
             model.addAttribute(
                     "histories",
                     stockHistoryService.getAllHistories()
             );
+
         } else {
+
             model.addAttribute(
                     "histories",
-                    stockHistoryService.getHistoriesByMaterialNo(materialNo)
+                    stockHistoryService.getHistoriesByMaterialNo(
+                            materialNo
+                    )
             );
         }
 
-        model.addAttribute("selectedMaterialNo", materialNo);
+        model.addAttribute(
+                "selectedMaterialNo",
+                materialNo
+        );
 
         return "stockhistory/list";
     }
@@ -50,10 +59,12 @@ public class StockHistoryController {
     // 재고 조정 입력 화면 표시
     @GetMapping("/adjustment")
     public String adjustmentForm(Model model) {
+
         model.addAttribute(
                 "stockAdjustmentRequest",
                 new StockAdjustmentRequest()
         );
+
         addActiveMaterials(model);
 
         return "stockhistory/adjustment";
@@ -68,22 +79,31 @@ public class StockHistoryController {
             Model model,
             RedirectAttributes redirectAttributes
     ) {
+
         if (bindingResult.hasErrors()) {
+
             addActiveMaterials(model);
 
             return "stockhistory/adjustment";
         }
 
         try {
-            stockHistoryService.adjustStock(stockAdjustmentRequest);
 
-        } catch (EntityNotFoundException
-                 | IllegalArgumentException
-                 | IllegalStateException exception) {
+            stockHistoryService.adjustStock(
+                    stockAdjustmentRequest
+            );
+
+        } catch (
+                EntityNotFoundException
+                | IllegalArgumentException
+                | IllegalStateException exception
+        ) {
+
             bindingResult.reject(
                     "stockAdjustment",
                     exception.getMessage()
             );
+
             addActiveMaterials(model);
 
             return "stockhistory/adjustment";
@@ -99,6 +119,7 @@ public class StockHistoryController {
 
     // 조정 화면의 자재 선택 목록에 사용 중인 자재만 전달
     private void addActiveMaterials(Model model) {
+
         model.addAttribute(
                 "materials",
                 materialService.getMaterialsByUseYn("Y")
