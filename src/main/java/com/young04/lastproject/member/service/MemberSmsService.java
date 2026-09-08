@@ -1,6 +1,6 @@
 package com.young04.lastproject.member.service;
 
-import com.young04.lastproject.global.sms.SmsSender;
+import com.young04.lastproject.global.sms.sender.SmsSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
