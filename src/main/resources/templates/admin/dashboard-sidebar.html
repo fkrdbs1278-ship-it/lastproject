@@ -10,9 +10,9 @@
 
     <!-- 관리자 로고 -->
     <a class="sidebar-logo"
-         href="/admin/dashboard"
-        th:href="@{/admin/dashboard}"
-        aria-label="관리자 대시보드로 이동">
+       href="/admin/dashboard"
+       th:href="@{/admin/dashboard}"
+       aria-label="관리자 대시보드로 이동">
 
         <div class="logo-symbol">
             S
@@ -145,10 +145,11 @@
     <!-- 사이드바 하단 메뉴 -->
     <div class="sidebar-bottom">
 
-        <!-- 사용자 화면으로 이동 -->
-        <a href="/"
-           th:href="@{/}"
-           class="sidebar-menu-item">
+        <!-- 사용자 사이트 관리 -->
+        <a href="/admin/siteadmin"
+           th:href="@{/admin/siteadmin}"
+           class="sidebar-menu-item"
+           th:classappend="${activeMenu == 'siteadmin'} ? ' active' : ''">
 
             <svg class="sidebar-icon" viewBox="0 0 24 24">
                 <path d="M14 4H20V10"></path>

@@ -1,0 +1,704 @@
+/* =========================================================
+   사용자 사이트 관리 화면
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background-color: #f5f6f8;
+    color: #1f2228;
+    font-family:
+            "Pretendard",
+            "Noto Sans KR",
+            "Malgun Gothic",
+            sans-serif;
+}
+
+
+/* 관리자 전체 영역 */
+.admin-layout {
+    min-height: 100vh;
+}
+
+
+/* 오른쪽 콘텐츠 */
+.siteadmin-content {
+    min-height: 100vh;
+    margin-left: 250px;
+    padding: 38px 40px 60px;
+}
+
+
+/* =========================================================
+   상단
+   ========================================================= */
+
+.siteadmin-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.page-label,
+.panel-label {
+    margin: 0 0 7px;
+    color: #965a76;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+}
+
+.siteadmin-header h1 {
+    margin: 0 0 10px;
+    font-size: 32px;
+    letter-spacing: -1.3px;
+}
+
+.page-description {
+    margin: 0;
+    color: #858a94;
+    font-size: 14px;
+}
+
+
+/* 실제 사이트 보기 */
+.site-view-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    min-width: 150px;
+    height: 46px;
+    padding: 0 18px;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 12px;
+
+    background: #ffffff;
+    color: #3e424a;
+
+    box-shadow: 0 7px 20px rgba(32, 36, 43, 0.06);
+
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+
+    transition: 0.2s;
+}
+
+.site-view-button:hover {
+    border-color: #b06f8d;
+    color: #965a76;
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   메인 배치
+   ========================================================= */
+
+.siteadmin-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) 420px;
+    gap: 22px;
+    align-items: start;
+}
+
+
+/* 공통 패널 */
+.preview-panel,
+.editor-panel {
+    border: 1px solid #e1e5eb;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(32, 36, 43, 0.055);
+}
+
+
+/* =========================================================
+   미리보기 영역
+   ========================================================= */
+
+.preview-panel {
+    padding: 24px;
+}
+
+.panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.panel-header h2 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.preview-badge {
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: #f5e8ef;
+    color: #965a76;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+/* 브라우저 */
+.browser-preview {
+    overflow: hidden;
+    border: 1px solid #dfe3e8;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.browser-bar {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    height: 45px;
+    padding: 0 15px;
+
+    border-bottom: 1px solid #e5e8ec;
+    background: #f3f4f6;
+}
+
+.browser-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.browser-dots span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #bfc4cb;
+}
+
+.browser-address {
+    flex: 1;
+
+    padding: 6px 12px;
+
+    border: 1px solid #e1e4e8;
+    border-radius: 7px;
+
+    background: #ffffff;
+    color: #8a8f97;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   사용자 사이트 미리보기
+   ========================================================= */
+
+.site-preview {
+    background: #ffffff;
+}
+
+
+/* 사용자 헤더 */
+.preview-site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 60px;
+    padding: 0 24px;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+.preview-logo {
+    font-size: 16px;
+    letter-spacing: -0.4px;
+}
+
+.preview-site-header nav {
+    display: flex;
+    gap: 20px;
+
+    color: #666666;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+/* Hero */
+.preview-hero {
+    position: relative;
+
+    overflow: hidden;
+
+    height: 350px;
+}
+
+.preview-hero > img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.preview-hero-overlay {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(255, 255, 255, 0.33);
+}
+
+.preview-hero-content {
+    position: absolute;
+    top: 50%;
+    left: 7%;
+
+    width: 50%;
+
+    transform: translateY(-50%);
+}
+
+.preview-hero-content h2 {
+    margin: 0 0 14px;
+
+    color: #262626;
+
+    font-size: 30px;
+    line-height: 1.3;
+    letter-spacing: -1.4px;
+
+    white-space: pre-line;
+}
+
+.preview-hero-content p {
+    margin: 0;
+
+    color: #535353;
+
+    font-size: 12px;
+    line-height: 1.7;
+
+    white-space: pre-line;
+}
+
+
+/* =========================================================
+   사용자 미리보기 공통 섹션
+   ========================================================= */
+
+.preview-section {
+    padding: 42px 35px;
+}
+
+.preview-section > h3 {
+    margin: 0 0 26px;
+    text-align: center;
+    font-size: 22px;
+}
+
+
+/* 서비스 안내 */
+.preview-service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.preview-service-grid article {
+    min-height: 120px;
+    padding: 18px;
+
+    border: 1px solid #ececec;
+    border-radius: 12px;
+
+    background: #ffffff;
+}
+
+.preview-service-grid strong {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 13px;
+}
+
+.preview-service-grid p {
+    margin: 0;
+    color: #777777;
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+
+/* 헤어스타일 */
+.preview-style-section {
+    background: #f8f8f8;
+}
+
+.preview-eyebrow {
+    margin: 0 0 5px;
+
+    color: #a35f7f;
+
+    text-align: center;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.preview-style-section h3 {
+    margin-bottom: 8px;
+}
+
+.preview-style-description {
+    margin: 0 0 24px;
+
+    color: #777777;
+
+    text-align: center;
+    font-size: 10px;
+    line-height: 1.6;
+
+    white-space: pre-line;
+}
+
+.preview-style-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.preview-style-grid article {
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: #ffffff;
+}
+
+.preview-style-grid img {
+    display: block;
+
+    width: 100%;
+    aspect-ratio: 1 / 1;
+
+    object-fit: cover;
+}
+
+.preview-style-grid span {
+    display: block;
+    padding: 9px;
+
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   오른쪽 편집 패널
+   ========================================================= */
+
+.editor-panel {
+    position: sticky;
+    top: 24px;
+
+    overflow: hidden;
+}
+
+.editor-panel > .panel-header {
+    padding: 23px 23px 19px;
+    margin: 0;
+
+    border-bottom: 1px solid #eceff2;
+}
+
+
+/* 편집 섹션 */
+.editor-section {
+    padding: 22px 23px;
+
+    border-bottom: 1px solid #eceff2;
+}
+
+.editor-section-title {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.section-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 10px;
+
+    background: #f5e8ef;
+    color: #965a76;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.editor-section-title h3 {
+    margin: 0 0 5px;
+    font-size: 15px;
+}
+
+.editor-section-title p {
+    margin: 0;
+
+    color: #8a8f97;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* 입력 영역 */
+.editor-field {
+    display: block;
+    margin-bottom: 17px;
+}
+
+.editor-field:last-child {
+    margin-bottom: 0;
+}
+
+.editor-field > span {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #4e535b;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.editor-field input,
+.editor-field textarea {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: 1px solid #dfe3e8;
+    border-radius: 10px;
+
+    outline: none;
+
+    color: #333333;
+
+    font: inherit;
+    font-size: 12px;
+
+    resize: vertical;
+
+    transition: 0.2s;
+}
+
+.editor-field input:focus,
+.editor-field textarea:focus {
+    border-color: #b06f8d;
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.1);
+}
+
+.editor-field small {
+    display: block;
+    margin-top: 6px;
+
+    color: #9a9ea5;
+
+    font-size: 10px;
+}
+
+
+/* 토글 */
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 18px;
+    padding: 13px 14px;
+
+    border: 1px solid #e6e9ed;
+    border-radius: 11px;
+
+    background: #fafbfc;
+}
+
+.toggle-row strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 12px;
+}
+
+.toggle-row p {
+    margin: 0;
+
+    color: #92969d;
+
+    font-size: 10px;
+}
+
+.toggle-row input {
+    flex: 0 0 auto;
+
+    width: 18px;
+    height: 18px;
+
+    accent-color: #b06f8d;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   버튼
+   ========================================================= */
+
+.editor-actions {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 9px;
+
+    padding: 22px 23px 10px;
+}
+
+.reset-button,
+.save-button {
+    height: 44px;
+
+    border: 0;
+    border-radius: 10px;
+
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.reset-button {
+    background: #eceff2;
+    color: #555b63;
+}
+
+.save-button {
+    background: linear-gradient(
+            135deg,
+            #b87594,
+            #a35f7f
+    );
+
+    color: #ffffff;
+}
+
+.reset-button:hover,
+.save-button:hover {
+    transform: translateY(-1px);
+}
+
+.save-help {
+    margin: 0;
+    padding: 0 23px 22px;
+
+    color: #9a9ea5;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   반응형
+   ========================================================= */
+
+@media (max-width: 1300px) {
+
+    .siteadmin-grid {
+        grid-template-columns: 1fr 360px;
+    }
+
+}
+
+
+@media (max-width: 1050px) {
+
+    .siteadmin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .editor-panel {
+        position: static;
+    }
+
+}
+
+/* =========================================================
+   저장 완료 토스트 메시지
+   ========================================================= */
+
+.siteadmin-toast {
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    z-index: 1000;
+
+    min-width: 280px;
+    padding: 16px 20px;
+
+    border-radius: 12px;
+
+    background: #2f333a;
+    color: #ffffff;
+
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(15px);
+
+    transition:
+            opacity 0.25s ease,
+            transform 0.25s ease,
+            visibility 0.25s ease;
+}
+
+
+/* 토스트 표시 상태 */
+.siteadmin-toast.show {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+}
