@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>시술 메뉴 | SALON CRM</title>
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/servicemenu/service-menu.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- Header -->
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+
+<!-- Main -->
+
+<main class="service-page">
+
+    <div class="service-container">
+
+
+        <!-- Header -->
+
+        <div class="service-page-header">
+
+            <h1 class="service-page-title">
+                시술 메뉴
+            </h1>
+
+            <p class="service-page-description">
+                원하는 시술 메뉴와 가격,
+                예상 소요시간을 확인해보세요.
+            </p>
+
+        </div>
+
+
+        <!-- Category -->
+
+        <nav class="service-category">
+
+
+            <!-- 전체 -->
+
+            <a
+                    th:href="@{/services}"
+                    class="category-button"
+                    th:classappend="${selectedCategory == null ? 'active' : ''}"
+            >
+                전체
+            </a>
+
+
+            <!-- 커트 -->
+
+            <a
+                    th:href="@{/services(category='CUT')}"
+                    class="category-button"
+                    th:classappend="${selectedCategory != null
+                         and selectedCategory.name() == 'CUT' ? 'active' : ''}"
+            >
+                커트
+            </a>
+
+
+            <!-- 펌 -->
+
+            <a
+                    th:href="@{/services(category='PERM')}"
+                    class="category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'PERM' ? 'active' : ''}"
+            >
+                펌
+            </a>
+
+
+            <!-- 염색 -->
+
+            <a
+                    th:href="@{/services(category='COLOR')}"
+                    class="category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'COLOR' ? 'active' : ''}"
+            >
+                염색
+            </a>
+
+
+            <!-- 클리닉 -->
+
+            <a
+                    th:href="@{/services(category='CLINIC')}"
+                    class="category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'CLINIC' ? 'active' : ''}"
+            >
+                클리닉
+            </a>
+
+
+            <!-- 기타 -->
+
+            <a
+                    th:href="@{/services(category='ETC')}"
+                    class="category-button"
+                    th:classappend="${selectedCategory != null
+                        and selectedCategory.name() == 'ETC' ? 'active' : ''}"
+            >
+                기타
+            </a>
+
+        </nav>
+
+
+        <!-- 메뉴 없음 -->
+
+        <div
+                th:if="${#lists.isEmpty(menus)}"
+                class="service-empty"
+        >
+            등록된 시술 메뉴가 없습니다.
+        </div>
+
+
+        <!-- Service Grid -->
+
+        <div
+                th:unless="${#lists.isEmpty(menus)}"
+                class="service-grid"
+        >
+
+
+            <article
+                    th:each="menu : ${menus}"
+                    class="service-card"
+            >
+
+                <a
+                        th:href="@{/services/{no}(no=${menu.no})}"
+                        class="service-card-link"
+                >
+
+
+                    <!-- Image -->
+
+                    <div class="service-image-area">
+
+
+                        <img
+                                th:if="${menu.imageUrl != null
+                                    and !#strings.isEmpty(menu.imageUrl)}"
+                                th:src="${menu.imageUrl}"
+                                th:alt="${menu.name}"
+                                class="service-image"
+                        >
+
+
+                        <div
+                                th:unless="${menu.imageUrl != null
+                                    and !#strings.isEmpty(menu.imageUrl)}"
+                                class="service-image-placeholder"
+                        >
+                            이미지 준비중
+                        </div>
+
+                    </div>
+
+
+                    <!-- Content -->
+
+                    <div class="service-card-body">
+
+                        <p
+                                class="service-category-name"
+                                th:text="${menu.categoryName}"
+                        >
+                            커트
+                        </p>
+
+
+                        <h2
+                                class="service-name"
+                                th:text="${menu.name}"
+                        >
+                            기본 커트
+                        </h2>
+
+
+                        <p
+                                class="service-description"
+                                th:text="${menu.description != null
+                                    ? menu.description
+                                    : '시술 설명이 준비중입니다.'}"
+                        >
+                            시술 설명
+                        </p>
+
+
+                        <div class="service-info">
+
+                            <strong
+                                    class="service-price"
+                                    th:text="|${#numbers.formatInteger(menu.price, 0, 'COMMA')}원|"
+                            >
+                                20,000원
+                            </strong>
+
+
+                            <span
+                                    class="service-duration"
+                                    th:text="|약 ${menu.durationMin}분|"
+                            >
+                                약 30분
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- Footer -->
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+
+</body>
+
+</html>

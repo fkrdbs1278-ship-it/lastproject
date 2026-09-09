@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약하기</title>
+    <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
+    <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/reservation/reservation.css}">
+</head>
+<body>
+<main class="reservation-page"
+      id="reservationPage"
+      th:attr="data-member-no=${memberNo},data-logged-in=${isLoggedIn}">
+
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">SALON RESERVATION</p>
+            <h1>예약하기</h1>
+            <p>시술 → 예시 스타일 → 날짜/시간 순서로 선택해주세요.</p>
+        </div>
+        <div>
+            <a class="secondary-button" th:href="@{/guest-reservation}">비회원 예약 조회</a>
+            <a class="secondary-button" th:href="@{/my-reservations}">내 예약</a>
+        </div>
+    </section>
+
+    <section class="reservation-grid">
+
+<section class="panel">
+    <div class="section-title-row">
+        <h2>진행 중 이벤트</h2>
+    </div>
+
+    <div th:if="${#lists.isEmpty(ongoingEvents)}" class="empty-box">
+        현재 진행 중인 이벤트가 없습니다.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(ongoingEvents)}" class="menu-list">
+        <article class="menu-card"
+                 th:each="event : ${ongoingEvents}">
+            <span class="menu-content">
+                <span class="menu-category"
+                      th:text="${event.eventType}">GENERAL</span>
+
+                <strong th:text="${event.title}">이벤트 제목</strong>
+
+                <span th:if="${event.content != null}"
+                      th:text="${event.content}">이벤트 내용</span>
+
+                <span>
+                    <span th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd')}">2026-09-01</span>
+                    ~
+                    <span th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd')}">2026-09-30</span>
+                </span>
+            </span>
+        </article>
+    </div>
+</section>
+
+
+        <div class="panel">
+            <div class="section-title-row">
+                <h2>1. 시술 선택</h2>
+                <button type="button" id="clearServiceMenu" class="secondary-button">선택 취소</button>
+            </div>
+
+            <div class="menu-list">
+                <label class="menu-card" th:each="menu : ${serviceMenus}">
+                    <input type="radio"
+                           name="serviceMenu"
+                           th:value="${menu.serviceMenuNo}"
+                           class="menu-radio">
+                    <span class="menu-content">
+                        <span class="menu-category" th:text="${menu.category}">CUT</span>
+                        <strong th:text="${menu.name}">커트</strong>
+                        <span>
+                            <span th:text="${#numbers.formatInteger(menu.price, 1, 'COMMA')}">20000</span>원 ·
+                            <span th:text="${menu.durationMin}">30</span>분
+                        </span>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="section-title-row">
+                <h2>2. 예시 헤어스타일</h2>
+                <button type="button" id="clearHairStyle" class="secondary-button">선택 안 함</button>
+            </div>
+            <p class="field-help">선택한 시술과 연결된 미용실 예시 스타일입니다. 선택하지 않아도 예약할 수 있습니다.</p>
+            <div id="hairStyleList" class="hair-style-list">
+                <div class="empty-box">먼저 시술 메뉴를 선택해주세요.</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>3. 날짜/시간</h2>
+            <label class="field">
+                <span>예약 날짜</span>
+                <input type="date" id="reservationDate">
+            </label>
+
+            <div id="timeSection" class="time-section hidden">
+                <h3>예약 가능 시간</h3>
+                <div id="availabilityNotice" class="availability-notice hidden"></div>
+                <div id="timeSlots" class="time-slots"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>4. 고객 정보</h2>
+
+            <div th:if="${isLoggedIn}" class="member-notice">
+                <strong th:text="${memberName}">회원</strong>
+                <span th:text="${memberPhoneMasked}">010-****-0000</span>
+                <div>로그인된 회원 정보로 예약합니다.</div>
+            </div>
+
+            <div th:unless="${isLoggedIn}">
+                <label class="field">
+                    <span>비회원 이름</span>
+                    <input id="guestName"
+                           type="text"
+                           minlength="2"
+                           maxlength="50"
+                           autocomplete="name"
+                           placeholder="예: 김영준 / John Smith">
+                </label>
+
+                <label class="field">
+                    <span>휴대전화</span>
+                    <input id="guestPhone"
+                           type="tel"
+                           maxlength="13"
+                           inputmode="numeric"
+                           autocomplete="tel"
+                           placeholder="01012345678">
+                </label>
+
+                <p class="field-help">
+                    국내 휴대전화 번호를 입력해주세요. 국적 정보는 수집하지 않습니다.
+                </p>
+            </div>
+
+            <label class="field">
+                <span>요청사항</span>
+                <textarea id="requestMemo"
+                          maxlength="500"
+                          rows="5"
+                          placeholder="시술 시 참고할 내용을 입력해주세요."></textarea>
+                <span class="counter"><span id="memoCount">0</span>/500</span>
+            </label>
+        </div>
+
+        <div class="panel">
+            <h2>5. 내 참고 이미지</h2>
+            <p class="field-help">
+                미용실 예시 스타일과 별도로 본인이 원하는 참고 사진이 있다면 추가할 수 있습니다.
+            </p>
+            <label class="file-drop">
+                <input type="file"
+                       id="reservationImages"
+                       accept="image/jpeg,image/png,image/webp"
+                       multiple>
+                <strong>사진 선택</strong>
+                <span>JPG, PNG, WEBP / 최대 3장 / 장당 10MB</span>
+            </label>
+            <div id="imagePreview" class="image-preview"></div>
+        </div>
+    </section>
+
+    <section class="submit-panel">
+        <div id="reservationSummary" class="reservation-summary">
+            시술, 날짜, 시간을 선택해주세요.
+        </div>
+        <button type="button" id="submitReservation" class="primary-button" disabled>
+            예약 신청
+        </button>
+    </section>
+
+    <div id="messageBox" class="message-box hidden" role="alert"></div>
+</main>
+
+<script th:src="@{/js/reservation/reservation-form.js}"></script>
+</body>
+</html>

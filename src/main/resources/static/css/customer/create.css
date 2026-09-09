@@ -1,0 +1,623 @@
+/* =========================================================
+   전화예약 고객 등록
+   3part 관리자 전용 CSS
+========================================================= */
+
+
+/* =========================================================
+   기본 설정
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-width: 1200px;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+
+    background-color: #f5f6f8;
+    color: #1f2228;
+
+    font-family:
+            "Pretendard",
+            "Noto Sans KR",
+            "Malgun Gothic",
+            sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+/* =========================================================
+   등록 화면 전체
+   관리자 공통 사이드바 250px 대응
+========================================================= */
+
+.create-page {
+    width: calc(100% - 250px);
+    min-height: 100vh;
+
+    margin-left: 250px;
+
+    padding: 38px 44px 55px;
+}
+
+
+/* =========================================================
+   페이지 상단
+========================================================= */
+
+.create-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+
+    margin-bottom: 28px;
+}
+
+.page-label,
+.panel-label,
+.default-label {
+    margin: 0 0 7px;
+
+    color: #965a76;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+}
+
+.create-header h1 {
+    margin: 0 0 10px;
+
+    color: #1f2228;
+
+    font-size: 32px;
+    line-height: 1.2;
+
+    letter-spacing: -1.5px;
+}
+
+.page-description {
+    margin: 0;
+
+    color: #858a94;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   고객 목록 버튼
+========================================================= */
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 110px;
+    height: 44px;
+
+    padding: 0 17px;
+
+    border: 1px solid #dde1e7;
+    border-radius: 10px;
+
+    background-color: #ffffff;
+
+    color: #565b64;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    transition:
+            border-color 0.2s ease,
+            color 0.2s ease,
+            background-color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.back-button:hover {
+    border-color: #b06f8d;
+
+    background-color: #fcf6f9;
+
+    color: #965a76;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   오류 메시지
+========================================================= */
+
+.alert {
+    margin-bottom: 20px;
+    padding: 14px 17px;
+
+    border-radius: 11px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.alert.error {
+    border: 1px solid #efcfd3;
+
+    background-color: #fdf0f2;
+
+    color: #b85760;
+}
+
+
+/* =========================================================
+   등록 카드
+========================================================= */
+
+.create-panel {
+    max-width: 900px;
+
+    padding: 27px;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 18px;
+
+    background-color: #ffffff;
+
+    box-shadow:
+            0 8px 24px rgba(32, 36, 43, 0.05);
+}
+
+
+/* =========================================================
+   카드 헤더
+========================================================= */
+
+.panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.panel-header h2 {
+    margin: 0;
+
+    color: #24272d;
+
+    font-size: 19px;
+    letter-spacing: -0.5px;
+}
+
+.panel-header > p {
+    max-width: 320px;
+
+    margin: 4px 0 0;
+
+    color: #959aa3;
+
+    font-size: 11px;
+    line-height: 1.6;
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   등록 Form
+========================================================= */
+
+.create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+
+/* =========================================================
+   Form Group
+========================================================= */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #555a63;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.required {
+    margin-left: 2px;
+
+    color: #c35c65;
+}
+
+
+/* =========================================================
+   입력창
+========================================================= */
+
+.form-control {
+    width: 100%;
+    height: 46px;
+
+    padding: 0 14px;
+
+    border: 1px solid #dce0e6;
+    border-radius: 10px;
+
+    outline: none;
+
+    background-color: #ffffff;
+
+    color: #3f434a;
+
+    font-size: 13px;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease,
+            background-color 0.2s ease;
+}
+
+.form-control::placeholder {
+    color: #b1b5bd;
+}
+
+.form-control:hover {
+    border-color: #ccd1d8;
+}
+
+.form-control:focus {
+    border-color: #b06f8d;
+
+    background-color: #ffffff;
+
+    box-shadow:
+            0 0 0 3px rgba(176, 111, 141, 0.09);
+}
+
+
+/* =========================================================
+   전화번호 입력 안내
+========================================================= */
+
+.input-guide {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #8e939c;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.guide-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 9px;
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   Validation 오류
+========================================================= */
+
+.field-error {
+    color: #c35c65;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   신규 고객 기본 설정
+========================================================= */
+
+.default-info {
+    padding: 21px;
+
+    border: 1px solid #e3e6eb;
+    border-radius: 14px;
+
+    background-color: #fafbfc;
+}
+
+.default-info-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    margin-bottom: 17px;
+}
+
+.default-info-header h3 {
+    margin: 0;
+
+    color: #363940;
+
+    font-size: 15px;
+}
+
+.default-label {
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   자동 적용 Badge
+========================================================= */
+
+.automatic-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 9px;
+
+    border-radius: 7px;
+
+    background-color: #e9f2ed;
+
+    color: #5e9077;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   기본 설정 Grid
+========================================================= */
+
+.default-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+}
+
+.default-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    min-height: 92px;
+
+    padding: 15px;
+
+    border: 1px solid #e4e7ec;
+    border-radius: 11px;
+
+    background-color: #ffffff;
+}
+
+.default-item > span {
+    color: #9297a0;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.default-item > strong {
+    color: #3b3f46;
+
+    font-size: 14px;
+}
+
+.default-item > small {
+    color: #a0a5ad;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.default-item .active-text {
+    color: #5e9077;
+}
+
+
+/* =========================================================
+   등록 후 안내
+========================================================= */
+
+.registration-guide {
+    padding: 15px 17px;
+
+    border-left: 4px solid #b06f8d;
+    border-radius: 9px;
+
+    background-color: #fdf8fa;
+}
+
+.registration-guide strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #965a76;
+
+    font-size: 11px;
+}
+
+.registration-guide p {
+    margin: 0;
+
+    color: #858a94;
+
+    font-size: 10px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   하단 버튼
+========================================================= */
+
+.button-area {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+
+    padding-top: 2px;
+}
+
+
+/* 취소 */
+
+.cancel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 85px;
+    height: 42px;
+
+    padding: 0 16px;
+
+    border: 1px solid #dce0e6;
+    border-radius: 9px;
+
+    background-color: #ffffff;
+
+    color: #666b73;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    transition:
+            border-color 0.2s ease,
+            color 0.2s ease,
+            background-color 0.2s ease;
+}
+
+.cancel-button:hover {
+    border-color: #b06f8d;
+
+    background-color: #fcf6f9;
+
+    color: #965a76;
+}
+
+
+/* 등록 */
+
+.submit-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 105px;
+    height: 42px;
+
+    padding: 0 18px;
+
+    border: 1px solid #a35f7f;
+    border-radius: 9px;
+
+    background: linear-gradient(
+            135deg,
+            #b87594,
+            #a35f7f
+    );
+
+    box-shadow:
+            0 6px 16px rgba(176, 111, 141, 0.18);
+
+    color: #ffffff;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            background-color 0.2s ease;
+}
+
+.submit-button:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+            0 9px 20px rgba(176, 111, 141, 0.25);
+}
+
+
+/* =========================================================
+   중간 화면
+========================================================= */
+
+@media (max-width: 1450px) {
+
+    .create-page {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+
+}
+
+
+/* =========================================================
+   작은 화면
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .create-page {
+        padding-right: 25px;
+        padding-left: 25px;
+    }
+
+    .default-grid {
+        grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+    }
+
+}

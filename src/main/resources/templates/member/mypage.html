@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>마이페이지 | SALON CRM</title>
+
+
+    <!-- 공통 CSS -->
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+
+    <!-- Header / Footer -->
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+
+    <!-- 마이페이지 -->
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/member/mypage.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+
+<main class="mypage-page">
+
+    <div class="mypage-container">
+
+
+        <!-- =========================================
+             마이페이지 상단
+        ========================================== -->
+
+        <section class="mypage-header">
+
+            <div>
+
+                <p class="mypage-eyebrow">
+                    MY PAGE
+                </p>
+
+                <h1>
+                    마이페이지
+                </h1>
+
+                <p class="mypage-description">
+                    회원정보와 서비스 이용 내역을 확인할 수 있습니다.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             회원정보
+        ========================================== -->
+
+        <section class="mypage-section">
+
+
+            <div class="mypage-section-header">
+
+                <div>
+
+                    <h2>
+                        내 정보
+                    </h2>
+
+                    <p>
+                        등록된 회원정보입니다.
+                    </p>
+
+                </div>
+
+
+                <a
+                        th:href="@{/member/edit}"
+                        class="mypage-edit-button"
+                >
+                    회원정보 수정
+                </a>
+
+            </div>
+
+
+            <div class="mypage-info-card">
+
+
+                <!-- 아이디 -->
+
+                <div class="mypage-info-row">
+
+                    <span class="mypage-info-label">
+                        아이디
+                    </span>
+
+                    <strong
+                            class="mypage-info-value"
+                            th:text="${member.memberId}"
+                    >
+                        test01
+                    </strong>
+
+                </div>
+
+
+                <!-- 이름 -->
+
+                <div class="mypage-info-row">
+
+                    <span class="mypage-info-label">
+                        이름
+                    </span>
+
+                    <span
+                            class="mypage-info-value"
+                            th:text="${member.name}"
+                    >
+                        홍길동
+                    </span>
+
+                </div>
+
+
+                <!-- 닉네임 -->
+
+                <div class="mypage-info-row">
+
+                    <span class="mypage-info-label">
+                        닉네임
+                    </span>
+
+                    <span
+                            class="mypage-info-value"
+                            th:text="${
+                                member.nickname != null
+                                and !#strings.isEmpty(member.nickname)
+                                ? member.nickname
+                                : '-'
+                            }"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <!-- 이메일 -->
+
+                <div class="mypage-info-row">
+
+                    <span class="mypage-info-label">
+                        이메일
+                    </span>
+
+                    <span
+                            class="mypage-info-value"
+                            th:text="${
+                                member.email != null
+                                and !#strings.isEmpty(member.email)
+                                ? member.email
+                                : '-'
+                            }"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <!-- 전화번호 -->
+
+                <div class="mypage-info-row">
+
+                    <span class="mypage-info-label">
+                        전화번호
+                    </span>
+
+                    <span
+                            class="mypage-info-value"
+                            th:text="${member.phone}"
+                    >
+                        010-1234-5678
+                    </span>
+
+                </div>
+
+
+                <!-- 생년월일 -->
+
+                <div class="mypage-info-row">
+
+                    <span class="mypage-info-label">
+                        생년월일
+                    </span>
+
+                    <span
+                            class="mypage-info-value"
+                            th:text="${
+                                member.birthDate != null
+                                ? #temporals.format(
+                                    member.birthDate,
+                                    'yyyy.MM.dd'
+                                  )
+                                : '-'
+                            }"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+                <!-- 성별 -->
+
+                <div class="mypage-info-row">
+
+                    <span class="mypage-info-label">
+                        성별
+                    </span>
+
+                    <span
+                            class="mypage-info-value"
+                            th:text="${
+                                member.gender == 'M'
+                                ? '남성'
+                                : (
+                                    member.gender == 'F'
+                                    ? '여성'
+                                    : '-'
+                                )
+                            }"
+                    >
+                        -
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             서비스 이용 메뉴
+
+             예약/결제/쿠폰 기능 Merge 전이므로
+             일단 화면 구조만 만든다.
+        ========================================== -->
+
+        <section class="mypage-section">
+
+
+            <div class="mypage-section-header">
+
+                <div>
+
+                    <h2>
+                        서비스 이용 내역
+                    </h2>
+
+                    <p>
+                        이용 중인 서비스를 확인할 수 있습니다.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="mypage-menu-grid">
+
+
+                <!-- 예약 -->
+
+                <div class="mypage-menu-card">
+
+                    <h3>
+                        예약 내역
+                    </h3>
+
+                    <p>
+                        예약한 시술을 확인합니다.
+                    </p>
+
+                    <span class="mypage-menu-ready">
+                        준비 중
+                    </span>
+
+                </div>
+
+
+                <!-- 결제 -->
+
+                <div class="mypage-menu-card">
+
+                    <h3>
+                        결제 내역
+                    </h3>
+
+                    <p>
+                        결제한 서비스 내역을 확인합니다.
+                    </p>
+
+                    <span class="mypage-menu-ready">
+                        준비 중
+                    </span>
+
+                </div>
+
+
+                <!-- 쿠폰 -->
+
+                <div class="mypage-menu-card">
+
+                    <h3>
+                        보유 쿠폰
+                    </h3>
+
+                    <p>
+                        사용할 수 있는 쿠폰을 확인합니다.
+                    </p>
+
+                    <span class="mypage-menu-ready">
+                        준비 중
+                    </span>
+
+                </div>
+
+
+                <!-- 리뷰 -->
+
+                <a
+                        th:href="@{/reviews}"
+                        class="mypage-menu-card mypage-menu-link"
+                >
+
+                    <h3>
+                        내 리뷰
+                    </h3>
+
+                    <p>
+                        내가 작성한 리뷰를 확인합니다.
+                    </p>
+
+                    <span class="mypage-menu-arrow">
+                        보기 →
+                    </span>
+
+                </a>
+
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             계정 관리
+        ========================================== -->
+
+        <section class="mypage-section">
+
+
+            <div class="mypage-section-header">
+
+                <div>
+
+                    <h2>
+                        계정 관리
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="mypage-account-actions">
+
+                <a
+                        th:href="@{/member/edit}"
+                        class="mypage-account-button"
+                >
+                    회원정보 수정
+                </a>
+
+
+                <a
+                        th:href="@{/member/withdraw}"
+                        class="mypage-withdraw-button"
+                >
+                    회원탈퇴
+                </a>
+
+            </div>
+
+
+        </section>
+
+
+    </div>
+
+</main>
+
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+
+</body>
+
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title th:text="|${detail.hairStyle.title} | SALON CRM|">
+        헤어스타일 상세 | SALON CRM
+    </title>
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/hairstyle/hairstyle.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+
+<main class="hair-page">
+
+    <div class="hair-container">
+
+
+        <section class="hair-detail">
+
+
+            <!-- Image -->
+
+            <div class="hair-detail-image-area">
+
+                <img
+                        th:src="${detail.hairStyle.imageUrl}"
+                        th:alt="${detail.hairStyle.title}"
+                        class="hair-detail-image"
+                >
+
+            </div>
+
+
+            <!-- Content -->
+
+            <div class="hair-detail-content">
+
+
+                <p
+                        class="hair-detail-category"
+                        th:text="${detail.hairStyle.categoryName}"
+                >
+                    롱
+                </p>
+
+
+                <h1
+                        class="hair-detail-title"
+                        th:text="${detail.hairStyle.title}"
+                >
+                    레이어드 C컬
+                </h1>
+
+
+                <p
+                        class="hair-detail-description"
+                        th:text="${detail.hairStyle.description != null
+                            ? detail.hairStyle.description
+                            : '헤어스타일 설명이 준비중입니다.'}"
+                >
+                    설명
+                </p>
+
+
+                <!-- 추천 시술 -->
+
+                <section class="recommended-services">
+
+                    <h2 class="recommended-title">
+                        추천 시술
+                    </h2>
+
+
+                    <!-- 연결된 시술 없음 -->
+
+                    <p
+                            th:if="${#lists.isEmpty(detail.recommendedServices)}"
+                            class="recommended-empty"
+                    >
+                        연결된 추천 시술이 없습니다.
+                    </p>
+
+
+                    <!-- 연결된 시술 -->
+
+                    <div
+                            th:unless="${#lists.isEmpty(detail.recommendedServices)}"
+                            class="recommended-list"
+                    >
+
+                        <a
+                                th:each="service : ${detail.recommendedServices}"
+                                th:href="@{/services/{no}(no=${service.no})}"
+                                class="recommended-item"
+                        >
+
+                            <span
+                                    class="recommended-name"
+                                    th:text="${service.name}"
+                            >
+                                디자인 펌
+                            </span>
+
+
+                            <span
+                                    class="recommended-price"
+                                    th:text="|${#numbers.formatInteger(service.price, 0, 'COMMA')}원 · 약 ${service.durationMin}분|"
+                            >
+                                70,000원 · 약 120분
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </section>
+
+
+        <!-- 목록 -->
+
+        <div class="hair-back-area">
+
+            <a
+                    th:href="@{/hairstyles}"
+                    class="hair-back-button"
+            >
+                목록으로
+            </a>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+
+</body>
+
+</html>

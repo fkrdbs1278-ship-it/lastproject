@@ -1,0 +1,880 @@
+/* =========================================================
+   고객 상담메모
+   3part 전용 CSS
+========================================================= */
+
+
+/* =========================================================
+   기본 설정
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-width: 1200px;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+
+    background-color: #f5f6f8;
+    color: #1f2228;
+
+    font-family:
+            "Pretendard",
+            "Noto Sans KR",
+            "Malgun Gothic",
+            sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+
+/* =========================================================
+   상담메모 전체 영역
+   관리자 공통 사이드바 250px 대응
+========================================================= */
+
+.memo-page {
+    width: calc(100% - 250px);
+    min-height: 100vh;
+
+    margin-left: 250px;
+
+    padding: 38px 44px 55px;
+}
+
+
+/* =========================================================
+   페이지 헤더
+========================================================= */
+
+.memo-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+
+    margin-bottom: 28px;
+}
+
+.page-label,
+.panel-label {
+    margin: 0 0 7px;
+
+    color: #965a76;
+
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+}
+
+.memo-header h1 {
+    margin: 0 0 10px;
+
+    color: #1f2228;
+
+    font-size: 32px;
+    line-height: 1.2;
+    letter-spacing: -1.5px;
+}
+
+.page-description {
+    margin: 0;
+
+    color: #858a94;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   상단 이동 버튼
+========================================================= */
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 110px;
+    height: 44px;
+
+    padding: 0 17px;
+
+    border: 1px solid #dde1e7;
+    border-radius: 10px;
+
+    background-color: #ffffff;
+
+    color: #565b64;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    transition:
+            border-color 0.2s ease,
+            color 0.2s ease,
+            background-color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.header-button:hover {
+    border-color: #b06f8d;
+    color: #965a76;
+
+    transform: translateY(-1px);
+}
+
+.header-button.primary {
+    border-color: #a35f7f;
+    background-color: #a35f7f;
+
+    color: #ffffff;
+}
+
+.header-button.primary:hover {
+    border-color: #965a76;
+    background-color: #965a76;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   고객 요약
+========================================================= */
+
+.customer-summary {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    margin-bottom: 20px;
+    padding: 20px 23px;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 17px;
+
+    background-color: #ffffff;
+
+    box-shadow: 0 8px 24px rgba(32, 36, 43, 0.05);
+}
+
+.summary-icon {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 13px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.customer-summary > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.customer-summary span {
+    color: #9297a0;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.customer-summary strong {
+    color: #35383f;
+
+    font-size: 14px;
+}
+
+.customer-summary strong span {
+    color: #965a76;
+
+    font-size: 14px;
+}
+
+.customer-summary p {
+    margin: 2px 0 0;
+
+    color: #9297a0;
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   메모 공통 패널
+========================================================= */
+
+.memo-panel {
+    margin-bottom: 20px;
+    padding: 25px;
+
+    border: 1px solid #e1e5eb;
+    border-radius: 18px;
+
+    background-color: #ffffff;
+
+    box-shadow: 0 8px 24px rgba(32, 36, 43, 0.05);
+}
+
+.panel-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 22px;
+}
+
+.panel-header h2 {
+    margin: 0;
+
+    color: #24272d;
+
+    font-size: 19px;
+    letter-spacing: -0.5px;
+}
+
+.panel-header > p {
+    margin: 4px 0 0;
+
+    color: #959aa3;
+
+    font-size: 12px;
+}
+
+.panel-header > p strong {
+    color: #965a76;
+}
+
+
+/* =========================================================
+   공통 Form
+========================================================= */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: #626770;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.form-group select,
+.form-group textarea {
+    width: 100%;
+
+    border: 1px solid #dce0e6;
+    border-radius: 9px;
+
+    outline: none;
+
+    background-color: #ffffff;
+
+    color: #444850;
+
+    font-size: 12px;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.form-group select {
+    height: 42px;
+    padding: 0 12px;
+}
+
+.form-group textarea {
+    min-height: 125px;
+
+    padding: 13px;
+
+    line-height: 1.65;
+
+    resize: vertical;
+}
+
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #b06f8d;
+
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.09);
+}
+
+.form-group textarea::placeholder {
+    color: #b0b4bc;
+}
+
+
+/* =========================================================
+   새 메모 등록 Form
+========================================================= */
+
+.memo-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.create-form-grid {
+    display: grid;
+
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    gap: 13px;
+}
+
+.memo-content-group textarea {
+    min-height: 145px;
+}
+
+
+/* =========================================================
+   메모 도움말
+========================================================= */
+
+.content-help {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color: #9a9fa8;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   Validation 오류
+========================================================= */
+
+.error {
+    color: #c35c65;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   등록 버튼
+========================================================= */
+
+.create-button-area {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.save-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 105px;
+    height: 42px;
+
+    padding: 0 18px;
+
+    border: 1px solid #a35f7f;
+    border-radius: 9px;
+
+    background-color: #a35f7f;
+
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.save-button:hover {
+    border-color: #965a76;
+    background-color: #965a76;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   메모 목록
+========================================================= */
+
+.memo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+
+/* =========================================================
+   메모 카드
+========================================================= */
+
+.memo-card {
+    position: relative;
+
+    padding: 19px;
+
+    border: 1px solid #e3e6eb;
+    border-radius: 14px;
+
+    background-color: #fafbfc;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.memo-card:hover {
+    border-color: #d7dbe1;
+
+    box-shadow: 0 5px 15px rgba(32, 36, 43, 0.04);
+}
+
+
+/* 중요 메모 */
+
+.memo-card.important-card {
+    border-left: 4px solid #b06f8d;
+
+    background-color: #fdf8fa;
+}
+
+
+/* =========================================================
+   메모 카드 헤더
+========================================================= */
+
+.memo-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 16px;
+}
+
+.memo-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+
+/* =========================================================
+   메모 유형 Badge
+========================================================= */
+
+.memo-type {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 52px;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+/* 상담 */
+
+.memo-type.type-counseling {
+    background-color: #edf3fa;
+    color: #6687b3;
+}
+
+
+/* 알레르기 */
+
+.memo-type.type-allergy {
+    background-color: #fbe9eb;
+    color: #c35c65;
+}
+
+
+/* 두피 */
+
+.memo-type.type-scalp {
+    background-color: #fff0e8;
+    color: #cd744f;
+}
+
+
+/* 모발 */
+
+.memo-type.type-hair {
+    background-color: #f5e8ef;
+    color: #965a76;
+}
+
+
+/* 일반 */
+
+.memo-type.type-general {
+    background-color: #f0f1f4;
+    color: #70757e;
+}
+
+
+/* =========================================================
+   중요 Badge
+========================================================= */
+
+.important-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 8px;
+
+    border-radius: 7px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 9px;
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   작성 정보
+========================================================= */
+
+.memo-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    color: #9a9fa8;
+
+    font-size: 10px;
+}
+
+.memo-date strong {
+    color: #727780;
+
+    font-weight: 700;
+}
+
+.meta-divider {
+    color: #c7cad0;
+}
+
+
+/* =========================================================
+   수정 Form
+========================================================= */
+
+.memo-update-form {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+.update-form-row {
+    display: grid;
+
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+.memo-update-form textarea {
+    min-height: 115px;
+}
+
+
+/* =========================================================
+   수정 버튼
+========================================================= */
+
+.memo-action-area {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.update-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 85px;
+    height: 36px;
+
+    padding: 0 14px;
+
+    border: 1px solid #b06f8d;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+
+    color: #965a76;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease,
+            color 0.2s ease;
+}
+
+.update-button:hover {
+    border-color: #965a76;
+
+    background-color: #965a76;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   삭제 Form
+========================================================= */
+
+.memo-delete-form {
+    position: absolute;
+
+    right: 19px;
+    bottom: 19px;
+
+    margin: 0;
+}
+
+.delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 58px;
+    height: 36px;
+
+    padding: 0 12px;
+
+    border: 1px solid #ead1d4;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+
+    color: #c35c65;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            border-color 0.2s ease;
+}
+
+.delete-button:hover {
+    border-color: #c35c65;
+
+    background-color: #fbe9eb;
+}
+
+
+/* 삭제 버튼 공간 확보 */
+
+.memo-update-form {
+    padding-bottom: 45px;
+}
+
+
+/* =========================================================
+   등록된 메모 없음
+========================================================= */
+
+.empty-memo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 180px;
+
+    border: 1px dashed #dce0e6;
+    border-radius: 13px;
+
+    background-color: #fafbfc;
+
+    text-align: center;
+}
+
+.empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 43px;
+    height: 43px;
+
+    margin-bottom: 3px;
+
+    border-radius: 12px;
+
+    background-color: #f5e8ef;
+
+    color: #965a76;
+
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.empty-memo strong {
+    color: #4a4e56;
+
+    font-size: 13px;
+}
+
+.empty-memo p {
+    margin: 0;
+
+    color: #969ba4;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   메모 유형 하단 안내
+========================================================= */
+
+.memo-guide {
+    display: grid;
+
+    grid-template-columns:
+            repeat(5, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.guide-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    min-height: 80px;
+
+    padding: 14px;
+
+    border: 1px solid #e2e5ea;
+    border-radius: 12px;
+
+    background-color: #ffffff;
+
+    box-shadow: 0 5px 15px rgba(32, 36, 43, 0.03);
+}
+
+.guide-item strong {
+    color: #565a62;
+
+    font-size: 11px;
+}
+
+.guide-item span {
+    color: #979ca5;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   중간 화면
+========================================================= */
+
+@media (max-width: 1450px) {
+
+    .memo-page {
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+
+    .memo-guide {
+        grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   작은 화면
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .memo-page {
+        padding-right: 25px;
+        padding-left: 25px;
+    }
+
+    .memo-guide {
+        grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+    }
+
+}

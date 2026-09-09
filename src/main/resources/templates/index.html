@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>SALON CRM</title>
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/home.css}"
+    >
+
+</head>
+
+<body>
+
+
+<!-- Header -->
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+
+<!-- Main -->
+
+<main>
+
+
+    <!-- Main Hero -->
+
+    <section
+            class="hero"
+            id="heroSlider"
+    >
+
+
+        <!-- Hero Background Images -->
+
+        <div class="hero-backgrounds">
+
+
+            <!-- =================================
+                 관리자 이미지가 있는 경우
+
+                 나중에 관리자 기능 Merge 후
+                 heroSlides를 Controller에서 전달하면
+                 이 부분이 자동으로 사용된다.
+            ================================== -->
+
+            <th:block
+                    th:if="${
+                    heroSlides != null
+                    and !#lists.isEmpty(heroSlides)
+                }"
+            >
+
+                <div
+                        th:each="slide, status : ${heroSlides}"
+                        class="hero-background"
+                        th:classappend="${status.first} ? ' active' : ''"
+                >
+
+                    <img
+                            th:src="${slide.imageUrl}"
+                            th:alt="${
+                            slide.altText != null
+                            ? slide.altText
+                            : 'SALON CRM 메인 이미지'
+                        }"
+                    >
+
+                </div>
+
+            </th:block>
+
+
+            <!-- 관리자 이미지가 없는 경우
+                 기본 Hero 이미지 출력 -->
+
+            <th:block
+                    th:if="${
+                    heroSlides == null
+                    or #lists.isEmpty(heroSlides)
+                }"
+            >
+
+                <div class="hero-background active">
+
+                    <img
+                            th:src="@{/images/hero/hero1.jpg}"
+                            alt="헤어스타일 이미지 1"
+                    >
+
+                </div>
+
+
+                <div class="hero-background">
+
+                    <img
+                            th:src="@{/images/hero/hero2.jpg}"
+                            alt="헤어스타일 이미지 2"
+                    >
+
+                </div>
+
+
+                <div class="hero-background">
+
+                    <img
+                            th:src="@{/images/hero/hero3.jpg}"
+                            alt="헤어스타일 이미지 3"
+                    >
+
+                </div>
+
+
+                <div class="hero-background">
+
+                    <img
+                            th:src="@{/images/hero/hero4.jpg}"
+                            alt="헤어스타일 이미지 4"
+                    >
+
+                </div>
+
+            </th:block>
+
+
+        </div>
+
+
+        <!-- Overlay
+
+             배경 이미지 위에서 글자가
+             잘 보이도록 밝은 레이어를 올린다. -->
+
+        <div class="hero-overlay"></div>
+
+
+        <!-- Hero Content -->
+
+        <div class="hero-inner">
+
+            <div class="hero-content">
+
+
+                <h1 class="hero-title">
+                    나에게 어울리는 스타일을
+                    찾아보세요.
+                </h1>
+
+
+                <p class="hero-description">
+                    원하는 시술과 헤어스타일을 확인하고
+                    편리하게 예약 서비스를 이용해보세요.
+                </p>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- 이전 버튼 -->
+
+        <button
+                type="button"
+                id="heroPrev"
+                class="hero-slider-button hero-slider-prev"
+                aria-label="이전 이미지"
+        >
+            ‹
+        </button>
+
+
+        <!-- 다음 버튼 -->
+
+        <button
+                type="button"
+                id="heroNext"
+                class="hero-slider-button hero-slider-next"
+                aria-label="다음 이미지"
+        >
+            ›
+        </button>
+
+
+        <!-- Slider Dots -->
+
+        <div
+                class="hero-slider-dots"
+                id="heroDots"
+        >
+
+
+            <!-- 관리자 이미지 -->
+
+            <th:block
+                    th:if="${
+                    heroSlides != null
+                    and !#lists.isEmpty(heroSlides)
+                }"
+            >
+
+                <button
+                        th:each="slide, status : ${heroSlides}"
+                        type="button"
+                        class="hero-dot"
+                        th:classappend="${status.first} ? ' active' : ''"
+                        th:attr="
+                        data-slide=${status.index},
+                        aria-label=${status.index + 1 + '번째 이미지'}
+                    "
+                ></button>
+
+            </th:block>
+
+
+            <!-- 기본 이미지 -->
+
+            <th:block
+                    th:if="${
+                    heroSlides == null
+                    or #lists.isEmpty(heroSlides)
+                }"
+            >
+
+                <button
+                        type="button"
+                        class="hero-dot active"
+                        data-slide="0"
+                        aria-label="첫 번째 이미지"
+                ></button>
+
+
+                <button
+                        type="button"
+                        class="hero-dot"
+                        data-slide="1"
+                        aria-label="두 번째 이미지"
+                ></button>
+
+
+                <button
+                        type="button"
+                        class="hero-dot"
+                        data-slide="2"
+                        aria-label="세 번째 이미지"
+                ></button>
+
+
+                <button
+                        type="button"
+                        class="hero-dot"
+                        data-slide="3"
+                        aria-label="네 번째 이미지"
+                ></button>
+
+            </th:block>
+
+
+        </div>
+
+
+    </section>
+
+
+    <!-- 주요 기능 -->
+
+    <section class="feature-section">
+
+        <h2 class="section-title">
+            서비스 안내
+        </h2>
+
+
+        <div class="feature-grid">
+
+
+            <!-- 시술 메뉴 -->
+
+            <div class="feature-card">
+
+                <h3>
+                    예약하기
+                </h3>
+
+                <p>
+                    커트, 펌, 염색, 클리닉 등
+                    다양한 스타일로 예약할 수 있습니다.
+                </p>
+
+            </div>
+
+
+            <!-- 헤어스타일 -->
+
+            <div class="feature-card">
+
+                <h3>
+                    헤어스타일
+                </h3>
+
+                <p>
+                    다양한 헤어스타일 이미지를 확인하고
+                    원하는 스타일을 찾아볼 수 있습니다.
+                </p>
+
+            </div>
+
+
+            <!-- 마이페이지 -->
+
+            <div class="feature-card">
+
+                <h3>
+                    마이페이지
+                </h3>
+
+                <p>
+                    예약, 결제, 쿠폰 및 리뷰 내역을
+                    한 곳에서 확인할 수 있습니다.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =========================================
+     Hairstyle Gallery
+
+     현재는 static 이미지 사용.
+     나중에 HairStyle DB Merge 후
+     DB 조회 방식으로 교체 예정.
+    ========================================= -->
+
+    <section class="style-gallery-section">
+
+        <div class="style-gallery-inner">
+
+
+            <!-- 제목 -->
+
+            <div class="style-gallery-header">
+
+                <p class="style-gallery-eyebrow">
+                    HAIR STYLE
+                </p>
+
+                <h2>
+                    헤어스타일 둘러보기
+                </h2>
+
+                <p>
+                    다양한 스타일을 확인하고
+                    원하는 헤어스타일을 찾아보세요.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================
+                 Gallery
+            ====================================== -->
+
+            <div
+                    class="style-gallery-grid"
+                    id="styleGallery"
+            >
+
+
+                <!-- 여성 : 보브 컬 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/bob-curl.png}"
+                                alt="보브 컬"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        보브 컬
+                    </p>
+
+                </article>
+
+
+                <!-- 여성 : 브라운 컬러 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/brown-color.png}"
+                                alt="브라운 컬러"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        브라운 컬러
+                    </p>
+
+                </article>
+
+
+                <!-- 여성 : C컬 펌 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/c-curl-perm.png}"
+                                alt="C컬 펌"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        C컬 펌
+                    </p>
+
+                </article>
+
+
+                <!-- 여성 : 레이어드 컷 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/layered-cut.png}"
+                                alt="레이어드 컷"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        레이어드 컷
+                    </p>
+
+                </article>
+
+
+                <!-- 여성 : S컬 펌 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/s-curl-perm.png}"
+                                alt="S컬 펌"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        S컬 펌
+                    </p>
+
+                </article>
+
+
+                <!-- 남성 : 댄디 컷 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/dandy-cut.png}"
+                                alt="댄디 컷"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        댄디 컷
+                    </p>
+
+                </article>
+
+
+                <!-- 남성 : 다운 펌 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/down-perm.png}"
+                                alt="다운 펌"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        다운 펌
+                    </p>
+
+                </article>
+
+
+                <!-- 남성 : 가르마 펌 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/part-perm.png}"
+                                alt="가르마 펌"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        가르마 펌
+                    </p>
+
+                </article>
+
+
+                <!-- 남성 : 쉐도우 펌 -->
+
+                <article class="style-gallery-card reveal-on-scroll">
+
+                    <div class="style-gallery-image">
+
+                        <img
+                                th:src="@{/images/hairstyle/shadow-perm.png}"
+                                alt="쉐도우 펌"
+                                loading="lazy"
+                        >
+
+                    </div>
+
+                    <p class="style-gallery-name">
+                        쉐도우 펌
+                    </p>
+
+                </article>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+
+</main>
+
+
+<!-- Footer -->
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+<script th:src="@{/js/home.js}"></script>
+
+</body>
+
+</html>

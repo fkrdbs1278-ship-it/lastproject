@@ -1,0 +1,570 @@
+package com.young04.lastproject.member.service;
+
+import com.young04.lastproject.global.exception.member.DuplicateEmailException;
+import com.young04.lastproject.global.exception.member.DuplicateMemberIdException;
+import com.young04.lastproject.global.exception.member.InvalidBirthDateException;
+import com.young04.lastproject.global.exception.member.MemberNotFoundException;
+import com.young04.lastproject.global.exception.member.PasswordMismatchException;
+import com.young04.lastproject.member.dto.MemberResponse;
+import com.young04.lastproject.member.dto.MemberUpdateRequest;
+import com.young04.lastproject.member.dto.PasswordConfirmRequest;
+import com.young04.lastproject.member.dto.SignupRequest;
+import com.young04.lastproject.member.entity.Member;
+import com.young04.lastproject.member.repository.MemberRepository;
+
+import com.young04.lastproject.member.verification.PhoneVerificationPurpose;
+import com.young04.lastproject.member.exception.PhoneVerificationException;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.Objects;
+
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class MemberService {
+
+    private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    private final PhoneVerificationService phoneVerificationService;
+
+
+    /* 회원가입 */
+
+    @Transactional
+    public Long signup(
+            SignupRequest request
+    ) {
+
+        /* 회원가입 비즈니스 Validation */
+        validateSignup(request);
+
+        /* 휴대전화 인증 확인 */
+
+        if (
+                !phoneVerificationService.isVerified(
+                        request.getPhone(),
+                        PhoneVerificationPurpose.SIGNUP
+                )
+        ) {
+
+            throw new PhoneVerificationException(
+                    "휴대전화 인증을 완료해주세요."
+            );
+        }
+
+
+
+        /* 입력값 정리 */
+
+        String memberId =
+                request.getMemberId().trim();
+
+        String email =
+                normalizeNullable(
+                        request.getEmail()
+                );
+
+
+        /* BCrypt 비밀번호 암호화 */
+
+        String encodedPassword =
+                passwordEncoder.encode(
+                        request.getPassword()
+                );
+
+
+        /* Member Entity 생성 */
+
+        Member member =
+                Member.builder()
+                        .memberId(memberId)
+                        .password(encodedPassword)
+                        .name(
+                                request
+                                        .getName()
+                                        .trim()
+                        )
+                        .nickname(
+                                normalizeNullable(
+                                        request.getNickname()
+                                )
+                        )
+                        .email(email)
+                        .phone(
+                                request
+                                        .getPhone()
+                                        .trim()
+                        )
+                        .birthDate(
+                                request.getBirthDate()
+                        )
+                        .gender(
+                                normalizeNullable(
+                                        request.getGender()
+                                )
+                        )
+                        .agreeTermsYn("Y")
+                        .agreePrivacyYn("Y")
+                        .build();
+
+
+        /* DB 저장 */
+
+        Member savedMember =
+                memberRepository.save(member);
+
+
+        /*  사용한 휴대전화 인증정보 제거
+
+        회원가입에 한 번 사용한 SIGNUP 인증은
+        다시 사용할 수 없도록 제거한다. */
+
+        boolean consumed =
+                phoneVerificationService
+                        .consumeVerification(
+                                request.getPhone(),
+                                PhoneVerificationPurpose.SIGNUP
+                        );
+
+
+        /*
+         * 인증이 그 사이 만료되었거나
+         * 정상적으로 소비되지 못한 경우
+         */
+        if (!consumed) {
+
+            throw new PhoneVerificationException(
+                    "휴대전화 인증이 만료되었습니다. 다시 인증해주세요."
+            );
+        }
+
+
+        /* 회원번호 반환 */
+
+        return savedMember.getNo();
+    }
+
+
+    /* 회원가입 Validation
+       Service에서 처리하는 회원가입 비즈니스 규칙 */
+
+    private void validateSignup(
+            SignupRequest request
+    ) {
+
+        /* 비밀번호와 비밀번호 확인 */
+        validatePasswordMatch(request);
+
+
+        /* 생년월일 */
+        validateBirthDate(
+                request.getBirthDate()
+        );
+
+
+        /* 아이디 중복 */
+        validateDuplicateMemberId(request);
+
+
+        /* 이메일 중복 */
+        validateDuplicateEmail(request);
+    }
+
+
+    /* 비밀번호 일치 검사 */
+
+    private void validatePasswordMatch(
+            SignupRequest request
+    ) {
+
+        if (!Objects.equals(
+                request.getPassword(),
+                request.getPasswordCheck()
+        )) {
+
+            throw new PasswordMismatchException();
+        }
+    }
+
+
+    /* 생년월일 검사
+
+   허용 범위:
+   1900-01-01 ~ 어제
+
+   회원가입 / 회원정보 수정에서 공통 사용 */
+
+    private void validateBirthDate(
+            LocalDate birthDate
+    ) {
+
+        /*
+         * 생년월일은 선택사항이므로
+         * null 허용
+         */
+        if (birthDate == null) {
+
+            return;
+        }
+
+
+        /*
+         * 최소 생년월일
+         */
+        LocalDate minimumBirthDate =
+                LocalDate.of(
+                        1900,
+                        1,
+                        1
+                );
+
+
+        /*
+         * 1900-01-01 이전
+         */
+        if (birthDate.isBefore(
+                minimumBirthDate
+        )) {
+
+            throw new InvalidBirthDateException();
+        }
+
+
+        /*
+         * 오늘 또는 미래
+         */
+        if (!birthDate.isBefore(
+                LocalDate.now()
+        )) {
+
+            throw new InvalidBirthDateException();
+        }
+    }
+
+
+    /* 아이디 중복 검사 */
+
+    private void validateDuplicateMemberId(
+            SignupRequest request
+    ) {
+
+        String memberId =
+                request
+                        .getMemberId()
+                        .trim();
+
+
+        if (memberRepository.existsByMemberId(
+                memberId
+        )) {
+
+            throw new DuplicateMemberIdException();
+        }
+    }
+
+
+    /* 이메일 중복 검사
+
+       이메일은 선택사항이므로
+       입력된 경우에만 검사 */
+
+    private void validateDuplicateEmail(
+            SignupRequest request
+    ) {
+
+        String email =
+                normalizeNullable(
+                        request.getEmail()
+                );
+
+
+        if (email == null) {
+
+            return;
+        }
+
+
+        if (memberRepository.existsByEmail(
+                email
+        )) {
+
+            throw new DuplicateEmailException();
+        }
+    }
+
+
+    /* =========================================================
+       빈 문자열을 NULL로 변환
+
+       null
+       ""
+       "   "
+          ↓
+       null
+
+       "test"
+          ↓
+       "test"
+    ========================================================= */
+
+    private String normalizeNullable(
+            String value
+    ) {
+
+        if (value == null
+                || value.isBlank()) {
+
+            return null;
+        }
+
+
+        return value.trim();
+    }
+
+
+    /*  회원 조회 */
+
+    public MemberResponse getMember(
+            Long memberNo
+    ) {
+
+        Member member =
+                findMember(memberNo);
+
+
+        return MemberResponse.from(
+                member
+        );
+    }
+
+
+    /* 회원정보 수정 Form 조회 */
+
+    public MemberUpdateRequest getMemberUpdateRequest(
+            Long memberNo
+    ) {
+
+        Member member =
+                findMember(memberNo);
+
+
+        return MemberUpdateRequest.from(
+                member
+        );
+    }
+
+
+    /* 회원정보 수정
+
+       true  = 수정 성공
+       false = 현재 비밀번호 불일치 */
+
+    @Transactional
+    public boolean updateMember(
+            Long memberNo,
+            MemberUpdateRequest request
+    ) {
+
+        Member member =
+                findMember(memberNo);
+
+
+        /* 현재 비밀번호 확인 */
+
+        if (!passwordEncoder.matches(
+                request.getCurrentPassword(),
+                member.getPassword()
+        )) {
+
+            return false;
+        }
+
+
+
+        /* 생년월일 검사
+
+        허용 범위:
+        1900-01-01 ~ 어제 */
+
+        validateBirthDate(
+                request.getBirthDate()
+        );
+
+
+        /* 휴대전화번호 변경 여부 확인 */
+
+        String currentPhoneDigits =
+                member.getPhone()
+                        .replaceAll(
+                                "\\D",
+                                ""
+                        );
+
+
+        String newPhoneDigits =
+                request.getPhone()
+                        .replaceAll(
+                                "\\D",
+                                ""
+                        );
+
+
+        boolean phoneChanged =
+                !currentPhoneDigits.equals(
+                        newPhoneDigits
+                );
+
+
+        /* 전화번호가 변경된 경우
+        새 전화번호 인증 필수 */
+
+        if (
+                phoneChanged
+                        && !phoneVerificationService
+                        .isVerified(
+                                request.getPhone(),
+                                PhoneVerificationPurpose.UPDATE_PHONE
+                        )
+        ) {
+
+            throw new PhoneVerificationException(
+                    "변경할 휴대전화번호의 인증을 완료해주세요."
+            );
+        }
+
+
+        String email =
+                normalizeNullable(
+                        request.getEmail()
+                );
+
+
+        /* 이메일 중복 확인
+           현재 로그인한 회원의 이메일은 제외한다. */
+
+        if (email != null
+                && memberRepository
+                .existsByEmailAndNoNot(
+                        email,
+                        memberNo
+                )) {
+
+            throw new DuplicateEmailException();
+        }
+
+
+        /* 회원정보 수정 */
+
+        member.updateProfile(
+                request
+                        .getName()
+                        .trim(),
+
+                normalizeNullable(
+                        request.getNickname()
+                ),
+
+                email,
+
+                request
+                        .getPhone()
+                        .trim(),
+
+                request.getBirthDate(),
+
+                normalizeNullable(
+                        request.getGender()
+                )
+        );
+
+        /* 전화번호 변경 인증 사용 완료 */
+
+        if (phoneChanged) {
+
+            boolean consumed =
+                    phoneVerificationService
+                            .consumeVerification(
+                                    request.getPhone(),
+                                    PhoneVerificationPurpose.UPDATE_PHONE
+                            );
+
+
+            if (!consumed) {
+
+                throw new PhoneVerificationException(
+                        "휴대전화 인증이 만료되었습니다. 다시 인증해주세요."
+                );
+            }
+        }
+
+
+
+
+        /*
+         * @Transactional 안에서 관리 중인 Entity이므로
+         * JPA Dirty Checking으로 UPDATE된다.
+         * memberRepository.save(member);
+         * 를 별도로 호출하지 않아도 된다.
+         */
+
+        return true;
+    }
+
+
+    /* 회원 탈퇴
+       true  = 탈퇴 성공
+       false = 비밀번호 불일치 */
+
+    @Transactional
+    public boolean withdraw(
+            Long memberNo,
+            PasswordConfirmRequest request
+    ) {
+
+        Member member =
+                findMember(memberNo);
+
+
+        /* 현재 비밀번호 확인 */
+
+        if (!passwordEncoder.matches(
+                request.getCurrentPassword(),
+                member.getPassword()
+        )) {
+
+            return false;
+        }
+
+
+        /* 회원 탈퇴
+           물리 DELETE가 아니라
+           Member Entity의 withdraw()에서
+           WITHDRAWN 상태로 변경 */
+
+        member.withdraw();
+
+
+        return true;
+    }
+
+
+    /* 회원 Entity 공통 조회 */
+
+    private Member findMember(
+            Long memberNo
+    ) {
+
+        return memberRepository
+                .findById(memberNo)
+                .orElseThrow(
+                        MemberNotFoundException::new
+                );
+    }
+}

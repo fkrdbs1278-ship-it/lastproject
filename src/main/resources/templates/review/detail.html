@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>리뷰 상세 | SALON CRM</title>
+
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+    <!-- 헤더 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <!-- 푸터 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/review/review.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+<main class="review-page">
+
+    <div class="review-container">
+
+
+        <div
+                th:if="${message}"
+                class="review-message success"
+                th:text="${message}"
+        ></div>
+
+
+        <article class="review-detail-card">
+
+
+            <!-- 상단 -->
+
+            <div class="review-detail-top">
+
+                <div>
+
+                    <strong
+                            class="review-author"
+                            th:text="${
+                                review.nickname != null
+                                and !#strings.isEmpty(review.nickname)
+                                ? review.nickname
+                                : review.memberName
+                            }"
+                    >
+                        작성자
+                    </strong>
+
+
+                    <span
+                            class="review-date"
+                            th:text="${#temporals.format(
+                                review.regdate,
+                                'yyyy.MM.dd HH:mm'
+                            )}"
+                    >
+                        작성일
+                    </span>
+
+                </div>
+
+
+                <div class="review-rating">
+
+                    <span
+                            th:each="score : ${#numbers.sequence(1, 5)}"
+                            th:text="${score <= review.rating ? '★' : '☆'}"
+                    ></span>
+
+                    <span
+                            class="review-rating-number"
+                            th:text="${review.rating + '점'}"
+                    ></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- 제목 -->
+
+            <h1
+                    class="review-detail-title"
+                    th:text="${
+                        review.title != null
+                        and !#strings.isEmpty(review.title)
+                        ? review.title
+                        : '제목 없는 리뷰'
+                    }"
+            >
+                리뷰 제목
+            </h1>
+
+
+            <!-- 내용 -->
+
+            <div
+                    class="review-detail-content"
+                    th:text="${review.content}"
+            >
+                리뷰 내용
+            </div>
+
+
+            <!-- 본인 리뷰만 -->
+
+            <div
+                    th:if="${
+                        currentMemberNo != null
+                        and currentMemberNo == review.memberNo
+                    }"
+                    class="review-owner-actions"
+            >
+
+                <a
+                        th:href="@{/reviews/{no}/edit(no=${review.no})}"
+                        class="review-edit-button"
+                >
+                    수정
+                </a>
+
+
+                <form
+                        th:action="@{/reviews/{no}/delete(no=${review.no})}"
+                        method="post"
+                >
+
+                    <input
+                            type="hidden"
+                            th:name="${_csrf.parameterName}"
+                            th:value="${_csrf.token}"
+                    >
+
+
+                    <button
+                            type="submit"
+                            class="review-delete-button"
+                            onclick="return confirm('리뷰를 삭제하시겠습니까?');"
+                    >
+                        삭제
+                    </button>
+
+                </form>
+
+            </div>
+
+
+        </article>
+
+
+        <div class="review-back-area">
+
+            <a
+                    th:href="@{/reviews}"
+                    class="review-back-button"
+            >
+                목록으로
+            </a>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+
+</body>
+
+</html>

@@ -1,0 +1,621 @@
+/* =========================================================
+   고객 활동 내역 임시 테스트
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    margin: 0;
+
+    font-family:
+            Arial,
+            "Noto Sans KR",
+            sans-serif;
+
+    background: #f7f7f7;
+
+    color: #222;
+}
+
+
+
+/* =========================================================
+   테스트 배너
+========================================================= */
+
+.test-banner {
+    padding: 9px 15px;
+
+    background: #222;
+
+    color: #fff;
+
+    text-align: center;
+
+    font-size: 13px;
+}
+
+
+
+/* =========================================================
+   전체
+========================================================= */
+
+.page-container {
+    width: min(
+            1000px,
+            calc(100% - 40px)
+    );
+
+    margin: 0 auto;
+
+    padding: 45px 0 70px;
+}
+
+
+
+/* =========================================================
+   페이지 헤더
+========================================================= */
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+
+.page-label {
+    margin: 0 0 8px;
+
+    color: #888;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+.page-header h1 {
+    margin: 0;
+
+    font-size: 34px;
+}
+
+
+.page-description {
+    margin: 12px 0 0;
+
+    color: #777;
+
+    line-height: 1.6;
+}
+
+
+
+/* =========================================================
+   고객 카드
+========================================================= */
+
+.customer-card {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    background: #fff;
+
+    border: 1px solid #e9e9e9;
+
+    border-radius: 14px;
+}
+
+
+.customer-avatar {
+    width: 60px;
+
+    height: 60px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #222;
+
+    border-radius: 50%;
+
+    color: #fff;
+
+    font-size: 22px;
+
+    font-weight: 700;
+}
+
+
+.customer-label {
+    margin: 0 0 5px;
+
+    color: #888;
+
+    font-size: 12px;
+}
+
+
+.customer-info h2 {
+    margin: 0 0 7px;
+
+    font-size: 21px;
+}
+
+
+.customer-info p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+
+/* =========================================================
+   마이페이지 메뉴
+========================================================= */
+
+.mypage-menu {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    margin-bottom: 35px;
+
+    overflow: hidden;
+
+    background: #fff;
+
+    border: 1px solid #e9e9e9;
+
+    border-radius: 12px;
+}
+
+
+.menu-button {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 50px;
+
+    padding: 15px 10px;
+
+    background: #fff;
+
+    border: 0;
+
+    border-right: 1px solid #eee;
+
+    color: #555;
+
+    font-size: 14px;
+
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+
+.menu-button:last-child {
+    border-right: 0;
+}
+
+
+.menu-button:hover {
+    background: #fafafa;
+}
+
+
+.menu-button.active {
+    background: #222;
+
+    color: #fff;
+
+    font-weight: 700;
+
+    cursor: default;
+}
+
+
+
+/* =========================================================
+   활동
+========================================================= */
+
+.section-header {
+    margin-bottom: 18px;
+}
+
+
+.section-header h2 {
+    margin: 0 0 7px;
+
+    font-size: 24px;
+}
+
+
+.section-header p {
+    margin: 0;
+
+    color: #888;
+
+    font-size: 14px;
+}
+
+
+.activity-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+}
+
+
+.activity-card {
+    display: flex;
+
+    gap: 18px;
+
+    padding: 25px;
+
+    background: #fff;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 14px;
+}
+
+
+.activity-icon {
+    width: 48px;
+
+    height: 48px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: #f2f2f2;
+
+    border-radius: 12px;
+
+    font-weight: 700;
+}
+
+
+.activity-content {
+    flex: 1;
+}
+
+
+.activity-title-row {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+
+.activity-title-row h3 {
+    margin: 0;
+
+    font-size: 18px;
+}
+
+
+.status-badge {
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.status-badge.waiting {
+    background: #f0f0f0;
+
+    color: #666;
+}
+
+
+.activity-description {
+    margin: 15px 0;
+
+    color: #777;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+
+/* =========================================================
+   연결 예정
+========================================================= */
+
+.connection-box {
+    padding: 14px;
+
+    margin-bottom: 15px;
+
+    background: #fafafa;
+
+    border-radius: 9px;
+}
+
+
+.connection-box strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 13px;
+}
+
+
+.connection-box p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+.info-button {
+    width: 100%;
+
+    padding: 10px 12px;
+
+    background: #fff;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    color: #555;
+
+    cursor: pointer;
+}
+
+
+.info-button:hover {
+    background: #f7f7f7;
+}
+
+
+
+/* =========================================================
+   연결 구조
+========================================================= */
+
+.flow-section {
+    margin-top: 30px;
+
+    padding: 25px;
+
+    background: #fff;
+
+    border: 1px solid #e7e7e7;
+
+    border-radius: 14px;
+}
+
+
+.flow-section h2 {
+    margin: 0 0 20px;
+
+    font-size: 20px;
+}
+
+
+.flow-box {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+}
+
+
+.flow-item {
+    padding: 13px 18px;
+
+    background: #222;
+
+    border-radius: 9px;
+
+    color: #fff;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.flow-arrow {
+    font-size: 18px;
+}
+
+
+.flow-section > p {
+    margin: 20px 0 0;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+    text-align: center;
+}
+
+
+
+/* =========================================================
+   테스트 안내
+========================================================= */
+
+.test-note {
+    margin-top: 30px;
+
+    padding: 18px 20px;
+
+    border: 1px dashed #bbb;
+
+    border-radius: 10px;
+
+    color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+.test-note strong {
+    color: #333;
+}
+
+
+.test-note p {
+    margin: 5px 0 0;
+}
+
+
+
+/* =========================================================
+   Toast
+========================================================= */
+
+.test-toast {
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 35px;
+
+    z-index: 1000;
+
+    min-width: 280px;
+
+    max-width: calc(100% - 40px);
+
+    padding: 13px 18px;
+
+    background: #222;
+
+    border-radius: 9px;
+
+    color: #fff;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform: translate(-50%, 10px);
+
+    transition:
+            opacity 0.2s ease,
+            transform 0.2s ease,
+            visibility 0.2s ease;
+}
+
+
+.test-toast.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translate(-50%, 0);
+}
+
+
+
+/* =========================================================
+   모바일
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .page-container {
+        width: calc(100% - 24px);
+
+        padding-top: 30px;
+    }
+
+
+    .page-header h1 {
+        font-size: 28px;
+    }
+
+
+    .mypage-menu {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+
+    .activity-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .activity-card {
+        padding: 20px;
+    }
+
+
+    .flow-box {
+        flex-direction: column;
+    }
+
+
+    .flow-arrow {
+        transform: rotate(0deg);
+    }
+
+}

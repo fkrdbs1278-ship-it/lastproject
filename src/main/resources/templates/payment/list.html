@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>매출 관리</title>
+
+    <!-- 관리자 공통 사이드바 CSS -->
+    <link rel="stylesheet"
+          href="/css/admin/dashboard-sidebar.css"
+          th:href="@{/css/admin/dashboard-sidebar.css}">
+
+    <!-- 결제 기반 매출 관리 전용 CSS -->
+    <link rel="stylesheet"
+          href="/css/operation/payment.css"
+          th:href="@{/css/operation/payment.css}">
+</head>
+
+<body>
+
+<div class="payment-admin-layout">
+
+    <!-- 관리자 공통 사이드바 -->
+    <aside th:replace="~{admin/dashboard-sidebar :: sidebar('payment')}"></aside>
+
+    <main class="payment-admin-content">
+
+        <!-- 매출 관리 제목 -->
+        <header class="payment-page-header">
+            <div>
+                <p class="payment-page-label">매장 운영 관리</p>
+                <h1>매출 관리</h1>
+                <p class="payment-page-description">
+                    기간별 매출과 인기 시술 현황을 확인합니다.
+                </p>
+            </div>
+
+            <span class="payment-data-notice">
+                결제 데이터 연결 전 화면 예시
+            </span>
+        </header>
+
+        <!-- 조회 기간 선택 -->
+        <section class="payment-filter-panel">
+            <div class="period-tabs" aria-label="매출 조회 단위">
+                <button type="button" class="period-tab active">일별</button>
+                <button type="button" class="period-tab">월별</button>
+                <button type="button" class="period-tab">연도별</button>
+            </div>
+
+            <form class="payment-period-form">
+                <label>
+                    <span>시작일</span>
+                    <input type="date" value="2026-09-01">
+                </label>
+
+                <span class="period-divider">~</span>
+
+                <label>
+                    <span>종료일</span>
+                    <input type="date" value="2026-09-07">
+                </label>
+
+                <button type="button" class="payment-search-button">
+                    조회
+                </button>
+            </form>
+        </section>
+
+        <!-- 매출 요약 -->
+        <section class="payment-summary-grid">
+
+            <article class="payment-summary-card today-payment-card">
+                <div class="payment-summary-icon">₩</div>
+
+                <div>
+                    <p>오늘 매출</p>
+                    <strong>580,000원</strong>
+                    <span class="payment-change increase">전일 대비 +8.4%</span>
+                </div>
+            </article>
+
+            <article class="payment-summary-card month-payment-card">
+                <div class="payment-summary-icon">M</div>
+
+                <div>
+                    <p>이번 달 매출</p>
+                    <strong>8,420,000원</strong>
+                    <span class="payment-change increase">지난달 대비 +5.1%</span>
+                </div>
+            </article>
+
+            <article class="payment-summary-card payment-count-card">
+                <div class="payment-summary-icon">#</div>
+
+                <div>
+                    <p>오늘 결제</p>
+                    <strong>7건</strong>
+                    <span>결제 완료 기준</span>
+                </div>
+            </article>
+
+            <article class="payment-summary-card average-payment-card">
+                <div class="payment-summary-icon">A</div>
+
+                <div>
+                    <p>평균 결제 금액</p>
+                    <strong>82,857원</strong>
+                    <span>오늘 결제 1건 기준</span>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- 매출 추이와 인기 시술 -->
+        <section class="payment-main-grid">
+
+            <!-- 최근 7일 매출 영역 차트 -->
+            <article class="payment-panel payment-chart-panel">
+                <div class="payment-panel-header">
+                    <div>
+                        <p class="payment-panel-label">PAYMENT TREND</p>
+                        <h2>최근 7일 매출 추이</h2>
+                        <p>결제 완료 금액을 날짜별로 표시합니다.</p>
+                    </div>
+
+                    <div class="chart-total">
+                        <span>조회 기간 총매출</span>
+                        <strong>2,870,000원</strong>
+                    </div>
+                </div>
+
+                <div class="payment-chart-wrap">
+                    <div class="chart-y-axis" aria-hidden="true">
+                        <span>60만</span>
+                        <span>45만</span>
+                        <span>30만</span>
+                        <span>15만</span>
+                        <span>0</span>
+                    </div>
+
+                    <div class="payment-area-chart"
+                         role="img"
+                         aria-label="9월 1일부터 9월 7일까지의 더미 매출 추이 영역 차트">
+
+                        <svg viewBox="0 0 720 300"
+                             preserveAspectRatio="none"
+                             aria-hidden="true">
+                            <defs>
+                                <linearGradient id="paymentPageAreaGradient"
+                                                x1="0" y1="0"
+                                                x2="0" y2="1">
+                                    <stop offset="0%"
+                                          stop-color="#6f91bf"
+                                          stop-opacity="0.34"></stop>
+                                    <stop offset="100%"
+                                          stop-color="#6f91bf"
+                                          stop-opacity="0.03"></stop>
+                                </linearGradient>
+                            </defs>
+
+                            <g class="payment-chart-grid">
+                                <line x1="8" y1="28" x2="712" y2="28"></line>
+                                <line x1="8" y1="88" x2="712" y2="88"></line>
+                                <line x1="8" y1="148" x2="712" y2="148"></line>
+                                <line x1="8" y1="208" x2="712" y2="208"></line>
+                                <line x1="8" y1="268" x2="712" y2="268"></line>
+                            </g>
+
+                            <path class="payment-chart-area"
+                                  d="M18 215
+                                     L132 168
+                                     L246 190
+                                     L360 104
+                                     L474 132
+                                     L588 55
+                                     L702 82
+                                     L702 268
+                                     L18 268 Z"></path>
+
+                            <path class="payment-chart-line"
+                                  d="M18 215
+                                     L132 168
+                                     L246 190
+                                     L360 104
+                                     L474 132
+                                     L588 55
+                                     L702 82"></path>
+
+                            <g class="payment-chart-points">
+                                <circle cx="18" cy="215" r="5"></circle>
+                                <circle cx="132" cy="168" r="5"></circle>
+                                <circle cx="246" cy="190" r="5"></circle>
+                                <circle cx="360" cy="104" r="5"></circle>
+                                <circle cx="474" cy="132" r="5"></circle>
+                                <circle cx="588" cy="55" r="5"></circle>
+                                <circle cx="702" cy="82" r="5"></circle>
+                            </g>
+                        </svg>
+
+                        <div class="chart-x-axis" aria-hidden="true">
+                            <span>9/1</span>
+                            <span>9/2</span>
+                            <span>9/3</span>
+                            <span>9/4</span>
+                            <span>9/5</span>
+                            <span>9/6</span>
+                            <span>9/7</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 인기 시술 순위 -->
+            <article class="payment-panel popular-service-panel">
+                <div class="payment-panel-header">
+                    <div>
+                        <p class="payment-panel-label">POPULAR SERVICE</p>
+                        <h2>인기 시술 순위</h2>
+                        <p>조회 기간 결제 건수 기준입니다.</p>
+                    </div>
+                </div>
+
+                <ol class="service-ranking-list">
+                    <li>
+                        <span class="ranking-number first">1</span>
+                        <div>
+                            <strong>여성 커트</strong>
+                            <span>18건</span>
+                        </div>
+                        <b>540,000원</b>
+                    </li>
+
+                    <li>
+                        <span class="ranking-number">2</span>
+                        <div>
+                            <strong>전체 염색</strong>
+                            <span>11건</span>
+                        </div>
+                        <b>990,000원</b>
+                    </li>
+
+                    <li>
+                        <span class="ranking-number">3</span>
+                        <div>
+                            <strong>남성 커트</strong>
+                            <span>10건</span>
+                        </div>
+                        <b>250,000원</b>
+                    </li>
+
+                    <li>
+                        <span class="ranking-number">4</span>
+                        <div>
+                            <strong>헤어 클리닉</strong>
+                            <span>8건</span>
+                        </div>
+                        <b>640,000원</b>
+                    </li>
+
+                    <li>
+                        <span class="ranking-number">5</span>
+                        <div>
+                            <strong>뿌리 염색</strong>
+                            <span>7건</span>
+                        </div>
+                        <b>420,000원</b>
+                    </li>
+                </ol>
+            </article>
+
+        </section>
+
+        <!-- 결제수단별 매출과 최근 결제 내역 -->
+        <section class="payment-bottom-grid">
+
+            <article class="payment-panel payment-method-panel">
+                <div class="payment-panel-header">
+                    <div>
+                        <p class="payment-panel-label">PAYMENT METHOD</p>
+                        <h2>결제수단별 매출</h2>
+                    </div>
+                </div>
+
+                <div class="payment-method-list">
+                    <div class="payment-method-item">
+                        <div>
+                            <strong>카드</strong>
+                            <span>1,980,000원</span>
+                        </div>
+                        <div class="payment-progress">
+                            <i style="width: 69%;"></i>
+                        </div>
+                        <b>69%</b>
+                    </div>
+
+                    <div class="payment-method-item">
+                        <div>
+                            <strong>현금</strong>
+                            <span>610,000원</span>
+                        </div>
+                        <div class="payment-progress cash">
+                            <i style="width: 21%;"></i>
+                        </div>
+                        <b>21%</b>
+                    </div>
+
+                    <div class="payment-method-item">
+                        <div>
+                            <strong>간편결제</strong>
+                            <span>280,000원</span>
+                        </div>
+                        <div class="payment-progress simple-payment">
+                            <i style="width: 10%;"></i>
+                        </div>
+                        <b>10%</b>
+                    </div>
+                </div>
+            </article>
+
+            <article class="payment-panel recent-payment-panel">
+                <div class="payment-panel-header">
+                    <div>
+                        <p class="payment-panel-label">RECENT PAYMENT</p>
+                        <h2>최근 결제 내역</h2>
+                    </div>
+
+                    <button type="button" class="payment-list-button">
+                        전체 내역
+                    </button>
+                </div>
+
+                <div class="recent-payment-table-wrap">
+                    <table class="recent-payment-table">
+                        <thead>
+                        <tr>
+                            <th>결제 시간</th>
+                            <th>고객명</th>
+                            <th>시술명</th>
+                            <th>결제수단</th>
+                            <th>결제 금액</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr>
+                            <td>2026-09-02 17:10</td>
+                            <td>김○○</td>
+                            <td>여성 커트</td>
+                            <td>카드</td>
+                            <td class="payment-amount">30,000원</td>
+                            <td><span class="payment-status completed">완료</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-09-02 15:42</td>
+                            <td>박○○</td>
+                            <td>전체 염색</td>
+                            <td>간편결제</td>
+                            <td class="payment-amount">120,000원</td>
+                            <td><span class="payment-status completed">완료</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-09-02 14:18</td>
+                            <td>이○○</td>
+                            <td>헤어 클리닉</td>
+                            <td>현금</td>
+                            <td class="payment-amount">90,000원</td>
+                            <td><span class="payment-status completed">완료</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

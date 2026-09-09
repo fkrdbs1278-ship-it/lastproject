@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>회원탈퇴 | SALON CRM</title>
+
+
+    <!-- 공통 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+
+    <!-- Header -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+
+    <!-- Footer -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+
+    <!-- 회원탈퇴 전용 CSS -->
+    <link
+            rel="stylesheet"
+            th:href="@{/css/member/withdraw.css}"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- Header -->
+
+<header th:replace="~{layout/header :: header}">
+</header>
+
+
+<!-- Main -->
+
+<main class="withdraw-page">
+
+    <div class="withdraw-container">
+
+
+        <!-- Page Header -->
+
+        <div class="withdraw-header">
+
+            <h1 class="withdraw-title">
+                회원탈퇴
+            </h1>
+
+            <p class="withdraw-description">
+                탈퇴 전에 아래 내용을 확인해주세요.
+            </p>
+
+        </div>
+
+
+        <!-- Withdraw Card -->
+
+        <section class="withdraw-card">
+
+
+            <!-- Warning -->
+
+            <div class="withdraw-warning">
+
+                <h2 class="withdraw-warning-title">
+                    회원탈퇴를 진행하시겠습니까?
+                </h2>
+
+                <p>
+                    탈퇴가 완료되면 현재 계정은 더 이상
+                    로그인할 수 없습니다.
+                </p>
+
+            </div>
+
+
+            <!-- Notice -->
+
+            <div class="withdraw-notice">
+
+                <h3 class="withdraw-notice-title">
+                    탈퇴 전 확인사항
+                </h3>
+
+                <ul>
+
+                    <li>
+                        탈퇴한 계정은 더 이상 로그인할 수 없습니다.
+                    </li>
+
+                    <li>
+                        회원 상태는 탈퇴 상태로 변경됩니다.
+                    </li>
+
+                    <li>
+                        회원탈퇴가 완료되면 현재 로그인 세션도 종료됩니다.
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- Withdraw Form -->
+
+            <form
+                    th:action="@{/member/withdraw}"
+                    th:object="${passwordConfirmRequest}"
+                    method="post"
+                    class="withdraw-form"
+            >
+
+
+                <!-- CSRF -->
+
+                <input
+                        type="hidden"
+                        th:name="${_csrf.parameterName}"
+                        th:value="${_csrf.token}"
+                >
+
+
+                <!-- 현재 비밀번호 -->
+
+                <div class="form-group">
+
+                    <label for="currentPassword">
+                        현재 비밀번호
+                    </label>
+
+                    <input
+                            type="password"
+                            id="currentPassword"
+                            th:field="*{currentPassword}"
+                            placeholder="현재 비밀번호를 입력해주세요."
+                            autocomplete="current-password"
+                    >
+
+                    <p
+                            class="field-error"
+                            th:if="${#fields.hasErrors('currentPassword')}"
+                            th:errors="*{currentPassword}"
+                    >
+                        비밀번호 오류
+                    </p>
+
+                </div>
+
+
+                <!-- =================================
+                     Buttons
+                ================================== -->
+
+                <div class="withdraw-actions">
+
+
+                    <!-- 취소 -->
+
+                    <a
+                            th:href="@{/member/edit}"
+                            class="cancel-button"
+                    >
+                        취소
+                    </a>
+
+
+                    <!-- 탈퇴 -->
+
+                    <button
+                            type="submit"
+                            class="withdraw-button"
+                    >
+                        회원탈퇴
+                    </button>
+
+                </div>
+
+            </form>
+
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<!-- Footer -->
+
+<footer th:replace="~{layout/footer :: footer}">
+</footer>
+
+
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 예약 관리</title>
+    <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
+    <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/reservation/reservation.css}">
+</head>
+<body>
+<main class="reservation-page admin-page">
+    <section class="page-heading">
+        <div>
+            <p class="eyebrow">ADMIN</p>
+            <h1>예약 관리</h1>
+            <p>목록에서는 상태를 관리하고, 상세에서 요청사항·스타일·참고 이미지를 확인합니다.</p>
+        </div>
+    </section>
+
+
+    <section class="panel admin-tool-panel">
+        <div class="section-title-row">
+            <div>
+                <h2>운영 도구</h2>
+                <p class="field-help">
+                    전화 예약, 영업시간, 휴일, 개인 예약 불가 시간을 이 화면에서 관리합니다.
+                </p>
+            </div>
+            <div class="admin-tool-buttons">
+                <button id="openPhoneReservation"
+                        type="button"
+                        class="primary-button">
+                    전화 예약 등록
+                </button>
+                <button id="openBusinessHours"
+                        type="button"
+                        class="secondary-button">
+                    영업시간
+                </button>
+                <button id="openHolidays"
+                        type="button"
+                        class="secondary-button">
+                    휴일 관리
+                </button>
+                <button id="openAvailabilityBlocks"
+                        type="button"
+                        class="secondary-button">
+                    개인 일정
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <form id="searchForm" class="search-grid">
+            <label class="field"><span>상태</span>
+                <select id="status">
+                    <option value="">전체</option><option value="REQUESTED">신청</option>
+                    <option value="CONFIRMED">확정</option><option value="COMPLETED">완료</option>
+                    <option value="CANCELED">취소</option><option value="NO_SHOW">노쇼</option>
+                </select>
+            </label>
+            <label class="field"><span>고객 유형</span>
+                <select id="customerType"><option value="">전체</option><option value="MEMBER">회원</option><option value="GUEST">비회원</option></select>
+            </label>
+            <label class="field"><span>비회원 이름</span><input id="guestName" type="text"></label>
+            <label class="field"><span>비회원 전화번호</span><input id="guestPhone" type="text"></label>
+            <label class="field"><span>시작일</span><input id="startFrom" type="date"></label>
+            <label class="field"><span>종료일</span><input id="startTo" type="date"></label>
+            <div class="search-actions">
+                <button class="primary-button" type="submit">검색</button>
+                <button class="secondary-button" id="resetSearch" type="button">초기화</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel">
+        <div class="table-wrap">
+            <table class="reservation-table">
+                <thead><tr>
+                    <th>번호</th><th>고객</th><th>시술</th><th>예약시간</th>
+                    <th>상태</th><th>요청사항</th><th>관리</th>
+                </tr></thead>
+                <tbody id="reservationTableBody"></tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            <button id="prevPage" class="secondary-button" type="button">이전</button>
+            <span id="pageInfo">1 / 1</span>
+            <button id="nextPage" class="secondary-button" type="button">다음</button>
+        </div>
+    </section>
+
+    <div id="detailOverlay" class="detail-overlay hidden">
+        <div class="detail-modal">
+            <div class="section-title-row">
+                <h2>예약 상세</h2>
+                <button id="closeDetail" type="button" class="secondary-button">닫기</button>
+            </div>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+
+
+    <div id="adminToolOverlay" class="detail-overlay hidden">
+        <div class="detail-modal admin-tool-modal">
+            <div class="section-title-row">
+                <h2 id="adminToolTitle">운영 도구</h2>
+                <button id="closeAdminTool"
+                        type="button"
+                        class="secondary-button">
+                    닫기
+                </button>
+            </div>
+            <div id="adminToolContent"></div>
+        </div>
+    </div>
+
+    <div id="messageBox" class="message-box hidden" role="alert"></div>
+</main>
+<script th:src="@{/js/reservation/admin-reservations.js}"></script>
+</body>
+</html>

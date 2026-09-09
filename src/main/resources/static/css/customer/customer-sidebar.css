@@ -1,0 +1,190 @@
+/* =========================================================
+   3part 고객 CRM 전용 관리자 사이드바
+========================================================= */
+
+.customer-admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 250px;
+    height: 100vh;
+
+    padding: 32px 16px 24px;
+
+    background: linear-gradient(
+            180deg,
+            #1d2027 0%,
+            #17191f 100%
+    );
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   로고
+========================================================= */
+
+.customer-sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 4px 0 38px;
+}
+
+.customer-logo-symbol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+            135deg,
+            #c47f9f,
+            #9f5d7d
+    );
+
+    box-shadow:
+            0 7px 18px rgba(0, 0, 0, 0.25);
+
+    color: #ffffff;
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.customer-logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.customer-logo-text strong {
+    color: #ffffff;
+
+    font-size: 20px;
+
+    letter-spacing: -0.5px;
+}
+
+.customer-logo-text span {
+    color: #aeb2bc;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   메뉴
+========================================================= */
+
+.customer-sidebar-menu {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.customer-sidebar-menu-item {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    min-height: 52px;
+
+    padding: 0 17px;
+
+    border-radius: 11px;
+
+    color: #d7d9df;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+            background-color 0.2s ease,
+            color 0.2s ease,
+            transform 0.2s ease;
+}
+
+.customer-sidebar-menu-item:hover {
+    background-color: #2b2f38;
+
+    color: #ffffff;
+
+    transform: translateX(2px);
+}
+
+
+/* =========================================================
+   현재 선택 메뉴
+========================================================= */
+
+.customer-sidebar-menu-item.active {
+    background: linear-gradient(
+            135deg,
+            #b87594,
+            #a35f7f
+    );
+
+    color: #ffffff;
+
+    box-shadow:
+            0 8px 20px rgba(176, 111, 141, 0.28);
+}
+
+
+/* =========================================================
+   아이콘
+========================================================= */
+
+.customer-sidebar-icon {
+    flex: 0 0 auto;
+
+    width: 21px;
+    height: 21px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* =========================================================
+   하단 메뉴
+========================================================= */
+
+.customer-sidebar-bottom {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-top: auto;
+
+    padding-top: 20px;
+
+    border-top:
+            1px solid rgba(255, 255, 255, 0.1);
+}
