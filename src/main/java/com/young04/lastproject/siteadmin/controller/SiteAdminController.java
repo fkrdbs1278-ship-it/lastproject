@@ -1,37 +1,78 @@
 package com.young04.lastproject.siteadmin.controller;
 
-import com.young04.lastproject.siteadmin.dto.SiteSettingDto;
+import com.young04.lastproject.siteadmin.dto.SiteSettingRequest;
+import com.young04.lastproject.siteadmin.service.SiteSettingService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+// 사용자 사이트 관리 화면 조회와 설정 저장을 처리하는 Controller
 @Controller
+@RequiredArgsConstructor
+@RequestMapping("/admin/siteadmin")
 public class SiteAdminController {
 
-    // 사용자 사이트 관리 화면
-    @GetMapping("/admin/siteadmin")
+    private final SiteSettingService siteSettingService;
+
+
+    // 사용자 사이트 관리 화면 조회
+    @GetMapping
     public String siteAdmin(Model model) {
 
-        // DB 연결 전 사용할 기본 화면 설정
-        SiteSettingDto siteSetting = SiteSettingDto.builder()
-                .heroTitle("나에게 어울리는 스타일을\n찾아보세요.")
-                .heroDescription(
-                        "원하는 시술과 헤어스타일을 확인하고\n" +
-                                "편리하게 예약 서비스를 이용해보세요."
-                )
-                .heroImageUrl("/images/hero/hero1.jpg")
-                .serviceVisible(true)
-                .serviceTitle("서비스 안내")
-                .styleVisible(true)
-                .styleTitle("헤어스타일 둘러보기")
-                .styleDescription(
-                        "다양한 스타일을 확인하고\n" +
-                                "원하는 헤어스타일을 찾아보세요."
-                )
-                .build();
+        // 현재 사이트 설정값을 관리자 화면에 전달
+        model.addAttribute(
+                "siteSetting",
+                siteSettingService.getCurrentSetting()
+        );
 
-        model.addAttribute("siteSetting", siteSetting);
+        // 설정 저장용 DTO
+        model.addAttribute(
+                "siteSettingRequest",
+                new SiteSettingRequest()
+        );
 
         return "admin/siteadmin";
+    }
+
+
+    // 사용자 사이트 설정 저장
+    @PostMapping("/save")
+    public String saveSetting(
+            @Valid
+            @ModelAttribute("siteSettingRequest")
+            SiteSettingRequest request,
+
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+
+        // 입력값 검증 실패
+        if (bindingResult.hasErrors()) {
+
+            model.addAttribute(
+                    "siteSetting",
+                    siteSettingService.getCurrentSetting()
+            );
+
+            return "admin/siteadmin";
+        }
+
+
+        // 관리자에서 변경한 설정 DB 저장
+        siteSettingService.saveSetting(request);
+
+
+        // 저장 완료 메시지
+        redirectAttributes.addFlashAttribute(
+                "message",
+                "사용자 사이트 설정이 저장되었습니다."
+        );
+
+        return "redirect:/admin/siteadmin";
     }
 }

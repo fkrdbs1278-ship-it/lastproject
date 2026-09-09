@@ -112,10 +112,12 @@
                 <div class="hero-background active">
 
                     <img
-                            th:src="@{/images/hero/hero1.jpg}"
+                            th:src="${siteSetting != null
+                                and siteSetting.heroImageUrl != null
+                                ? siteSetting.heroImageUrl
+                                : '/images/hero/hero1.jpg'}"
                             alt="헤어스타일 이미지 1"
                     >
-
                 </div>
 
 

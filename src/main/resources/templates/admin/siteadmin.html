@@ -23,6 +23,13 @@
 
 <body>
 
+<!-- 사용자 사이트 설정 저장 Form -->
+<form id="siteSettingForm"
+      th:action="@{/admin/siteadmin/save}"
+      method="post"
+      enctype="multipart/form-data">
+</form>
+
 <div class="admin-layout">
 
     <!-- 관리자 공통 사이드바 -->
@@ -316,6 +323,8 @@
                         <span>메인 제목</span>
 
                         <textarea id="heroTitleInput"
+                                  name="heroTitle"
+                                  form="siteSettingForm"
                                   rows="2"
                                   th:text="${siteSetting != null
                                       ? siteSetting.heroTitle
@@ -330,6 +339,8 @@
                         <span>메인 설명</span>
 
                         <textarea id="heroDescriptionInput"
+                                  name="heroDescription"
+                                  form="siteSettingForm"
                                   rows="3"
                                   th:text="${siteSetting != null
                                       ? siteSetting.heroDescription
@@ -344,6 +355,8 @@
                         <span>메인 이미지</span>
 
                         <input id="heroImageInput"
+                               name="heroImage"
+                               form="siteSettingForm"
                                type="file"
                                accept="image/*">
 
@@ -388,6 +401,9 @@
 
 
                         <input id="serviceVisibleInput"
+                               name="serviceVisible"
+                               value="true"
+                               form="siteSettingForm"
                                type="checkbox"
                                th:checked="${siteSetting == null or siteSetting.serviceVisible}">
 
@@ -399,6 +415,8 @@
                         <span>영역 제목</span>
 
                         <input id="serviceTitleInput"
+                               name="serviceTitle"
+                               form="siteSettingForm"
                                type="text"
                                value="서비스 안내"
                                th:value="${siteSetting != null
@@ -442,6 +460,9 @@
 
 
                         <input id="styleVisibleInput"
+                               name="styleVisible"
+                               value="true"
+                               form="siteSettingForm"
                                type="checkbox"
                                th:checked="${siteSetting == null or siteSetting.styleVisible}">
 
@@ -453,6 +474,8 @@
                         <span>영역 제목</span>
 
                         <input id="styleTitleInput"
+                               name="styleTitle"
+                               form="siteSettingForm"
                                type="text"
                                value="헤어스타일 둘러보기"
                                th:value="${siteSetting != null
@@ -467,6 +490,8 @@
                         <span>영역 설명</span>
 
                         <textarea id="styleDescriptionInput"
+                                  name="styleDescription"
+                                  form="siteSettingForm"
                                   rows="3"
                                   th:text="${siteSetting != null
                                       ? siteSetting.styleDescription
@@ -489,7 +514,8 @@
 
 
                     <button id="saveButton"
-                            type="button"
+                            type="submit"
+                            form="siteSettingForm"
                             class="save-button">
                         변경사항 저장
                     </button>
@@ -498,8 +524,7 @@
 
 
                 <p class="save-help">
-                    현재 단계에서는 미리보기까지 동작하며,
-                    실제 DB 저장 기능은 다음 단계에서 연결합니다.
+                    저장한 설정은 사용자 메인 화면에 적용됩니다.
                 </p>
 
             </aside>
