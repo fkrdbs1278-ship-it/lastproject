@@ -12,26 +12,36 @@
           name="_csrf_header"
           th:content="${_csrf.headerName}">
 
-    <link rel="stylesheet"
-          th:href="@{/css/reservation/reservation.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/header.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/member/mypage.css}">
+    <link rel="stylesheet" th:href="@{/css/reservation/reservation.css}">
+    <link rel="stylesheet" th:href="@{/css/reservation/reservation-user.css}">
 </head>
 <body>
-<main class="reservation-page"
+
+<header th:replace="~{layout/header :: header}"></header>
+
+<main class="reservation-page my-reservation-page"
       id="myReservationPage"
       th:attr="data-member-no=${memberNo},
                data-logged-in=${isLoggedIn}">
 
-    <section class="page-heading">
+    <section class="mypage-header reservation-user-heading">
         <div>
-            <p class="eyebrow">MY RESERVATION</p>
+            <p class="mypage-eyebrow">MY RESERVATION</p>
             <h1>내 예약</h1>
-            <p>예약 상태와 시술 일정을 확인할 수 있습니다.</p>
+            <p class="mypage-description">
+                예약 상태와 시술 일정, 변경 및 취소 내역을 확인할 수 있습니다.
+            </p>
         </div>
 
-        <a class="primary-link"
-           th:href="@{/reservation}">
-            새 예약
-        </a>
+        <div class="reservation-page-actions">
+            <a class="secondary-button" th:href="@{/}">메인페이지</a>
+            <a class="secondary-button" th:href="@{/member/mypage}">마이페이지</a>
+            <a class="primary-link" th:href="@{/reservation}">새 예약</a>
+        </div>
     </section>
 
     <section th:unless="${isLoggedIn}"
@@ -40,7 +50,15 @@
     </section>
 
     <section th:if="${isLoggedIn}"
-             class="panel">
+             class="mypage-section">
+        <div class="mypage-section-header">
+            <div>
+                <h2>예약 내역</h2>
+                <p>최근 예약부터 확인할 수 있습니다.</p>
+            </div>
+        </div>
+
+        <div class="mypage-info-card reservation-history-card">
         <div class="toolbar">
             <button type="button"
                     class="secondary-button"
@@ -54,6 +72,7 @@
             <div class="loading-box">
                 예약을 불러오는 중입니다.
             </div>
+        </div>
         </div>
     </section>
 
@@ -128,6 +147,8 @@
          class="message-box hidden"
          role="alert"></div>
 </main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
 
 <script th:src="@{/js/reservation/my-reservations.js}"></script>
 </body>

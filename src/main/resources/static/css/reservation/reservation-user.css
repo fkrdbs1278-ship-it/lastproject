@@ -1,0 +1,441 @@
+/* =========================================================
+   Phase 12 - 사용자 예약 화면 공통 UI
+   메인 페이지 / 마이페이지의 공통 디자인 체계와 맞춘다.
+   기존 reservation.js가 사용하는 id/class는 유지한다.
+   ========================================================= */
+
+:root {
+    --user-bg: #f7f7f7;
+    --user-surface: #ffffff;
+    --user-border: #dddddd;
+    --user-border-soft: #eeeeee;
+    --user-text: #222222;
+    --user-text-sub: #777777;
+    --user-text-muted: #999999;
+    --user-accent: #333333;
+    --user-accent-soft: #f4f4f4;
+}
+
+body {
+    background: var(--user-bg);
+    color: var(--user-text);
+}
+
+/* reservation.css의 독립 페이지 여백을
+   공통 header/footer가 있는 사용자 사이트 기준으로 재정렬 */
+.reservation-page {
+    width: min(1120px, calc(100% - 40px));
+    min-height: calc(100vh - 210px);
+    margin: 0 auto;
+    padding: 56px 0 30px;
+}
+
+.reservation-user-page {
+    max-width: 1120px;
+}
+
+.my-reservation-page {
+    width: min(1000px, calc(100% - 40px));
+    padding-top: 60px;
+}
+
+/* =========================================================
+   Page heading
+   ========================================================= */
+
+.reservation-user-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.reservation-user-heading h1 {
+    margin: 4px 0 10px;
+    color: var(--user-text);
+    font-size: 32px;
+    line-height: 1.25;
+    letter-spacing: -0.7px;
+}
+
+.reservation-user-heading > div:first-child > p:last-child,
+.reservation-user-heading .mypage-description {
+    color: var(--user-text-sub);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.reservation-user-heading .eyebrow,
+.guest-lookup-card .eyebrow {
+    margin-bottom: 6px;
+    color: #888888 !important;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.reservation-page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.reservation-page-actions .primary-link,
+.reservation-page-actions .secondary-button {
+    min-height: 40px;
+    padding: 0 15px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* 메인/마이페이지의 버튼 톤 */
+.reservation-page .primary-button,
+.reservation-page .primary-link {
+    border: 1px solid #333333;
+    background: #333333;
+    color: #ffffff;
+}
+
+.reservation-page .primary-button:not(:disabled):hover,
+.reservation-page .primary-link:hover {
+    background: #111111;
+    border-color: #111111;
+}
+
+.reservation-page .secondary-button {
+    border: 1px solid #cccccc;
+    background: #ffffff;
+    color: #333333;
+}
+
+.reservation-page .secondary-button:hover {
+    border-color: #999999;
+}
+
+/* =========================================================
+   Reservation form
+   ========================================================= */
+
+.reservation-grid {
+    gap: 16px;
+}
+
+.reservation-user-page .panel,
+.reservation-user-page .submit-panel {
+    border: 1px solid var(--user-border);
+    border-radius: 14px;
+    background: var(--user-surface);
+    box-shadow: none;
+}
+
+.reservation-user-page .panel {
+    padding: 24px;
+}
+
+.reservation-user-page .panel h2 {
+    color: var(--user-text);
+    font-size: 19px;
+    letter-spacing: -0.3px;
+}
+
+.reservation-user-page .panel h3 {
+    color: var(--user-text);
+    font-size: 15px;
+}
+
+.reservation-user-page .field > span {
+    color: #555555;
+}
+
+.reservation-user-page input,
+.reservation-user-page textarea,
+.reservation-user-page select {
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.reservation-user-page input:focus,
+.reservation-user-page textarea:focus,
+.reservation-user-page select:focus {
+    border-color: #777777;
+    box-shadow: 0 0 0 3px rgba(60, 60, 60, 0.08);
+}
+
+.reservation-user-page .field-help,
+.reservation-user-page .counter {
+    color: #888888;
+}
+
+.reservation-user-page .menu-content,
+.reservation-user-page .hair-style-content {
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.reservation-user-page .menu-card:hover .menu-content,
+.reservation-user-page .hair-style-card:hover .hair-style-content {
+    border-color: #aaaaaa;
+}
+
+.reservation-user-page .menu-radio:checked + .menu-content,
+.reservation-user-page .hair-style-radio:checked + .hair-style-content {
+    border-color: #333333;
+    background: #f7f7f7;
+    box-shadow: inset 0 0 0 1px #333333;
+}
+
+.reservation-user-page .menu-category {
+    color: #666666;
+}
+
+.reservation-user-page .time-button {
+    border: 1px solid #d6d6d6;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #333333;
+}
+
+.reservation-user-page .time-button:hover:not(:disabled) {
+    border-color: #999999;
+}
+
+.reservation-user-page .time-button.selected {
+    border-color: #333333;
+    background: #333333;
+    color: #ffffff;
+}
+
+.reservation-user-page .member-notice,
+.reservation-user-page .empty-box,
+.reservation-user-page .loading-box {
+    border-color: #d6d6d6;
+    border-radius: 10px;
+    background: #fafafa;
+    color: #666666;
+}
+
+.reservation-user-page .file-drop {
+    border-color: #cccccc;
+    border-radius: 10px;
+    background: #fafafa;
+}
+
+.reservation-user-page .file-drop:hover {
+    border-color: #888888;
+    background: #f7f7f7;
+}
+
+.reservation-user-page .submit-panel {
+    margin-top: 16px;
+    padding: 20px 24px;
+}
+
+.reservation-user-page .reservation-summary {
+    color: #666666;
+    font-size: 14px;
+}
+
+/* =========================================================
+   My reservations - mypage style
+   ========================================================= */
+
+.my-reservation-page .mypage-header {
+    margin-bottom: 32px;
+}
+
+.my-reservation-page .mypage-header h1 {
+    margin-bottom: 10px;
+    color: #222222;
+    font-size: 32px;
+}
+
+.my-reservation-page .mypage-section {
+    margin-bottom: 28px;
+}
+
+.my-reservation-page .mypage-section-header {
+    margin-bottom: 14px;
+}
+
+.reservation-history-card {
+    display: block;
+    padding: 22px;
+    overflow: visible;
+}
+
+.reservation-history-card .toolbar {
+    margin-bottom: 14px;
+}
+
+.my-reservation-page .reservation-list {
+    gap: 10px;
+}
+
+.my-reservation-page .reservation-item {
+    border: 1px solid #eeeeee;
+    border-radius: 10px;
+    padding: 18px;
+    background: #ffffff;
+    transition:
+            border-color 0.18s ease,
+            background 0.18s ease;
+}
+
+.my-reservation-page .reservation-item:hover {
+    border-color: #cccccc;
+    background: #fcfcfc;
+}
+
+.my-reservation-page .reservation-item-header strong {
+    color: #222222;
+}
+
+.my-reservation-page .status-badge {
+    border-radius: 999px;
+    font-size: 11px;
+}
+
+.my-reservation-page .action-button {
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #333333;
+}
+
+.my-reservation-page .action-button:hover {
+    border-color: #999999;
+}
+
+.my-reservation-page > .panel.empty-box {
+    border: 1px solid #dddddd;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: none;
+}
+
+/* =========================================================
+   Guest reservation lookup
+   ========================================================= */
+
+.guest-reservation-page {
+    max-width: 1000px;
+}
+
+.guest-lookup-card {
+    max-width: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: end;
+    padding: 26px;
+}
+
+.guest-lookup-card .section-title-row {
+    grid-column: 1 / -1;
+    margin-bottom: 2px;
+}
+
+.guest-lookup-card .section-title-row h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.guest-lookup-card .field {
+    margin-bottom: 0;
+}
+
+.guest-lookup-card #lookupButton {
+    min-height: 43px;
+    white-space: nowrap;
+}
+
+.guest-reservation-page #lookupResult {
+    max-width: none;
+    margin-top: 14px;
+}
+
+/* =========================================================
+   Modal
+   기존 기능 유지 + 사용자 페이지 톤 정리
+   ========================================================= */
+
+.reservation-page .detail-modal {
+    border: 1px solid #dddddd;
+    border-radius: 14px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+}
+
+.reservation-page .detail-block {
+    border: 1px solid #eeeeee;
+    background: #fafafa;
+}
+
+/* footer가 페이지 본문과 자연스럽게 이어지도록 */
+.site-footer {
+    margin-top: 40px;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 820px) {
+    .reservation-page,
+    .my-reservation-page {
+        width: min(100% - 32px, 1120px);
+        padding-top: 40px;
+    }
+
+    .reservation-user-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .reservation-page-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .guest-lookup-card {
+        grid-template-columns: 1fr;
+    }
+
+    .guest-lookup-card .section-title-row {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 520px) {
+    .reservation-page,
+    .my-reservation-page {
+        width: min(100% - 24px, 1120px);
+        padding-top: 30px;
+    }
+
+    .reservation-user-heading h1,
+    .my-reservation-page .mypage-header h1 {
+        font-size: 27px;
+    }
+
+    .reservation-page-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .reservation-page-actions .primary-link,
+    .reservation-page-actions .secondary-button {
+        width: 100%;
+    }
+
+    .reservation-user-page .panel,
+    .reservation-user-page .submit-panel,
+    .reservation-history-card,
+    .guest-lookup-card {
+        padding: 18px;
+    }
+}

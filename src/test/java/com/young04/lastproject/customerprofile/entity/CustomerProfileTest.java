@@ -64,8 +64,7 @@ class CustomerProfileTest {
 
         // when
         customer.recordVisit(
-                visitDate,
-                revisitDate
+                visitDate
         );
 
 
@@ -78,11 +77,6 @@ class CustomerProfileTest {
         assertEquals(
                 visitDate,
                 customer.getLastVisitDate()
-        );
-
-        assertEquals(
-                revisitDate,
-                customer.getRevisitRecommendedDate()
         );
     }
 
@@ -107,11 +101,6 @@ class CustomerProfileTest {
                         2026,
                         8,
                         1
-                ),
-                LocalDate.of(
-                        2026,
-                        9,
-                        1
                 )
         );
 
@@ -119,11 +108,6 @@ class CustomerProfileTest {
                 LocalDate.of(
                         2026,
                         8,
-                        28
-                ),
-                LocalDate.of(
-                        2026,
-                        9,
                         28
                 )
         );
@@ -142,15 +126,6 @@ class CustomerProfileTest {
                         28
                 ),
                 customer.getLastVisitDate()
-        );
-
-        assertEquals(
-                LocalDate.of(
-                        2026,
-                        9,
-                        28
-                ),
-                customer.getRevisitRecommendedDate()
         );
     }
 
@@ -311,19 +286,5 @@ class CustomerProfileTest {
         // given
         CustomerProfile customer =
                 createCustomer();
-
-
-        // when / then
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> customer.recordVisit(
-                        null,
-                        LocalDate.of(
-                                2026,
-                                9,
-                                28
-                        )
-                )
-        );
     }
 }
