@@ -1,0 +1,285 @@
+/* =========================================================
+   Phase 11.1 - 관리자 예약 관리 통합 레이아웃
+   dashboard와 동일한 사이드바/콘텐츠 구조를 사용한다.
+   ========================================================= */
+
+.reservation-admin-content {
+    width: calc(100% - 250px);
+}
+
+.reservation-admin-content .dashboard-header {
+    margin-bottom: 24px;
+}
+
+/* dashboard 메인에서 이동한 예약 운영 기능 */
+.reservation-operation-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.reservation-operation-card {
+    min-width: 0;
+    min-height: 92px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 17px 16px;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: var(--surface);
+    color: var(--text-main);
+    text-align: left;
+    box-shadow: 0 6px 18px rgba(32, 36, 43, 0.045);
+}
+
+.operation-button {
+    width: 100%;
+    cursor: pointer;
+    font: inherit;
+    transition:
+            transform 0.18s ease,
+            border-color 0.18s ease,
+            box-shadow 0.18s ease;
+}
+
+.operation-button:hover {
+    transform: translateY(-2px);
+    border-color: #c9a8b8;
+    box-shadow: 0 9px 22px rgba(32, 36, 43, 0.07);
+}
+
+.active-card {
+    border-color: rgba(176, 111, 141, 0.42);
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(245, 232, 239, 0.78),
+                    #ffffff 78%
+            );
+}
+
+.operation-icon {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #f2edf0;
+    color: var(--rose-dark);
+}
+
+.operation-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.reservation-operation-card > div:last-child {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.reservation-operation-card strong {
+    font-size: 15px;
+    letter-spacing: -0.2px;
+}
+
+.reservation-operation-card span {
+    overflow: hidden;
+    color: var(--text-sub);
+    font-size: 12px;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+}
+
+/* 관리자 예약 전용 패널 */
+.reservation-admin-panel {
+    margin-bottom: 18px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: var(--surface);
+    box-shadow: 0 8px 24px rgba(32, 36, 43, 0.05);
+}
+
+.reservation-panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.reservation-panel-heading h2 {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+}
+
+.reservation-panel-heading p:not(.panel-label) {
+    margin: 7px 0 0;
+    color: var(--text-sub);
+    font-size: 13px;
+}
+
+/* reservation.css의 기존 form 스타일을 dashboard tone으로 보정 */
+.reservation-admin-content .reservation-search-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.reservation-admin-content .field {
+    margin-bottom: 0;
+}
+
+.reservation-admin-content .field > span {
+    color: #5f646d;
+}
+
+.reservation-admin-content input,
+.reservation-admin-content textarea,
+.reservation-admin-content select {
+    min-height: 43px;
+    border-color: var(--border);
+    border-radius: 10px;
+    color: var(--text-main);
+}
+
+.reservation-admin-content input:focus,
+.reservation-admin-content textarea:focus,
+.reservation-admin-content select:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.11);
+}
+
+.reservation-search-actions {
+    grid-column: span 2;
+    align-self: end;
+    justify-content: flex-end;
+}
+
+.reservation-admin-content .primary-button {
+    min-height: 42px;
+    border-radius: 10px;
+    background: var(--rose-dark);
+}
+
+.reservation-admin-content .primary-button:hover {
+    background: var(--rose);
+}
+
+.reservation-admin-content .secondary-button {
+    min-height: 42px;
+    border-radius: 10px;
+    background: #f0f1f3;
+    color: #4c5159;
+}
+
+/* 예약 테이블 */
+.reservation-list-panel {
+    overflow: hidden;
+}
+
+.reservation-admin-content .table-wrap {
+    overflow-x: auto;
+    border: 1px solid #e7e9ed;
+    border-radius: 13px;
+}
+
+.reservation-admin-content .reservation-table {
+    min-width: 930px;
+    background: #ffffff;
+}
+
+.reservation-admin-content .reservation-table thead {
+    background: #f7f8fa;
+}
+
+.reservation-admin-content .reservation-table th {
+    color: #686d76;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.reservation-admin-content .reservation-table th,
+.reservation-admin-content .reservation-table td {
+    padding: 14px 13px;
+    border-bottom: 1px solid #edf0f3;
+}
+
+.reservation-admin-content .reservation-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.reservation-admin-content .reservation-table tbody tr:hover {
+    background: #fbfbfc;
+}
+
+.reservation-admin-content .action-button {
+    border-color: #dfe2e7;
+    color: #4b5058;
+}
+
+.reservation-admin-content .action-button:hover {
+    border-color: #c9a8b8;
+    color: var(--rose-dark);
+}
+
+.reservation-admin-content .pagination {
+    margin-top: 20px;
+}
+
+/* 기존 reservation.css가 body에 주는 beige 배경보다 dashboard 배경을 우선 */
+body {
+    background: var(--background);
+}
+
+/* 모달은 기존 기능을 유지하되 admin tone으로 정리 */
+.detail-overlay .detail-modal {
+    border: 1px solid var(--border);
+}
+
+.detail-overlay .primary-button {
+    background: var(--rose-dark);
+}
+
+.detail-overlay .secondary-button {
+    background: #f0f1f3;
+    color: #4c5159;
+}
+
+@media (max-width: 1450px) {
+    .reservation-operation-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .reservation-admin-content .reservation-search-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .reservation-search-actions {
+        grid-column: span 3;
+    }
+}
+
+@media (max-width: 1100px) {
+    .reservation-operation-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .reservation-admin-content .reservation-search-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .reservation-search-actions {
+        grid-column: span 2;
+    }
+}

@@ -120,41 +120,6 @@
 
         </section>
 
-        <!-- 2part 예약 운영 바로가기 -->
-        <section class="reservation-quick-actions">
-
-            <a th:href="@{/admin/reservations}"
-               class="reservation-quick-link">
-                <strong>예약 관리</strong>
-                <span>전체 예약 조회·상태 변경</span>
-            </a>
-
-            <a th:href="@{/admin/reservations(tool='phone')}"
-               class="reservation-quick-link">
-                <strong>전화 예약</strong>
-                <span>관리자 전화 예약 등록</span>
-            </a>
-
-            <a th:href="@{/admin/reservations(tool='business-hours')}"
-               class="reservation-quick-link">
-                <strong>영업시간</strong>
-                <span>영업시간·정기휴무 관리</span>
-            </a>
-
-            <a th:href="@{/admin/reservations(tool='holidays')}"
-               class="reservation-quick-link">
-                <strong>휴일 관리</strong>
-                <span>임시 휴일·휴가 등록</span>
-            </a>
-
-            <a th:href="@{/admin/reservations(tool='availability-blocks')}"
-               class="reservation-quick-link">
-                <strong>개인 일정</strong>
-                <span>예약 불가 시간 관리</span>
-            </a>
-
-        </section>
-
         <!-- 예약 일정과 재고 알림 -->
         <section class="dashboard-grid">
 
