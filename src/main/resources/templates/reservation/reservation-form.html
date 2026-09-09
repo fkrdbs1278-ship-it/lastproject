@@ -6,22 +6,31 @@
     <title>예약하기</title>
     <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
     <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/header.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/footer.css}">
     <link rel="stylesheet" th:href="@{/css/reservation/reservation.css}">
+    <link rel="stylesheet" th:href="@{/css/reservation/reservation-user.css}">
 </head>
 <body>
-<main class="reservation-page"
+
+<header th:replace="~{layout/header :: header}"></header>
+
+<main class="reservation-page reservation-user-page"
       id="reservationPage"
       th:attr="data-member-no=${memberNo},data-logged-in=${isLoggedIn}">
 
-    <section class="page-heading">
+    <section class="page-heading reservation-user-heading">
         <div>
-            <p class="eyebrow">SALON RESERVATION</p>
+            <p class="eyebrow">RESERVATION</p>
             <h1>예약하기</h1>
-            <p>시술 → 예시 스타일 → 날짜/시간 순서로 선택해주세요.</p>
+            <p>원하는 시술과 스타일을 선택하고 편리하게 예약해보세요.</p>
         </div>
-        <div>
+
+        <div class="reservation-page-actions">
+            <a class="secondary-button" th:href="@{/}">메인페이지</a>
             <a class="secondary-button" th:href="@{/guest-reservation}">비회원 예약 조회</a>
-            <a class="secondary-button" th:href="@{/my-reservations}">내 예약</a>
+            <a class="primary-link" th:href="@{/my-reservations}">내 예약</a>
         </div>
     </section>
 
@@ -181,6 +190,8 @@
 
     <div id="messageBox" class="message-box hidden" role="alert"></div>
 </main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
 
 <script th:src="@{/js/reservation/reservation-form.js}"></script>
 </body>

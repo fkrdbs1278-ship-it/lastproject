@@ -6,20 +6,37 @@
     <title>비회원 예약 조회</title>
     <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
     <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/header.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/footer.css}">
     <link rel="stylesheet" th:href="@{/css/reservation/reservation.css}">
+    <link rel="stylesheet" th:href="@{/css/reservation/reservation-user.css}">
 </head>
 <body>
-<main class="reservation-page">
-    <section class="page-heading">
+
+<header th:replace="~{layout/header :: header}"></header>
+
+<main class="reservation-page reservation-user-page guest-reservation-page">
+    <section class="page-heading reservation-user-heading">
         <div>
             <p class="eyebrow">GUEST RESERVATION</p>
             <h1>비회원 예약 조회</h1>
-            <p>예약번호와 예약 시 입력한 휴대전화 번호로 조회합니다.</p>
+            <p>예약번호와 예약 시 입력한 휴대전화 번호로 예약을 확인합니다.</p>
         </div>
-        <a class="secondary-button" th:href="@{/reservation}">예약하기</a>
+
+        <div class="reservation-page-actions">
+            <a class="secondary-button" th:href="@{/}">메인페이지</a>
+            <a class="primary-link" th:href="@{/reservation}">예약하기</a>
+        </div>
     </section>
 
-    <section class="panel guest-lookup-form">
+    <section class="panel guest-lookup-form guest-lookup-card">
+        <div class="section-title-row">
+            <div>
+                <p class="eyebrow">LOOKUP</p>
+                <h2>예약 정보 입력</h2>
+            </div>
+        </div>
         <label class="field">
             <span>예약번호</span>
             <input id="lookupReservationNo" type="number" min="1">
@@ -36,6 +53,8 @@
     <section id="lookupResult" class="panel hidden"></section>
     <div id="messageBox" class="message-box hidden" role="alert"></div>
 </main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+
 <script th:src="@{/js/reservation/guest-reservation.js}"></script>
 </body>
 </html>
