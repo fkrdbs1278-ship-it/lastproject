@@ -19,4 +19,10 @@ public class DashboardReservationSummary {
 
     private List<DashboardReservationItem> todayReservations;
     private List<DashboardReservationItem> weekReservations;
+
+    private int calendarStartHour;
+    private int calendarEndHour;
+
+    private List<DashboardCalendarDay> calendarDays;
+    private List<DashboardCalendarBlock> calendarBlocks;
 }
