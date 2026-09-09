@@ -39,8 +39,21 @@ public class HairStyle {
     )
     private HairStyleCategory category;
 
-    /* 설명*/
 
+    /* 성별 */
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            name = "GENDER",
+            nullable = false,
+            length = 10
+    )
+    private HairStyleGender gender =
+            HairStyleGender.ALL;
+
+
+
+    /* 설명*/
 
     @Column(
             name = "DESCRIPTION",

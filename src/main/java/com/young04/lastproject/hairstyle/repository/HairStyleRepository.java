@@ -3,6 +3,10 @@ package com.young04.lastproject.hairstyle.repository;
 import com.young04.lastproject.hairstyle.entity.HairStyle;
 import com.young04.lastproject.hairstyle.entity.HairStyleCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.young04.lastproject.hairstyle.entity.HairStyleGender;
+
+import java.util.Collection;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +26,25 @@ public interface HairStyleRepository
     List<HairStyle>
     findByCategoryAndActiveYnOrderByDisplayOrderAscNoAsc(
             HairStyleCategory category,
+            String activeYn
+    );
+
+
+    /* 성별 조회 */
+
+    List<HairStyle>
+    findByGenderInAndActiveYnOrderByDisplayOrderAscNoAsc(
+            Collection<HairStyleGender> genders,
+            String activeYn
+    );
+
+
+    /* 카테고리 + 성별 조회 */
+
+    List<HairStyle>
+    findByCategoryAndGenderInAndActiveYnOrderByDisplayOrderAscNoAsc(
+            HairStyleCategory category,
+            Collection<HairStyleGender> genders,
             String activeYn
     );
 

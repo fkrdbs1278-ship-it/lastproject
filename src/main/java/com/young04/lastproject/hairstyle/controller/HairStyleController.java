@@ -3,6 +3,7 @@ package com.young04.lastproject.hairstyle.controller;
 import com.young04.lastproject.hairstyle.dto.HairStyleDetailResponse;
 import com.young04.lastproject.hairstyle.dto.HairStyleResponse;
 import com.young04.lastproject.hairstyle.entity.HairStyleCategory;
+import com.young04.lastproject.hairstyle.entity.HairStyleGender;
 import com.young04.lastproject.hairstyle.service.HairStyleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -41,12 +42,21 @@ public class HairStyleController {
             )
             HairStyleCategory category,
 
+            @RequestParam(
+                    name = "gender",
+                    required = false
+            )
+            HairStyleGender gender,
+
             Model model
     ) {
 
         List<HairStyleResponse> hairStyles =
                 hairStyleService
-                        .getHairStyles(category);
+                        .getHairStyles(
+                                category,
+                                gender
+                        );
 
 
         model.addAttribute(
@@ -58,6 +68,11 @@ public class HairStyleController {
         model.addAttribute(
                 "selectedCategory",
                 category
+        );
+
+        model.addAttribute(
+                "selectedGender",
+                gender
         );
 
 
