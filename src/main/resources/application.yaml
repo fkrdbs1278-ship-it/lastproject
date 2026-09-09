@@ -4,13 +4,9 @@ spring:
 
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@localhost:1521:XE
-    username: orcltest
-    password: 1234
-#    driver-class-name: oracle.jdbc.OracleDriver
-#    url: ${DB_URL}
-#    username: ${DB_USERNAME}
-#    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     show-sql: false
@@ -35,7 +31,7 @@ spring:
       max-request-size: 30MB
 
 
-# P6Spy를 사용하는 경우
+  # P6Spy를 사용하는 경우
 decorator:
   datasource:
     enabled: true
@@ -57,30 +53,5 @@ logging:
     com.example.lastproject: debug
 
 
-#file:
-#  upload-dir: ${FILE_UPLOAD_DIR:uploads}
 file:
-  upload-dir: D:/kim/lastproject-upload
-
-# 예약 문자 알림
-#
-# =========================================================
-# 공통 SMS 설정
-#
-# 개발 기본값:
-# SMS_PROVIDER=log
-#
-# 실제 SOLAPI 발송:
-# SMS_PROVIDER=solapi
-# SOLAPI_API_KEY=...
-# SOLAPI_API_SECRET=...
-# SOLAPI_SENDER=SOLAPI에 등록된 발신번호
-# =========================================================
-sms:
-  provider: ${SMS_PROVIDER:log}
-
-  solapi:
-    api-key: ${SOLAPI_API_KEY:}
-    api-secret: ${SOLAPI_API_SECRET:}
-    sender: ${SOLAPI_SENDER:}
-
+  upload-dir: ${FILE_UPLOAD_DIR:uploads}
