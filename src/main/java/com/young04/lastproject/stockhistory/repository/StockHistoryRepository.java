@@ -15,6 +15,14 @@ public interface StockHistoryRepository
     // 특정 자재의 변동 이력을 최신순으로 조회
     List<StockHistory> findByMaterialNoOrderByRegdateDesc(Long materialNo);
 
+
+    // 같은 예약에서 같은 사용 이력이 이미 저장됐는지 확인
+    boolean existsByReferenceTypeAndReferenceNoAndMovementType(
+            String referenceType,
+            Long referenceNo,
+            String movementType
+    );
+
     // 자재와 연결된 재고 변동 이력 삭제
     long deleteByMaterialNo(Long materialNo);
 }

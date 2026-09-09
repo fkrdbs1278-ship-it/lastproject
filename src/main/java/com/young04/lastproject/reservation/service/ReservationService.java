@@ -7,6 +7,7 @@ import com.young04.lastproject.reservation.exception.*;
 import com.young04.lastproject.reservation.repository.ReservationRepository;
 import com.young04.lastproject.reservation.notification.ReservationNotificationPublisher;
 import com.young04.lastproject.reservation.notification.ReservationNotificationType;
+import com.young04.lastproject.servicematerial.service.MaterialUsageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,10 @@ public class ReservationService {
     private final HairStyleReader hairStyleReader;
     private final BusinessHourRepository businessHourRepository;
     private final ReservationNotificationPublisher notificationPublisher;
+
+    // 시술 완료 시 연결된 자재를 자동 차감
+    private final MaterialUsageService materialUsageService;
+
 
     @Transactional
     public ReservationResponse createReservation(
@@ -115,6 +120,7 @@ public class ReservationService {
         return ReservationResponse.from(saved);
     }
 
+
     @Transactional
     public ReservationResponse updateReservation(
             Long reservationNo,
@@ -139,6 +145,7 @@ public class ReservationService {
 
         return ReservationResponse.from(reservation);
     }
+
 
     @Transactional
     public ReservationResponse updateGuestReservation(
@@ -180,6 +187,7 @@ public class ReservationService {
         return ReservationResponse.from(reservation);
     }
 
+
     @Transactional
     public ReservationResponse confirmReservation(
             Long reservationNo
@@ -204,6 +212,8 @@ public class ReservationService {
         return ReservationResponse.from(reservation);
     }
 
+
+    // 확정된 예약을 시술 완료 처리하고 연결된 자재를 자동 차감
     @Transactional
     public ReservationResponse completeReservation(
             Long reservationNo
@@ -225,7 +235,14 @@ public class ReservationService {
             );
         }
 
+        // 예약 상태를 시술 완료로 변경
         reservation.complete();
+
+        // 시술에 연결된 자재가 있으면 실제 사용량만큼 자동 차감
+        materialUsageService.deductMaterialsForReservation(
+                reservation.getReservationNo(),
+                reservation.getServiceMenuNo()
+        );
 
         notificationPublisher.publish(
                 ReservationNotificationType.COMPLETED,
@@ -234,6 +251,7 @@ public class ReservationService {
 
         return ReservationResponse.from(reservation);
     }
+
 
     @Transactional
     public ReservationResponse cancelReservation(
@@ -262,6 +280,7 @@ public class ReservationService {
         return ReservationResponse.from(reservation);
     }
 
+
     public ReservationResponse lookupGuestReservation(
             GuestReservationLookupRequest request
     ) {
@@ -286,6 +305,7 @@ public class ReservationService {
 
         return ReservationResponse.from(reservation);
     }
+
 
     @Transactional
     public ReservationResponse cancelGuestReservation(
@@ -330,6 +350,7 @@ public class ReservationService {
         return ReservationResponse.from(reservation);
     }
 
+
     public ReservationResponse getReservationDetail(
             Long reservationNo
     ) {
@@ -337,6 +358,7 @@ public class ReservationService {
                 getReservation(reservationNo)
         );
     }
+
 
     public List<ReservationResponse> getMemberReservations(
             Long memberNo
@@ -347,6 +369,7 @@ public class ReservationService {
                 .map(ReservationResponse::from)
                 .toList();
     }
+
 
     private void updateReservationEntity(
             Reservation reservation,
@@ -395,6 +418,7 @@ public class ReservationService {
         );
     }
 
+
     private void validateCustomer(
             ReservationCreateRequest request
     ) {
@@ -412,6 +436,7 @@ public class ReservationService {
         }
     }
 
+
     private void validateHairStyle(
             Long hairStyleNo,
             Long serviceMenuNo
@@ -425,6 +450,7 @@ public class ReservationService {
             );
         }
     }
+
 
     private void lockReservationDay(
             LocalDateTime startAt
@@ -442,6 +468,7 @@ public class ReservationService {
                 );
     }
 
+
     private Reservation getReservation(
             Long reservationNo
     ) {
@@ -454,6 +481,7 @@ public class ReservationService {
                                 )
                 );
     }
+
 
     private Reservation getReservationForUpdate(
             Long reservationNo
@@ -468,6 +496,7 @@ public class ReservationService {
                 );
     }
 
+
     private void validateModifiable(
             Reservation reservation
     ) {
@@ -480,6 +509,7 @@ public class ReservationService {
             );
         }
     }
+
 
     private void validateCancelable(
             Reservation reservation,
@@ -498,12 +528,13 @@ public class ReservationService {
 
         if (canceledBy == CanceledBy.USER
                 && !reservation.getStartAt()
-                        .isAfter(LocalDateTime.now())) {
+                .isAfter(LocalDateTime.now())) {
             throw new InvalidReservationStatusException(
                     "예약 시간이 지난 후에는 고객이 직접 취소할 수 없습니다. 미용실에 문의해주세요."
             );
         }
     }
+
 
     private String normalizeGuestName(String value) {
         return value == null
@@ -511,11 +542,13 @@ public class ReservationService {
                 : value.trim().replaceAll("\\s+", " ");
     }
 
+
     private String normalizeGuestPhone(String value) {
         return value == null
                 ? null
                 : value.replaceAll("\\D", "");
     }
+
 
     private String normalizeMemo(String value) {
         if (value == null || value.isBlank()) {
@@ -525,6 +558,7 @@ public class ReservationService {
         return value.trim();
     }
 
+
     private String normalizeCancelReason(String value) {
         if (value == null || value.isBlank()) {
             return "사용자 요청";
@@ -532,6 +566,7 @@ public class ReservationService {
 
         return value.trim();
     }
+
 
     private boolean hasText(String value) {
         return value != null && !value.isBlank();
