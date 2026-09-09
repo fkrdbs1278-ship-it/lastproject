@@ -112,10 +112,12 @@
                 <div class="hero-background active">
 
                     <img
-                            th:src="@{/images/hero/hero1.jpg}"
+                            th:src="${siteSetting != null
+                                and siteSetting.heroImageUrl != null
+                                ? siteSetting.heroImageUrl
+                                : '/images/hero/hero1.jpg'}"
                             alt="헤어스타일 이미지 1"
                     >
-
                 </div>
 
 
@@ -169,13 +171,19 @@
             <div class="hero-content">
 
 
-                <h1 class="hero-title">
-                    나에게 어울리는 스타일을
-                    찾아보세요.
+                <!-- 관리자 설정값이 있으면 적용하고, 없으면 기본 문구 표시 -->
+                <h1 class="hero-title"
+                    th:text="${siteSetting != null
+                        ? siteSetting.heroTitle
+                        : '나에게 어울리는 스타일을 찾아보세요.'}">
+                    나에게 어울리는 스타일을 찾아보세요.
                 </h1>
 
 
-                <p class="hero-description">
+                <p class="hero-description"
+                   th:text="${siteSetting != null
+                        ? siteSetting.heroDescription
+                        : '원하는 시술과 헤어스타일을 확인하고 편리하게 예약 서비스를 이용해보세요.'}">
                     원하는 시술과 헤어스타일을 확인하고
                     편리하게 예약 서비스를 이용해보세요.
                 </p>
@@ -292,9 +300,14 @@
 
     <!-- 주요 기능 -->
 
-    <section class="feature-section">
+    <!-- 관리자 설정에 따라 서비스 안내 영역 노출 -->
+    <section class="feature-section"
+             th:if="${siteSetting == null or siteSetting.serviceVisible}">
 
-        <h2 class="section-title">
+        <h2 class="section-title"
+            th:text="${siteSetting != null
+                ? siteSetting.serviceTitle
+                : '서비스 안내'}">
             서비스 안내
         </h2>
 
@@ -361,7 +374,9 @@
      DB 조회 방식으로 교체 예정.
     ========================================= -->
 
-    <section class="style-gallery-section">
+    <!-- 관리자 설정에 따라 헤어스타일 영역 노출 -->
+    <section class="style-gallery-section"
+             th:if="${siteSetting == null or siteSetting.styleVisible}">
 
         <div class="style-gallery-inner">
 
@@ -374,11 +389,15 @@
                     HAIR STYLE
                 </p>
 
-                <h2>
+                <h2 th:text="${siteSetting != null
+                        ? siteSetting.styleTitle
+                        : '헤어스타일 둘러보기'}">
                     헤어스타일 둘러보기
                 </h2>
 
-                <p>
+                <p th:text="${siteSetting != null
+                        ? siteSetting.styleDescription
+                        : '다양한 스타일을 확인하고 원하는 헤어스타일을 찾아보세요.'}">
                     다양한 스타일을 확인하고
                     원하는 헤어스타일을 찾아보세요.
                 </p>

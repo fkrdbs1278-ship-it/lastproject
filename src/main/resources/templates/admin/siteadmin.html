@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>사용자 사이트 관리 | SALON ADMIN</title>
+
+    <!-- 관리자 공통 사이드바 CSS -->
+    <link rel="stylesheet"
+          href="/css/admin/dashboard-sidebar.css"
+          th:href="@{/css/admin/dashboard-sidebar.css}">
+
+    <!-- 사용자 사이트 관리 CSS -->
+    <link rel="stylesheet"
+          href="/css/admin/siteadmin.css"
+          th:href="@{/css/admin/siteadmin.css}">
+</head>
+
+<body>
+
+<!-- 사용자 사이트 설정 저장 Form -->
+<form id="siteSettingForm"
+      th:action="@{/admin/siteadmin/save}"
+      method="post"
+      enctype="multipart/form-data">
+</form>
+
+<div class="admin-layout">
+
+    <!-- 관리자 공통 사이드바 -->
+    <aside th:replace="~{admin/dashboard-sidebar :: sidebar('siteadmin')}"></aside>
+
+
+    <!-- 사용자 사이트 관리 영역 -->
+    <main class="siteadmin-content">
+
+        <!-- 상단 -->
+        <header class="siteadmin-header">
+
+            <div>
+                <p class="page-label">SITE MANAGEMENT</p>
+
+                <h1>사용자 사이트 관리</h1>
+
+                <p class="page-description">
+                    사용자 메인 화면에 표시되는 문구와 영역을 확인하고 수정할 수 있습니다.
+                </p>
+            </div>
+
+
+            <a href="/"
+               th:href="@{/}"
+               target="_blank"
+               class="site-view-button">
+                실제 사이트 보기
+                <span>↗</span>
+            </a>
+
+        </header>
+
+
+        <div class="siteadmin-grid">
+
+            <!-- =================================================
+                 왼쪽 : 사용자 화면 미리보기
+                 ================================================= -->
+            <section class="preview-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <p class="panel-label">PREVIEW</p>
+                        <h2>사용자 화면 미리보기</h2>
+                    </div>
+
+                    <span class="preview-badge">
+                        실시간 미리보기
+                    </span>
+
+                </div>
+
+
+                <div class="browser-preview">
+
+                    <!-- 브라우저 상단 모양 -->
+                    <div class="browser-bar">
+
+                        <div class="browser-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+
+                        <div class="browser-address">
+                            localhost:8080
+                        </div>
+
+                    </div>
+
+
+                    <!-- 사용자 사이트 미리보기 -->
+                    <div class="site-preview">
+
+                        <!-- 사용자 헤더 -->
+                        <header class="preview-site-header">
+
+                            <strong class="preview-logo">
+                                SALON CRM
+                            </strong>
+
+                            <nav>
+                                <span>홈</span>
+                                <span>시술 메뉴</span>
+                                <span>헤어스타일</span>
+                                <span>마이페이지</span>
+                            </nav>
+
+                        </header>
+
+
+                        <!-- Hero -->
+                        <section class="preview-hero"
+                                 id="previewHero">
+
+                            <img id="previewHeroImage"
+                                 src="/images/hero/hero1.jpg"
+                                 th:src="${siteSetting != null and siteSetting.heroImageUrl != null
+                                    ? siteSetting.heroImageUrl
+                                    : '/images/hero/hero1.jpg'}"
+                                 alt="메인 이미지">
+
+
+                            <div class="preview-hero-overlay"></div>
+
+
+                            <div class="preview-hero-content">
+
+                                <h2 id="previewHeroTitle"
+                                    th:text="${siteSetting != null
+                                        ? siteSetting.heroTitle
+                                        : '나에게 어울리는 스타일을 찾아보세요.'}">
+                                    나에게 어울리는 스타일을 찾아보세요.
+                                </h2>
+
+                                <p id="previewHeroDescription"
+                                   th:text="${siteSetting != null
+                                       ? siteSetting.heroDescription
+                                       : '원하는 시술과 헤어스타일을 확인하고 편리하게 예약 서비스를 이용해보세요.'}">
+                                    원하는 시술과 헤어스타일을 확인하고
+                                    편리하게 예약 서비스를 이용해보세요.
+                                </p>
+
+                            </div>
+
+                        </section>
+
+
+                        <!-- 서비스 안내 -->
+                        <section class="preview-section"
+                                 id="previewServiceSection"
+                                 th:style="${siteSetting != null and !siteSetting.serviceVisible} ? 'display:none;' : ''">
+
+                            <h3 id="previewServiceTitle"
+                                th:text="${siteSetting != null
+                                    ? siteSetting.serviceTitle
+                                    : '서비스 안내'}">
+                                서비스 안내
+                            </h3>
+
+
+                            <div class="preview-service-grid">
+
+                                <article>
+                                    <strong>시술 메뉴</strong>
+
+                                    <p>
+                                        커트, 펌, 염색, 클리닉 등
+                                        다양한 시술 메뉴와 가격을 확인할 수 있습니다.
+                                    </p>
+                                </article>
+
+
+                                <article>
+                                    <strong>헤어스타일</strong>
+
+                                    <p>
+                                        다양한 헤어스타일 이미지를 확인하고
+                                        원하는 스타일을 찾아볼 수 있습니다.
+                                    </p>
+                                </article>
+
+
+                                <article>
+                                    <strong>마이페이지</strong>
+
+                                    <p>
+                                        예약, 결제, 쿠폰 및 리뷰 내역을
+                                        한 곳에서 확인할 수 있습니다.
+                                    </p>
+                                </article>
+
+                            </div>
+
+                        </section>
+
+
+                        <!-- 헤어스타일 -->
+                        <section class="preview-section preview-style-section"
+                                 id="previewStyleSection"
+                                 th:style="${siteSetting != null and !siteSetting.styleVisible} ? 'display:none;' : ''">
+
+                            <p class="preview-eyebrow">
+                                HAIR STYLE
+                            </p>
+
+                            <h3 id="previewStyleTitle"
+                                th:text="${siteSetting != null
+                                    ? siteSetting.styleTitle
+                                    : '헤어스타일 둘러보기'}">
+                                헤어스타일 둘러보기
+                            </h3>
+
+                            <p id="previewStyleDescription"
+                               class="preview-style-description"
+                               th:text="${siteSetting != null
+                                   ? siteSetting.styleDescription
+                                   : '다양한 스타일을 확인하고 원하는 헤어스타일을 찾아보세요.'}">
+                                다양한 스타일을 확인하고
+                                원하는 헤어스타일을 찾아보세요.
+                            </p>
+
+
+                            <div class="preview-style-grid">
+
+                                <article>
+                                    <img src="/images/hairstyle/bob-curl.png"
+                                         th:src="@{/images/hairstyle/bob-curl.png}"
+                                         alt="보브 컬">
+
+                                    <span>보브 컬</span>
+                                </article>
+
+
+                                <article>
+                                    <img src="/images/hairstyle/c-curl-perm.png"
+                                         th:src="@{/images/hairstyle/c-curl-perm.png}"
+                                         alt="C컬 펌">
+
+                                    <span>C컬 펌</span>
+                                </article>
+
+
+                                <article>
+                                    <img src="/images/hairstyle/dandy-cut.png"
+                                         th:src="@{/images/hairstyle/dandy-cut.png}"
+                                         alt="댄디 컷">
+
+                                    <span>댄디 컷</span>
+                                </article>
+
+
+                                <article>
+                                    <img src="/images/hairstyle/part-perm.png"
+                                         th:src="@{/images/hairstyle/part-perm.png}"
+                                         alt="가르마 펌">
+
+                                    <span>가르마 펌</span>
+                                </article>
+
+                            </div>
+
+                        </section>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 오른쪽 : 편집 영역
+                 ================================================= -->
+            <aside class="editor-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <p class="panel-label">EDIT</p>
+                        <h2>화면 설정</h2>
+                    </div>
+
+                </div>
+
+
+                <!-- 메인 화면 설정 -->
+                <section class="editor-section">
+
+                    <div class="editor-section-title">
+
+                        <span class="section-number">
+                            01
+                        </span>
+
+                        <div>
+                            <h3>메인 화면</h3>
+
+                            <p>
+                                사용자 사이트 첫 화면의 메인 영역을 설정합니다.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <label class="editor-field">
+
+                        <span>메인 제목</span>
+
+                        <textarea id="heroTitleInput"
+                                  name="heroTitle"
+                                  form="siteSettingForm"
+                                  rows="2"
+                                  th:text="${siteSetting != null
+                                      ? siteSetting.heroTitle
+                                      : '나에게 어울리는 스타일을 찾아보세요.'}">나에게 어울리는 스타일을
+찾아보세요.</textarea>
+
+                    </label>
+
+
+                    <label class="editor-field">
+
+                        <span>메인 설명</span>
+
+                        <textarea id="heroDescriptionInput"
+                                  name="heroDescription"
+                                  form="siteSettingForm"
+                                  rows="3"
+                                  th:text="${siteSetting != null
+                                      ? siteSetting.heroDescription
+                                      : '원하는 시술과 헤어스타일을 확인하고 편리하게 예약 서비스를 이용해보세요.'}">원하는 시술과 헤어스타일을 확인하고
+편리하게 예약 서비스를 이용해보세요.</textarea>
+
+                    </label>
+
+
+                    <label class="editor-field">
+
+                        <span>메인 이미지</span>
+
+                        <input id="heroImageInput"
+                               name="heroImage"
+                               form="siteSettingForm"
+                               type="file"
+                               accept="image/*">
+
+                        <small>
+                            이미지를 선택하면 왼쪽 미리보기에 바로 표시됩니다.
+                        </small>
+
+                    </label>
+
+                </section>
+
+
+                <!-- 서비스 안내 설정 -->
+                <section class="editor-section">
+
+                    <div class="editor-section-title">
+
+                        <span class="section-number">
+                            02
+                        </span>
+
+                        <div>
+                            <h3>서비스 안내</h3>
+
+                            <p>
+                                메인 페이지의 서비스 안내 영역을 설정합니다.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <label class="toggle-row">
+
+                        <div>
+                            <strong>서비스 안내 노출</strong>
+
+                            <p>
+                                사용자 메인에 서비스 안내 영역을 표시합니다.
+                            </p>
+                        </div>
+
+
+                        <input id="serviceVisibleInput"
+                               name="serviceVisible"
+                               value="true"
+                               form="siteSettingForm"
+                               type="checkbox"
+                               th:checked="${siteSetting == null or siteSetting.serviceVisible}">
+
+                    </label>
+
+
+                    <label class="editor-field">
+
+                        <span>영역 제목</span>
+
+                        <input id="serviceTitleInput"
+                               name="serviceTitle"
+                               form="siteSettingForm"
+                               type="text"
+                               value="서비스 안내"
+                               th:value="${siteSetting != null
+                                   ? siteSetting.serviceTitle
+                                   : '서비스 안내'}">
+
+                    </label>
+
+                </section>
+
+
+                <!-- 헤어스타일 영역 설정 -->
+                <section class="editor-section">
+
+                    <div class="editor-section-title">
+
+                        <span class="section-number">
+                            03
+                        </span>
+
+                        <div>
+                            <h3>헤어스타일 영역</h3>
+
+                            <p>
+                                메인에 표시되는 헤어스타일 소개 영역을 설정합니다.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <label class="toggle-row">
+
+                        <div>
+                            <strong>헤어스타일 영역 노출</strong>
+
+                            <p>
+                                사용자 메인에 헤어스타일 영역을 표시합니다.
+                            </p>
+                        </div>
+
+
+                        <input id="styleVisibleInput"
+                               name="styleVisible"
+                               value="true"
+                               form="siteSettingForm"
+                               type="checkbox"
+                               th:checked="${siteSetting == null or siteSetting.styleVisible}">
+
+                    </label>
+
+
+                    <label class="editor-field">
+
+                        <span>영역 제목</span>
+
+                        <input id="styleTitleInput"
+                               name="styleTitle"
+                               form="siteSettingForm"
+                               type="text"
+                               value="헤어스타일 둘러보기"
+                               th:value="${siteSetting != null
+                                   ? siteSetting.styleTitle
+                                   : '헤어스타일 둘러보기'}">
+
+                    </label>
+
+
+                    <label class="editor-field">
+
+                        <span>영역 설명</span>
+
+                        <textarea id="styleDescriptionInput"
+                                  name="styleDescription"
+                                  form="siteSettingForm"
+                                  rows="3"
+                                  th:text="${siteSetting != null
+                                      ? siteSetting.styleDescription
+                                      : '다양한 스타일을 확인하고 원하는 헤어스타일을 찾아보세요.'}">다양한 스타일을 확인하고
+원하는 헤어스타일을 찾아보세요.</textarea>
+
+                    </label>
+
+                </section>
+
+
+                <!-- 하단 버튼 -->
+                <div class="editor-actions">
+
+                    <button id="resetButton"
+                            type="button"
+                            class="reset-button">
+                        초기화
+                    </button>
+
+
+                    <button id="saveButton"
+                            type="submit"
+                            form="siteSettingForm"
+                            class="save-button">
+                        변경사항 저장
+                    </button>
+
+                </div>
+
+
+                <p class="save-help">
+                    저장한 설정은 사용자 메인 화면에 적용됩니다.
+                </p>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- 저장 완료 토스트 메시지 -->
+<div id="siteadminToast"
+     class="siteadmin-toast">
+    변경사항이 미리보기에 적용되었습니다.
+</div>
+
+<script src="/js/admin/siteadmin.js"
+        th:src="@{/js/admin/siteadmin.js}">
+</script>
+
+</body>
+</html>
