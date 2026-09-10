@@ -324,24 +324,24 @@
 
                 <div class="form-group">
 
-                    <label for="birthDate">
+                    <label>
                         생년월일
                     </label>
 
+                    <div class="birthdate-readonly">
+                        <span th:text="*{birthDate}">
+                            2000-01-01
+                        </span>
+                    </div>
+
+                    <!-- 기존 값을 form에 유지 -->
                     <input
-                            type="date"
-                            id="birthDate"
+                            type="hidden"
                             th:field="*{birthDate}"
-                            min="1900-01-01"
-                            autocomplete="bday"
                     >
 
-                    <p
-                            class="field-error"
-                            th:if="${#fields.hasErrors('birthDate')}"
-                            th:errors="*{birthDate}"
-                    >
-                        생년월일 오류
+                    <p class="field-help">
+                        생년월일은 회원가입 후 변경할 수 없습니다.
                     </p>
 
                 </div>

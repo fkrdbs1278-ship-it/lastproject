@@ -215,15 +215,13 @@ public class Member {
             String name,
             String nickname,
             String email,
-            String phone,
-            LocalDate birthDate
+            String phone
 
     ){
         this.name = name;
         this.nickname = nickname;
         this.email = email;
         this.phone = phone;
-        this.birthDate = birthDate;
     }
 
     /*회원 탈퇴

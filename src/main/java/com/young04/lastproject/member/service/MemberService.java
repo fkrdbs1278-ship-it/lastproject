@@ -475,9 +475,9 @@ public class MemberService {
 
                 request
                         .getPhone()
-                        .trim(),
+                        .trim()
 
-                request.getBirthDate()
+
 
 
         );
