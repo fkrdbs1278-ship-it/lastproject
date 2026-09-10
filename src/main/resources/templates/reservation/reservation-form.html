@@ -18,7 +18,12 @@
 
 <main class="reservation-page reservation-user-page"
       id="reservationPage"
-      th:attr="data-member-no=${memberNo},data-logged-in=${isLoggedIn}">
+      th:attr="data-member-no=${memberNo},
+               data-logged-in=${isLoggedIn},
+               data-hair-style-no=${selectedHairStyle != null ? selectedHairStyle.hairStyleNo : ''},
+               data-hair-style-title=${selectedHairStyle != null ? selectedHairStyle.title : ''},
+               data-linked-service-menu-nos=${#strings.listJoin(linkedServiceMenuNos, ',')},
+               data-preferred-service-menu-no=${preferredServiceMenuNo != null ? preferredServiceMenuNo : ''}">
 
     <section class="page-heading reservation-user-heading">
         <div>
@@ -31,6 +36,47 @@
             <a class="secondary-button" th:href="@{/}">메인페이지</a>
             <a class="secondary-button" th:href="@{/guest-reservation}">비회원 예약 조회</a>
             <a class="primary-link" th:href="@{/my-reservations}">내 예약</a>
+        </div>
+    </section>
+
+
+    <section
+            th:if="${selectedHairStyle != null}"
+            class="selected-hairstyle-context"
+            id="selectedHairStyleContext"
+    >
+        <div>
+            <p class="selected-hairstyle-label">
+                SELECTED HAIR STYLE
+            </p>
+
+            <strong
+                    class="selected-hairstyle-title"
+                    th:text="${selectedHairStyle.title}"
+            >
+                선택한 헤어스타일
+            </strong>
+
+            <p>
+                헤어스타일 페이지에서 선택한 스타일입니다.
+                연결된 시술 메뉴를 우선 안내합니다.
+            </p>
+        </div>
+
+        <div class="selected-hairstyle-actions">
+            <a
+                    th:href="@{/hairstyles/{no}(no=${selectedHairStyle.hairStyleNo})}"
+                    class="secondary-button"
+            >
+                스타일 다시 보기
+            </a>
+
+            <a
+                    th:href="@{/reservation}"
+                    class="secondary-button"
+            >
+                선택 해제
+            </a>
         </div>
     </section>
 
@@ -78,7 +124,8 @@
                 </button>
             </div>
 
-            <p class="field-help">
+            <p class="field-help"
+               id="serviceCategoryHelp">
                 먼저 원하는 시술 종류를 선택해주세요.
             </p>
 
@@ -176,7 +223,8 @@
 
                 <label class="menu-card service-detail-card hidden"
                        th:each="menu : ${serviceMenus}"
-                       th:attr="data-category=${menu.category}">
+                       th:attr="data-category=${menu.category},
+                                data-service-menu-no=${menu.serviceMenuNo}">
 
                     <input type="radio"
                            name="serviceMenu"

@@ -418,3 +418,50 @@
         gap: 6px;
     }
 }
+
+/* =========================================================
+   Phase 14 - 헤어스타일 -> 예약 연결
+   ========================================================= */
+
+.hair-reservation-actions {
+    margin-top: 30px;
+}
+
+.hair-reservation-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 190px;
+    min-height: 48px;
+
+    padding: 0 22px;
+
+    border: 1px solid #222222;
+    border-radius: 8px;
+
+    background-color: #222222;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.hair-reservation-button:hover {
+    background-color: #000000;
+}
+
+.hair-reservation-help {
+    margin-top: 10px;
+
+    color: #888888;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+    .hair-reservation-button {
+        width: 100%;
+    }
+}

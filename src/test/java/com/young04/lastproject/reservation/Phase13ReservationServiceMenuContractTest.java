@@ -45,6 +45,7 @@ class Phase13ReservationServiceMenuContractTest {
                 .contains("2. 시술 메뉴 선택")
                 .contains("id=\"serviceMenuList\"")
                 .contains("data-category=${menu.category}")
+                .contains("data-service-menu-no=${menu.serviceMenuNo}")
                 .contains("name=\"serviceMenu\"")
                 .contains("${menu.serviceMenuNo}")
                 .contains("#numbers.formatInteger(menu.price, 1, 'COMMA')")
@@ -75,7 +76,9 @@ class Phase13ReservationServiceMenuContractTest {
         assertThat(js)
                 .doesNotContain("loadHairStyles")
                 .doesNotContain("/api/reservations/hair-styles")
-                .contains("hairStyleNo: null");
+                .contains("selectedHairStyleNo")
+                .contains("hairStyleNo:")
+                .contains("selectedHairStyleNo");
     }
 
     @Test

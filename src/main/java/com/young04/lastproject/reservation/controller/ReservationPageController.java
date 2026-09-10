@@ -1,6 +1,8 @@
 package com.young04.lastproject.reservation.controller;
 
 import com.young04.lastproject.reservation.dto.MemberReservationInfo;
+import com.young04.lastproject.reservation.dto.HairStyleOptionResponse;
+import com.young04.lastproject.reservation.service.HairStyleReader;
 import com.young04.lastproject.reservation.service.ReservationMemberReader;
 import com.young04.lastproject.reservation.service.SalonEventReader;
 import com.young04.lastproject.reservation.service.ServiceMenuReader;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
 
@@ -18,9 +21,22 @@ public class ReservationPageController {
     private final ServiceMenuReader serviceMenuReader;
     private final SalonEventReader salonEventReader;
     private final ReservationMemberReader reservationMemberReader;
+    private final HairStyleReader hairStyleReader;
 
     @GetMapping("/reservation")
     public String reservationForm(
+            @RequestParam(
+                    name = "hairStyleNo",
+                    required = false
+            )
+            Long hairStyleNo,
+
+            @RequestParam(
+                    name = "serviceMenuNo",
+                    required = false
+            )
+            Long serviceMenuNo,
+
             Principal principal,
             Model model
     ) {
@@ -35,6 +51,42 @@ public class ReservationPageController {
         model.addAttribute(
                 "serviceMenus",
                 serviceMenuReader.getActiveServiceMenus()
+        );
+
+        HairStyleOptionResponse selectedHairStyle =
+                hairStyleReader
+                        .findActiveById(hairStyleNo)
+                        .orElse(null);
+
+        var linkedServiceMenuNos =
+                selectedHairStyle == null
+                        ? java.util.List.<Long>of()
+                        : hairStyleReader
+                                .getActiveServiceMenuNosForStyle(
+                                        selectedHairStyle
+                                                .getHairStyleNo()
+                                );
+
+        Long preferredServiceMenuNo =
+                serviceMenuNo != null
+                        && linkedServiceMenuNos
+                                .contains(serviceMenuNo)
+                        ? serviceMenuNo
+                        : null;
+
+        model.addAttribute(
+                "selectedHairStyle",
+                selectedHairStyle
+        );
+
+        model.addAttribute(
+                "linkedServiceMenuNos",
+                linkedServiceMenuNos
+        );
+
+        model.addAttribute(
+                "preferredServiceMenuNo",
+                preferredServiceMenuNo
         );
 
         model.addAttribute(
