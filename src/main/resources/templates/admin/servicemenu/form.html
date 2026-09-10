@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${editing ? '시술 메뉴 수정 | SALON ADMIN' : '시술 메뉴 등록 | SALON ADMIN'}">
+        시술 메뉴 관리 | SALON ADMIN
+    </title>
+    <link rel="stylesheet" th:href="@{/css/admin/dashboard-sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/service-menu-admin.css}">
+</head>
+<body>
+<div class="admin-layout">
+    <aside th:replace="~{admin/dashboard-sidebar :: sidebar('service')}"></aside>
+
+    <main class="dashboard-content service-admin-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <p class="page-label">SERVICE MENU</p>
+                <h1 th:text="${editing ? '시술 메뉴 수정' : '시술 메뉴 등록'}">시술 메뉴 등록</h1>
+                <p class="page-description">
+                    가격과 소요시간은 예약 가능 시간 계산에 직접 사용되므로 실제 운영 기준으로 입력하세요.
+                </p>
+            </div>
+            <a th:href="@{/admin/services}" class="site-button">목록으로 돌아가기 <span>↗</span></a>
+        </header>
+
+        <div class="service-alert" th:if="${message != null}" th:text="${message}"></div>
+
+        <section class="service-admin-panel form-panel">
+            <div class="service-panel-heading">
+                <div>
+                    <p class="panel-label" th:text="${editing ? 'EDIT SERVICE' : 'NEW SERVICE'}">NEW SERVICE</p>
+                    <h2 th:text="${editing ? '시술 정보 수정' : '새 시술 정보'}">새 시술 정보</h2>
+                    <p>비활성화된 메뉴는 사용자 예약 화면의 신규 선택 대상에서 제외됩니다.</p>
+                </div>
+            </div>
+
+            <form method="post"
+                  th:object="${form}"
+                  th:action="${editing} ? @{/admin/services/{no}(no=${menuNo})} : @{/admin/services}"
+                  class="service-form">
+
+                <div class="form-grid two-column">
+                    <label class="service-field">
+                        <span>카테고리 <b>*</b></span>
+                        <select th:field="*{category}">
+                            <option value="">선택</option>
+                            <option th:each="category : ${categories}"
+                                    th:value="${category}"
+                                    th:text="${category.name() == 'CUT' ? '커트' :
+                                              category.name() == 'PERM' ? '펌' :
+                                              category.name() == 'COLOR' ? '컬러' :
+                                              category.name() == 'CLINIC' ? '클리닉' : '기타'}"></option>
+                        </select>
+                        <small class="field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></small>
+                    </label>
+
+                    <label class="service-field">
+                        <span>시술명 <b>*</b></span>
+                        <input type="text" th:field="*{name}" maxlength="100" placeholder="예: 남성 커트">
+                        <small class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+                    </label>
+                </div>
+
+                <div class="form-grid two-column">
+                    <label class="service-field">
+                        <span>가격 <b>*</b></span>
+                        <div class="input-suffix-wrap">
+                            <input type="number" th:field="*{price}" min="0" step="1000" placeholder="20000">
+                            <em>원</em>
+                        </div>
+                        <small class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></small>
+                    </label>
+
+                    <label class="service-field">
+                        <span>소요시간 <b>*</b></span>
+                        <div class="input-suffix-wrap">
+                            <input type="number" th:field="*{durationMin}" min="5" max="1440" step="5" placeholder="30">
+                            <em>분</em>
+                        </div>
+                        <small class="field-hint">5분 단위로 입력합니다. 예: 30, 60, 90, 120분</small>
+                        <small class="field-error" th:if="${#fields.hasErrors('durationMin')}" th:errors="*{durationMin}"></small>
+                    </label>
+                </div>
+
+                <label class="service-field full-field">
+                    <span>설명</span>
+                    <textarea th:field="*{description}" maxlength="1000" rows="5"
+                              placeholder="사용자에게 보여줄 시술 설명을 입력하세요."></textarea>
+                    <small class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></small>
+                </label>
+
+                <label class="service-field full-field">
+                    <span>이미지 URL</span>
+                    <input type="text" th:field="*{imageUrl}" maxlength="500"
+                           placeholder="예: /images/service/cut.jpg (선택)">
+                    <small class="field-hint">이미지를 사용하지 않는 경우 비워두어도 됩니다.</small>
+                    <small class="field-error" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></small>
+                </label>
+
+                <div class="form-grid two-column">
+                    <label class="service-field">
+                        <span>사용 여부 <b>*</b></span>
+                        <select th:field="*{activeYn}">
+                            <option value="Y">사용 중</option>
+                            <option value="N">비활성</option>
+                        </select>
+                        <small class="field-error" th:if="${#fields.hasErrors('activeYn')}" th:errors="*{activeYn}"></small>
+                    </label>
+
+                    <label class="service-field">
+                        <span>표시 순서 <b>*</b></span>
+                        <input type="number" th:field="*{displayOrder}" min="0" step="1">
+                        <small class="field-hint">숫자가 작을수록 사용자 화면에서 먼저 표시됩니다.</small>
+                        <small class="field-error" th:if="${#fields.hasErrors('displayOrder')}" th:errors="*{displayOrder}"></small>
+                    </label>
+                </div>
+
+                <div class="service-form-actions">
+                    <a th:href="@{/admin/services}" class="service-secondary-button">취소</a>
+                    <button type="submit" class="service-primary-button"
+                            th:text="${editing ? '수정 내용 저장' : '시술 메뉴 등록'}">시술 메뉴 등록</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>
