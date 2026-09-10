@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시술 메뉴 관리 | SALON ADMIN</title>
+    <link rel="stylesheet" th:href="@{/css/admin/dashboard-sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/admin/service-menu-admin.css}">
+</head>
+<body>
+<div class="admin-layout">
+    <aside th:replace="~{admin/dashboard-sidebar :: sidebar('service')}"></aside>
+
+    <main class="dashboard-content service-admin-content">
+        <header class="dashboard-header">
+            <div class="header-title">
+                <p class="page-label">SERVICE MENU</p>
+                <h1>시술 메뉴 관리</h1>
+                <p class="page-description">
+                    예약에 사용되는 시술명·가격·소요시간과 노출 여부를 관리합니다.
+                </p>
+            </div>
+
+            <div class="service-header-actions">
+                <a th:href="@{/admin/dashboard}" class="site-button">대시보드로 이동 <span>↗</span></a>
+                <a th:href="@{/admin/services/new}" class="service-primary-link">+ 시술 메뉴 등록</a>
+            </div>
+        </header>
+
+        <div class="service-alert" th:if="${message != null}" th:text="${message}"></div>
+
+        <section class="service-summary-grid">
+            <article class="service-summary-card">
+                <span>전체 시술</span>
+                <strong th:text="${totalCount + '개'}">0개</strong>
+                <small>SERVICE_MENU 전체 데이터</small>
+            </article>
+            <article class="service-summary-card active-summary">
+                <span>사용 중</span>
+                <strong th:text="${activeCount + '개'}">0개</strong>
+                <small>예약 화면에 노출되는 메뉴</small>
+            </article>
+            <article class="service-summary-card inactive-summary">
+                <span>비활성</span>
+                <strong th:text="${(totalCount - activeCount) + '개'}">0개</strong>
+                <small>기존 예약은 유지되고 신규 선택만 차단</small>
+            </article>
+        </section>
+
+        <section class="service-admin-panel">
+            <div class="service-panel-heading">
+                <div>
+                    <p class="panel-label">SEARCH</p>
+                    <h2>시술 검색</h2>
+                </div>
+            </div>
+
+            <form method="get" th:action="@{/admin/services}" class="service-search-grid">
+                <label class="service-field">
+                    <span>카테고리</span>
+                    <select name="category">
+                        <option value="">전체</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category}"
+                                th:selected="${selectedCategory == category}"
+                                th:text="${category.name() == 'CUT' ? '커트' :
+                                          category.name() == 'PERM' ? '펌' :
+                                          category.name() == 'COLOR' ? '컬러' :
+                                          category.name() == 'CLINIC' ? '클리닉' : '기타'}">
+                        </option>
+                    </select>
+                </label>
+
+                <label class="service-field">
+                    <span>사용 여부</span>
+                    <select name="activeYn">
+                        <option value="">전체</option>
+                        <option value="Y" th:selected="${selectedActiveYn == 'Y'}">사용 중</option>
+                        <option value="N" th:selected="${selectedActiveYn == 'N'}">비활성</option>
+                    </select>
+                </label>
+
+                <label class="service-field keyword-field">
+                    <span>검색어</span>
+                    <input type="text" name="keyword" th:value="${keyword}"
+                           placeholder="시술명 또는 설명 검색">
+                </label>
+
+                <div class="service-search-actions">
+                    <button type="submit" class="service-primary-button">검색</button>
+                    <a th:href="@{/admin/services}" class="service-secondary-button">초기화</a>
+                </div>
+            </form>
+        </section>
+
+        <section class="service-admin-panel service-list-panel">
+            <div class="service-panel-heading list-heading">
+                <div>
+                    <p class="panel-label">SERVICE LIST</p>
+                    <h2>시술 메뉴 목록</h2>
+                    <p>삭제 대신 비활성화를 사용하여 기존 예약 데이터의 참조를 안전하게 유지합니다.</p>
+                </div>
+                <span class="result-count" th:text="${#lists.size(menus) + '개'}">0개</span>
+            </div>
+
+            <div class="service-table-wrap">
+                <table class="service-table">
+                    <thead>
+                    <tr>
+                        <th>순서</th>
+                        <th>카테고리</th>
+                        <th>시술명</th>
+                        <th>가격</th>
+                        <th>소요시간</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="menu : ${menus}">
+                        <td th:text="${menu.displayOrder}">0</td>
+                        <td>
+                            <span class="category-badge"
+                                  th:text="${menu.category.name() == 'CUT' ? '커트' :
+                                            menu.category.name() == 'PERM' ? '펌' :
+                                            menu.category.name() == 'COLOR' ? '컬러' :
+                                            menu.category.name() == 'CLINIC' ? '클리닉' : '기타'}">커트</span>
+                        </td>
+                        <td class="menu-name-cell">
+                            <strong th:text="${menu.name}">남성 커트</strong>
+                            <small th:text="${menu.description != null ? menu.description : '설명 없음'}">설명</small>
+                        </td>
+                        <td class="price-cell"
+                            th:text="${#numbers.formatInteger(menu.price, 1, 'COMMA') + '원'}">20,000원</td>
+                        <td th:text="${menu.durationMin + '분'}">30분</td>
+                        <td>
+                            <span class="active-badge"
+                                  th:classappend="${menu.activeYn == 'Y'} ? ' enabled' : ' disabled'"
+                                  th:text="${menu.activeYn == 'Y' ? '사용 중' : '비활성'}">사용 중</span>
+                        </td>
+                        <td>
+                            <div class="row-actions">
+                                <a th:href="@{/admin/services/{no}/edit(no=${menu.no})}"
+                                   class="table-edit-link">수정</a>
+                                <form method="post"
+                                      th:action="@{/admin/services/{no}/toggle-active(no=${menu.no})}">
+                                    <button type="submit"
+                                            class="table-toggle-button"
+                                            th:classappend="${menu.activeYn == 'Y'} ? ' deactivate' : ' activate'"
+                                            th:text="${menu.activeYn == 'Y' ? '비활성화' : '활성화'}">
+                                        비활성화
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(menus)}">
+                        <td colspan="7" class="empty-row">조건에 맞는 시술 메뉴가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
