@@ -37,7 +37,7 @@ public class SignupRequest {
     /* 비밀번호
 
        조건
-       - 8 ~ 100자
+       - 8 ~ 20자
        - 영문 대문자 1개 이상
        - 영문 소문자 1개 이상
        - 숫자 1개 이상
@@ -47,12 +47,12 @@ public class SignupRequest {
     @NotBlank(message = "비밀번호를 입력해주세요.")
     @Size(
             min = 8,
-            max = 100,
-            message = "비밀번호는 8자 이상 100자 이하로 입력해주세요."
+            max = 20,
+            message = "비밀번호는 8자 이상 20자 이하로 입력해주세요."
     )
     @Pattern(
-            regexp = "^(?!.*\\s)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9\\s]).+$",
-            message = "비밀번호는 영문 대문자, 소문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다."
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,20}$",
+            message = "비밀번호는 영문 대문자, 소문자, 숫자, 특수문자를 각각 1개 이상 포함해주세요."
     )
     private String password;
 
@@ -61,25 +61,42 @@ public class SignupRequest {
        실제 일치 여부는 Controller에서도 다시 확인한다. */
 
     @NotBlank(message = "비밀번호 확인을 입력해주세요.")
+    @Size(
+            min = 8,
+            max = 20,
+            message = "비밀번호 확인은 8자 이상 20자 이하로 입력해주세요."
+    )
     private String passwordCheck;
+
 
 
     /* 이름 */
 
     @NotBlank(message = "이름을 입력해주세요.")
     @Size(
-            max = 50,
-            message = "이름은 50자 이하로 입력해주세요."
+            min = 2,
+            max = 20,
+            message = "이름은 2자 이상 20자 이하로 입력해주세요."
+    )
+    @Pattern(
+            regexp = "^[가-힣a-zA-Z]+$",
+            message = "이름은 한글 또는 영문만 사용할 수 있습니다."
     )
     private String name;
 
 
     /* 닉네임
-       선택사항 */
+       필수사항 */
 
+    @NotBlank(message = "닉네임을 입력해주세요.")
     @Size(
-            max = 50,
-            message = "닉네임은 50자 이하로 입력해주세요."
+            min = 2,
+            max = 12,
+            message = "닉네임은 2자 이상 12자 이하로 입력해주세요."
+    )
+    @Pattern(
+            regexp = "^[가-힣a-zA-Z0-9]+$",
+            message = "닉네임은 한글, 영문, 숫자만 사용할 수 있습니다."
     )
     private String nickname;
 

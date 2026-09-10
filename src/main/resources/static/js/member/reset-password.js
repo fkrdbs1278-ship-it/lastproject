@@ -968,7 +968,8 @@ document.addEventListener(
             return {
 
                 length:
-                    value.length >= 8,
+                    value.length >= 8 &&
+                    value.length <= 20,
 
                 uppercase:
                     /[A-Z]/.test(value),
@@ -980,7 +981,7 @@ document.addEventListener(
                     /\d/.test(value),
 
                 special:
-                    /[^A-Za-z0-9]/.test(value),
+                    /[!@#$%^&*]/.test(value),
 
                 noSpace:
                     !/\s/.test(value)

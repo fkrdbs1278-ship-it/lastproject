@@ -37,18 +37,12 @@ public class ResetPasswordRequest {
     )
     @Size(
             min = 8,
-            max = 100,
-            message = "비밀번호는 8자 이상이어야 합니다."
+            max = 20,
+            message = "비밀번호는 8자 이상 20자 이하로 입력해주세요."
     )
     @Pattern(
-            regexp =
-                    "^(?=.*[A-Z])"
-                            + "(?=.*[a-z])"
-                            + "(?=.*\\d)"
-                            + "(?=.*[^A-Za-z0-9])"
-                            + "\\S{8,100}$",
-            message =
-                    "비밀번호는 영문 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다."
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,20}$",
+            message = "비밀번호는 영문 대문자, 소문자, 숫자, 특수문자를 각각 1개 이상 포함해주세요."
     )
     private String newPassword;
 
@@ -57,6 +51,11 @@ public class ResetPasswordRequest {
 
     @NotBlank(
             message = "새 비밀번호 확인을 입력해주세요."
+    )
+    @Size(
+            min = 8,
+            max = 20,
+            message = "비밀번호 확인은 8자 이상 20자 이하로 입력해주세요."
     )
     private String newPasswordCheck;
 }

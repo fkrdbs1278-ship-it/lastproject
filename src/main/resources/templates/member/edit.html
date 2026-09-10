@@ -355,35 +355,31 @@
                         성별
                     </label>
 
+                    <div class="gender-readonly">
 
-                    <div class="gender-group">
-
-                        <label class="gender-option">
-
-                            <input
-                                    type="radio"
-                                    th:field="*{gender}"
-                                    value="M"
-                            >
-
+                        <span
+                                th:if="*{gender == 'M'}"
+                        >
                             남성
+                        </span>
 
-                        </label>
-
-
-                        <label class="gender-option">
-
-                            <input
-                                    type="radio"
-                                    th:field="*{gender}"
-                                    value="F"
-                            >
-
+                        <span
+                                th:if="*{gender == 'F'}"
+                        >
                             여성
+                        </span>
 
-                        </label>
+                        <span
+                                th:if="*{gender == null}"
+                        >
+                            미설정
+                        </span>
 
                     </div>
+
+                    <p class="field-help">
+                        성별은 회원가입 후 변경할 수 없습니다.
+                    </p>
 
                 </div>
 

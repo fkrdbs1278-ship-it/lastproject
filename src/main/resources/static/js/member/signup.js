@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             length:
                 value.length >= 8 &&
-                value.length <= 100,
+                value.length <= 20,
 
             uppercase:
                 /[A-Z]/.test(value),
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 /\d/.test(value),
 
             special:
-                /[^A-Za-z0-9\s]/.test(value),
+                /[!@#$%^&*]/.test(value),
 
             noSpace:
                 value.length > 0 &&
