@@ -1,13 +1,14 @@
+# 테스트 프로필은 DB 접속 정보를 별도로 덮어쓰지 않습니다.
+# src/main/resources/application.yaml의 DB_URL / DB_USERNAME / DB_PASSWORD를 그대로 사용합니다.
+#
+# 이유:
+# - 팀원마다 Oracle 설치 위치/계정이 다를 수 있음
+# - 최종 공통 schema + dummy SQL은 동일하지만 접속 자격증명은 개인 환경값
+# - localhost:1521:XE / orcltest 같은 특정 개발자 설정에 테스트가 묶이는 문제 방지
+
 spring:
-  datasource:
-    driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@localhost:1521:XE
-    username: orcltest
-    password: 1234
-file:
-  upload-dir: build/test-uploads
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: validate
       naming:
@@ -15,4 +16,16 @@ file:
     properties:
       hibernate:
         format_sql: true
+        highlight_sql: false
     open-in-view: false
+
+file:
+  upload-dir: build/test-uploads
+
+sms:
+  provider: log
+
+logging:
+  level:
+    root: info
+    p6spy: warn

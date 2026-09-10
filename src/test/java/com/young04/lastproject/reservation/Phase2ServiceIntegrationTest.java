@@ -49,19 +49,102 @@ class Phase2ServiceIntegrationTest {
 
     Long memberNo;
     Long serviceMenuNo;
+    String serviceMenuName;
 
     @BeforeEach
     void setUp() {
-        memberNo = ((Number) entityManager.createNativeQuery(
-                "SELECT NO FROM MEMBER WHERE MEMBER_ID = 'phase2_test_member'"
-        ).getSingleResult()).longValue();
+        /*
+         * 최종 공용 DB의 dummy 데이터에 테스트 전용 행이 존재한다고
+         * 가정하지 않습니다.
+         *
+         * @Transactional 테스트이므로 아래 fixture는 각 테스트가 끝난 뒤
+         * 자동 rollback되어 공용/발표 DB를 오염시키지 않습니다.
+         */
+        long suffix = Math.abs(System.nanoTime());
+        String memberId =
+                "phase2_runtime_" + suffix;
+        String phone =
+                String.format(
+                        "0109%07d",
+                        suffix % 10_000_000
+                );
 
-        serviceMenuNo = ((Number) entityManager.createNativeQuery(
-                "SELECT NO FROM SERVICE_MENU WHERE NAME = 'PHASE2_TEST_CUT_30'"
-        ).getSingleResult()).longValue();
+        serviceMenuName =
+                "PHASE2_RUNTIME_CUT_30_" + suffix;
 
-        System.out.println("테스트 MEMBER.NO = " + memberNo);
-        System.out.println("테스트 SERVICE_MENU.NO = " + serviceMenuNo);
+        entityManager.createNativeQuery(
+                """
+                INSERT INTO MEMBER
+                    (MEMBER_ID, PASSWORD, NAME, PHONE, ROLE, STATUS)
+                VALUES
+                    (:memberId, :password, :name, :phone, 'USER', 'ACTIVE')
+                """
+        )
+                .setParameter("memberId", memberId)
+                .setParameter("password", "{test}not-used")
+                .setParameter("name", "Phase2 테스트 회원")
+                .setParameter("phone", phone)
+                .executeUpdate();
+
+        entityManager.createNativeQuery(
+                """
+                INSERT INTO SERVICE_MENU
+                    (
+                        CATEGORY,
+                        NAME,
+                        DESCRIPTION,
+                        PRICE,
+                        DURATION_MIN,
+                        ACTIVE_YN,
+                        DISPLAY_ORDER
+                    )
+                VALUES
+                    (
+                        'CUT',
+                        :name,
+                        'Phase2 예약 통합 테스트 런타임 메뉴',
+                        20000,
+                        30,
+                        'Y',
+                        9999
+                    )
+                """
+        )
+                .setParameter("name", serviceMenuName)
+                .executeUpdate();
+
+        entityManager.flush();
+
+        memberNo =
+                ((Number) entityManager.createNativeQuery(
+                        """
+                        SELECT NO
+                        FROM MEMBER
+                        WHERE MEMBER_ID = :memberId
+                        """
+                )
+                        .setParameter("memberId", memberId)
+                        .getSingleResult())
+                        .longValue();
+
+        serviceMenuNo =
+                ((Number) entityManager.createNativeQuery(
+                        """
+                        SELECT NO
+                        FROM SERVICE_MENU
+                        WHERE NAME = :name
+                        """
+                )
+                        .setParameter("name", serviceMenuName)
+                        .getSingleResult())
+                        .longValue();
+
+        System.out.println(
+                "테스트 MEMBER.NO = " + memberNo
+        );
+        System.out.println(
+                "테스트 SERVICE_MENU.NO = " + serviceMenuNo
+        );
     }
 
     @Test
@@ -107,7 +190,7 @@ class Phase2ServiceIntegrationTest {
                 Reservation.createMemberReservation(
                         memberNo,
                         serviceMenuNo,
-                        "PHASE2_TEST_CUT_30",
+                        serviceMenuName,
                         30,
                         MONDAY.atTime(14, 0),
                         MONDAY.atTime(14, 30),
@@ -184,7 +267,7 @@ class Phase2ServiceIntegrationTest {
                 Reservation.createMemberReservation(
                         memberNo,
                         serviceMenuNo,
-                        "PHASE2_TEST_CUT_30",
+                        serviceMenuName,
                         30,
                         pastStart,
                         pastStart.plusMinutes(30),
@@ -239,7 +322,7 @@ class Phase2ServiceIntegrationTest {
                 Reservation.createMemberReservation(
                         memberNo,
                         serviceMenuNo,
-                        "PHASE2_TEST_CUT_30",
+                        serviceMenuName,
                         30,
                         pastStart,
                         pastStart.plusMinutes(30),
