@@ -475,13 +475,11 @@ public class MemberService {
 
                 request
                         .getPhone()
-                        .trim(),
+                        .trim()
 
-                request.getBirthDate(),
 
-                normalizeNullable(
-                        request.getGender()
-                )
+
+
         );
 
         /* 전화번호 변경 인증 사용 완료 */

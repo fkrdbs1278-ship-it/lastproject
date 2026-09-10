@@ -156,7 +156,8 @@
                                 th:field="*{password}"
                                 placeholder="비밀번호를 입력해주세요."
                                 autocomplete="new-password"
-                                maxlength="100"
+                                minlength="8"
+                                maxlength="20"
                         >
 
                         <button
@@ -176,7 +177,7 @@
                     <div class="password-rules">
 
                         <p id="ruleLength" class="password-rule">
-                            ✓ 8자 이상
+                            ✓ 8자 이상 20자 이하
                         </p>
 
                         <p id="ruleUppercase" class="password-rule">
@@ -229,7 +230,8 @@
                                 th:field="*{passwordCheck}"
                                 placeholder="비밀번호를 다시 입력해주세요."
                                 autocomplete="new-password"
-                                maxlength="100"
+                                minlength="8"
+                                maxlength="20"
                         >
 
                         <button

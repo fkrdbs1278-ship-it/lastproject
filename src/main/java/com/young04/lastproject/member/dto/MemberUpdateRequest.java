@@ -13,18 +13,30 @@ import java.time.LocalDate;
 public class MemberUpdateRequest {
 
     @NotBlank(message = "이름을 입력해주세요.")
-    @Size(max = 50, message = "이름은 50자 이하로 입력해주세요.")
+    @Size(min = 2, max = 20, message = "이름은 2자 이상 20자 이하로 입력해주세요.")
+    @Pattern(
+            regexp = "^[가-힣a-zA-Z]+$",
+            message = "이름은 한글 또는 영문만 사용할 수 있습니다."
+    )
     private String name;
 
-    @Size(max = 50, message = "닉네임은 50자 이하로 입력해주세요.")
+    @NotBlank(message = "닉네임을 입력해주세요.")
+    @Size(min = 2, max = 12, message = "닉네임은 2자 이상 12자 이하로 입력해주세요.")
+    @Pattern(
+            regexp = "^[가-힣a-zA-Z0-9]+$",
+            message = "닉네임은 한글, 영문, 숫자만 사용할 수 있습니다."
+    )
     private String nickname;
 
     @Email(message = "올바른 이메일 형식이 아닙니다.")
     @Pattern(
-            regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
+            regexp = "^$|^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
             message = "이메일 도메인을 올바르게 입력해주세요."
     )
-    @Size(max = 100, message = "이메일은 100자 이하로 입력해주세요.")
+    @Size(
+            max = 100,
+            message = "이메일은 100자 이하로 입력해주세요."
+    )
     private String email;
 
     @NotBlank(
