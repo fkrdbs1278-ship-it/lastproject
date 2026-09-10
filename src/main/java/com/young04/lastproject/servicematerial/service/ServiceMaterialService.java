@@ -46,6 +46,7 @@ public class ServiceMaterialService {
                     serviceMaterial.changeUsageQuantity(
                             usageQuantity
                     );
+
                     return serviceMaterial;
                 })
                 .orElseGet(() ->
@@ -57,6 +58,45 @@ public class ServiceMaterialService {
                                 )
                         )
                 );
+    }
+
+
+    // 기존에 설정된 기본 자재를 다른 제품으로 교체
+    @Transactional
+    public ServiceMaterial changeMaterial(
+            Long serviceMaterialNo,
+            Long newMaterialNo
+    ) {
+
+        ServiceMaterial serviceMaterial =
+                serviceMaterialRepository
+                        .findById(serviceMaterialNo)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "시술 자재 설정을 찾을 수 없습니다."
+                                )
+                        );
+
+        // 같은 시술에 새 자재가 이미 연결되어 있으면 중복 등록 방지
+        boolean duplicate =
+                serviceMaterialRepository
+                        .existsByServiceMenuNoAndMaterialNo(
+                                serviceMaterial.getServiceMenuNo(),
+                                newMaterialNo
+                        );
+
+        if (duplicate
+                && !serviceMaterial.getMaterialNo()
+                .equals(newMaterialNo)) {
+
+            throw new IllegalStateException(
+                    "해당 자재는 이미 이 시술에 등록되어 있습니다."
+            );
+        }
+
+        serviceMaterial.changeMaterial(newMaterialNo);
+
+        return serviceMaterial;
     }
 
 
@@ -88,6 +128,7 @@ public class ServiceMaterialService {
     public void deleteAllByServiceMenuNo(
             Long serviceMenuNo
     ) {
+
         serviceMaterialRepository
                 .deleteByServiceMenuNo(serviceMenuNo);
     }

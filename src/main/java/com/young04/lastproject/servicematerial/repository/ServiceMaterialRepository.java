@@ -11,14 +11,24 @@ public interface ServiceMaterialRepository
         extends JpaRepository<ServiceMaterial, Long> {
 
     // 특정 시술에 연결된 모든 자재 조회
-    List<ServiceMaterial> findByServiceMenuNo(Long serviceMenuNo);
+    List<ServiceMaterial> findByServiceMenuNo(
+            Long serviceMenuNo
+    );
 
-    // 특정 시술에 특정 자재가 이미 연결되어 있는지 조회
+    // 특정 시술에 특정 자재가 이미 연결되어 있는지 확인
+    boolean existsByServiceMenuNoAndMaterialNo(
+            Long serviceMenuNo,
+            Long materialNo
+    );
+
+    // 특정 시술과 자재의 연결 정보 조회
     Optional<ServiceMaterial> findByServiceMenuNoAndMaterialNo(
             Long serviceMenuNo,
             Long materialNo
     );
 
     // 특정 시술에 연결된 자재 전체 삭제
-    void deleteByServiceMenuNo(Long serviceMenuNo);
+    void deleteByServiceMenuNo(
+            Long serviceMenuNo
+    );
 }

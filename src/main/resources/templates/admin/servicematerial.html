@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>시술 자재 설정</title>
+
+    <!-- 관리자 공통 사이드바 CSS -->
+    <link rel="stylesheet"
+          th:href="@{/css/admin/dashboard-sidebar.css}">
+
+    <!-- 시술 자재 설정 전용 CSS -->
+    <link rel="stylesheet"
+          th:href="@{/css/admin/servicematerial.css}">
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- 관리자 공통 사이드바 -->
+    <aside th:replace="~{admin/dashboard-sidebar
+        :: sidebar('material')}">
+    </aside>
+
+
+    <main class="service-material-page">
+
+        <!-- 페이지 상단 -->
+        <section class="service-material-header">
+
+            <div>
+                <p class="page-label">SERVICE MATERIAL</p>
+
+                <h1>시술별 자재 설정</h1>
+
+                <p>
+                    각 시술에 기본으로 사용할 자재와
+                    1회 기준 사용량을 설정합니다.
+                </p>
+            </div>
+
+            <a th:href="@{/admin/material}"
+               class="back-button">
+                자재 관리
+            </a>
+
+        </section>
+
+
+        <!-- 처리 완료 메시지 -->
+        <div class="message"
+             th:if="${message != null}"
+             th:text="${message}">
+        </div>
+
+
+        <!-- 시술 선택 -->
+        <section class="setting-card">
+
+            <div class="card-title">
+                <h2>시술 선택</h2>
+
+                <p>
+                    자재를 설정할 시술을 먼저 선택해 주세요.
+                </p>
+            </div>
+
+            <form th:action="@{/admin/servicematerial}"
+                  method="get"
+                  class="service-select-form">
+
+                <select name="serviceMenuNo">
+
+                    <option value="">
+                        시술을 선택해 주세요.
+                    </option>
+
+                    <option th:each="menu : ${serviceMenus}"
+                            th:value="${menu.no}"
+                            th:selected="${selectedServiceMenuNo != null
+                                and menu.no == selectedServiceMenuNo}"
+                            th:text="${menu.categoryName
+                                + ' - '
+                                + menu.name}">
+                        커트 - 남성 커트
+                    </option>
+
+                </select>
+
+                <button type="submit">
+                    선택
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- 시술을 선택한 경우에만 표시 -->
+        <th:block th:if="${selectedServiceMenuNo != null}">
+
+
+            <!-- 기본 자재 등록 -->
+            <section class="setting-card">
+
+                <div class="card-title">
+                    <h2>기본 자재 등록</h2>
+
+                    <p>
+                        해당 시술 1회에 기본으로 사용할
+                        자재와 사용량을 등록합니다.
+                    </p>
+                </div>
+
+
+                <form th:action="@{/admin/servicematerial/save}"
+                      th:object="${serviceMaterialRequest}"
+                      method="post"
+                      class="material-setting-form">
+
+                    <!-- 현재 선택한 시술 번호 -->
+                    <input type="hidden"
+                           th:field="*{serviceMenuNo}">
+
+
+                    <div class="form-group">
+
+                        <label for="materialNo">
+                            사용할 자재
+                        </label>
+
+                        <select id="materialNo"
+                                th:field="*{materialNo}">
+
+                            <option value="">
+                                자재를 선택해 주세요.
+                            </option>
+
+                            <option th:each="material : ${materials}"
+                                    th:value="${material.materialNo}"
+                                    th:text="${material.materialName}">
+                                샴푸
+                            </option>
+
+                        </select>
+
+                        <p class="field-error"
+                           th:if="${#fields.hasErrors('materialNo')}"
+                           th:errors="*{materialNo}">
+                        </p>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="usageQuantity">
+                            1회 사용량
+                        </label>
+
+                        <input type="number"
+                               id="usageQuantity"
+                               th:field="*{usageQuantity}"
+                               min="0.01"
+                               step="0.01"
+                               placeholder="예: 10">
+
+                        <p class="field-error"
+                           th:if="${#fields.hasErrors('usageQuantity')}"
+                           th:errors="*{usageQuantity}">
+                        </p>
+
+                    </div>
+
+
+                    <!-- Service에서 발생한 오류 -->
+                    <div class="field-error global-error"
+                         th:if="${#fields.hasGlobalErrors()}">
+
+                        <p th:each="error : ${#fields.globalErrors()}"
+                           th:text="${error}">
+                        </p>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="primary-button">
+                        자재 등록
+                    </button>
+
+                </form>
+
+            </section>
+
+
+            <!-- 현재 연결된 자재 -->
+            <section class="setting-card">
+
+                <div class="card-title">
+
+                    <h2>현재 기본 자재</h2>
+
+                    <p>
+                        등록된 기본 제품을 변경하거나
+                        사용량을 수정할 수 있습니다.
+                    </p>
+
+                </div>
+
+
+                <!-- 등록된 자재 없음 -->
+                <div class="empty-box"
+                     th:if="${#lists.isEmpty(serviceMaterials)}">
+
+                    아직 이 시술에 등록된 자재가 없습니다.
+
+                </div>
+
+
+                <!-- 자재 목록 -->
+                <div class="material-table-wrap"
+                     th:unless="${#lists.isEmpty(serviceMaterials)}">
+
+                    <table class="material-table">
+
+                        <thead>
+                        <tr>
+                            <th>기본 자재</th>
+                            <th>1회 사용량</th>
+                            <th>사용량 수정</th>
+                            <th>제품 교체</th>
+                            <th>삭제</th>
+                        </tr>
+                        </thead>
+
+
+                        <tbody>
+
+                        <tr th:each="setting : ${serviceMaterials}">
+
+                            <!-- 현재 기본 자재 -->
+                            <td>
+
+                                <span th:each="material : ${materials}"
+                                      th:if="${material.materialNo
+                                          == setting.materialNo}"
+                                      th:text="${material.materialName}">
+                                    자재명
+                                </span>
+
+                            </td>
+
+
+                            <!-- 현재 사용량 -->
+                            <td>
+                                <strong th:text="${setting.usageQuantity}">
+                                    10
+                                </strong>
+                            </td>
+
+
+                            <!-- 사용량 수정 -->
+                            <td>
+
+                                <form th:action="@{/admin/servicematerial/save}"
+                                      method="post"
+                                      class="inline-form">
+
+                                    <input type="hidden"
+                                           name="serviceMenuNo"
+                                           th:value="${setting.serviceMenuNo}">
+
+                                    <input type="hidden"
+                                           name="materialNo"
+                                           th:value="${setting.materialNo}">
+
+                                    <input type="number"
+                                           name="usageQuantity"
+                                           th:value="${setting.usageQuantity}"
+                                           min="0.01"
+                                           step="0.01"
+                                           class="quantity-input">
+
+                                    <button type="submit"
+                                            class="small-button">
+                                        수정
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+
+                            <!-- 기본 제품 교체 -->
+                            <td>
+
+                                <form th:action="@{/admin/servicematerial/change}"
+                                      method="post"
+                                      class="inline-form">
+
+                                    <input type="hidden"
+                                           name="serviceMaterialNo"
+                                           th:value="${setting.serviceMaterialNo}">
+
+                                    <input type="hidden"
+                                           name="serviceMenuNo"
+                                           th:value="${setting.serviceMenuNo}">
+
+
+                                    <select name="newMaterialNo"
+                                            class="material-change-select">
+
+                                        <option th:each="material : ${materials}"
+                                                th:value="${material.materialNo}"
+                                                th:selected="${material.materialNo
+                                                    == setting.materialNo}"
+                                                th:text="${material.materialName}">
+                                            자재
+                                        </option>
+
+                                    </select>
+
+
+                                    <button type="submit"
+                                            class="small-button">
+                                        변경
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+
+                            <!-- 연결 삭제 -->
+                            <td>
+
+                                <form th:action="@{/admin/servicematerial/delete}"
+                                      method="post">
+
+                                    <input type="hidden"
+                                           name="serviceMenuNo"
+                                           th:value="${setting.serviceMenuNo}">
+
+                                    <input type="hidden"
+                                           name="materialNo"
+                                           th:value="${setting.materialNo}">
+
+                                    <button type="submit"
+                                            class="delete-button">
+                                        삭제
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </th:block>
+
+
+        <!-- 시술 미선택 -->
+        <section class="setting-card empty-selection"
+                 th:if="${selectedServiceMenuNo == null}">
+
+            <p>
+                위에서 시술을 선택하면
+                기본 자재 설정 화면이 표시됩니다.
+            </p>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>
