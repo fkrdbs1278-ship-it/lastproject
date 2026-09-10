@@ -1,0 +1,434 @@
+/* =========================================================
+   시술별 자재 설정 페이지
+========================================================= */
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+}
+
+.admin-layout {
+    min-height: 100vh;
+    background: #f7f8fa;
+}
+
+/* 고정 사이드바 너비만큼 오른쪽으로 이동 */
+.service-material-page {
+    width: calc(100% - 250px);
+    min-width: 0;
+    min-height: 100vh;
+
+    margin-left: 250px;
+    padding: 36px 42px 60px;
+
+    box-sizing: border-box;
+    background: #f7f8fa;
+}
+
+
+/* =========================================================
+   페이지 상단
+========================================================= */
+
+.service-material-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.page-label {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    color: #8a93a0;
+}
+
+.service-material-header h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    color: #222831;
+}
+
+.service-material-header p:not(.page-label) {
+    margin: 10px 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #6f7782;
+}
+
+
+/* =========================================================
+   상단 버튼
+========================================================= */
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    height: 42px;
+    padding: 0 18px;
+    border: 1px solid #d8dde4;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #424b57;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.back-button:hover {
+    background: #f1f3f5;
+}
+
+
+/* =========================================================
+   처리 메시지
+========================================================= */
+
+.message {
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    border: 1px solid #cfe5d7;
+    border-radius: 9px;
+    background: #f2faf5;
+    color: #34704a;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   공통 카드
+========================================================= */
+
+.setting-card {
+    margin-bottom: 22px;
+    padding: 24px;
+    border: 1px solid #e2e6eb;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 3px 12px rgba(20, 30, 40, 0.04);
+}
+
+.card-title {
+    margin-bottom: 20px;
+}
+
+.card-title h2 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 700;
+    color: #2b3138;
+}
+
+.card-title p {
+    margin: 7px 0 0;
+    font-size: 13px;
+    color: #7d8590;
+}
+
+
+/* =========================================================
+   시술 선택
+========================================================= */
+
+.service-select-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.service-select-form select {
+    width: 100%;
+    max-width: 480px;
+    height: 44px;
+    padding: 0 13px;
+    border: 1px solid #d7dce2;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #333b45;
+    font-size: 14px;
+    outline: none;
+}
+
+.service-select-form select:focus {
+    border-color: #727f8f;
+}
+
+.service-select-form button {
+    height: 44px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 8px;
+    background: #505b68;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.service-select-form button:hover {
+    background: #414b57;
+}
+
+
+/* =========================================================
+   자재 등록 폼
+========================================================= */
+
+.material-setting-form {
+    display: grid;
+    grid-template-columns: minmax(250px, 1.5fr) minmax(160px, 0.7fr) auto;
+    align-items: end;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b545f;
+}
+
+.form-group select,
+.form-group input {
+    width: 100%;
+    height: 42px;
+    box-sizing: border-box;
+    padding: 0 12px;
+    border: 1px solid #d8dde3;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #333b45;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    border-color: #737f8c;
+}
+
+.primary-button {
+    height: 42px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 8px;
+    background: #3f4b58;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primary-button:hover {
+    background: #313b46;
+}
+
+
+/* =========================================================
+   오류 메시지
+========================================================= */
+
+.field-error {
+    margin: 0;
+    color: #c65353;
+    font-size: 12px;
+}
+
+.global-error {
+    grid-column: 1 / -1;
+    padding: 10px 13px;
+    border-radius: 7px;
+    background: #fff2f2;
+}
+
+.global-error p {
+    margin: 0;
+}
+
+
+/* =========================================================
+   자재 테이블
+========================================================= */
+
+.material-table-wrap {
+    overflow-x: auto;
+}
+
+.material-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+}
+
+.material-table th {
+    padding: 13px 14px;
+    border-bottom: 1px solid #dfe4e9;
+    background: #f8f9fb;
+    color: #626b77;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.material-table td {
+    padding: 15px 14px;
+    border-bottom: 1px solid #edf0f3;
+    color: #3e4650;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.material-table tbody tr:hover {
+    background: #fafbfc;
+}
+
+.material-table strong {
+    color: #252b32;
+}
+
+
+/* =========================================================
+   테이블 내부 폼
+========================================================= */
+
+.inline-form {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.quantity-input {
+    width: 90px;
+    height: 36px;
+    box-sizing: border-box;
+    padding: 0 9px;
+    border: 1px solid #d6dbe1;
+    border-radius: 7px;
+    outline: none;
+}
+
+.quantity-input:focus {
+    border-color: #7d8997;
+}
+
+.material-change-select {
+    width: 170px;
+    height: 36px;
+    padding: 0 8px;
+    border: 1px solid #d6dbe1;
+    border-radius: 7px;
+    background: #ffffff;
+    outline: none;
+}
+
+.small-button {
+    height: 36px;
+    padding: 0 13px;
+    border: 1px solid #cfd5dc;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #48515c;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.small-button:hover {
+    background: #f0f2f4;
+}
+
+
+/* =========================================================
+   삭제 버튼
+========================================================= */
+
+.delete-button {
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid #e2bcbc;
+    border-radius: 7px;
+    background: #fffafa;
+    color: #b55353;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background: #fff0f0;
+}
+
+
+/* =========================================================
+   빈 화면
+========================================================= */
+
+.empty-box,
+.empty-selection {
+    padding: 34px 20px;
+    text-align: center;
+    color: #8b929b;
+    font-size: 14px;
+}
+
+.empty-selection p {
+    margin: 0;
+}
+
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .service-material-page {
+        padding: 28px;
+    }
+
+    .material-setting-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .primary-button {
+        width: 150px;
+    }
+}
+
+
+@media (max-width: 760px) {
+
+    .service-material-header {
+        flex-direction: column;
+    }
+
+    .service-select-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .service-select-form select {
+        max-width: none;
+    }
+
+    .material-setting-form {
+        grid-template-columns: 1fr;
+    }
+
+    .primary-button {
+        width: 100%;
+    }
+}
