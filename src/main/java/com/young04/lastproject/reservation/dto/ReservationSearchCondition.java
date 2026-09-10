@@ -16,6 +16,7 @@ public class ReservationSearchCondition {
     private CustomerType customerType;
     private ReservationSource reservationSource;
 
+    private Long reservationNo;
     private Long memberNo;
     private Long serviceMenuNo;
 

@@ -231,23 +231,30 @@
                            th:value="${menu.serviceMenuNo}"
                            class="menu-radio">
 
-                    <span class="menu-content">
-                        <span class="menu-category"
-                              th:text="${menu.category}">
-                            CUT
+                    <span class="menu-content service-detail-content">
+                        <span class="service-detail-topline">
+                            <span class="menu-category"
+                                  th:text="${menu.category}">
+                                CUT
+                            </span>
+                            <span class="service-detail-check" aria-hidden="true">✓</span>
                         </span>
 
-                        <strong th:text="${menu.name}">
+                        <strong class="service-detail-name"
+                                th:text="${menu.name}">
                             커트
                         </strong>
 
-                        <span>
-                            <span th:text="${#numbers.formatInteger(menu.price, 1, 'COMMA')}">
-                                20000
-                            </span>원 ·
-                            <span th:text="${menu.durationMin}">
-                                30
-                            </span>분
+                        <span class="service-detail-meta">
+                            <span class="service-detail-price">
+                                <span th:text="${#numbers.formatInteger(menu.price, 1, 'COMMA')}">
+                                    20000
+                                </span>원
+                            </span>
+                            <span class="service-detail-divider">·</span>
+                            <span class="service-detail-duration">
+                                약 <span th:text="${menu.durationMin}">30</span>분
+                            </span>
                         </span>
                     </span>
                 </label>

@@ -143,6 +143,51 @@
         </div>
     </div>
 
+    <div id="memberCancelOverlay"
+         class="detail-overlay hidden">
+        <div class="detail-modal cancel-reason-modal">
+            <div class="section-title-row">
+                <div>
+                    <p class="cancel-modal-eyebrow">CANCEL RESERVATION</p>
+                    <h2>예약 취소</h2>
+                </div>
+                <button id="closeMemberCancel"
+                        type="button"
+                        class="secondary-button">
+                    닫기
+                </button>
+            </div>
+
+            <p class="cancel-modal-description">
+                예약 취소 사유를 입력해주세요. 취소 후에는 예약 상태가 취소로 변경됩니다.
+            </p>
+
+            <input type="hidden" id="cancelReservationNo">
+
+            <label class="field">
+                <span>취소 사유</span>
+                <textarea id="cancelReason"
+                          rows="4"
+                          maxlength="200"
+                          placeholder="예: 일정 변경으로 예약을 취소합니다."></textarea>
+                <span class="counter"><span id="cancelReasonCount">0</span>/200</span>
+            </label>
+
+            <div class="modal-actions">
+                <button id="confirmMemberCancel"
+                        type="button"
+                        class="danger-button">
+                    예약 취소
+                </button>
+                <button id="cancelMemberCancel"
+                        type="button"
+                        class="secondary-button">
+                    돌아가기
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="messageBox"
          class="message-box hidden"
          role="alert"></div>
