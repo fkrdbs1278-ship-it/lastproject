@@ -24,7 +24,7 @@
         <div>
             <p class="eyebrow">RESERVATION</p>
             <h1>예약하기</h1>
-            <p>원하는 시술과 스타일을 선택하고 편리하게 예약해보세요.</p>
+            <p>시술 카테고리와 상세 메뉴를 선택하고 편리하게 예약해보세요.</p>
         </div>
 
         <div class="reservation-page-actions">
@@ -70,36 +70,140 @@
 
         <div class="panel">
             <div class="section-title-row">
-                <h2>1. 시술 선택</h2>
-                <button type="button" id="clearServiceMenu" class="secondary-button">선택 취소</button>
+                <h2>1. 시술 카테고리 선택</h2>
+                <button type="button"
+                        id="clearServiceCategory"
+                        class="secondary-button">
+                    선택 취소
+                </button>
             </div>
 
-            <div class="menu-list">
-                <label class="menu-card" th:each="menu : ${serviceMenus}">
+            <p class="field-help">
+                먼저 원하는 시술 종류를 선택해주세요.
+            </p>
+
+            <div class="service-category-list"
+                 id="serviceCategoryList">
+
+                <label class="service-category-card">
                     <input type="radio"
-                           name="serviceMenu"
-                           th:value="${menu.serviceMenuNo}"
-                           class="menu-radio">
-                    <span class="menu-content">
-                        <span class="menu-category" th:text="${menu.category}">CUT</span>
-                        <strong th:text="${menu.name}">커트</strong>
-                        <span>
-                            <span th:text="${#numbers.formatInteger(menu.price, 1, 'COMMA')}">20000</span>원 ·
-                            <span th:text="${menu.durationMin}">30</span>분
-                        </span>
+                           name="serviceCategory"
+                           value="CUT"
+                           class="service-category-radio">
+                    <span class="service-category-content">
+                        <strong>커트</strong>
+                        <small>CUT</small>
                     </span>
                 </label>
+
+                <label class="service-category-card">
+                    <input type="radio"
+                           name="serviceCategory"
+                           value="PERM"
+                           class="service-category-radio">
+                    <span class="service-category-content">
+                        <strong>펌</strong>
+                        <small>PERM</small>
+                    </span>
+                </label>
+
+                <label class="service-category-card">
+                    <input type="radio"
+                           name="serviceCategory"
+                           value="COLOR"
+                           class="service-category-radio">
+                    <span class="service-category-content">
+                        <strong>컬러</strong>
+                        <small>COLOR</small>
+                    </span>
+                </label>
+
+                <label class="service-category-card">
+                    <input type="radio"
+                           name="serviceCategory"
+                           value="CLINIC"
+                           class="service-category-radio">
+                    <span class="service-category-content">
+                        <strong>클리닉</strong>
+                        <small>CLINIC</small>
+                    </span>
+                </label>
+
+                <label class="service-category-card">
+                    <input type="radio"
+                           name="serviceCategory"
+                           value="ETC"
+                           class="service-category-radio">
+                    <span class="service-category-content">
+                        <strong>기타</strong>
+                        <small>ETC</small>
+                    </span>
+                </label>
+
             </div>
         </div>
 
         <div class="panel">
             <div class="section-title-row">
-                <h2>2. 예시 헤어스타일</h2>
-                <button type="button" id="clearHairStyle" class="secondary-button">선택 안 함</button>
+                <div>
+                    <h2>2. 시술 메뉴 선택</h2>
+                    <p class="field-help service-menu-help">
+                        선택한 카테고리의 상세 시술 메뉴입니다.
+                    </p>
+                </div>
+
+                <div class="section-title-actions">
+                    <a class="secondary-button"
+                       th:href="@{/hairstyles}">
+                        헤어스타일 보기
+                    </a>
+
+                    <button type="button"
+                            id="clearServiceMenu"
+                            class="secondary-button">
+                        메뉴 선택 취소
+                    </button>
+                </div>
             </div>
-            <p class="field-help">선택한 시술과 연결된 미용실 예시 스타일입니다. 선택하지 않아도 예약할 수 있습니다.</p>
-            <div id="hairStyleList" class="hair-style-list">
-                <div class="empty-box">먼저 시술 메뉴를 선택해주세요.</div>
+
+            <div id="serviceMenuEmpty"
+                 class="empty-box">
+                먼저 시술 카테고리를 선택해주세요.
+            </div>
+
+            <div class="menu-list service-detail-menu-list"
+                 id="serviceMenuList">
+
+                <label class="menu-card service-detail-card hidden"
+                       th:each="menu : ${serviceMenus}"
+                       th:attr="data-category=${menu.category}">
+
+                    <input type="radio"
+                           name="serviceMenu"
+                           th:value="${menu.serviceMenuNo}"
+                           class="menu-radio">
+
+                    <span class="menu-content">
+                        <span class="menu-category"
+                              th:text="${menu.category}">
+                            CUT
+                        </span>
+
+                        <strong th:text="${menu.name}">
+                            커트
+                        </strong>
+
+                        <span>
+                            <span th:text="${#numbers.formatInteger(menu.price, 1, 'COMMA')}">
+                                20000
+                            </span>원 ·
+                            <span th:text="${menu.durationMin}">
+                                30
+                            </span>분
+                        </span>
+                    </span>
+                </label>
+
             </div>
         </div>
 
@@ -165,7 +269,10 @@
         <div class="panel">
             <h2>5. 내 참고 이미지</h2>
             <p class="field-help">
-                미용실 예시 스타일과 별도로 본인이 원하는 참고 사진이 있다면 추가할 수 있습니다.
+                원하는 헤어스타일 이미지는
+                <a th:href="@{/hairstyles}" class="inline-text-link">헤어스타일</a>
+                메뉴에서 확인할 수 있습니다.
+                별도의 참고 사진이 있다면 예약에 추가해주세요.
             </p>
             <label class="file-drop">
                 <input type="file"

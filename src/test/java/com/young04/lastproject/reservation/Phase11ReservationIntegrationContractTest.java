@@ -21,7 +21,9 @@ class Phase11ReservationIntegrationContractTest {
         assertThat(html)
                 .contains("th:href=\"@{/reservation}\"")
                 .contains("예약")
-                .doesNotContain("th:href=\"@{/services}\"");
+                .doesNotContain(
+                        "th:href=\"@{/services}\""
+                );
     }
 
     @Test
@@ -34,13 +36,17 @@ class Phase11ReservationIntegrationContractTest {
                 );
 
         assertThat(html)
-                .contains("th:href=\"@{/my-reservations}\"")
+                .contains(
+                        "th:href=\"@{/my-reservations}\""
+                )
                 .contains("예약 내역")
-                .contains("예약 상태, 일정, 변경 및 취소 내역");
+                .contains(
+                        "예약 상태, 일정, 변경 및 취소 내역"
+                );
     }
 
     @Test
-    void 관리자_대시보드는_예약운영기능을_연결한다()
+    void 관리자_대시보드는_실제_예약현황과_주간캘린더를_연결한다()
             throws Exception {
 
         String html =
@@ -49,13 +55,33 @@ class Phase11ReservationIntegrationContractTest {
                 );
 
         assertThat(html)
-                .contains("reservationSummary.todayCount")
-                .contains("reservationSummary.weekReservations")
-                .contains("@{/admin/reservations}")
-                .contains("tool='phone'")
-                .contains("tool='business-hours'")
-                .contains("tool='holidays'")
-                .contains("tool='availability-blocks'");
+                .contains(
+                        "reservationSummary.todayCount"
+                )
+                .contains(
+                        "reservationSummary.todayRemainingCount"
+                )
+                .contains(
+                        "reservationSummary.weekCount"
+                )
+                .contains(
+                        "reservationSummary.calendarDays"
+                )
+                .contains(
+                        "reservationSummary.calendarBlocks"
+                )
+                .contains(
+                        "reservationSummary.calendarStartHour"
+                )
+                .contains(
+                        "reservationSummary.calendarEndHour"
+                )
+                .contains(
+                        "@{/admin/reservations}"
+                )
+                .contains(
+                        "reservation-schedule-block"
+                );
     }
 
     @Test
@@ -72,7 +98,9 @@ class Phase11ReservationIntegrationContractTest {
                 .contains("business-hours")
                 .contains("availability-blocks")
                 .contains("reservationNo")
-                .contains("openDetail(reservationNo)");
+                .contains(
+                        "openDetail(reservationNo)"
+                );
     }
 
     private String resource(String path)
