@@ -18,6 +18,9 @@ public interface TreatmentHistoryRepository
     // 예약 번호로 시술 이력 조회
     Optional<TreatmentHistory> findByReservationNo(Long reservationNo);
 
+    // 시술 메뉴를 참조하는 이력이 존재하는지 확인
+    boolean existsByServiceMenuNo(Long serviceMenuNo);
+
     // 특정 고객의 시술 이력 개수
     long countByCustomer_CustomerId(Long customerId);
 }

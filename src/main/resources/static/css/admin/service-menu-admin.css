@@ -268,7 +268,8 @@
 .row-actions form { margin: 0; }
 
 .table-edit-link,
-.table-toggle-button {
+.table-toggle-button,
+.table-delete-button {
     min-height: 34px;
     padding: 0 11px;
     border-radius: 8px;
@@ -286,9 +287,12 @@
     color: #5f6570;
 }
 
-.table-toggle-button { border: 1px solid transparent; }
+.table-toggle-button,
+.table-delete-button { border: 1px solid transparent; }
 .table-toggle-button.deactivate { background: #fff1f2; color: #b95b64; }
 .table-toggle-button.activate { background: #edf7f1; color: #4d8067; }
+.table-delete-button { background: #f7f7f8; color: #7a7f87; }
+.table-delete-button:hover { background: #feecee; color: #b24f5a; }
 
 .empty-row {
     height: 150px;
@@ -343,4 +347,10 @@
     gap: 9px;
     padding-top: 7px;
     border-top: 1px solid #edf0f3;
+}
+
+.service-alert.error {
+    background: #fff0f1;
+    border: 1px solid #f0c8cd;
+    color: #ad4f5a;
 }

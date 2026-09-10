@@ -17,6 +17,8 @@ public interface HairStyleServiceLinkRepository
             Long hairStyleNo
     );
 
+    boolean existsByServiceMenu_No(Long serviceMenuNo);
+
 
 
 

@@ -1,9 +1,14 @@
 package com.young04.lastproject.servicemenu.service;
 
+import com.young04.lastproject.hairstyle.repository.HairStyleServiceLinkRepository;
+import com.young04.lastproject.reservation.repository.ReservationRepository;
+import com.young04.lastproject.servicematerial.repository.ServiceMaterialRepository;
 import com.young04.lastproject.servicemenu.dto.ServiceMenuAdminForm;
 import com.young04.lastproject.servicemenu.entity.ServiceMenu;
 import com.young04.lastproject.servicemenu.entity.ServiceMenuCategory;
+import com.young04.lastproject.servicemenu.exception.ServiceMenuDeleteBlockedException;
 import com.young04.lastproject.servicemenu.exception.ServiceMenuNotFoundException;
+import com.young04.lastproject.treatmenthistory.repository.TreatmentHistoryRepository;
 import com.young04.lastproject.servicemenu.repository.ServiceMenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +23,10 @@ import java.util.Locale;
 public class ServiceMenuAdminService {
 
     private final ServiceMenuRepository serviceMenuRepository;
+    private final ReservationRepository reservationRepository;
+    private final HairStyleServiceLinkRepository hairStyleServiceLinkRepository;
+    private final ServiceMaterialRepository serviceMaterialRepository;
+    private final TreatmentHistoryRepository treatmentHistoryRepository;
 
     public List<ServiceMenu> getMenus(
             ServiceMenuCategory category,
@@ -79,6 +88,44 @@ public class ServiceMenuAdminService {
         String next = "Y".equals(menu.getActiveYn()) ? "N" : "Y";
         menu.changeActiveYn(next);
         return next;
+    }
+
+
+    /**
+     * 시술 메뉴 실제 삭제.
+     *
+     * 예약/시술이력/헤어스타일 추천/자재 사용설정에서 참조 중인 메뉴는
+     * FK 및 이력 보존을 위해 삭제하지 않고 비활성화를 사용하도록 차단한다.
+     */
+    @Transactional
+    public void delete(Long no) {
+        ServiceMenu menu = getMenu(no);
+
+        if (reservationRepository.existsByServiceMenuNo(no)) {
+            throw new ServiceMenuDeleteBlockedException(
+                    "예약 이력이 있는 시술 메뉴는 삭제할 수 없습니다. 비활성화를 사용해주세요."
+            );
+        }
+
+        if (treatmentHistoryRepository.existsByServiceMenuNo(no)) {
+            throw new ServiceMenuDeleteBlockedException(
+                    "시술 이력이 있는 시술 메뉴는 삭제할 수 없습니다. 비활성화를 사용해주세요."
+            );
+        }
+
+        if (hairStyleServiceLinkRepository.existsByServiceMenu_No(no)) {
+            throw new ServiceMenuDeleteBlockedException(
+                    "헤어스타일과 연결된 시술 메뉴는 삭제할 수 없습니다. 연결을 해제하거나 비활성화를 사용해주세요."
+            );
+        }
+
+        if (serviceMaterialRepository.existsByServiceMenuNo(no)) {
+            throw new ServiceMenuDeleteBlockedException(
+                    "사용 자재가 연결된 시술 메뉴는 삭제할 수 없습니다. 자재 연결을 해제하거나 비활성화를 사용해주세요."
+            );
+        }
+
+        serviceMenuRepository.delete(menu);
     }
 
     public long countAll() {

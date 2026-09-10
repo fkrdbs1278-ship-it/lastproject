@@ -77,9 +77,10 @@
                     <label class="service-field">
                         <span>소요시간 <b>*</b></span>
                         <div class="input-suffix-wrap">
-                            <input type="number" th:field="*{durationMin}" min="1" max="1440" step="5" placeholder="30">
+                            <input type="number" th:field="*{durationMin}" min="5" max="1440" step="5" placeholder="30">
                             <em>분</em>
                         </div>
+                        <small class="field-hint">5분 단위로 입력합니다. 예: 30, 60, 90, 120분</small>
                         <small class="field-error" th:if="${#fields.hasErrors('durationMin')}" th:errors="*{durationMin}"></small>
                     </label>
                 </div>

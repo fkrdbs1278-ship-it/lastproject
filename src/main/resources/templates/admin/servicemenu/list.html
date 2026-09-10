@@ -29,6 +29,7 @@
         </header>
 
         <div class="service-alert" th:if="${message != null}" th:text="${message}"></div>
+        <div class="service-alert error" th:if="${errorMessage != null}" th:text="${errorMessage}"></div>
 
         <section class="service-summary-grid">
             <article class="service-summary-card">
@@ -99,7 +100,7 @@
                 <div>
                     <p class="panel-label">SERVICE LIST</p>
                     <h2>시술 메뉴 목록</h2>
-                    <p>삭제 대신 비활성화를 사용하여 기존 예약 데이터의 참조를 안전하게 유지합니다.</p>
+                    <p>미사용 메뉴는 삭제할 수 있으며, 예약·시술이력 등에서 참조 중인 메뉴는 안전을 위해 삭제가 차단됩니다.</p>
                 </div>
                 <span class="result-count" th:text="${#lists.size(menus) + '개'}">0개</span>
             </div>
@@ -150,6 +151,14 @@
                                             th:classappend="${menu.activeYn == 'Y'} ? ' deactivate' : ' activate'"
                                             th:text="${menu.activeYn == 'Y' ? '비활성화' : '활성화'}">
                                         비활성화
+                                    </button>
+                                </form>
+                                <form method="post"
+                                      th:action="@{/admin/services/{no}/delete(no=${menu.no})}"
+                                      onsubmit="return confirm('이 시술 메뉴를 삭제하시겠습니까?\n예약·시술이력 등에서 사용 중인 메뉴는 삭제되지 않습니다.');">
+                                    <button type="submit"
+                                            class="table-delete-button">
+                                        삭제
                                     </button>
                                 </form>
                             </div>

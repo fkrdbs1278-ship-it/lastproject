@@ -2,6 +2,7 @@ package com.young04.lastproject.servicemenu.controller;
 
 import com.young04.lastproject.servicemenu.dto.ServiceMenuAdminForm;
 import com.young04.lastproject.servicemenu.entity.ServiceMenuCategory;
+import com.young04.lastproject.servicemenu.exception.ServiceMenuDeleteBlockedException;
 import com.young04.lastproject.servicemenu.service.ServiceMenuAdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -114,6 +115,27 @@ public class ServiceMenuAdminController {
                         ? "시술 메뉴를 활성화했습니다."
                         : "시술 메뉴를 비활성화했습니다."
         );
+        return "redirect:/admin/services";
+    }
+
+
+    @PostMapping("/{no}/delete")
+    public String delete(
+            @PathVariable Long no,
+            RedirectAttributes redirectAttributes
+    ) {
+        try {
+            serviceMenuAdminService.delete(no);
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "시술 메뉴가 삭제되었습니다."
+            );
+        } catch (ServiceMenuDeleteBlockedException e) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    e.getMessage()
+            );
+        }
         return "redirect:/admin/services";
     }
 
