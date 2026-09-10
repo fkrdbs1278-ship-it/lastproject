@@ -73,6 +73,72 @@ public class HairStyleReader {
         return count.longValue() > 0;
     }
 
+
+    public Optional<HairStyleOptionResponse> findActiveById(
+            Long hairStyleNo
+    ) {
+        if (hairStyleNo == null) {
+            return Optional.empty();
+        }
+
+        try {
+            Object[] row = (Object[]) entityManager.createNativeQuery("""
+                    SELECT
+                        NO,
+                        TITLE,
+                        CATEGORY,
+                        DESCRIPTION,
+                        IMAGE_URL
+                    FROM HAIR_STYLE
+                    WHERE NO = :hairStyleNo
+                      AND ACTIVE_YN = 'Y'
+                    """)
+                    .setParameter("hairStyleNo", hairStyleNo)
+                    .getSingleResult();
+
+            return Optional.of(
+                    HairStyleOptionResponse.builder()
+                            .hairStyleNo(((Number) row[0]).longValue())
+                            .title((String) row[1])
+                            .category((String) row[2])
+                            .description((String) row[3])
+                            .imageUrl((String) row[4])
+                            .build()
+            );
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
+    }
+
+    public List<Long> getActiveServiceMenuNosForStyle(
+            Long hairStyleNo
+    ) {
+        if (hairStyleNo == null) {
+            return List.of();
+        }
+
+        @SuppressWarnings("unchecked")
+        List<Number> rows =
+                entityManager.createNativeQuery("""
+                        SELECT SM.NO
+                        FROM HAIR_STYLE_SERVICE HS
+                        JOIN HAIR_STYLE H
+                          ON H.NO = HS.HAIR_STYLE_NO
+                        JOIN SERVICE_MENU SM
+                          ON SM.NO = HS.SERVICE_MENU_NO
+                        WHERE HS.HAIR_STYLE_NO = :hairStyleNo
+                          AND H.ACTIVE_YN = 'Y'
+                          AND SM.ACTIVE_YN = 'Y'
+                        ORDER BY SM.DISPLAY_ORDER ASC, SM.NO ASC
+                        """)
+                        .setParameter("hairStyleNo", hairStyleNo)
+                        .getResultList();
+
+        return rows.stream()
+                .map(Number::longValue)
+                .toList();
+    }
+
     public Optional<HairStyleOptionResponse> findById(Long hairStyleNo) {
         if (hairStyleNo == null) {
             return Optional.empty();

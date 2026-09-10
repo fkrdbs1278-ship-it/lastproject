@@ -6,6 +6,29 @@
     const isLoggedIn = page.dataset.loggedIn === "true";
     const memberNo = memberNoValue ? Number(memberNoValue) : null;
 
+    const selectedHairStyleNo =
+        page.dataset.hairStyleNo
+            ? Number(page.dataset.hairStyleNo)
+            : null;
+
+    const selectedHairStyleTitle =
+        page.dataset.hairStyleTitle || "";
+
+    const linkedServiceMenuNos =
+        (page.dataset.linkedServiceMenuNos || "")
+            .split(",")
+            .map(value => Number(value))
+            .filter(Number.isFinite);
+
+    const preferredServiceMenuNo =
+        page.dataset.preferredServiceMenuNo
+            ? Number(page.dataset.preferredServiceMenuNo)
+            : null;
+
+    const hasHairStyleContext =
+        selectedHairStyleNo != null
+        && linkedServiceMenuNos.length > 0;
+
     const dateInput = document.getElementById("reservationDate");
     const timeSection = document.getElementById("timeSection");
     const timeSlots = document.getElementById("timeSlots");
@@ -20,6 +43,9 @@
 
     const serviceMenuEmpty =
         document.getElementById("serviceMenuEmpty");
+
+    const serviceCategoryHelp =
+        document.getElementById("serviceCategoryHelp");
 
     const submitButton =
         document.getElementById("submitReservation");
@@ -101,6 +127,12 @@
         ?.addEventListener(
             "click",
             () => {
+                if (hasHairStyleContext) {
+                    location.href =
+                        "/reservation";
+                    return;
+                }
+
                 categoryRadios
                     .forEach(radio =>
                         radio.checked = false
@@ -264,6 +296,152 @@
         submitReservation
     );
 
+
+    initializeHairStyleReservationContext();
+
+    function initializeHairStyleReservationContext() {
+        if (!hasHairStyleContext) {
+            return;
+        }
+
+        if (serviceCategoryHelp) {
+            serviceCategoryHelp.textContent =
+                `"${selectedHairStyleTitle}" 스타일과 연결된 시술 카테고리만 선택할 수 있습니다.`;
+        }
+
+        const linkedCategories =
+            new Set();
+
+        serviceMenuCards
+            .forEach(card => {
+                const menuNo =
+                    Number(
+                        card.dataset.serviceMenuNo
+                    );
+
+                if (linkedServiceMenuNos
+                        .includes(menuNo)) {
+                    linkedCategories.add(
+                        card.dataset.category
+                    );
+                }
+            });
+
+        categoryRadios
+            .forEach(radio => {
+                const enabled =
+                    linkedCategories
+                        .has(radio.value);
+
+                radio.disabled = !enabled;
+
+                radio.closest(
+                    ".service-category-card"
+                )
+                    ?.classList.toggle(
+                        "disabled",
+                        !enabled
+                    );
+            });
+
+        let targetMenuNo =
+            preferredServiceMenuNo;
+
+        if (targetMenuNo == null
+                && linkedServiceMenuNos.length === 1) {
+            targetMenuNo =
+                linkedServiceMenuNos[0];
+        }
+
+        let targetCard = null;
+
+        if (targetMenuNo != null) {
+            targetCard =
+                Array.from(
+                    serviceMenuCards
+                )
+                    .find(
+                        card =>
+                            Number(
+                                card.dataset.serviceMenuNo
+                            )
+                            === targetMenuNo
+                    )
+                    || null;
+        }
+
+        if (!targetCard) {
+            targetCard =
+                Array.from(
+                    serviceMenuCards
+                )
+                    .find(
+                        card =>
+                            linkedServiceMenuNos
+                                .includes(
+                                    Number(
+                                        card.dataset.serviceMenuNo
+                                    )
+                                )
+                    )
+                    || null;
+        }
+
+        if (!targetCard) {
+            return;
+        }
+
+        const targetCategory =
+            targetCard.dataset.category;
+
+        const categoryRadio =
+            Array.from(categoryRadios)
+                .find(
+                    radio =>
+                        radio.value
+                        === targetCategory
+                );
+
+        if (categoryRadio) {
+            categoryRadio.checked = true;
+            selectedCategory =
+                targetCategory;
+            selectedCategoryName =
+                categoryNames[targetCategory]
+                || targetCategory;
+        }
+
+        renderServiceMenus(
+            targetCategory
+        );
+
+        if (targetMenuNo != null) {
+            const menuRadio =
+                targetCard.querySelector(
+                    ".menu-radio"
+                );
+
+            if (menuRadio) {
+                menuRadio.checked = true;
+                selectedMenuNo =
+                    Number(
+                        menuRadio.value
+                    );
+
+                selectedMenuName =
+                    targetCard
+                        .querySelector(
+                            "strong"
+                        )
+                        ?.textContent
+                        ?.trim()
+                    || "";
+            }
+        }
+
+        updateSummary();
+    }
+
     function renderServiceMenus(
             category
     ) {
@@ -271,9 +449,23 @@
 
         serviceMenuCards
             .forEach(card => {
-                const matches =
+                const menuNo =
+                    Number(
+                        card.dataset.serviceMenuNo
+                    );
+
+                const sameCategory =
                     card.dataset.category
                     === category;
+
+                const linkedToStyle =
+                    !hasHairStyleContext
+                    || linkedServiceMenuNos
+                        .includes(menuNo);
+
+                const matches =
+                    sameCategory
+                    && linkedToStyle;
 
                 card.classList
                     .toggle(
@@ -288,7 +480,9 @@
 
         if (visibleCount === 0) {
             serviceMenuEmpty.textContent =
-                `${categoryNames[category] || category} 카테고리에 등록된 상세 시술 메뉴가 없습니다.`;
+                hasHairStyleContext
+                    ? `${categoryNames[category] || category} 카테고리에는 선택한 헤어스타일과 연결된 시술 메뉴가 없습니다.`
+                    : `${categoryNames[category] || category} 카테고리에 등록된 상세 시술 메뉴가 없습니다.`;
 
             serviceMenuEmpty
                 .classList.remove(
@@ -629,11 +823,12 @@
                     selectedMenuNo,
 
                 /*
-                 * 예약 화면에서는 헤어스타일 이미지를 더 이상 선택하지 않는다.
-                 * HairStyle 갤러리는 /hairstyles에서 독립적으로 제공한다.
-                 * RESERVATION.HAIR_STYLE_NO는 기존 예약 호환을 위해 nullable 유지.
+                 * 일반 /reservation 진입은 hairStyleNo = null.
+                 * /hairstyles/{no}에서 진입한 경우에는 선택한 hairStyleNo를 유지해
+                 * RESERVATION.HAIR_STYLE_NO에 저장한다.
                  */
-                hairStyleNo: null,
+                hairStyleNo:
+                    selectedHairStyleNo,
 
                 startAt:
                     `${selectedDate}T${selectedStartTime}:00`,
