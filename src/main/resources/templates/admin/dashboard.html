@@ -63,7 +63,7 @@
                 <div class="summary-icon">□</div>
 
                 <div class="summary-content">
-                    <p class="summary-title">오늘 예약</p>
+                    <p class="summary-title">오늘 고객 예약</p>
                     <strong class="summary-number"
                             th:text="${reservationSummary.todayCount + '건'}">
                         0건
@@ -138,7 +138,7 @@
                     0건
                 </strong>
                 <span></span>
-                오늘 예약
+                오늘 고객 예약
                 <strong th:text="${reservationSummary.todayCount + '건'}">
                     0건
                 </strong>
@@ -339,8 +339,17 @@
             </span>
 
             <span>
-                <i class="calendar-legend-color blocked-color"></i>
-                예약 불가
+                <i class="calendar-legend-color personal-color"></i>
+                개인 일정
+            </span>
+
+            <span>
+                <i class="calendar-legend-color holiday-color"></i>
+                휴무·예약 불가
+            </span>
+
+            <span class="calendar-count-note">
+                ※ 개인 일정·휴무는 예약 건수에 포함되지 않습니다.
             </span>
         </div>
 

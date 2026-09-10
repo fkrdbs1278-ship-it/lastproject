@@ -1841,6 +1841,20 @@ a {
     background: #b996ac;
 }
 
+.personal-color {
+    background: #b996ac;
+}
+
+.holiday-color {
+    background: #c8896d;
+}
+
+.calendar-legend .calendar-count-note {
+    margin-left: auto;
+    color: #989da5;
+    font-weight: 600;
+}
+
 @media (max-width: 1450px) {
     .week-calendar {
         overflow-x: auto;

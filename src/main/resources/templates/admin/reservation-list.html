@@ -156,6 +156,15 @@
             <form id="searchForm"
                   class="search-grid reservation-search-grid">
 
+                <label class="field reservation-no-field">
+                    <span>예약번호</span>
+                    <input id="reservationNoSearch"
+                           type="number"
+                           min="1"
+                           inputmode="numeric"
+                           placeholder="예: 367">
+                </label>
+
                 <label class="field">
                     <span>상태</span>
                     <select id="status">
@@ -178,26 +187,30 @@
                 </label>
 
                 <label class="field">
-                    <span>비회원 이름</span>
+                    <span>이름</span>
                     <input id="guestName"
                            type="text"
+                           maxlength="50"
                            placeholder="이름">
                 </label>
 
                 <label class="field">
-                    <span>비회원 전화번호</span>
+                    <span>전화번호</span>
                     <input id="guestPhone"
-                           type="text"
+                           type="tel"
+                           maxlength="11"
+                           inputmode="numeric"
+                           autocomplete="tel"
                            placeholder="01012345678">
                 </label>
 
-                <label class="field">
+                <label class="field date-field">
                     <span>시작일</span>
                     <input id="startFrom"
                            type="date">
                 </label>
 
-                <label class="field">
+                <label class="field date-field">
                     <span>종료일</span>
                     <input id="startTo"
                            type="date">
@@ -224,7 +237,7 @@
             <div class="reservation-panel-heading">
                 <div>
                     <p class="panel-label">RESERVATION LIST</p>
-                    <h2>전체 예약</h2>
+                    <h2>전체 예약 <span id="reservationResultCount" class="result-count-badge">0건</span></h2>
                     <p>
                         예약 상세에서 요청사항·스타일·참고 이미지를 확인할 수 있습니다.
                     </p>

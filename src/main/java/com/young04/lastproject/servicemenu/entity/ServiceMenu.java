@@ -111,4 +111,54 @@ public class ServiceMenu {
 
     @Column(name = "UPDATE_DATE")
     private LocalDateTime updateDate;
+
+    public static ServiceMenu create(
+            ServiceMenuCategory category,
+            String name,
+            String description,
+            Long price,
+            Integer durationMin,
+            String imageUrl,
+            String activeYn,
+            Integer displayOrder
+    ) {
+        ServiceMenu menu = new ServiceMenu();
+        menu.category = category;
+        menu.name = name;
+        menu.description = description;
+        menu.price = price;
+        menu.durationMin = durationMin;
+        menu.imageUrl = imageUrl;
+        menu.activeYn = activeYn;
+        menu.displayOrder = displayOrder;
+        menu.regdate = LocalDateTime.now();
+        return menu;
+    }
+
+    public void update(
+            ServiceMenuCategory category,
+            String name,
+            String description,
+            Long price,
+            Integer durationMin,
+            String imageUrl,
+            String activeYn,
+            Integer displayOrder
+    ) {
+        this.category = category;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.durationMin = durationMin;
+        this.imageUrl = imageUrl;
+        this.activeYn = activeYn;
+        this.displayOrder = displayOrder;
+        this.updateDate = LocalDateTime.now();
+    }
+
+    public void changeActiveYn(String activeYn) {
+        this.activeYn = activeYn;
+        this.updateDate = LocalDateTime.now();
+    }
+
 }

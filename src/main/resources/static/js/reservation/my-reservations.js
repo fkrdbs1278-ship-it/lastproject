@@ -159,25 +159,47 @@
                 );
 
             item.querySelector(".cancel-button")
-                ?.addEventListener("click", async () => {
-                    const reason = prompt("취소 사유를 입력해주세요.");
-                    if (reason === null) return;
-
-                    if (!reason.trim()) {
-                        showMessage("취소 사유를 입력해주세요.", true);
-                        return;
-                    }
-
-                    await withScrollPreserved(() =>
-                        cancelReservation(
-                            reservation.reservationNo,
-                            reason.trim()
-                        )
-                    );
+                ?.addEventListener("click", () => {
+                    openCancelModal(reservation.reservationNo);
                 });
 
             list.appendChild(item);
         });
+    }
+
+    function openCancelModal(reservationNo) {
+        if (!cancelOverlay || !cancelReservationNo || !cancelReason) {
+            return;
+        }
+
+        cancelReservationNo.value = String(reservationNo);
+        cancelReason.value = "";
+
+        if (cancelReasonCount) {
+            cancelReasonCount.textContent = "0";
+        }
+
+        cancelOverlay.classList.remove("hidden");
+
+        requestAnimationFrame(() => {
+            cancelReason.focus();
+        });
+    }
+
+    function closeCancelModal() {
+        cancelOverlay?.classList.add("hidden");
+
+        if (cancelReservationNo) {
+            cancelReservationNo.value = "";
+        }
+
+        if (cancelReason) {
+            cancelReason.value = "";
+        }
+
+        if (cancelReasonCount) {
+            cancelReasonCount.textContent = "0";
+        }
     }
 
     async function openDetail(reservationNo) {

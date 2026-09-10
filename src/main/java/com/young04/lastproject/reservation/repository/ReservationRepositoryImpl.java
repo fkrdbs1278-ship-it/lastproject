@@ -45,6 +45,14 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                 );
             }
 
+            if (condition.getReservationNo() != null) {
+                builder.and(
+                        reservation.reservationNo.eq(
+                                condition.getReservationNo()
+                        )
+                );
+            }
+
             if (condition.getMemberNo() != null) {
                 builder.and(reservation.memberNo.eq(condition.getMemberNo()));
             }

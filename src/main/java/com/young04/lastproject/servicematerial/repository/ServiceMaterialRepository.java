@@ -15,6 +15,9 @@ public interface ServiceMaterialRepository
             Long serviceMenuNo
     );
 
+    // 특정 시술에 연결된 자재가 하나라도 있는지 확인
+    boolean existsByServiceMenuNo(Long serviceMenuNo);
+
     // 특정 시술에 특정 자재가 이미 연결되어 있는지 확인
     boolean existsByServiceMenuNoAndMaterialNo(
             Long serviceMenuNo,

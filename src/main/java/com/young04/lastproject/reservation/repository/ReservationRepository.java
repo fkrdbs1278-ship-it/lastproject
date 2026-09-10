@@ -22,6 +22,8 @@ public interface ReservationRepository
             Long memberNo
     );
 
+    boolean existsByServiceMenuNo(Long serviceMenuNo);
+
     List<Reservation>
     findByStatusInAndStartAtGreaterThanEqualOrderByStartAtAsc(
             Collection<ReservationStatus> statuses,

@@ -643,3 +643,130 @@ body {
         width: 100%;
     }
 }
+
+
+/* Phase UI polish - 시술 메뉴 카드 */
+.service-detail-menu-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.service-detail-card .service-detail-content {
+    min-height: 126px;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 18px;
+    border-radius: 12px;
+}
+
+.service-detail-topline {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.service-detail-check {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #dddddd;
+    border-radius: 50%;
+    color: transparent;
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.service-detail-name {
+    margin-top: 10px;
+    font-size: 17px;
+    letter-spacing: -0.3px;
+}
+
+.service-detail-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 12px;
+    color: #666666;
+    font-size: 13px;
+}
+
+.service-detail-price {
+    color: #222222;
+    font-weight: 800;
+}
+
+.service-detail-divider {
+    color: #c6c6c6;
+}
+
+.service-detail-card .menu-radio:checked + .service-detail-content .service-detail-check {
+    border-color: #333333;
+    background: #333333;
+    color: #ffffff;
+}
+
+@media (max-width: 620px) {
+    .service-detail-menu-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* 내 예약 - 프로젝트 공통 톤의 취소 사유 모달 */
+.cancel-reason-modal {
+    width: min(520px, calc(100vw - 32px));
+}
+
+.cancel-modal-eyebrow {
+    margin: 0 0 5px;
+    color: #8a8a8a;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.cancel-modal-description {
+    margin: 4px 0 18px;
+    color: #777777;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.cancel-reason-modal textarea {
+    min-height: 112px;
+    resize: vertical;
+}
+
+.cancel-reason-modal .counter {
+    display: block;
+    margin-top: 6px;
+    color: #999999;
+    font-size: 11px;
+    text-align: right;
+}
+
+.danger-button {
+    min-height: 42px;
+    padding: 0 18px;
+    border: 1px solid #222222;
+    border-radius: 8px;
+    background: #222222;
+    color: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.danger-button:hover {
+    background: #000000;
+}
+
+.danger-button:disabled {
+    cursor: wait;
+    opacity: 0.55;
+}

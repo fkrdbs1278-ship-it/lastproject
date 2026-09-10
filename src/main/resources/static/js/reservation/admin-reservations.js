@@ -8,6 +8,10 @@
     const nextButton = document.getElementById("nextPage");
     const resetButton = document.getElementById("resetSearch");
     const messageBox = document.getElementById("messageBox");
+    const resultCount = document.getElementById("reservationResultCount");
+    const guestPhoneSearch = document.getElementById("guestPhone");
+    const startFromInput = document.getElementById("startFrom");
+    const startToInput = document.getElementById("startTo");
 
     const detailOverlay = document.getElementById("detailOverlay");
     const detailContent = document.getElementById("detailContent");
@@ -75,6 +79,7 @@
     document.getElementById("openAvailabilityBlocks")
         ?.addEventListener("click", openAvailabilityBlocks);
 
+    initializeSearchControls();
     initializeFromQuery();
 
     async function initializeFromQuery() {
@@ -132,6 +137,10 @@
             currentPage = body.page || 0;
             renderRows(body.content || []);
 
+            if (resultCount) {
+                resultCount.textContent = `${body.totalElements || 0}건`;
+            }
+
             pageInfo.textContent = `${currentPage + 1} / ${totalPages}`;
             prevButton.disabled = currentPage <= 0;
             nextButton.disabled = currentPage + 1 >= totalPages;
@@ -155,8 +164,14 @@
 
             const customer =
                 r.customerType === "MEMBER"
-                    ? `회원 #${r.memberNo}`
-                    : `${escapeHtml(r.guestName || "")}<br>${escapeHtml(r.guestPhone || "")}`;
+                    ? `<div class="customer-cell">
+                           <strong>회원 #${r.memberNo}</strong>
+                           <small>회원 예약</small>
+                       </div>`
+                    : `<div class="customer-cell">
+                           <strong>${escapeHtml(r.guestName || "비회원")}</strong>
+                           <small>${escapeHtml(r.guestPhone || "-")}</small>
+                       </div>`;
 
             const memo =
                 r.requestMemo
@@ -168,16 +183,16 @@
                     : "-";
 
             tr.innerHTML = `
-                <td>${r.reservationNo}</td>
+                <td><span class="reservation-no-badge">#${r.reservationNo}</span></td>
                 <td>${customer}</td>
-                <td>${escapeHtml(r.serviceName)}</td>
-                <td>${formatDateTime(r.startAt)}</td>
+                <td><strong class="service-name-cell">${escapeHtml(r.serviceName)}</strong></td>
+                <td><span class="reservation-time-cell">${formatDateTime(r.startAt)}</span></td>
                 <td>
                     <span class="status-badge status-${r.status}">
                         ${statusText(r.status)}
                     </span>
                 </td>
-                <td>${memo}</td>
+                <td><span class="memo-cell" title="${escapeAttribute(r.requestMemo || "")}">${memo}</span></td>
                 <td>
                     <div class="action-group" data-no="${r.reservationNo}">
                         <button type="button"
@@ -1398,9 +1413,42 @@
         });
     }
 
+    function initializeSearchControls() {
+        if (guestPhoneSearch) {
+            guestPhoneSearch.addEventListener("input", () => {
+                guestPhoneSearch.value =
+                    guestPhoneSearch.value
+                        .replace(/\D/g, "")
+                        .slice(0, 11);
+            });
+        }
+
+        const now = new Date();
+        const minDate = new Date(
+            now.getFullYear() - 2,
+            0,
+            1
+        );
+        const maxDate = new Date(
+            now.getFullYear() + 2,
+            11,
+            31
+        );
+
+        const toDateString = date =>
+            `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+        [startFromInput, startToInput].forEach(input => {
+            if (!input) return;
+            input.min = toDateString(minDate);
+            input.max = toDateString(maxDate);
+        });
+    }
+
     function buildParams() {
         const params = new URLSearchParams();
 
+        put(params, "reservationNo", value("reservationNoSearch"));
         put(params, "status", value("status"));
         put(params, "customerType", value("customerType"));
         put(params, "guestName", value("guestName"));
