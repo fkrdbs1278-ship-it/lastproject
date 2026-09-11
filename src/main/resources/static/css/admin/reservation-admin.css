@@ -374,3 +374,92 @@ body {
 .reservation-admin-content .action-group {
     flex-wrap: wrap;
 }
+
+
+/* 관리자 예약 취소 모달 */
+.admin-cancel-modal {
+    width: min(520px, calc(100vw - 32px));
+}
+
+.admin-cancel-modal-header {
+    align-items: flex-start;
+}
+
+.admin-cancel-eyebrow {
+    margin: 0 0 5px;
+    color: var(--rose-dark);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.admin-cancel-description {
+    margin: 4px 0 18px;
+    color: #747981;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.admin-cancel-field textarea {
+    width: 100%;
+    min-height: 112px;
+    padding: 13px 14px;
+    border: 1px solid #dfe2e7;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #2f3338;
+    font: inherit;
+    line-height: 1.6;
+    resize: vertical;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-cancel-field textarea:focus {
+    outline: none;
+    border-color: #b66f91;
+    box-shadow: 0 0 0 3px rgba(182, 111, 145, 0.12);
+}
+
+.admin-cancel-counter {
+    display: block;
+    margin-top: 6px;
+    color: #989da5;
+    font-size: 11px;
+    text-align: right;
+}
+
+.admin-cancel-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #edf0f3;
+}
+
+.admin-cancel-confirm-button {
+    min-height: 42px;
+    padding: 0 18px;
+    border: 1px solid var(--rose-dark);
+    border-radius: 8px;
+    background: var(--rose-dark);
+    color: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.admin-cancel-confirm-button:hover {
+    filter: brightness(0.94);
+}
+
+.admin-cancel-confirm-button:disabled {
+    cursor: wait;
+    opacity: 0.55;
+}

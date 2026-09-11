@@ -20,6 +20,14 @@
     const toolTitle = document.getElementById("adminToolTitle");
     const toolContent = document.getElementById("adminToolContent");
 
+    const cancelOverlay = document.getElementById("adminCancelOverlay");
+    const cancelReservationNo = document.getElementById("adminCancelReservationNo");
+    const cancelReason = document.getElementById("adminCancelReason");
+    const cancelReasonCount = document.getElementById("adminCancelReasonCount");
+    const closeCancelButton = document.getElementById("closeAdminCancel");
+    const backCancelButton = document.getElementById("backAdminCancel");
+    const confirmCancelButton = document.getElementById("confirmAdminCancel");
+
     let currentPage = 0;
     const pageSize = 20;
     let totalPages = 1;
@@ -65,6 +73,52 @@
 
     toolOverlay?.addEventListener("click", e => {
         if (e.target === toolOverlay) closeTool();
+    });
+
+    closeCancelButton?.addEventListener("click", closeAdminCancelModal);
+    backCancelButton?.addEventListener("click", closeAdminCancelModal);
+
+    cancelOverlay?.addEventListener("click", e => {
+        if (e.target === cancelOverlay) closeAdminCancelModal();
+    });
+
+    cancelReason?.addEventListener("input", () => {
+        if (cancelReasonCount) {
+            cancelReasonCount.textContent =
+                String(cancelReason.value.length);
+        }
+    });
+
+    confirmCancelButton?.addEventListener("click", async () => {
+        const reservationNo = Number(cancelReservationNo?.value);
+        const reason = cancelReason?.value.trim() || "";
+
+        if (!reservationNo) {
+            showMessage("취소할 예약을 확인할 수 없습니다.", true);
+            return;
+        }
+
+        if (!reason) {
+            cancelReason?.focus();
+            showMessage("관리자 취소 사유를 입력해주세요.", true);
+            return;
+        }
+
+        confirmCancelButton.disabled = true;
+
+        try {
+            await withScrollPreserved(() =>
+                postAction(
+                    `/admin/api/reservations/${reservationNo}/cancel?` +
+                    new URLSearchParams({ reason })
+                )
+            );
+            closeAdminCancelModal();
+        } catch (error) {
+            showMessage(error.message, true);
+        } finally {
+            confirmCancelButton.disabled = false;
+        }
     });
 
     document.getElementById("openPhoneReservation")
@@ -356,19 +410,44 @@
         );
     }
 
-    async function cancelAdmin(reservationNo) {
-        const reason = prompt("관리자 취소 사유를 입력해주세요.");
-        if (reason === null) return;
-        if (!reason.trim()) {
-            return showMessage("취소 사유를 입력해주세요.", true);
+    function cancelAdmin(reservationNo) {
+        openAdminCancelModal(reservationNo);
+    }
+
+    function openAdminCancelModal(reservationNo) {
+        if (!cancelOverlay || !cancelReservationNo || !cancelReason) {
+            showMessage("취소 화면을 열 수 없습니다.", true);
+            return;
         }
 
-        await withScrollPreserved(() =>
-            postAction(
-                `/admin/api/reservations/${reservationNo}/cancel?` +
-                new URLSearchParams({ reason: reason.trim() })
-            )
-        );
+        cancelReservationNo.value = String(reservationNo);
+        cancelReason.value = "";
+
+        if (cancelReasonCount) {
+            cancelReasonCount.textContent = "0";
+        }
+
+        cancelOverlay.classList.remove("hidden");
+
+        requestAnimationFrame(() => {
+            cancelReason.focus();
+        });
+    }
+
+    function closeAdminCancelModal() {
+        cancelOverlay?.classList.add("hidden");
+
+        if (cancelReservationNo) {
+            cancelReservationNo.value = "";
+        }
+
+        if (cancelReason) {
+            cancelReason.value = "";
+        }
+
+        if (cancelReasonCount) {
+            cancelReasonCount.textContent = "0";
+        }
     }
 
     async function noShow(reservationNo) {

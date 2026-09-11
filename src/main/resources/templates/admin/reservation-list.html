@@ -298,6 +298,55 @@
     </div>
 </div>
 
+<!-- 관리자 예약 취소 모달 -->
+<div id="adminCancelOverlay"
+     class="detail-overlay hidden">
+    <div class="detail-modal admin-cancel-modal">
+        <div class="section-title-row admin-cancel-modal-header">
+            <div>
+                <p class="admin-cancel-eyebrow">CANCEL RESERVATION</p>
+                <h2>예약 취소</h2>
+            </div>
+            <button id="closeAdminCancel"
+                    type="button"
+                    class="secondary-button">
+                닫기
+            </button>
+        </div>
+
+        <p class="admin-cancel-description">
+            고객 예약을 취소합니다. 취소 사유는 예약 이력에 저장됩니다.
+        </p>
+
+        <input id="adminCancelReservationNo"
+               type="hidden">
+
+        <label class="field admin-cancel-field">
+            <span>관리자 취소 사유</span>
+            <textarea id="adminCancelReason"
+                      rows="4"
+                      maxlength="200"
+                      placeholder="예: 고객 요청으로 예약을 취소합니다."></textarea>
+            <span class="admin-cancel-counter">
+                <span id="adminCancelReasonCount">0</span>/200
+            </span>
+        </label>
+
+        <div class="admin-cancel-actions">
+            <button id="backAdminCancel"
+                    type="button"
+                    class="secondary-button">
+                돌아가기
+            </button>
+            <button id="confirmAdminCancel"
+                    type="button"
+                    class="admin-cancel-confirm-button">
+                예약 취소
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- 기존 2part 운영 도구 모달 -->
 <div id="adminToolOverlay"
      class="detail-overlay hidden">
