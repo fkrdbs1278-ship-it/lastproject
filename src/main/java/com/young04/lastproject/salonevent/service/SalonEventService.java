@@ -93,6 +93,11 @@ public class SalonEventService {
         request.setEventContent(event.getEventContent());
         request.setEventType(event.getEventType());
         request.setEventImageUrl(event.getEventImageUrl());
+        request.setTargetCategory(event.getTargetCategory());
+        request.setDiscountType(event.getDiscountType());
+        request.setDiscountValue(event.getDiscountValue());
+        request.setMinPaymentAmount(event.getMinPaymentAmount());
+        request.setMaxDiscountAmount(event.getMaxDiscountAmount());
         request.setStartDate(event.getStartDate());
         request.setEndDate(event.getEndDate());
         request.setUseYn(event.getUseYn());
@@ -137,6 +142,7 @@ public class SalonEventService {
                 request.getStartDate(),
                 request.getEndDate()
         );
+        validateDiscount(request);
 
         SalonEvent event = SalonEvent.builder()
                 .eventTitle(request.getEventTitle().trim())
@@ -147,6 +153,11 @@ public class SalonEventService {
                 .eventImageUrl(
                         emptyToNull(request.getEventImageUrl())
                 )
+                .targetCategory(request.getTargetCategory())
+                .discountType(request.getDiscountType())
+                .discountValue(request.getDiscountValue())
+                .minPaymentAmount(request.getMinPaymentAmount())
+                .maxDiscountAmount(request.getMaxDiscountAmount())
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .useYn(request.getUseYn())
@@ -168,6 +179,7 @@ public class SalonEventService {
                 request.getStartDate(),
                 request.getEndDate()
         );
+        validateDiscount(request);
 
         SalonEvent event = findEvent(eventNo);
 
@@ -176,6 +188,11 @@ public class SalonEventService {
                 emptyToNull(request.getEventContent()),
                 request.getEventType(),
                 emptyToNull(request.getEventImageUrl()),
+                request.getTargetCategory(),
+                request.getDiscountType(),
+                request.getDiscountValue(),
+                request.getMinPaymentAmount(),
+                request.getMaxDiscountAmount(),
                 request.getStartDate(),
                 request.getEndDate(),
                 request.getUseYn()
@@ -233,6 +250,18 @@ public class SalonEventService {
             throw new IllegalArgumentException(
                     "이벤트 종료일은 시작일보다 빠를 수 없습니다."
             );
+        }
+    }
+
+
+    private void validateDiscount(SalonEventRequest request) {
+        if ("RATE".equals(request.getDiscountType())
+                && request.getDiscountValue() != null
+                && request.getDiscountValue().compareTo(java.math.BigDecimal.valueOf(100)) > 0) {
+            throw new IllegalArgumentException("비율 할인은 100%를 초과할 수 없습니다.");
+        }
+        if (request.getMaxDiscountAmount() != null && request.getMaxDiscountAmount() == 0) {
+            request.setMaxDiscountAmount(null);
         }
     }
 

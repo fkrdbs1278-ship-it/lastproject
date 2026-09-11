@@ -47,6 +47,21 @@ public class Reservation {
     @Column(name = "DURATION_MINUTES_SNAPSHOT", nullable = false)
     private Integer durationMinutesSnapshot;
 
+    @Column(name = "ORIGINAL_PRICE_SNAPSHOT")
+    private Integer originalPriceSnapshot;
+
+    @Column(name = "EVENT_NO_SNAPSHOT")
+    private Long eventNoSnapshot;
+
+    @Column(name = "EVENT_TITLE_SNAPSHOT", length = 200)
+    private String eventTitleSnapshot;
+
+    @Column(name = "DISCOUNT_AMOUNT_SNAPSHOT")
+    private Integer discountAmountSnapshot;
+
+    @Column(name = "FINAL_PRICE_SNAPSHOT")
+    private Integer finalPriceSnapshot;
+
     @Column(name = "START_AT", nullable = false)
     private LocalDateTime startAt;
 
@@ -253,6 +268,19 @@ public class Reservation {
                 endAt,
                 requestMemo
         );
+    }
+
+    public void applyPricing(
+            Integer originalPrice,
+            Long eventNo, String eventTitle,
+            Integer discountAmount,
+            Integer finalPrice
+    ) {
+        this.originalPriceSnapshot = originalPrice;
+        this.eventNoSnapshot = eventNo;
+        this.eventTitleSnapshot = eventTitle;
+        this.discountAmountSnapshot = discountAmount == null ? 0:discountAmount;
+        this.finalPriceSnapshot = finalPrice;
     }
 
     public void confirm() {

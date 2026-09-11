@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -25,6 +26,8 @@ public class ReservationController {
     private final HairStyleReader hairStyleReader;
     private final SalonEventReader salonEventReader;
     private final AvailabilityNoticeService availabilityNoticeService;
+    private final ReservationPricingService reservationPricingService;
+    private final ReservationMemberReader reservationMemberReader;
 
     /*
      * 공개 예약 생성은 비회원 전용입니다.
@@ -143,6 +146,23 @@ public class ReservationController {
                         serviceMenuNo
                 )
         );
+    }
+
+
+    @GetMapping("/price-preview")
+    public ResponseEntity<ReservationPricePreviewResponse> pricePreview(
+            Authentication authentication,
+            @RequestParam Long serviceMenuNo,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startAt,
+            @RequestParam(required = false) String guestPhone) {
+        Long memberNo = null; String memberId = username(authentication);
+        if(memberId!=null && !"anonymousUser".equals(memberId)) {
+            memberNo = reservationMemberReader
+                    .findMemberInfoByMemberId(memberId)
+                    .map(MemberReservationInfo::getMemberNo)
+                    .orElse(null);
+        }
+        return ResponseEntity.ok(reservationPricingService.calculate(memberNo,guestPhone,serviceMenuNo,startAt));
     }
 
     @GetMapping("/service-menus")

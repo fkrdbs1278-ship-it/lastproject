@@ -115,6 +115,12 @@
                         </dd>
                     </div>
 
+
+                    <div><dt>적용 시술</dt><dd th:text="${event.targetCategoryName}">전체 시술</dd></div>
+                    <div><dt>할인 혜택</dt><dd class="event-discount-value" th:text="${event.discountText}">50% 할인</dd></div>
+                    <div><dt>최소 시술 금액</dt><dd th:text="${#numbers.formatInteger(event.minPaymentAmount,1,'COMMA') + '원'}">0원</dd></div>
+                    <div><dt>최대 할인 금액</dt><dd th:text="${event.maxDiscountAmount != null ? #numbers.formatInteger(event.maxDiscountAmount,1,'COMMA') + '원' : '제한 없음'}">제한 없음</dd></div>
+
                     <div>
                         <dt>시작일</dt>
                         <dd th:text="${#temporals.format(

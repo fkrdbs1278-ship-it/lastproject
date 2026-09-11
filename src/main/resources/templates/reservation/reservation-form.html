@@ -99,6 +99,8 @@
                       th:text="${event.eventType}">GENERAL</span>
 
                 <strong th:text="${event.title}">이벤트 제목</strong>
+                <span class="event-discount-badge"
+                      th:text="${event.discountType == 'RATE' ? #numbers.formatDecimal(event.discountValue,1,0) + '% 할인' : #numbers.formatInteger(event.discountValue,1,'COMMA') + '원 할인'}">50% 할인</span>
 
                 <span th:if="${event.content != null}"
                       th:text="${event.content}">이벤트 내용</span>
@@ -342,6 +344,7 @@
     </section>
 
     <section class="submit-panel">
+        <div id="pricePreview" class="reservation-price-preview hidden"></div>
         <div id="reservationSummary" class="reservation-summary">
             시술, 날짜, 시간을 선택해주세요.
         </div>

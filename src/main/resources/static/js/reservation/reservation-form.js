@@ -52,6 +52,8 @@
 
     const summary =
         document.getElementById("reservationSummary");
+    const pricePreview = document.getElementById("pricePreview");
+    let pricePreviewSequence = 0;
 
     const memoInput =
         document.getElementById("requestMemo");
@@ -249,6 +251,10 @@
                                 /[^\d-]/g,
                                 ""
                             );
+
+                    if (selectedMenuNo && selectedDate && selectedStartTime) {
+                        refreshPricePreview();
+                    }
                 }
             );
     }
@@ -987,6 +993,31 @@
             + `${selectedStartTime}`;
 
         submitButton.disabled = false;
+        refreshPricePreview();
+    }
+
+
+    async function refreshPricePreview() {
+        if (!pricePreview || !selectedMenuNo || !selectedDate || !selectedStartTime) return;
+        const sequence = ++pricePreviewSequence;
+        const params = new URLSearchParams({ serviceMenuNo: String(selectedMenuNo), startAt: `${selectedDate}T${selectedStartTime}:00` });
+        const guestPhoneValue = document.getElementById("guestPhone")?.value?.replace(/\D/g, "") || "";
+        if (guestPhoneValue) params.set("guestPhone", guestPhoneValue);
+        try {
+            const response = await fetch(`/api/reservations/price-preview?${params}`);
+            if (!response.ok) return;
+            const body = await response.json();
+            if (sequence !== pricePreviewSequence) return;
+            const money = value => Number(value || 0).toLocaleString("ko-KR") + "원";
+            if (body.discountAmount > 0) {
+                pricePreview.innerHTML = `<div><span>정상가</span><del>${money(body.originalPrice)}</del></div>` +
+                    `<div class="price-event"><span>${escapeHtml(body.eventTitle || "이벤트 할인")}</span><strong>-${money(body.discountAmount)}</strong></div>` +
+                    `<div class="price-final"><span>예상 결제금액</span><strong>${money(body.finalPrice)}</strong></div>`;
+            } else {
+                pricePreview.innerHTML = `<div class="price-final"><span>예상 결제금액</span><strong>${money(body.finalPrice)}</strong></div>`;
+            }
+            pricePreview.classList.remove("hidden");
+        } catch (_) { pricePreview.classList.add("hidden"); }
     }
 
     function clearSelectedTime() {

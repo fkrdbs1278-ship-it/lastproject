@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 // 미용실 이벤트의 기본 정보와 진행 기간을 저장하는 Entity
@@ -14,10 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SalonEvent {
-
-    // 이벤트 번호
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "EVENT_NO")
     private Long eventNo;
 
@@ -36,6 +34,17 @@ public class SalonEvent {
     // 이벤트 이미지 주소
     @Column(name = "EVENT_IMAGE_URL", length = 500)
     private String eventImageUrl;
+
+    @Column(name = "TARGET_CATEGORY", nullable = false, length = 20)
+    private String targetCategory;
+    @Column(name = "DISCOUNT_TYPE", length = 20)
+    private String discountType;
+    @Column(name = "DISCOUNT_VALUE", precision = 12, scale = 2)
+    private BigDecimal discountValue;
+    @Column(name = "MIN_PAYMENT_AMOUNT", nullable = false)
+    private Long minPaymentAmount;
+    @Column(name = "MAX_DISCOUNT_AMOUNT")
+    private Long maxDiscountAmount;
 
     // 이벤트 시작일
     @Column(name = "START_DATE", nullable = false)
@@ -68,6 +77,11 @@ public class SalonEvent {
             String eventContent,
             String eventType,
             String eventImageUrl,
+            String targetCategory,
+            String discountType,
+            BigDecimal discountValue,
+            Long minPaymentAmount,
+            Long maxDiscountAmount,
             LocalDateTime startDate,
             LocalDateTime endDate,
             String useYn
@@ -76,6 +90,11 @@ public class SalonEvent {
         this.eventContent = eventContent;
         this.eventType = eventType;
         this.eventImageUrl = eventImageUrl;
+        this.targetCategory = targetCategory;
+        this.discountType = discountType;
+        this.discountValue = discountValue;
+        this.minPaymentAmount = minPaymentAmount;
+        this.maxDiscountAmount = maxDiscountAmount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.useYn = useYn;
@@ -84,13 +103,11 @@ public class SalonEvent {
     // 신규 이벤트 저장 전에 기본값과 등록일 설정
     @PrePersist
     public void prePersist() {
-        if (useYn == null || useYn.isBlank()) {
-            useYn = "Y";
-        }
-
+        if (useYn == null || useYn.isBlank()) useYn = "Y";
+        if (targetCategory == null || targetCategory.isBlank()) targetCategory = "ALL";
+        if (minPaymentAmount == null) minPaymentAmount = 0L;
         regdate = LocalDateTime.now();
     }
-
     // 이벤트 수정 시 수정일 갱신
     @PreUpdate
     public void preUpdate() {
@@ -103,6 +120,11 @@ public class SalonEvent {
             String eventContent,
             String eventType,
             String eventImageUrl,
+            String targetCategory,
+            String discountType,
+            BigDecimal discountValue,
+            Long minPaymentAmount,
+            Long maxDiscountAmount,
             LocalDateTime startDate,
             LocalDateTime endDate,
             String useYn
@@ -111,6 +133,11 @@ public class SalonEvent {
         this.eventContent = eventContent;
         this.eventType = eventType;
         this.eventImageUrl = eventImageUrl;
+        this.targetCategory = targetCategory;
+        this.discountType = discountType;
+        this.discountValue = discountValue;
+        this.minPaymentAmount = minPaymentAmount;
+        this.maxDiscountAmount = maxDiscountAmount;
         this.startDate = startDate;
         this.endDate = endDate;
         this.useYn = useYn;
@@ -118,11 +145,11 @@ public class SalonEvent {
 
     // 이벤트를 사용자 화면에서 숨김 처리
     public void stopUsing() {
-        this.useYn = "N";
+        useYn = "N";
     }
 
     // 중지된 이벤트를 다시 노출
     public void resumeUsing() {
-        this.useYn = "Y";
+        useYn = "Y";
     }
 }

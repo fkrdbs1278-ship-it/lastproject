@@ -20,6 +20,11 @@ public class ReservationResponse {
     private ReservationSource reservationSource;
     private String serviceName;
     private Integer durationMinutes;
+    private Integer originalPrice;
+    private Long eventNo;
+    private String eventTitle;
+    private Integer discountAmount;
+    private Integer finalPrice;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private String requestMemo;
@@ -56,6 +61,11 @@ public class ReservationResponse {
                 .reservationSource(r.getReservationSource())
                 .serviceName(r.getServiceNameSnapshot())
                 .durationMinutes(r.getDurationMinutesSnapshot())
+                .originalPrice(r.getOriginalPriceSnapshot())
+                .eventNo(r.getEventNoSnapshot())
+                .eventTitle(r.getEventTitleSnapshot())
+                .discountAmount(r.getDiscountAmountSnapshot())
+                .finalPrice(r.getFinalPriceSnapshot())
                 .startAt(r.getStartAt())
                 .endAt(r.getEndAt())
                 .requestMemo(r.getRequestMemo())

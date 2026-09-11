@@ -26,6 +26,7 @@ public class ReservationService {
     private final HairStyleReader hairStyleReader;
     private final BusinessHourRepository businessHourRepository;
     private final ReservationNotificationPublisher notificationPublisher;
+    private final ReservationPricingService reservationPricingService;
 
     // 시술 완료 시 연결된 자재를 자동 차감
     private final MaterialUsageService materialUsageService;
@@ -98,6 +99,20 @@ public class ReservationService {
                             source
                     );
         }
+
+        var price = reservationPricingService.calculate(
+                request.getMemberNo(),
+                request.getGuestPhone(),
+                request.getServiceMenuNo(),
+                start
+        );
+        reservation.applyPricing(
+                price.getOriginalPrice(),
+                price.getEventNo(),
+                price.getEventTitle(),
+                price.getDiscountAmount(),
+                price.getFinalPrice()
+        );
 
         Reservation saved =
                 reservationRepository.save(reservation);
@@ -415,6 +430,19 @@ public class ReservationService {
                 start,
                 end,
                 normalizeMemo(requestMemo)
+        );
+
+        var price = reservationPricingService.calculate(
+                reservation.getMemberNo(),
+                reservation.getGuestPhone(),
+                serviceMenuNo, start
+        );
+        reservation.applyPricing(
+                price.getOriginalPrice(),
+                price.getEventNo(),
+                price.getEventTitle(),
+                price.getDiscountAmount(),
+                price.getFinalPrice()
         );
     }
 

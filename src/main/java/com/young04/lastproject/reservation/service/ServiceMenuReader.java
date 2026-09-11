@@ -20,7 +20,7 @@ public class ServiceMenuReader {
     public ServiceMenuSnapshot getActiveServiceMenu(Long serviceMenuNo) {
         try {
             Object[] row = (Object[]) entityManager.createNativeQuery("""
-                    SELECT NAME, DURATION_MIN
+                    SELECT NAME, DURATION_MIN, CATEGORY, PRICE
                     FROM SERVICE_MENU
                     WHERE NO = :serviceMenuNo
                       AND ACTIVE_YN = 'Y'
@@ -31,7 +31,9 @@ public class ServiceMenuReader {
             return new ServiceMenuSnapshot(
                     serviceMenuNo,
                     (String) row[0],
-                    ((Number) row[1]).intValue()
+                    ((Number) row[1]).intValue(),
+                    (String) row[2],
+                    ((Number) row[3]).intValue()
             );
         } catch (NoResultException e) {
             throw new ServiceMenuNotFoundException(serviceMenuNo);
@@ -70,6 +72,8 @@ public class ServiceMenuReader {
     public record ServiceMenuSnapshot(
             Long serviceMenuNo,
             String name,
-            Integer durationMin
+            Integer durationMin,
+            String category,
+            Integer price
     ) {}
 }

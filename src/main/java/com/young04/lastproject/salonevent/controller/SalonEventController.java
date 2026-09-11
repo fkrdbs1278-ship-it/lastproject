@@ -53,6 +53,9 @@ public class SalonEventController {
                 new SalonEventRequest();
 
         eventRequest.setUseYn("Y");
+        eventRequest.setTargetCategory("ALL");
+        eventRequest.setDiscountType("RATE");
+        eventRequest.setMinPaymentAmount(0L);
 
         model.addAttribute(
                 "eventRequest",
