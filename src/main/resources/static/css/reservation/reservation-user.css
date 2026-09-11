@@ -778,3 +778,82 @@ body {
     justify-content: center;
     text-decoration: none;
 }
+
+/* =========================================================
+   Final fix - My reservation status badge alignment
+   예약 건수가 늘어나도 header/status 배치가 흔들리지 않도록
+   display: contents 기반 배치를 제거하고 header flex로 고정한다.
+   ========================================================= */
+
+#reservationList .reservation-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+#reservationList .reservation-item-header {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+}
+
+#reservationList .reservation-item-header > div:first-child {
+    min-width: 0;
+}
+
+#reservationList .status-badge {
+    /* 기존 grid item 속성 무효화 */
+    grid-column: auto;
+    grid-row: auto;
+    align-self: auto;
+    justify-self: auto;
+
+    /* 배지 자체 크기와 글자 위치 고정 */
+    flex: 0 0 auto;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box;
+    min-width: 72px;
+    height: 34px;
+    min-height: 34px;
+    margin: 0;
+    padding: 0 12px;
+
+    border-radius: 999px;
+    line-height: 1 !important;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    word-break: keep-all;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+#reservationList .reservation-item > div:not(.reservation-item-header):not(.reservation-actions),
+#reservationList .reservation-actions {
+    grid-column: 1;
+}
+
+#reservationList .reservation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+@media (max-width: 720px) {
+    #reservationList .reservation-item-header {
+        align-items: flex-start;
+    }
+
+    #reservationList .status-badge {
+        min-width: 68px;
+        height: 32px;
+        min-height: 32px;
+        padding: 0 10px;
+    }
+}
