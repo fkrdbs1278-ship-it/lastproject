@@ -1,0 +1,328 @@
+/* =========================================================
+   회원 결제 내역
+   ========================================================= */
+
+.payment-history-page {
+    min-height: 100vh;
+    padding: 64px 20px 90px;
+    background: #f7f7f7;
+}
+
+.payment-history-container {
+    width: min(100%, 1000px);
+    margin: 0 auto;
+}
+
+.payment-history-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.payment-history-eyebrow,
+.payment-history-section-label {
+    margin: 0 0 7px;
+    color: #929292;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.payment-history-heading h1 {
+    margin: 0 0 10px;
+    color: #222222;
+    font-size: 32px;
+}
+
+.payment-history-description {
+    margin: 0;
+    color: #777777;
+    font-size: 14px;
+}
+
+.payment-history-back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 104px;
+    height: 42px;
+    padding: 0 16px;
+    border: 1px solid #d2d2d2;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #333333;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.payment-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.payment-summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 20px 22px;
+    border: 1px solid #dfdfdf;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.payment-summary-card span {
+    color: #8a8a8a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.payment-summary-card strong {
+    color: #222222;
+    font-size: 23px;
+}
+
+.payment-history-panel {
+    padding: 22px;
+    border: 1px solid #dfdfdf;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+.payment-history-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 17px;
+}
+
+.payment-history-panel-header h2 {
+    margin: 0;
+    color: #222222;
+    font-size: 20px;
+}
+
+.payment-history-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #f0f0f0;
+    color: #555555;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.payment-history-empty {
+    padding: 68px 20px;
+    border: 1px dashed #dcdcdc;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.payment-history-empty strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #333333;
+}
+
+.payment-history-empty p {
+    margin: 0;
+    color: #8a8a8a;
+    font-size: 13px;
+}
+
+.payment-history-list {
+    display: grid;
+    gap: 11px;
+}
+
+.payment-history-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    gap: 22px;
+    align-items: center;
+    padding: 19px 20px;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.payment-history-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 11px;
+}
+
+.payment-history-title {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+.payment-history-title strong {
+    overflow: hidden;
+    color: #222222;
+    font-size: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.payment-history-title span {
+    color: #aaaaaa;
+    font-size: 11px;
+}
+
+.payment-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    min-width: 72px;
+    height: 31px;
+    padding: 0 11px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.payment-status-paid {
+    background: #edf5f0;
+    color: #4d705c;
+}
+
+.payment-status-refunded {
+    background: #eeeeee;
+    color: #686868;
+}
+
+.payment-status-unpaid {
+    background: #fff3d8;
+    color: #7b6328;
+}
+
+.payment-history-information {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 18px;
+    color: #888888;
+    font-size: 12px;
+}
+
+.payment-history-information b {
+    margin-left: 4px;
+    color: #555555;
+    font-weight: 700;
+}
+
+.payment-event-information {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px 9px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #f7f7f7;
+    color: #555555;
+    font-size: 12px;
+}
+
+.payment-event-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 46px;
+    height: 22px;
+    border-radius: 999px;
+    background: #222222;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+}
+
+.payment-price {
+    padding-left: 20px;
+    border-left: 1px solid #ededed;
+}
+
+.payment-price > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.payment-price span {
+    color: #919191;
+    font-size: 11px;
+}
+
+.payment-price strong {
+    color: #555555;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.payment-original-price strong {
+    color: #aaaaaa;
+    text-decoration: line-through;
+}
+
+.payment-final-price {
+    margin-top: 11px;
+    padding-top: 11px;
+    border-top: 1px solid #ededed;
+}
+
+.payment-final-price span {
+    color: #555555;
+    font-weight: 700;
+}
+
+.payment-final-price strong {
+    color: #222222;
+    font-size: 17px;
+}
+
+@media (max-width: 760px) {
+
+    .payment-history-page {
+        padding: 42px 16px 65px;
+    }
+
+    .payment-history-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .payment-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-history-item {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-price {
+        padding-top: 15px;
+        padding-left: 0;
+        border-top: 1px solid #ededed;
+        border-left: 0;
+    }
+}

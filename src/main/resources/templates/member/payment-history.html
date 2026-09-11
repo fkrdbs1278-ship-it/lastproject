@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>결제 내역</title>
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/common.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/header.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/layout/footer.css}"
+    >
+
+    <link
+            rel="stylesheet"
+            th:href="@{/css/member/payment-history.css}"
+    >
+
+</head>
+
+<body>
+
+<header th:replace="~{layout/header :: header}"></header>
+
+
+<main class="payment-history-page">
+
+    <div class="payment-history-container">
+
+        <section class="payment-history-heading">
+
+            <div>
+
+                <p class="payment-history-eyebrow">
+                    MY PAYMENT
+                </p>
+
+                <h1>
+                    결제 내역
+                </h1>
+
+                <p class="payment-history-description">
+                    시술 결제와 이벤트 할인 내역을 확인할 수 있습니다.
+                </p>
+
+            </div>
+
+
+            <a
+                    th:href="@{/member/mypage}"
+                    class="payment-history-back-button"
+            >
+                마이페이지
+            </a>
+
+        </section>
+
+
+        <section class="payment-summary">
+
+            <article class="payment-summary-card">
+
+                <span>
+                    결제 완료
+                </span>
+
+                <strong th:text="${paidCount + '건'}">
+                    0건
+                </strong>
+
+            </article>
+
+
+            <article class="payment-summary-card">
+
+                <span>
+                    누적 결제 금액
+                </span>
+
+                <strong
+                        th:text="${#numbers.formatInteger(totalPaidAmount, 1, 'COMMA') + '원'}"
+                >
+                    0원
+                </strong>
+
+            </article>
+
+
+            <article class="payment-summary-card">
+
+                <span>
+                    환불 완료
+                </span>
+
+                <strong th:text="${refundedCount + '건'}">
+                    0건
+                </strong>
+
+            </article>
+
+        </section>
+
+
+        <section class="payment-history-panel">
+
+            <div class="payment-history-panel-header">
+
+                <div>
+
+                    <p class="payment-history-section-label">
+                        PAYMENT HISTORY
+                    </p>
+
+                    <h2>
+                        내 결제
+                    </h2>
+
+                </div>
+
+
+                <span
+                        class="payment-history-count"
+                        th:text="${#lists.size(payments) + '건'}"
+                >
+                    0건
+                </span>
+
+            </div>
+
+
+            <div
+                    class="payment-history-empty"
+                    th:if="${#lists.isEmpty(payments)}"
+            >
+
+                <strong>
+                    아직 결제 내역이 없습니다.
+                </strong>
+
+                <p>
+                    시술 결제가 등록되면 이곳에서 확인할 수 있습니다.
+                </p>
+
+            </div>
+
+
+            <div
+                    class="payment-history-list"
+                    th:unless="${#lists.isEmpty(payments)}"
+            >
+
+                <article
+                        class="payment-history-item"
+                        th:each="payment : ${payments}"
+                >
+
+                    <div class="payment-history-main">
+
+                        <div class="payment-history-title-row">
+
+                            <div class="payment-history-title">
+
+                                <strong
+                                        th:text="${payment.serviceName != null
+                                            ? payment.serviceName
+                                            : '시술 결제'}"
+                                >
+                                    시술 결제
+                                </strong>
+
+                                <span
+                                        th:text="${'#' + payment.paymentNo}"
+                                >
+                                    #1
+                                </span>
+
+                            </div>
+
+
+                            <span
+                                    class="payment-status-badge"
+                                    th:classappend="${' payment-status-'
+                                        + #strings.toLowerCase(payment.paymentStatus)}"
+                                    th:text="${payment.paymentStatusName}"
+                            >
+                                결제 완료
+                            </span>
+
+                        </div>
+
+
+                        <div class="payment-history-information">
+
+                            <span
+                                    th:if="${payment.reservationStartAt != null}"
+                            >
+                                예약일시
+                                <b
+                                        th:text="${#temporals.format(
+                                            payment.reservationStartAt,
+                                            'yyyy.MM.dd HH:mm'
+                                        )}"
+                                >
+                                    2026.09.11 14:00
+                                </b>
+                            </span>
+
+
+                            <span>
+                                결제수단
+                                <b th:text="${payment.paymentMethodName}">
+                                    카드
+                                </b>
+                            </span>
+
+
+                            <span
+                                    th:if="${payment.paidAt != null}"
+                            >
+                                결제일시
+                                <b
+                                        th:text="${#temporals.format(
+                                            payment.paidAt,
+                                            'yyyy.MM.dd HH:mm'
+                                        )}"
+                                >
+                                    2026.09.11 15:00
+                                </b>
+                            </span>
+
+
+                            <span
+                                    th:if="${payment.refundedAt != null}"
+                            >
+                                환불일시
+                                <b
+                                        th:text="${#temporals.format(
+                                            payment.refundedAt,
+                                            'yyyy.MM.dd HH:mm'
+                                        )}"
+                                >
+                                    2026.09.12 10:00
+                                </b>
+                            </span>
+
+                        </div>
+
+
+                        <div
+                                class="payment-event-information"
+                                th:if="${payment.eventTitle != null
+                                    and !#strings.isEmpty(payment.eventTitle)}"
+                        >
+
+                            <span class="payment-event-label">
+                                EVENT
+                            </span>
+
+                            <strong th:text="${payment.eventTitle}">
+                                첫 방문 50% 할인
+                            </strong>
+
+                            <span
+                                    th:if="${payment.discountAmount != null
+                                        and payment.discountAmount > 0}"
+                                    th:text="${'-'
+                                        + #numbers.formatInteger(
+                                            payment.discountAmount,
+                                            1,
+                                            'COMMA'
+                                        )
+                                        + '원'}"
+                            >
+                                -50,000원
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="payment-price">
+
+                        <div
+                                class="payment-original-price"
+                                th:if="${payment.discountAmount != null
+                                    and payment.discountAmount > 0}"
+                        >
+
+                            <span>
+                                정상가
+                            </span>
+
+                            <strong
+                                    th:text="${#numbers.formatInteger(
+                                        payment.originalAmount,
+                                        1,
+                                        'COMMA'
+                                    ) + '원'}"
+                            >
+                                100,000원
+                            </strong>
+
+                        </div>
+
+
+                        <div
+                                class="payment-discount-price"
+                                th:if="${payment.discountAmount != null
+                                    and payment.discountAmount > 0}"
+                        >
+
+                            <span>
+                                할인
+                            </span>
+
+                            <strong
+                                    th:text="${'-'
+                                        + #numbers.formatInteger(
+                                            payment.discountAmount,
+                                            1,
+                                            'COMMA'
+                                        )
+                                        + '원'}"
+                            >
+                                -50,000원
+                            </strong>
+
+                        </div>
+
+
+                        <div class="payment-final-price">
+
+                            <span>
+                                결제금액
+                            </span>
+
+                            <strong
+                                    th:text="${#numbers.formatInteger(
+                                        payment.paymentAmount,
+                                        1,
+                                        'COMMA'
+                                    ) + '원'}"
+                            >
+                                50,000원
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+
+</body>
+</html>

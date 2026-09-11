@@ -75,7 +75,7 @@
                 </h1>
 
                 <p class="mypage-description">
-                    회원정보와 서비스 이용 내역을 확인할 수 있습니다.
+                    회원정보와 예약, 결제, 리뷰 내역을 확인할 수 있습니다.
                 </p>
 
             </div>
@@ -275,10 +275,7 @@
 
 
         <!-- =========================================
-             서비스 이용 메뉴
-
-             예약/결제/쿠폰 기능 Merge 전이므로
-             일단 화면 구조만 만든다.
+             서비스 이용 내역
         ========================================== -->
 
         <section class="mypage-section">
@@ -293,7 +290,7 @@
                     </h2>
 
                     <p>
-                        이용 중인 서비스를 확인할 수 있습니다.
+                        예약, 결제와 리뷰 내역을 확인할 수 있습니다.
                     </p>
 
                 </div>
@@ -311,57 +308,59 @@
                         class="mypage-menu-card mypage-menu-link"
                 >
 
-                    <h3>
-                        예약 내역
-                    </h3>
+                    <div class="mypage-menu-content">
 
-                    <p>
-                        예약 상태, 일정, 변경 및 취소 내역을 확인합니다.
-                    </p>
+                        <span class="mypage-menu-category">
+                            RESERVATION
+                        </span>
+
+                        <h3>
+                            예약 내역
+                        </h3>
+
+                        <p>
+                            예약 상태와 일정, 변경 및 취소 내역을 확인합니다.
+                        </p>
+
+                    </div>
+
 
                     <span class="mypage-menu-arrow">
-                        보기 →
+                        예약 내역 보기 →
                     </span>
 
                 </a>
 
 
-                <!-- 결제 -->
+                <!-- 결제 내역 -->
 
-                <div class="mypage-menu-card">
+                <a
+                        th:href="@{/member/payments}"
+                        class="mypage-menu-card mypage-menu-link"
+                >
 
-                    <h3>
-                        결제 내역
-                    </h3>
+                    <div class="mypage-menu-content">
 
-                    <p>
-                        결제한 서비스 내역을 확인합니다.
-                    </p>
+                        <span class="mypage-menu-category">
+                            PAYMENT
+                        </span>
 
-                    <span class="mypage-menu-ready">
-                        준비 중
+                        <h3>
+                            결제 내역
+                        </h3>
+
+                        <p>
+                            결제 금액과 적용된 이벤트 할인 내역을 확인합니다.
+                        </p>
+
+                    </div>
+
+
+                    <span class="mypage-menu-arrow">
+                        결제 내역 보기 →
                     </span>
 
-                </div>
-
-
-                <!-- 쿠폰 -->
-
-                <div class="mypage-menu-card">
-
-                    <h3>
-                        보유 쿠폰
-                    </h3>
-
-                    <p>
-                        사용할 수 있는 쿠폰을 확인합니다.
-                    </p>
-
-                    <span class="mypage-menu-ready">
-                        준비 중
-                    </span>
-
-                </div>
+                </a>
 
 
                 <!-- 리뷰 -->
@@ -371,16 +370,25 @@
                         class="mypage-menu-card mypage-menu-link"
                 >
 
-                    <h3>
-                        내 리뷰
-                    </h3>
+                    <div class="mypage-menu-content">
 
-                    <p>
-                        내가 작성한 리뷰를 확인합니다.
-                    </p>
+                        <span class="mypage-menu-category">
+                            REVIEW
+                        </span>
+
+                        <h3>
+                            내 리뷰
+                        </h3>
+
+                        <p>
+                            작성한 리뷰와 시술 후기를 확인합니다.
+                        </p>
+
+                    </div>
+
 
                     <span class="mypage-menu-arrow">
-                        보기 →
+                        리뷰 보기 →
                     </span>
 
                 </a>
@@ -405,6 +413,10 @@
                     <h2>
                         계정 관리
                     </h2>
+
+                    <p>
+                        회원정보 변경 또는 회원탈퇴를 진행할 수 있습니다.
+                    </p>
 
                 </div>
 

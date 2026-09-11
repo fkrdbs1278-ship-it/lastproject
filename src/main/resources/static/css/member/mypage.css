@@ -344,3 +344,230 @@
         width: 100%;
     }
 }
+
+/* =========================================================
+   서비스 이용 메뉴
+   ========================================================= */
+
+.mypage-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.mypage-menu-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    min-height: 190px;
+    padding: 24px;
+
+    border: 1px solid #e2e2e2;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    overflow: hidden;
+}
+
+.mypage-menu-link {
+    color: inherit;
+    text-decoration: none;
+
+    transition:
+            border-color 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.mypage-menu-link:hover {
+    border-color: #bcbcbc;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+            0 8px 22px
+            rgba(0, 0, 0, 0.05);
+}
+
+
+/* 상단 영문 카테고리 */
+
+.mypage-menu-category {
+    display: block;
+
+    margin-bottom: 14px;
+
+    color: #a0a0a0;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.3px;
+}
+
+
+/* 메뉴 제목 */
+
+.mypage-menu-card h3 {
+    margin: 0 0 10px;
+
+    color: #222222;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+/* 메뉴 설명 */
+
+.mypage-menu-card p {
+    margin: 0;
+
+    color: #777777;
+
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+
+/* 이동 버튼 */
+
+.mypage-menu-arrow {
+    display: inline-flex;
+    align-items: center;
+
+    margin-top: 24px;
+
+    color: #444444;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+/* 왼쪽 포인트 */
+
+.mypage-menu-link::before {
+    content: "";
+
+    position: absolute;
+
+    top: 24px;
+    left: 0;
+
+    width: 3px;
+    height: 0;
+
+    border-radius:
+            0 2px 2px 0;
+
+    background: #222222;
+
+    transition:
+            height 0.2s ease;
+}
+
+.mypage-menu-link:hover::before {
+    height: 42px;
+}
+
+
+/* =========================================================
+   계정 관리
+   ========================================================= */
+
+.mypage-account-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mypage-account-button,
+.mypage-withdraw-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 120px;
+    height: 42px;
+
+    padding: 0 16px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+            border-color 0.2s ease,
+            background 0.2s ease;
+}
+
+.mypage-account-button {
+    border: 1px solid #cccccc;
+
+    background: #ffffff;
+
+    color: #333333;
+}
+
+.mypage-account-button:hover {
+    border-color: #999999;
+
+    background: #fafafa;
+}
+
+.mypage-withdraw-button {
+    border: 1px solid #e1d1d1;
+
+    background: #ffffff;
+
+    color: #8b5a5a;
+}
+
+.mypage-withdraw-button:hover {
+    border-color: #c9aaaa;
+
+    background: #fdf8f8;
+}
+
+
+/* =========================================================
+   반응형
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .mypage-menu-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 640px) {
+
+    .mypage-menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mypage-menu-card {
+        min-height: 165px;
+    }
+
+    .mypage-account-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .mypage-account-button,
+    .mypage-withdraw-button {
+        width: 100%;
+    }
+}
