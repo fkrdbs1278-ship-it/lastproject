@@ -24,6 +24,14 @@
     const editAvailabilityNotice = document.getElementById("editAvailabilityNotice");
     const editRequestMemo = document.getElementById("editRequestMemo");
 
+    const cancelOverlay = document.getElementById("memberCancelOverlay");
+    const cancelReservationNo = document.getElementById("cancelReservationNo");
+    const cancelReason = document.getElementById("cancelReason");
+    const cancelReasonCount = document.getElementById("cancelReasonCount");
+    const closeCancelButton = document.getElementById("closeMemberCancel");
+    const cancelCancelButton = document.getElementById("cancelMemberCancel");
+    const confirmCancelButton = document.getElementById("confirmMemberCancel");
+
     let serviceMenus = [];
     let editingDetail = null;
     let selectedEditTime = null;
@@ -42,6 +50,49 @@
 
     editOverlay?.addEventListener("click", e => {
         if (e.target === editOverlay) closeEdit();
+    });
+
+    closeCancelButton?.addEventListener("click", closeCancelModal);
+    cancelCancelButton?.addEventListener("click", closeCancelModal);
+
+    cancelOverlay?.addEventListener("click", e => {
+        if (e.target === cancelOverlay) closeCancelModal();
+    });
+
+    cancelReason?.addEventListener("input", () => {
+        if (cancelReasonCount) {
+            cancelReasonCount.textContent =
+                String(cancelReason.value.length);
+        }
+    });
+
+    confirmCancelButton?.addEventListener("click", async () => {
+        const reservationNo = Number(cancelReservationNo?.value);
+        const reason = cancelReason?.value.trim() || "";
+
+        if (!reservationNo) {
+            showMessage("취소할 예약을 확인할 수 없습니다.", true);
+            return;
+        }
+
+        if (!reason) {
+            cancelReason?.focus();
+            showMessage("취소 사유를 입력해주세요.", true);
+            return;
+        }
+
+        confirmCancelButton.disabled = true;
+
+        try {
+            await withScrollPreserved(() =>
+                cancelReservation(reservationNo, reason)
+            );
+            closeCancelModal();
+        } catch (error) {
+            showMessage(error.message, true);
+        } finally {
+            confirmCancelButton.disabled = false;
+        }
     });
 
     editServiceMenu?.addEventListener("change", () => {
