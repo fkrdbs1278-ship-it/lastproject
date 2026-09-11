@@ -354,3 +354,98 @@
     border: 1px solid #f0c8cd;
     color: #ad4f5a;
 }
+
+
+/* === Final compact polish: service menu list === */
+.service-menu-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.service-menu-table th,
+.service-menu-table td {
+    vertical-align: middle;
+}
+
+.service-menu-table th:nth-child(1),
+.service-menu-table td:nth-child(1) {
+    width: 70px;
+}
+
+.service-menu-table th:nth-child(2),
+.service-menu-table td:nth-child(2) {
+    width: 95px;
+}
+
+.service-menu-table th:nth-child(3),
+.service-menu-table td:nth-child(3) {
+    width: auto;
+}
+
+.service-menu-table th:nth-child(4),
+.service-menu-table td:nth-child(4) {
+    width: 120px;
+}
+
+.service-menu-table th:nth-child(5),
+.service-menu-table td:nth-child(5) {
+    width: 90px;
+}
+
+.service-menu-table th:nth-child(6),
+.service-menu-table td:nth-child(6) {
+    width: 92px;
+}
+
+.service-menu-table th:nth-child(7),
+.service-menu-table td:nth-child(7) {
+    width: 220px;
+}
+
+.service-menu-table .service-name-cell {
+    min-width: 0;
+}
+
+.service-menu-table .service-name-cell strong,
+.service-menu-table .service-name-cell small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.service-menu-table .table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+.service-menu-table .table-actions form {
+    margin: 0;
+}
+
+.service-menu-table .table-edit-link,
+.service-menu-table .table-toggle-button,
+.service-menu-table .table-delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    min-height: 34px;
+    padding: 0 10px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    word-break: keep-all;
+    font-size: 12px;
+}
+
+.service-menu-table .table-toggle-button {
+    min-width: 72px;
+}
+
+.service-menu-table .table-delete-button {
+    min-width: 58px;
+}

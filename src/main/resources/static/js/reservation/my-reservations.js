@@ -20,17 +20,24 @@
     const editReservationNo = document.getElementById("editReservationNo");
     const editServiceMenu = document.getElementById("editServiceMenu");
     const editDate = document.getElementById("editDate");
+    const todayStringForEdit = (() => {
+        const now = new Date();
+        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    })();
+    const maxEditDateString = (() => {
+        const max = new Date();
+        max.setFullYear(max.getFullYear() + 1);
+        return `${max.getFullYear()}-${String(max.getMonth() + 1).padStart(2, "0")}-${String(max.getDate()).padStart(2, "0")}`;
+    })();
+
+    if (editDate) {
+        editDate.min = todayStringForEdit;
+        editDate.max = maxEditDateString;
+    }
+
     const editTimeSlots = document.getElementById("editTimeSlots");
     const editAvailabilityNotice = document.getElementById("editAvailabilityNotice");
     const editRequestMemo = document.getElementById("editRequestMemo");
-
-    const cancelOverlay = document.getElementById("memberCancelOverlay");
-    const cancelReservationNo = document.getElementById("cancelReservationNo");
-    const cancelReason = document.getElementById("cancelReason");
-    const cancelReasonCount = document.getElementById("cancelReasonCount");
-    const closeCancelButton = document.getElementById("closeMemberCancel");
-    const cancelCancelButton = document.getElementById("cancelMemberCancel");
-    const confirmCancelButton = document.getElementById("confirmMemberCancel");
 
     let serviceMenus = [];
     let editingDetail = null;
@@ -50,49 +57,6 @@
 
     editOverlay?.addEventListener("click", e => {
         if (e.target === editOverlay) closeEdit();
-    });
-
-    closeCancelButton?.addEventListener("click", closeCancelModal);
-    cancelCancelButton?.addEventListener("click", closeCancelModal);
-
-    cancelOverlay?.addEventListener("click", e => {
-        if (e.target === cancelOverlay) closeCancelModal();
-    });
-
-    cancelReason?.addEventListener("input", () => {
-        if (cancelReasonCount) {
-            cancelReasonCount.textContent =
-                String(cancelReason.value.length);
-        }
-    });
-
-    confirmCancelButton?.addEventListener("click", async () => {
-        const reservationNo = Number(cancelReservationNo?.value);
-        const reason = cancelReason?.value.trim() || "";
-
-        if (!reservationNo) {
-            showMessage("취소할 예약을 확인할 수 없습니다.", true);
-            return;
-        }
-
-        if (!reason) {
-            cancelReason?.focus();
-            showMessage("취소 사유를 입력해주세요.", true);
-            return;
-        }
-
-        confirmCancelButton.disabled = true;
-
-        try {
-            await withScrollPreserved(() =>
-                cancelReservation(reservationNo, reason)
-            );
-            closeCancelModal();
-        } catch (error) {
-            showMessage(error.message, true);
-        } finally {
-            confirmCancelButton.disabled = false;
-        }
     });
 
     editServiceMenu?.addEventListener("change", () => {
