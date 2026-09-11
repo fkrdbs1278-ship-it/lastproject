@@ -20,6 +20,7 @@ public class ReviewCreateRequest {
      * STEP 9-3에서 예약 기능과 연결하면
      * 본인의 완료된 예약인지 검사할 예정.
      */
+    @NotNull(message = "리뷰를 작성할 예약 정보가 필요합니다.")
     private Long reservationNo;
 
 

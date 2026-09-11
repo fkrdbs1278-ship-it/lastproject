@@ -5,6 +5,7 @@ import com.young04.lastproject.review.dto.ReviewCreateRequest;
 import com.young04.lastproject.review.dto.ReviewResponse;
 import com.young04.lastproject.review.dto.ReviewUpdateRequest;
 import com.young04.lastproject.review.service.ReviewService;
+import com.young04.lastproject.global.exception.review.InvalidReviewReservationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -125,6 +126,15 @@ public class ReviewController {
             return "redirect:/member/login";
         }
 
+        if (reservationNo == null) {
+            return "redirect:/my-reservations";
+        }
+
+        try {
+            reviewService.validateWritableReservation(loginUser.getMemberNo(), reservationNo);
+        } catch (InvalidReviewReservationException e) {
+            return "redirect:/my-reservations";
+        }
 
         ReviewCreateRequest request =
                 new ReviewCreateRequest();
@@ -181,12 +191,13 @@ public class ReviewController {
         }
 
 
-        Long reviewNo =
-                reviewService.createReview(
-                        loginUser.getMemberNo(),
-                        request
-                );
-
+        Long reviewNo;
+        try {
+            reviewNo = reviewService.createReview(loginUser.getMemberNo(), request);
+        } catch (InvalidReviewReservationException e) {
+            bindingResult.reject("review.reservation", e.getMessage());
+            return "review/write";
+        }
 
         redirectAttributes.addFlashAttribute(
                 "message",

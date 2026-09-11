@@ -3,6 +3,7 @@ package com.young04.lastproject.review.service;
 import com.young04.lastproject.global.exception.member.MemberNotFoundException;
 import com.young04.lastproject.global.exception.review.ReviewAccessDeniedException;
 import com.young04.lastproject.global.exception.review.ReviewNotFoundException;
+import com.young04.lastproject.global.exception.review.InvalidReviewReservationException;
 import com.young04.lastproject.member.entity.Member;
 import com.young04.lastproject.member.repository.MemberRepository;
 import com.young04.lastproject.review.dto.ReviewCreateRequest;
@@ -11,6 +12,9 @@ import com.young04.lastproject.review.dto.ReviewUpdateRequest;
 import com.young04.lastproject.review.entity.Review;
 import com.young04.lastproject.review.entity.ReviewStatus;
 import com.young04.lastproject.review.repository.ReviewRepository;
+import com.young04.lastproject.reservation.entity.Reservation;
+import com.young04.lastproject.reservation.entity.ReservationStatus;
+import com.young04.lastproject.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +29,8 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     private final MemberRepository memberRepository;
+
+    private final ReservationRepository reservationRepository;
 
 
     /* =========================================================
@@ -119,6 +125,24 @@ public class ReviewService {
 
 
 
+    public void validateWritableReservation(Long memberNo, Long reservationNo) {
+        if (reservationNo == null) {
+            throw new InvalidReviewReservationException("리뷰는 완료된 예약에서 작성할 수 있습니다.");
+        }
+
+        Reservation reservation = reservationRepository
+                .findByReservationNoAndMemberNo(reservationNo, memberNo)
+                .orElseThrow(() -> new InvalidReviewReservationException("본인의 예약에서만 리뷰를 작성할 수 있습니다."));
+
+        if (reservation.getStatus() != ReservationStatus.COMPLETED) {
+            throw new InvalidReviewReservationException("시술이 완료된 예약만 리뷰를 작성할 수 있습니다.");
+        }
+
+        if (reviewRepository.existsByReservationNo(reservationNo)) {
+            throw new InvalidReviewReservationException("이미 리뷰를 작성한 예약입니다.");
+        }
+    }
+
     /* =========================================================
        리뷰 등록
     ========================================================= */
@@ -141,14 +165,10 @@ public class ReviewService {
                         );
 
 
-        /*
-         * STEP 9-3에서 추가:
-         *
-         * 1. reservationNo가 본인 예약인가?
-         * 2. COMPLETED 예약인가?
-         * 3. 해당 예약에 ACTIVE 리뷰가 이미 존재하는가?
-         */
-
+        validateWritableReservation(
+                memberNo,
+                request.getReservationNo()
+        );
 
         /* =====================================================
            Review 생성

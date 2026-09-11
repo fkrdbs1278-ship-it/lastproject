@@ -20,21 +20,6 @@
     const editReservationNo = document.getElementById("editReservationNo");
     const editServiceMenu = document.getElementById("editServiceMenu");
     const editDate = document.getElementById("editDate");
-    const todayStringForEdit = (() => {
-        const now = new Date();
-        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-    })();
-    const maxEditDateString = (() => {
-        const max = new Date();
-        max.setFullYear(max.getFullYear() + 1);
-        return `${max.getFullYear()}-${String(max.getMonth() + 1).padStart(2, "0")}-${String(max.getDate()).padStart(2, "0")}`;
-    })();
-
-    if (editDate) {
-        editDate.min = todayStringForEdit;
-        editDate.max = maxEditDateString;
-    }
-
     const editTimeSlots = document.getElementById("editTimeSlots");
     const editAvailabilityNotice = document.getElementById("editAvailabilityNotice");
     const editRequestMemo = document.getElementById("editRequestMemo");
@@ -159,6 +144,13 @@
                                    class="secondary-button cancel-button">
                                 예약 취소
                            </button>`
+                        : ""}
+
+                    ${reservation.status === "COMPLETED"
+                        ? `<a class="secondary-button review-write-link"
+                              href="/reviews/write?reservationNo=${reservation.reservationNo}">
+                                리뷰 작성
+                           </a>`
                         : ""}
                 </div>
             `;

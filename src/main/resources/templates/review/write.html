@@ -72,6 +72,13 @@
                     class="review-form"
             >
 
+                <div class="review-message error"
+                     th:if="${#fields.hasGlobalErrors()}"
+                     th:each="err : ${#fields.globalErrors()}"
+                     th:text="${err}">
+                    리뷰를 등록할 수 없습니다.
+                </div>
+
 
                 <!-- CSRF -->
 

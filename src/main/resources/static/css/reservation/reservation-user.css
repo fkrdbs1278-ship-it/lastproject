@@ -772,91 +772,9 @@ body {
 }
 
 
-/* === Final compact polish: my reservations === */
-#reservationList {
-    display: grid;
-    gap: 12px;
-}
-
-#reservationList .reservation-item {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 14px 20px;
-    align-items: start;
-    padding: 18px 20px;
-    border: 1px solid #e7e7e7;
-    border-radius: 12px;
-    background: #ffffff;
-}
-
-#reservationList .reservation-item-header {
-    display: contents;
-}
-
-#reservationList .reservation-item-header > div:first-child {
-    min-width: 0;
-}
-
-#reservationList .reservation-item-header strong {
-    display: block;
-    margin-bottom: 2px;
-    font-size: 16px;
-    line-height: 1.35;
-}
-
-#reservationList .reservation-item > div:not(.reservation-item-header):not(.reservation-actions) {
-    grid-column: 1 / 2;
-    margin: 0;
-    color: #555555;
-    line-height: 1.45;
-}
-
-#reservationList .reservation-actions {
-    grid-column: 1 / 2;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 2px;
-}
-
-#reservationList .status-badge {
-    grid-column: 2 / 3;
-    grid-row: 1 / span 3;
-    align-self: start;
-    justify-self: end;
+.review-write-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 72px;
-    min-height: 34px;
-    padding: 0 12px;
-    border-radius: 999px;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    font-size: 12px;
-    font-weight: 800;
-}
-
-#reservationList .reservation-item button {
-    min-height: 38px;
-    padding: 0 14px;
-}
-
-@media (max-width: 720px) {
-    #reservationList .reservation-item {
-        grid-template-columns: 1fr;
-    }
-
-    #reservationList .status-badge {
-        grid-column: 1;
-        grid-row: auto;
-        justify-self: start;
-    }
-
-    #reservationList .reservation-actions,
-    #reservationList .reservation-item > div:not(.reservation-item-header):not(.reservation-actions) {
-        grid-column: 1;
-    }
+    text-decoration: none;
 }

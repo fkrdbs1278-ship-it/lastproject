@@ -58,6 +58,8 @@ public interface ReviewRepository
             ReviewStatus status
     );
 
+    boolean existsByReservationNo(Long reservationNo);
+
     /* =========================================================
        특정 회원이 작성한 특정 활성 리뷰
 

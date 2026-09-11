@@ -50,7 +50,7 @@ public class Review {
        SQL에서 NULL 허용
     ========================================================= */
 
-    @Column(name = "RESERVATION_NO")
+    @Column(name = "RESERVATION_NO", nullable = false)
     private Long reservationNo;
 
 
