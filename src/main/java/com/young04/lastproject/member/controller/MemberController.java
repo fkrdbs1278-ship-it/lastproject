@@ -37,6 +37,10 @@ public class MemberController {
 
             Model model
     ) {
+        if (userDetails == null) {
+            return "redirect:/member/login";
+        }
+
 
         MemberResponse member =
                 memberService.getMember(
