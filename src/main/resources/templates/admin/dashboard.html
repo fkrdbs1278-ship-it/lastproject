@@ -87,10 +87,14 @@
 
                 <div class="summary-content">
                     <p class="summary-title">오늘 매출</p>
-                    <strong class="summary-number">580,000원</strong>
+                    <strong class="summary-number"
+                            th:text="${#numbers.formatInteger(paymentSummary.todaySales, 1, 'COMMA') + '원'}">
+                        0원
+                    </strong>
 
                     <p class="summary-description">
-                        오늘 결제 완료 7건
+                        오늘 결제 완료
+                        <strong th:text="${paymentSummary.todayPaymentCount + '건'}">0건</strong>
                     </p>
                 </div>
 
@@ -123,67 +127,67 @@
         <!-- 예약 일정과 재고 알림 -->
         <section class="dashboard-grid">
 
-<!-- 이번 주 실제 예약 일정 -->
-<article class="dashboard-panel reservation-calendar-panel">
+            <!-- 이번 주 실제 예약 일정 -->
+            <article class="dashboard-panel reservation-calendar-panel">
 
-    <div class="calendar-panel-header">
+                <div class="calendar-panel-header">
 
-        <div>
-            <p class="panel-label">RESERVATION SCHEDULE</p>
-            <h2>이번 주 예약 일정</h2>
+                    <div>
+                        <p class="panel-label">RESERVATION SCHEDULE</p>
+                        <h2>이번 주 예약 일정</h2>
 
-            <p class="calendar-summary">
-                이번 주 예약
-                <strong th:text="${reservationSummary.weekCount + '건'}">
-                    0건
-                </strong>
-                <span></span>
-                오늘 고객 예약
-                <strong th:text="${reservationSummary.todayCount + '건'}">
-                    0건
-                </strong>
-                <span></span>
-                남은 예약
-                <strong th:text="${reservationSummary.todayRemainingCount + '건'}">
-                    0건
-                </strong>
-            </p>
-        </div>
+                        <p class="calendar-summary">
+                            이번 주 예약
+                            <strong th:text="${reservationSummary.weekCount + '건'}">
+                                0건
+                            </strong>
+                            <span></span>
+                            오늘 고객 예약
+                            <strong th:text="${reservationSummary.todayCount + '건'}">
+                                0건
+                            </strong>
+                            <span></span>
+                            남은 예약
+                            <strong th:text="${reservationSummary.todayRemainingCount + '건'}">
+                                0건
+                            </strong>
+                        </p>
+                    </div>
 
-        <div class="calendar-controller">
+                    <div class="calendar-controller">
 
-            <strong class="calendar-range">
+                        <strong class="calendar-range">
                 <span th:text="${#temporals.format(reservationSummary.weekStart, 'yyyy년 M월 d일')}">
                     2026년 9월 7일
                 </span>
-                ~
-                <span th:text="${#temporals.format(reservationSummary.weekEnd, 'M월 d일')}">
+                            ~
+                            <span th:text="${#temporals.format(reservationSummary.weekEnd, 'M월 d일')}">
                     9월 13일
                 </span>
-            </strong>
+                        </strong>
 
-            <a th:href="@{/admin/reservations}"
-               class="calendar-all-button">
-                전체 예약 보기
-                <span>→</span>
-            </a>
+                        <a th:href="@{/admin/reservations}"
+                           class="calendar-all-button">
+                            전체 예약 보기
+                            <span>→</span>
+                        </a>
 
-        </div>
+                    </div>
 
-    </div>
+                </div>
 
-    <!-- 실제 DB 예약을 이용한 주간 캘린더 -->
-    <div class="week-calendar">
+                <!-- 실제 DB 예약을 이용한 주간 캘린더 -->
+                <div class="week-calendar">
 
-        <!-- 좌측 시간 + 7일 헤더 -->
-        <div class="week-calendar-header">
-            <div class="calendar-time-heading">
-                시간
-            </div>
+                    <!-- 좌측 시간 + 7일 헤더 -->
+                    <div class="week-calendar-header">
+                        <div class="calendar-time-heading">
+                            시간
+                        </div>
 
-            <div class="calendar-day-heading"
-                 th:each="day : ${reservationSummary.calendarDays}"
-                 th:classappend="${
+                        <div class="calendar-day-heading"
+                             th:each="day : ${reservationSummary.calendarDays}"
+                             th:classappend="${
                     (day.today ? ' today' : '')
                     + (day.saturday ? ' saturday' : '')
                     + (day.sunday ? ' sunday' : '')
@@ -193,169 +197,169 @@
                     월
                 </span>
 
-                <strong th:text="${day.date.dayOfMonth}">
-                    7
-                </strong>
+                            <strong th:text="${day.date.dayOfMonth}">
+                                7
+                            </strong>
 
-                <small th:if="${!day.closed}"
-                       th:text="${day.reservationCount + '건'}">
-                    0건
-                </small>
+                            <small th:if="${!day.closed}"
+                                   th:text="${day.reservationCount + '건'}">
+                                0건
+                            </small>
 
-                <small th:if="${day.closed}"
-                       class="closed-day-label"
-                       th:text="${day.closedLabel}">
-                    휴무
-                </small>
+                            <small th:if="${day.closed}"
+                                   class="closed-day-label"
+                                   th:text="${day.closedLabel}">
+                                휴무
+                            </small>
 
-            </div>
-        </div>
+                        </div>
+                    </div>
 
-        <div class="week-calendar-body"
-             th:style="${'--calendar-hours: '
+                    <div class="week-calendar-body"
+                         th:style="${'--calendar-hours: '
                        + (reservationSummary.calendarEndHour
                           - reservationSummary.calendarStartHour)}">
 
-            <!-- 시간 라벨 -->
-            <div class="calendar-time-axis">
-                <div class="calendar-hour-label"
-                     th:each="hour : ${#numbers.sequence(
+                        <!-- 시간 라벨 -->
+                        <div class="calendar-time-axis">
+                            <div class="calendar-hour-label"
+                                 th:each="hour : ${#numbers.sequence(
                         reservationSummary.calendarStartHour,
                         reservationSummary.calendarEndHour - 1
                      )}"
-                     th:text="${#numbers.formatInteger(hour, 2) + ':00'}">
-                    10:00
-                </div>
-            </div>
+                                 th:text="${#numbers.formatInteger(hour, 2) + ':00'}">
+                                10:00
+                            </div>
+                        </div>
 
-            <!-- 7일 캘린더 본문 -->
-            <div class="calendar-day-grid">
+                        <!-- 7일 캘린더 본문 -->
+                        <div class="calendar-day-grid">
 
-                <div class="calendar-day-column"
-                     th:each="day, stat : ${reservationSummary.calendarDays}"
-                     th:classappend="${
+                            <div class="calendar-day-column"
+                                 th:each="day, stat : ${reservationSummary.calendarDays}"
+                                 th:classappend="${
                          (day.today ? ' today-column' : '')
                          + (day.closed ? ' closed-column' : '')
                       }">
 
-                    <div class="calendar-hour-line"
-                         th:each="hour : ${#numbers.sequence(
+                                <div class="calendar-hour-line"
+                                     th:each="hour : ${#numbers.sequence(
                             reservationSummary.calendarStartHour,
                             reservationSummary.calendarEndHour - 1
                          )}">
-                    </div>
+                                </div>
 
-                    <div class="calendar-closed-overlay"
-                         th:if="${day.closed}">
+                                <div class="calendar-closed-overlay"
+                                     th:if="${day.closed}">
                         <span th:text="${day.closedLabel}">
                             정기 휴무
                         </span>
-                    </div>
+                                </div>
 
-                </div>
+                            </div>
 
-                <!-- 예약 / 개인 일정 / 부분 휴무 블록 -->
-                <th:block th:each="block : ${reservationSummary.calendarBlocks}">
+                            <!-- 예약 / 개인 일정 / 부분 휴무 블록 -->
+                            <th:block th:each="block : ${reservationSummary.calendarBlocks}">
 
-                    <a th:if="${block.type.name() == 'RESERVATION'}"
-                       class="calendar-schedule-block reservation-schedule-block"
-                       th:classappend="${
+                                <a th:if="${block.type.name() == 'RESERVATION'}"
+                                   class="calendar-schedule-block reservation-schedule-block"
+                                   th:classappend="${
                           ' status-'
                           + #strings.toLowerCase(block.reservationStatus.name())
                        }"
-                       th:href="@{/admin/reservations(reservationNo=${block.reservationNo})}"
-                       th:style="${'--day-index: ' + block.dayIndex
+                                   th:href="@{/admin/reservations(reservationNo=${block.reservationNo})}"
+                                   th:style="${'--day-index: ' + block.dayIndex
                                + '; --start-minute: ' + block.startMinute
                                + '; --duration-minute: ' + block.durationMinute}">
 
-                        <strong th:text="${block.title}">
-                            김○○
-                        </strong>
+                                    <strong th:text="${block.title}">
+                                        김○○
+                                    </strong>
 
-                        <span th:text="${block.subtitle}">
+                                    <span th:text="${block.subtitle}">
                             커트
                         </span>
 
-                        <small th:text="${block.timeLabel}">
-                            10:00 · 30분
-                        </small>
+                                    <small th:text="${block.timeLabel}">
+                                        10:00 · 30분
+                                    </small>
 
-                    </a>
+                                </a>
 
-                    <div th:if="${block.type.name() != 'RESERVATION'}"
-                         class="calendar-schedule-block schedule-blocked"
-                         th:classappend="${
+                                <div th:if="${block.type.name() != 'RESERVATION'}"
+                                     class="calendar-schedule-block schedule-blocked"
+                                     th:classappend="${
                              block.type.name() == 'PERSONAL'
                              ? ' personal-block'
                              : ' holiday-block'
                          }"
-                         th:style="${'--day-index: ' + block.dayIndex
+                                     th:style="${'--day-index: ' + block.dayIndex
                                  + '; --start-minute: ' + block.startMinute
                                  + '; --duration-minute: ' + block.durationMinute}">
 
-                        <strong th:text="${block.title}">
-                            예약 불가
-                        </strong>
+                                    <strong th:text="${block.title}">
+                                        예약 불가
+                                    </strong>
 
-                        <span th:text="${block.subtitle}">
+                                    <span th:text="${block.subtitle}">
                             개인 일정
                         </span>
 
-                        <small th:text="${block.timeLabel}">
-                            14:00 ~ 15:00
-                        </small>
+                                    <small th:text="${block.timeLabel}">
+                                        14:00 ~ 15:00
+                                    </small>
+
+                                </div>
+
+                            </th:block>
+
+                        </div>
 
                     </div>
 
-                </th:block>
+                </div>
 
-            </div>
+                <div class="calendar-bottom">
 
-        </div>
-
-    </div>
-
-    <div class="calendar-bottom">
-
-        <div class="calendar-legend">
+                    <div class="calendar-legend">
             <span>
                 <i class="calendar-legend-color requested-color"></i>
                 접수
             </span>
 
-            <span>
+                        <span>
                 <i class="calendar-legend-color confirmed-color"></i>
                 확정
             </span>
 
-            <span>
+                        <span>
                 <i class="calendar-legend-color completed-color"></i>
                 시술 완료
             </span>
 
-            <span>
+                        <span>
                 <i class="calendar-legend-color no-show-color"></i>
                 노쇼
             </span>
 
-            <span>
+                        <span>
                 <i class="calendar-legend-color personal-color"></i>
                 개인 일정
             </span>
 
-            <span>
+                        <span>
                 <i class="calendar-legend-color holiday-color"></i>
                 휴무·예약 불가
             </span>
 
-            <span class="calendar-count-note">
+                        <span class="calendar-count-note">
                 ※ 개인 일정·휴무는 예약 건수에 포함되지 않습니다.
             </span>
-        </div>
+                    </div>
 
-    </div>
+                </div>
 
-</article>
+            </article>
 
 
             <!-- 오른쪽 운영 관리 영역 -->
@@ -662,7 +666,10 @@
 
                     <div class="sales-chart-summary">
                         <span>최근 7일 총매출</span>
-                        <strong id="weeklySalesTotal">3,640,000원</strong>
+                        <strong id="weeklySalesTotal"
+                                th:text="${#numbers.formatInteger(weeklySalesTotal, 1, 'COMMA') + '원'}">
+                            0원
+                        </strong>
 
                         <a href="/admin/payment"
                            th:href="@{/admin/payment}"
@@ -690,69 +697,49 @@
                     <div>
                         <p class="panel-label">POPULAR SERVICE</p>
                         <h2>인기 시술 TOP 5</h2>
-                        <p>이번 달 시술 완료 건수 기준입니다.</p>
+                        <p>이번 달 결제 완료 건수 기준입니다.</p>
                     </div>
 
                     <span class="popular-service-period">이번 달</span>
 
                 </div>
 
-                <!-- 실제 시술 통계 연결 전 화면 확인용 더미 데이터 -->
+                <!-- 이번 달 결제 완료(PAID) 기준 실제 인기 시술 -->
                 <div class="popular-service-list">
 
-                    <div class="popular-service-item">
-                        <span class="popular-rank first">1</span>
+                    <div class="popular-service-item"
+                         th:each="service, stat : ${popularServices}">
+
+                        <span class="popular-rank"
+                              th:classappend="${stat.index == 0 ? ' first' : ''}"
+                              th:text="${stat.count}">
+                            1
+                        </span>
 
                         <div class="popular-service-info">
-                            <strong>남성 커트</strong>
-                            <span>시술 완료</span>
+                            <strong th:text="${service.serviceName}">
+                                시술명
+                            </strong>
+                            <span>결제 완료</span>
                         </div>
 
-                        <strong class="popular-service-count">38건</strong>
+                        <strong class="popular-service-count"
+                                th:text="${service.paymentCount + '건'}">
+                            0건
+                        </strong>
                     </div>
 
-                    <div class="popular-service-item">
-                        <span class="popular-rank">2</span>
+                    <div class="popular-service-item"
+                         th:if="${#lists.isEmpty(popularServices)}">
+
+                        <span class="popular-rank">-</span>
 
                         <div class="popular-service-info">
-                            <strong>여성 커트</strong>
-                            <span>시술 완료</span>
+                            <strong>결제 완료된 시술이 없습니다.</strong>
+                            <span>이번 달 PAID 결제 기준</span>
                         </div>
 
-                        <strong class="popular-service-count">31건</strong>
-                    </div>
-
-                    <div class="popular-service-item">
-                        <span class="popular-rank">3</span>
-
-                        <div class="popular-service-info">
-                            <strong>전체 염색</strong>
-                            <span>시술 완료</span>
-                        </div>
-
-                        <strong class="popular-service-count">24건</strong>
-                    </div>
-
-                    <div class="popular-service-item">
-                        <span class="popular-rank">4</span>
-
-                        <div class="popular-service-info">
-                            <strong>남성 펌</strong>
-                            <span>시술 완료</span>
-                        </div>
-
-                        <strong class="popular-service-count">19건</strong>
-                    </div>
-
-                    <div class="popular-service-item">
-                        <span class="popular-rank">5</span>
-
-                        <div class="popular-service-info">
-                            <strong>헤어 클리닉</strong>
-                            <span>시술 완료</span>
-                        </div>
-
-                        <strong class="popular-service-count">14건</strong>
+                        <strong class="popular-service-count">0건</strong>
                     </div>
 
                 </div>
@@ -771,31 +758,14 @@
 
 </div>
 
-<!-- 매출 데이터 연결 전 대시보드 차트 표시용 라이브러리 -->
+<!-- 최근 7일 실제 매출 그래프 표시용 라이브러리 -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
-<!-- 실제 매출 정보가 전달되면 사용하고, 없으면 화면 확인용 더미 데이터를 사용한다. -->
+<!-- Controller에서 전달한 최근 7일 실제 매출 데이터를 그래프로 표시한다. -->
 <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function () {
-        const serverSalesLabels = /*[[${weeklySalesLabels}]]*/ null;
-        const serverSalesAmounts = /*[[${weeklySalesAmounts}]]*/ null;
-
-        const salesLabels = Array.isArray(serverSalesLabels)
-        && serverSalesLabels.length > 0
-            ? serverSalesLabels
-            : ["8/28 금", "8/29 토", "8/30 일", "8/31 월", "9/1 화", "9/2 수", "9/3 목"];
-
-        const salesAmounts = Array.isArray(serverSalesAmounts)
-        && serverSalesAmounts.length === salesLabels.length
-            ? serverSalesAmounts
-            : [420000, 680000, 0, 510000, 760000, 690000, 580000];
-
-        const totalSales = salesAmounts.reduce(function (total, amount) {
-            return total + Number(amount || 0);
-        }, 0);
-
-        document.getElementById("weeklySalesTotal").textContent
-            = new Intl.NumberFormat("ko-KR").format(totalSales) + "원";
+        const salesLabels = /*[[${weeklySalesLabels}]]*/ [];
+        const salesAmounts = /*[[${weeklySalesAmounts}]]*/ [];
 
         const chartCanvas = document.getElementById("weeklySalesChart");
 

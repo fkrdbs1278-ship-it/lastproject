@@ -1,6 +1,9 @@
 package com.young04.lastproject.dashboard.controller;
 
 import com.young04.lastproject.material.service.MaterialService;
+import com.young04.lastproject.payment.dto.PaymentTrendDto;
+import com.young04.lastproject.payment.dto.PaymentTrendUnit;
+import com.young04.lastproject.payment.service.PaymentService;
 import com.young04.lastproject.reservation.service.ReservationDashboardService;
 import com.young04.lastproject.purchaseorder.repository.PurchaseOrderRepository;
 import com.young04.lastproject.purchaseorder.entity.PurchaseOrder;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,9 @@ public class DashboardController {
     // 예약 도메인의 실제 예약 현황 조회
     private final ReservationDashboardService reservationDashboardService;
 
+    // 결제 완료(PAID) 기준 실제 매출 조회
+    private final PaymentService paymentService;
+
     // 관리자 대시보드 조회
     @GetMapping("/admin/dashboard")
     public String dashboard(Model model) {
@@ -49,6 +56,58 @@ public class DashboardController {
         model.addAttribute(
                 "reservationSummary",
                 reservationSummary
+        );
+
+        // 오늘 포함 최근 7일 결제 완료(PAID) 매출
+        LocalDate today = LocalDate.now();
+        LocalDate weekStart = today.minusDays(6);
+
+        var weeklyPaymentData = paymentService.getPaymentPage(
+                weekStart,
+                today,
+                PaymentTrendUnit.DAY
+        );
+
+        // 상단 오늘 매출 / 오늘 결제 완료 건수
+        model.addAttribute(
+                "paymentSummary",
+                weeklyPaymentData.getSummary()
+        );
+
+        // 최근 7일 총매출
+        model.addAttribute(
+                "weeklySalesTotal",
+                weeklyPaymentData.getPeriodTotal()
+        );
+
+        // 최근 7일 그래프 날짜 라벨
+        model.addAttribute(
+                "weeklySalesLabels",
+                weeklyPaymentData.getTrend()
+                        .stream()
+                        .map(PaymentTrendDto::getLabel)
+                        .toList()
+        );
+
+        // 최근 7일 그래프 실제 매출 금액
+        model.addAttribute(
+                "weeklySalesAmounts",
+                weeklyPaymentData.getTrend()
+                        .stream()
+                        .map(PaymentTrendDto::getAmount)
+                        .toList()
+        );
+
+        // 이번 달 결제 완료(PAID) 기준 인기 시술 TOP 5
+        var monthlyPaymentData = paymentService.getPaymentPage(
+                today.withDayOfMonth(1),
+                today,
+                PaymentTrendUnit.DAY
+        );
+
+        model.addAttribute(
+                "popularServices",
+                monthlyPaymentData.getPopularServices()
         );
 
         // 이번 달 방문 고객 수
