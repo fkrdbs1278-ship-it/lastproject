@@ -1,13 +1,14 @@
 package com.young04.lastproject.payment.service;
 
+import com.young04.lastproject.member.entity.Member;
+import com.young04.lastproject.member.repository.MemberRepository;
 import com.young04.lastproject.payment.dto.*;
 import com.young04.lastproject.payment.entity.Payment;
+import com.young04.lastproject.payment.entity.PaymentMethod;
 import com.young04.lastproject.payment.entity.PaymentStatus;
 import com.young04.lastproject.payment.repository.PaymentRepository;
 import com.young04.lastproject.reservation.entity.Reservation;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +25,103 @@ import java.util.stream.Collectors;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final MemberRepository memberRepository;
+
+    /**
+     * 시술 완료 시 해당 예약의 PAYMENT가 없으면 UNPAID 1건을 생성합니다.
+     * 이벤트를 다시 계산하지 않고 Reservation의 가격 snapshot을 그대로 사용합니다.
+     */
+    @Transactional
+    public Payment createUnpaidPaymentIfAbsent(Reservation reservation) {
+        if (reservation == null || reservation.getReservationNo() == null) {
+            throw new IllegalArgumentException("저장된 예약 정보가 필요합니다.");
+        }
+
+        Optional<Payment> existing =
+                paymentRepository.findByReservation_ReservationNo(
+                        reservation.getReservationNo()
+                );
+
+        if (existing.isPresent()) {
+            return existing.get();
+        }
+
+        if (reservation.getOriginalPriceSnapshot() == null
+                || reservation.getFinalPriceSnapshot() == null) {
+            throw new IllegalStateException("예약 가격 snapshot이 없습니다.");
+        }
+
+        Member member = null;
+
+        if (reservation.getMemberNo() != null) {
+            member = memberRepository
+                    .findById(reservation.getMemberNo())
+                    .orElseThrow(
+                            () -> new IllegalStateException(
+                                    "예약에 연결된 회원을 찾을 수 없습니다."
+                            )
+                    );
+        }
+
+        Long originalAmount =
+                reservation.getOriginalPriceSnapshot().longValue();
+
+        Long discountAmount =
+                reservation.getDiscountAmountSnapshot() == null
+                        ? 0L
+                        : reservation.getDiscountAmountSnapshot().longValue();
+
+        Long paymentAmount =
+                reservation.getFinalPriceSnapshot().longValue();
+
+        Payment payment = Payment.createUnpaid(
+                reservation,
+                member,
+                originalAmount,
+                discountAmount,
+                paymentAmount,
+                null
+        );
+
+        return paymentRepository.save(payment);
+    }
+
+    /**
+     * 관리자 결제 완료 처리
+     */
+    @Transactional
+    public Payment completePayment(
+            Long paymentNo,
+            PaymentMethod paymentMethod
+    ) {
+        Payment payment = paymentRepository
+                .findById(paymentNo)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "결제 정보를 찾을 수 없습니다. paymentNo=" + paymentNo
+                        )
+                );
+
+        payment.pay(paymentMethod);
+        return payment;
+    }
+
+    /**
+     * 관리자 환불 처리
+     */
+    @Transactional
+    public Payment refundPayment(Long paymentNo) {
+        Payment payment = paymentRepository
+                .findById(paymentNo)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "결제 정보를 찾을 수 없습니다. paymentNo=" + paymentNo
+                        )
+                );
+
+        payment.refund();
+        return payment;
+    }
 
     /**
      * 관리자 매출 관리 화면 전체 데이터 조회
@@ -35,35 +131,30 @@ public class PaymentService {
             LocalDate endDate,
             PaymentTrendUnit unit
     ) {
-        PaymentSummaryDto summary = getSummary();
+        if (startDate == null || endDate == null) {
+            throw new IllegalArgumentException("조회 기간이 필요합니다.");
+        }
+
+        if (unit == null) {
+            unit = PaymentTrendUnit.DAY;
+        }
 
         LocalDateTime start = startDate.atStartOfDay();
-        LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+        LocalDateTime endExclusive = endDate.plusDays(1).atStartOfDay();
 
-        long periodTotal = getSalesAmount(start, end);
+        List<Payment> periodPayments = findPaidPayments(start, endExclusive);
+        long periodTotal = sumAmount(periodPayments);
 
-        List<PaymentTrendDto> trend = getTrend(
-                startDate,
-                endDate,
-                start,
-                end,
-                unit
-        );
+        PaymentSummaryDto summary = getSummary();
+
+        List<PaymentTrendDto> trend =
+                buildTrend(startDate, endDate, unit, periodPayments);
 
         List<PopularServiceDto> popularServices =
-                paymentRepository.findPopularServices(
-                        PaymentStatus.PAID,
-                        start,
-                        end,
-                        PageRequest.of(0, 5)
-                );
+                buildPopularServices(periodPayments);
 
         List<PaymentMethodSalesDto> paymentMethods =
-                getPaymentMethodSales(
-                        start,
-                        end,
-                        periodTotal
-                );
+                buildPaymentMethodSales(periodPayments, periodTotal);
 
         List<RecentPaymentDto> recentPayments =
                 getRecentPayments();
@@ -79,7 +170,7 @@ public class PaymentService {
     }
 
     /**
-     * 상단 매출 요약
+     * 상단 요약 카드
      */
     private PaymentSummaryDto getSummary() {
         LocalDate today = LocalDate.now();
@@ -88,146 +179,149 @@ public class PaymentService {
         LocalDateTime tomorrowStart = today.plusDays(1).atStartOfDay();
         LocalDateTime yesterdayStart = today.minusDays(1).atStartOfDay();
 
-        long todaySales = getSalesAmount(todayStart, tomorrowStart);
-        long yesterdaySales = getSalesAmount(yesterdayStart, todayStart);
+        List<Payment> todayPayments =
+                findPaidPayments(todayStart, tomorrowStart);
 
-        long todayCount = paymentRepository.countPayments(
-                PaymentStatus.PAID,
-                todayStart,
-                tomorrowStart
-        );
+        List<Payment> yesterdayPayments =
+                findPaidPayments(yesterdayStart, todayStart);
+
+        long todaySales = sumAmount(todayPayments);
+        long yesterdaySales = sumAmount(yesterdayPayments);
+        long todayPaymentCount = todayPayments.size();
 
         long averagePaymentAmount =
-                todayCount == 0 ? 0L : todaySales / todayCount;
+                todayPaymentCount == 0
+                        ? 0L
+                        : todaySales / todayPaymentCount;
 
         YearMonth currentMonth = YearMonth.from(today);
+        YearMonth previousMonth = currentMonth.minusMonths(1);
 
-        LocalDateTime monthStart =
+        LocalDateTime currentMonthStart =
                 currentMonth.atDay(1).atStartOfDay();
 
         LocalDateTime nextMonthStart =
-                currentMonth.plusMonths(1).atDay(1).atStartOfDay();
-
-        YearMonth previousMonth =
-                currentMonth.minusMonths(1);
+                currentMonth.plusMonths(1)
+                        .atDay(1)
+                        .atStartOfDay();
 
         LocalDateTime previousMonthStart =
                 previousMonth.atDay(1).atStartOfDay();
 
         long monthSales =
-                getSalesAmount(
-                        monthStart,
-                        nextMonthStart
+                sumAmount(
+                        findPaidPayments(
+                                currentMonthStart,
+                                nextMonthStart
+                        )
                 );
 
         long previousMonthSales =
-                getSalesAmount(
-                        previousMonthStart,
-                        monthStart
-                );
-
-        Double todayChangeRate =
-                calculateChangeRate(
-                        todaySales,
-                        yesterdaySales
-                );
-
-        Double monthChangeRate =
-                calculateChangeRate(
-                        monthSales,
-                        previousMonthSales
+                sumAmount(
+                        findPaidPayments(
+                                previousMonthStart,
+                                currentMonthStart
+                        )
                 );
 
         return new PaymentSummaryDto(
                 todaySales,
                 monthSales,
-                todayCount,
+                todayPaymentCount,
                 averagePaymentAmount,
-                todayChangeRate,
-                monthChangeRate
+                calculateChangeRate(todaySales, yesterdaySales),
+                calculateChangeRate(monthSales, previousMonthSales)
         );
     }
 
     /**
-     * 기간 매출 합계
+     * PAID 상태만 매출로 조회
      */
-    private long getSalesAmount(
+    private List<Payment> findPaidPayments(
             LocalDateTime start,
             LocalDateTime end
     ) {
-        Long amount =
-                paymentRepository.sumPaymentAmount(
+        return paymentRepository
+                .findByPaymentStatusAndPaidAtGreaterThanEqualAndPaidAtLessThanOrderByPaidAtAsc(
                         PaymentStatus.PAID,
                         start,
                         end
                 );
-
-        return amount == null ? 0L : amount;
     }
 
     /**
-     * 매출 추이 조회
+     * 결제 금액 합계
      */
-    private List<PaymentTrendDto> getTrend(
+    private long sumAmount(List<Payment> payments) {
+        return payments.stream()
+                .map(Payment::getPaymentAmount)
+                .filter(Objects::nonNull)
+                .mapToLong(Long::longValue)
+                .sum();
+    }
+
+    /**
+     * 일/월/연도별 그래프 데이터 생성
+     */
+    private List<PaymentTrendDto> buildTrend(
             LocalDate startDate,
             LocalDate endDate,
-            LocalDateTime start,
-            LocalDateTime end,
-            PaymentTrendUnit unit
+            PaymentTrendUnit unit,
+            List<Payment> payments
     ) {
-        List<PaymentTrendDto> dbResult;
+        Map<String, Long> grouped = new HashMap<>();
 
-        switch (unit) {
-            case MONTH ->
-                    dbResult =
-                            paymentRepository.findMonthlyTrend(
-                                    PaymentStatus.PAID,
-                                    start,
-                                    end
-                            );
+        for (Payment payment : payments) {
+            if (payment.getPaidAt() == null) {
+                continue;
+            }
 
-            case YEAR ->
-                    dbResult =
-                            paymentRepository.findYearlyTrend(
-                                    PaymentStatus.PAID,
-                                    start,
-                                    end
-                            );
+            String key = toPeriodKey(payment.getPaidAt(), unit);
 
-            default ->
-                    dbResult =
-                            paymentRepository.findDailyTrend(
-                                    PaymentStatus.PAID,
-                                    start,
-                                    end
-                            );
+            grouped.merge(
+                    key,
+                    payment.getPaymentAmount() == null
+                            ? 0L
+                            : payment.getPaymentAmount(),
+                    Long::sum
+            );
         }
-
-        Map<String, Long> salesMap =
-                dbResult.stream()
-                        .collect(
-                                Collectors.toMap(
-                                        PaymentTrendDto::getPeriodKey,
-                                        PaymentTrendDto::getAmount
-                                )
-                        );
 
         return fillEmptyPeriods(
                 startDate,
                 endDate,
                 unit,
-                salesMap
+                grouped
         );
     }
 
     /**
-     * 결제가 없는 날짜도 그래프에 0원으로 표시
+     * 그래프 묶음 기준 키
+     */
+    private String toPeriodKey(
+            LocalDateTime paidAt,
+            PaymentTrendUnit unit
+    ) {
+        return switch (unit) {
+            case MONTH ->
+                    YearMonth.from(paidAt).toString();
+
+            case YEAR ->
+                    String.valueOf(paidAt.getYear());
+
+            case DAY ->
+                    paidAt.toLocalDate().toString();
+        };
+    }
+
+    /**
+     * 매출이 없는 기간도 0원으로 채우기
      */
     private List<PaymentTrendDto> fillEmptyPeriods(
             LocalDate startDate,
             LocalDate endDate,
             PaymentTrendUnit unit,
-            Map<String, Long> salesMap
+            Map<String, Long> grouped
     ) {
         List<PaymentTrendDto> result =
                 new ArrayList<>();
@@ -241,10 +335,7 @@ public class PaymentService {
                 result.add(
                         new PaymentTrendDto(
                                 key,
-                                salesMap.getOrDefault(
-                                        key,
-                                        0L
-                                )
+                                grouped.getOrDefault(key, 0L)
                         )
                 );
 
@@ -267,10 +358,7 @@ public class PaymentService {
                 result.add(
                         new PaymentTrendDto(
                                 key,
-                                salesMap.getOrDefault(
-                                        key,
-                                        0L
-                                )
+                                grouped.getOrDefault(key, 0L)
                         )
                 );
 
@@ -280,12 +368,9 @@ public class PaymentService {
             return result;
         }
 
-        int startYear = startDate.getYear();
-        int endYear = endDate.getYear();
-
         for (
-                int year = startYear;
-                year <= endYear;
+                int year = startDate.getYear();
+                year <= endDate.getYear();
                 year++
         ) {
             String key = String.valueOf(year);
@@ -293,10 +378,7 @@ public class PaymentService {
             result.add(
                     new PaymentTrendDto(
                             key,
-                            salesMap.getOrDefault(
-                                    key,
-                                    0L
-                            )
+                            grouped.getOrDefault(key, 0L)
                     )
             );
         }
@@ -305,58 +387,148 @@ public class PaymentService {
     }
 
     /**
-     * 결제수단별 매출
+     * 인기 시술 TOP 5
      */
-    private List<PaymentMethodSalesDto> getPaymentMethodSales(
-            LocalDateTime start,
-            LocalDateTime end,
-            long totalSales
+    private List<PopularServiceDto> buildPopularServices(
+            List<Payment> payments
     ) {
-        List<PaymentMethodSalesDto> rows =
-                paymentRepository.findPaymentMethodSales(
-                        PaymentStatus.PAID,
-                        start,
-                        end
-                );
+        class ServiceStat {
+            long count;
+            long amount;
+        }
 
-        List<PaymentMethodSalesDto> result =
-                new ArrayList<>();
+        Map<String, ServiceStat> stats =
+                new HashMap<>();
 
-        for (PaymentMethodSalesDto row : rows) {
-            double percentage = 0.0;
+        for (Payment payment : payments) {
+            Reservation reservation =
+                    payment.getReservation();
 
-            if (totalSales > 0) {
-                percentage =
-                        row.getSalesAmount()
-                                * 100.0
-                                / totalSales;
+            if (reservation == null) {
+                continue;
             }
 
-            result.add(
-                    new PaymentMethodSalesDto(
-                            row.getPaymentMethod(),
-                            row.getSalesAmount(),
-                            row.getPaymentCount(),
-                            percentage
-                    )
-            );
+            String serviceName =
+                    reservation.getServiceNameSnapshot();
+
+            if (serviceName == null || serviceName.isBlank()) {
+                serviceName = "시술명 없음";
+            }
+
+            ServiceStat stat =
+                    stats.computeIfAbsent(
+                            serviceName,
+                            key -> new ServiceStat()
+                    );
+
+            stat.count++;
+
+            if (payment.getPaymentAmount() != null) {
+                stat.amount += payment.getPaymentAmount();
+            }
         }
 
-        return result;
+        return stats.entrySet()
+                .stream()
+                .map(entry ->
+                        new PopularServiceDto(
+                                entry.getKey(),
+                                entry.getValue().count,
+                                entry.getValue().amount
+                        )
+                )
+                .sorted(
+                        Comparator.comparingLong(
+                                        PopularServiceDto::getPaymentCount
+                                )
+                                .reversed()
+                                .thenComparing(
+                                        Comparator.comparingLong(
+                                                        PopularServiceDto::getSalesAmount
+                                                )
+                                                .reversed()
+                                )
+                )
+                .limit(5)
+                .collect(Collectors.toList());
     }
 
     /**
-     * 최근 결제 내역 5건
+     * 결제 수단별 매출
+     */
+    private List<PaymentMethodSalesDto> buildPaymentMethodSales(
+            List<Payment> payments,
+            long periodTotal
+    ) {
+        class MethodStat {
+            long count;
+            long amount;
+        }
+
+        Map<PaymentMethod, MethodStat> stats =
+                new EnumMap<>(PaymentMethod.class);
+
+        for (Payment payment : payments) {
+            PaymentMethod method =
+                    payment.getPaymentMethod();
+
+            if (method == null) {
+                continue;
+            }
+
+            MethodStat stat =
+                    stats.computeIfAbsent(
+                            method,
+                            key -> new MethodStat()
+                    );
+
+            stat.count++;
+
+            if (payment.getPaymentAmount() != null) {
+                stat.amount += payment.getPaymentAmount();
+            }
+        }
+
+        return stats.entrySet()
+                .stream()
+                .map(entry -> {
+                    long amount =
+                            entry.getValue().amount;
+
+                    double percentage =
+                            periodTotal == 0
+                                    ? 0.0
+                                    : amount * 100.0 / periodTotal;
+
+                    return new PaymentMethodSalesDto(
+                            entry.getKey(),
+                            amount,
+                            entry.getValue().count,
+                            percentage
+                    );
+                })
+                .sorted(
+                        Comparator.comparingLong(
+                                        PaymentMethodSalesDto::getSalesAmount
+                                )
+                                .reversed()
+                )
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 최근 결제/환불 5건
      */
     private List<RecentPaymentDto> getRecentPayments() {
         List<Payment> payments =
-                paymentRepository.findRecentPayments(
-                        List.of(
-                                PaymentStatus.PAID,
-                                PaymentStatus.REFUNDED
-                        ),
-                        PageRequest.of(0, 5)
-                );
+                paymentRepository
+                        .findByPaymentStatusInOrderByPaidAtDesc(
+                                List.of(
+                                        PaymentStatus.PAID,
+                                        PaymentStatus.REFUNDED
+                                ),
+                                PageRequest.of(0, 5)
+                        );
 
         List<RecentPaymentDto> result =
                 new ArrayList<>();
@@ -365,30 +537,40 @@ public class PaymentService {
             Reservation reservation =
                     payment.getReservation();
 
-            String customerName;
+            String customerName = "고객";
+            String serviceName = "-";
 
-            if (payment.getMember() != null) {
+            if (
+                    payment.getMember() != null
+                            && payment.getMember().getName() != null
+                            && !payment.getMember().getName().isBlank()
+            ) {
                 customerName =
-                        payment
-                                .getMember()
-                                .getName();
+                        payment.getMember().getName();
 
             } else if (
-                    reservation.getGuestName() != null
-                    && !reservation.getGuestName().isBlank()
+                    reservation != null
+                            && reservation.getGuestName() != null
+                            && !reservation.getGuestName().isBlank()
             ) {
                 customerName =
                         reservation.getGuestName();
+            }
 
-            } else {
-                customerName = "고객";
+            if (
+                    reservation != null
+                            && reservation.getServiceNameSnapshot() != null
+                            && !reservation.getServiceNameSnapshot().isBlank()
+            ) {
+                serviceName =
+                        reservation.getServiceNameSnapshot();
             }
 
             result.add(
                     new RecentPaymentDto(
                             payment.getPaidAt(),
                             customerName,
-                            reservation.getServiceNameSnapshot(),
+                            serviceName,
                             payment.getPaymentMethod(),
                             payment.getPaymentAmount(),
                             payment.getPaymentStatus()

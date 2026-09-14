@@ -74,14 +74,15 @@ public class Payment {
     private LocalDateTime updatedate;
 
     /**
-     * 결제 대기 데이터 생성
-     * 실제 결제 완료 기능을 연결할 때 사용할 수 있도록 준비해 둔 메서드입니다.
+     * 시술 완료 후 결제 대기(UNPAID) 데이터 생성
+     * 예약 당시 저장된 금액 snapshot을 그대로 사용합니다.
      */
     public static Payment createUnpaid(
             Reservation reservation,
             Member member,
             Long originalAmount,
             Long discountAmount,
+            Long paymentAmount,
             String memo
     ) {
         if (reservation == null) {
@@ -98,23 +99,60 @@ public class Payment {
             throw new IllegalArgumentException("할인 금액이 올바르지 않습니다.");
         }
 
-        Payment payment = new Payment();
+        if (paymentAmount == null || paymentAmount < 0) {
+            throw new IllegalArgumentException("최종 결제 금액이 올바르지 않습니다.");
+        }
 
+        // DB 제약조건과 예약 snapshot이 서로 다른 경우 조용히 재계산하지 않고 오류로 처리합니다.
+        if (!paymentAmount.equals(originalAmount - discount)) {
+            throw new IllegalStateException("예약 가격 snapshot 값이 서로 일치하지 않습니다.");
+        }
+
+        Payment payment = new Payment();
         payment.reservation = reservation;
         payment.member = member;
         payment.originalAmount = originalAmount;
         payment.discountAmount = discount;
-        payment.paymentAmount = originalAmount - discount;
+        payment.paymentAmount = paymentAmount;
+        payment.paymentMethod = null;
         payment.paymentStatus = PaymentStatus.UNPAID;
+        payment.paidAt = null;
+        payment.refundedAt = null;
         payment.memo = memo;
 
         return payment;
     }
 
     /**
+     * 기존 호출부 호환용 overload
+     */
+    public static Payment createUnpaid(
+            Reservation reservation,
+            Member member,
+            Long originalAmount,
+            Long discountAmount,
+            String memo
+    ) {
+        long discount = discountAmount == null ? 0L : discountAmount;
+
+        return createUnpaid(
+                reservation,
+                member,
+                originalAmount,
+                discount,
+                originalAmount == null ? null : originalAmount - discount,
+                memo
+        );
+    }
+
+    /**
      * 결제 완료 처리
      */
     public void pay(PaymentMethod paymentMethod) {
+        if (this.paymentStatus != PaymentStatus.UNPAID) {
+            throw new IllegalStateException("미결제 상태만 결제 완료 처리할 수 있습니다.");
+        }
+
         if (paymentMethod == null) {
             throw new IllegalArgumentException("결제 수단이 필요합니다.");
         }
