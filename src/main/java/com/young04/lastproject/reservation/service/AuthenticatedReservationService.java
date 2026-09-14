@@ -8,6 +8,9 @@ import com.young04.lastproject.reservation.exception.ReservationAccessDeniedExce
 import com.young04.lastproject.reservation.exception.ReservationAuthenticationRequiredException;
 import com.young04.lastproject.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +55,60 @@ public class AuthenticatedReservationService {
 
         return reservationService
                 .getMemberReservations(memberNo);
+    }
+
+
+    public ReservationPageResponse getMyReservations(
+            String memberId,
+            int page,
+            int size
+    ) {
+
+        Long memberNo =
+                requireMember(memberId)
+                        .getMemberNo();
+
+
+        Pageable pageable =
+                PageRequest.of(
+                        Math.max(
+                                page,
+                                0
+                        ),
+                        Math.clamp(
+                                size,
+                                1,
+                                20
+                        )
+                );
+
+
+        Page<ReservationResponse> reservationPage =
+                reservationService
+                        .getMemberReservations(
+                                memberNo,
+                                pageable
+                        );
+
+
+        return ReservationPageResponse
+                .builder()
+                .content(
+                        reservationPage.getContent()
+                )
+                .page(
+                        reservationPage.getNumber()
+                )
+                .size(
+                        reservationPage.getSize()
+                )
+                .totalElements(
+                        reservationPage.getTotalElements()
+                )
+                .totalPages(
+                        reservationPage.getTotalPages()
+                )
+                .build();
     }
 
     public ReservationDetailResponse getMyReservationDetail(

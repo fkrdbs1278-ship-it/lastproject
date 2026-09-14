@@ -16,6 +16,8 @@ import com.young04.lastproject.reservation.entity.Reservation;
 import com.young04.lastproject.reservation.entity.ReservationStatus;
 import com.young04.lastproject.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,21 @@ public class ReviewService {
                         ReviewResponse::from
                 )
                 .toList();
+    }
+
+
+    public Page<ReviewResponse> getReviews(
+            Pageable pageable
+    ) {
+
+        return reviewRepository
+                .findByStatusOrderByRegdateDesc(
+                        ReviewStatus.ACTIVE,
+                        pageable
+                )
+                .map(
+                        ReviewResponse::from
+                );
     }
 
 
@@ -98,6 +115,23 @@ public class ReviewService {
                         ReviewResponse::from
                 )
                 .toList();
+    }
+
+
+    public Page<ReviewResponse> getMyReviews(
+            Long memberNo,
+            Pageable pageable
+    ) {
+
+        return reviewRepository
+                .findByMember_NoAndStatusOrderByRegdateDesc(
+                        memberNo,
+                        ReviewStatus.ACTIVE,
+                        pageable
+                )
+                .map(
+                        ReviewResponse::from
+                );
     }
 
     /* =========================================================

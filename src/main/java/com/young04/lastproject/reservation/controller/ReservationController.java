@@ -65,13 +65,24 @@ public class ReservationController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<ReservationResponse>> myReservations(
-            Authentication authentication
+    public ResponseEntity<ReservationPageResponse> myReservations(
+            Authentication authentication,
+            @RequestParam(
+                    defaultValue = "0"
+            )
+            int page,
+            @RequestParam(
+                    defaultValue = "5"
+            )
+            int size
     ) {
+
         return ResponseEntity.ok(
                 authenticatedReservationService
                         .getMyReservations(
-                                username(authentication)
+                                username(authentication),
+                                page,
+                                size
                         )
         );
     }

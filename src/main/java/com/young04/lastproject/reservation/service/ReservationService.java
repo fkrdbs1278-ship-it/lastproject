@@ -11,6 +11,8 @@ import com.young04.lastproject.reservation.notification.ReservationNotificationP
 import com.young04.lastproject.reservation.notification.ReservationNotificationType;
 import com.young04.lastproject.servicematerial.service.MaterialUsageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -405,6 +407,29 @@ public class ReservationService {
                         )
                 )
                 .toList();
+    }
+
+
+    public Page<ReservationResponse> getMemberReservations(
+            Long memberNo,
+            Pageable pageable
+    ) {
+
+        return reservationRepository
+                .findByMemberNoOrderByStartAtDesc(
+                        memberNo,
+                        pageable
+                )
+                .map(reservation ->
+                        ReservationResponse.from(
+                                reservation,
+                                reviewRepository
+                                        .existsByReservationNo(
+                                                reservation
+                                                        .getReservationNo()
+                                        )
+                        )
+                );
     }
 
 

@@ -3,13 +3,15 @@ package com.young04.lastproject.member.controller;
 import com.young04.lastproject.global.security.CustomUserDetails;
 import com.young04.lastproject.payment.dto.MemberPaymentHistoryResponse;
 import com.young04.lastproject.payment.service.MemberPaymentHistoryService;
+import com.young04.lastproject.payment.service.MemberPaymentHistoryService.PaymentHistorySummary;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,6 +22,10 @@ public class MemberPaymentController {
 
     @GetMapping("/member/payments")
     public String paymentHistory(
+            @RequestParam(
+                    defaultValue = "0"
+            )
+            int page,
             @AuthenticationPrincipal CustomUserDetails userDetails,
             Model model
     ) {
@@ -30,58 +36,49 @@ public class MemberPaymentController {
         }
 
 
-        List<MemberPaymentHistoryResponse> payments =
+        Long memberNo =
+                userDetails.getMemberNo();
+
+
+        Page<MemberPaymentHistoryResponse> paymentPage =
                 memberPaymentHistoryService
                         .findMyPaymentHistory(
-                                userDetails.getMemberNo()
+                                memberNo,
+                                page,
+                                10
                         );
 
 
-        long paidCount =
-                payments.stream()
-                        .filter(payment ->
-                                "PAID".equals(
-                                        payment.getPaymentStatus()
-                                )
-                        )
-                        .count();
-
-
-        long refundedCount =
-                payments.stream()
-                        .filter(payment ->
-                                "REFUNDED".equals(
-                                        payment.getPaymentStatus()
-                                )
-                        )
-                        .count();
-
-
-        long totalPaidAmount =
+        PaymentHistorySummary summary =
                 memberPaymentHistoryService
-                        .calculateTotalPaidAmount(
-                                payments
+                        .getSummary(
+                                memberNo
                         );
 
 
         model.addAttribute(
                 "payments",
-                payments
+                paymentPage.getContent()
+        );
+
+        model.addAttribute(
+                "paymentPage",
+                paymentPage
         );
 
         model.addAttribute(
                 "paidCount",
-                paidCount
+                summary.paidCount()
         );
 
         model.addAttribute(
                 "refundedCount",
-                refundedCount
+                summary.refundedCount()
         );
 
         model.addAttribute(
                 "totalPaidAmount",
-                totalPaidAmount
+                summary.totalPaidAmount()
         );
 
 

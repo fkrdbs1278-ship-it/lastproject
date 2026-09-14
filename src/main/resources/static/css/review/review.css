@@ -626,3 +626,64 @@
     border-color: #999999;
     background: #fafafa;
 }
+
+
+/* =========================================
+   Pagination
+========================================= */
+
+.review-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 28px;
+}
+
+.review-pagination-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 68px;
+    height: 40px;
+
+    padding: 0 14px;
+
+    border: 1px solid #d6d6d6;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #333333;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.review-pagination-button:hover {
+    border-color: #999999;
+    background: #fafafa;
+}
+
+.review-pagination-info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    min-width: 66px;
+
+    color: #666666;
+
+    font-size: 13px;
+}
+
+.review-pagination-info strong {
+    color: #222222;
+}
