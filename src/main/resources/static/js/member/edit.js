@@ -335,10 +335,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             stopVerificationTimer();
 
+            timerElement.classList.remove("expired");
 
             remainingSeconds =
                 180;
-
 
             updateTimer();
 
@@ -362,6 +362,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             timerElement.textContent =
                                 "인증시간이 만료되었습니다.";
+
+                            timerElement.classList.add("expired");
 
 
                             verifyButton.disabled =
@@ -486,6 +488,8 @@ document.addEventListener("DOMContentLoaded", () => {
             timerElement.textContent =
                 "";
 
+            timerElement.classList.remove("expired");
+
 
             verifyMessage.textContent =
                 "";
@@ -534,7 +538,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "";
 
                 changeMessage.className =
-                    "phone-verification-message";
+                    "phone-verification-message phone-change-message";
 
 
                 return;
@@ -559,7 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "전화번호가 변경되었습니다. 새 번호 인증을 완료해주세요.";
 
                 changeMessage.className =
-                    "phone-verification-message error";
+                    "phone-verification-message phone-change-message error";
 
             } else {
 
@@ -665,7 +669,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         "올바른 휴대전화번호를 입력해주세요.";
 
                     changeMessage.className =
-                        "phone-verification-message error";
+                        "phone-verification-message phone-change-message error";
 
 
                     phone.focus();
@@ -698,7 +702,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "인증번호를 발송하고 있습니다...";
 
                 changeMessage.className =
-                    "phone-verification-message";
+                    "phone-verification-message phone-change-message";
 
 
                 try {
@@ -748,7 +752,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             || "인증번호 발송에 실패했습니다.";
 
                         changeMessage.className =
-                            "phone-verification-message error";
+                            "phone-verification-message phone-change-message error";
 
 
                         sendButton.disabled =
@@ -775,7 +779,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         "인증번호를 발송했습니다.";
 
                     changeMessage.className =
-                        "phone-verification-message success";
+                        "phone-verification-message phone-change-message success";
 
 
                     codeGroup.hidden =
@@ -820,7 +824,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         "문자 발송 중 오류가 발생했습니다.";
 
                     changeMessage.className =
-                        "phone-verification-message error";
+                        "phone-verification-message phone-change-message error";
 
 
                     sendButton.disabled =
@@ -972,6 +976,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     timerElement.textContent =
                         "";
+
+                    timerElement.classList.remove("expired");
 
 
                     verifyMessage.textContent =

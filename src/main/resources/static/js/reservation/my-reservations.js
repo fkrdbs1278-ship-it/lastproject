@@ -10,6 +10,16 @@
     const messageBox = document.getElementById("messageBox");
     const flashErrorMessage = page.dataset.errorMessage || "";
 
+    const pagination = document.getElementById("reservationPagination");
+    const pageInfo = document.getElementById("reservationPageInfo");
+    const prevPageButton = document.getElementById("prevReservationPage");
+    const nextPageButton = document.getElementById("nextReservationPage");
+
+    let currentPage = 0;
+    let totalPages = 1;
+
+    const pageSize = 5;
+
     const detailOverlay = document.getElementById("memberDetailOverlay");
     const detailContent = document.getElementById("memberDetailContent");
     const closeDetailButton = document.getElementById("closeMemberDetail");
@@ -32,6 +42,36 @@
     refreshButton?.addEventListener("click", () =>
         withScrollPreserved(loadReservations)
     );
+
+    prevPageButton?.addEventListener("click", () => {
+
+        if (currentPage <= 0) {
+
+            return;
+        }
+
+
+        currentPage--;
+
+        withScrollPreserved(
+            loadReservations
+        );
+    });
+
+    nextPageButton?.addEventListener("click", () => {
+
+        if (currentPage + 1 >= totalPages) {
+
+            return;
+        }
+
+
+        currentPage++;
+
+        withScrollPreserved(
+            loadReservations
+        );
+    });
 
     closeDetailButton?.addEventListener("click", closeDetail);
     closeEditButton?.addEventListener("click", closeEdit);
@@ -70,22 +110,130 @@
     loadReservations();
 
     async function loadReservations() {
+
         list.innerHTML =
             `<div class="loading-box">예약을 불러오는 중입니다.</div>`;
 
+
         try {
-            const response = await fetch("/api/reservations/me");
-            const body = await readJson(response);
+
+            const params =
+                new URLSearchParams({
+                    page: String(currentPage),
+                    size: String(pageSize)
+                });
+
+
+            const response =
+                await fetch(
+                    `/api/reservations/me?${params.toString()}`
+                );
+
+
+            const body =
+                await readJson(
+                    response
+                );
+
 
             if (!response.ok) {
-                throw new Error(body.message || "예약 조회에 실패했습니다.");
+
+                throw new Error(
+                    body.message
+                    || "예약 조회에 실패했습니다."
+                );
             }
 
-            renderReservations(body);
+
+            totalPages =
+                Math.max(
+                    body.totalPages || 0,
+                    1
+                );
+
+
+            if (
+                body.totalElements > 0
+                && currentPage >= totalPages
+            ) {
+
+                currentPage =
+                    totalPages - 1;
+
+                await loadReservations();
+
+                return;
+            }
+
+
+            currentPage =
+                body.page || 0;
+
+
+            renderReservations(
+                body.content || []
+            );
+
+
+            renderPagination(
+                body.totalElements || 0
+            );
+
         } catch (error) {
+
             list.innerHTML =
                 `<div class="empty-box">${escapeHtml(error.message)}</div>`;
+
+            pagination?.classList.add(
+                "hidden"
+            );
         }
+    }
+
+
+    function renderPagination(
+            totalElements
+    ) {
+
+        if (
+                !pagination
+                || !pageInfo
+                || !prevPageButton
+                || !nextPageButton
+        ) {
+
+            return;
+        }
+
+
+        if (
+                totalElements === 0
+                || totalPages <= 1
+        ) {
+
+            pagination.classList.add(
+                "hidden"
+            );
+
+            return;
+        }
+
+
+        pagination.classList.remove(
+            "hidden"
+        );
+
+
+        pageInfo.textContent =
+            `${currentPage + 1} / ${totalPages}`;
+
+
+        prevPageButton.disabled =
+            currentPage <= 0;
+
+
+        nextPageButton.disabled =
+            currentPage + 1 >= totalPages;
     }
 
     function renderReservations(reservations) {

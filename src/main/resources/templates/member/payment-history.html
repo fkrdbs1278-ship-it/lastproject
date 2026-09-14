@@ -137,7 +137,7 @@
 
                 <span
                         class="payment-history-count"
-                        th:text="${#lists.size(payments) + '건'}"
+                        th:text="${paymentPage.totalElements + '건'}"
                 >
                     0건
                 </span>
@@ -369,6 +369,47 @@
                 </article>
 
             </div>
+
+
+            <nav
+                    th:if="${paymentPage != null and paymentPage.totalPages > 1}"
+                    class="payment-pagination"
+                    aria-label="결제 내역 페이지 이동"
+            >
+
+                <a
+                        th:if="${!paymentPage.first}"
+                        th:href="@{/member/payments(page=${paymentPage.number - 1})}"
+                        class="payment-pagination-button"
+                >
+                    이전
+                </a>
+
+
+                <span class="payment-pagination-info">
+
+                    <strong th:text="${paymentPage.number + 1}">
+                        1
+                    </strong>
+
+                    <span>/</span>
+
+                    <span th:text="${paymentPage.totalPages}">
+                        1
+                    </span>
+
+                </span>
+
+
+                <a
+                        th:if="${!paymentPage.last}"
+                        th:href="@{/member/payments(page=${paymentPage.number + 1})}"
+                        class="payment-pagination-button"
+                >
+                    다음
+                </a>
+
+            </nav>
 
         </section>
 

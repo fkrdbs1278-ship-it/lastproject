@@ -4,6 +4,8 @@ import com.young04.lastproject.reservation.entity.CustomerType;
 import com.young04.lastproject.reservation.entity.Reservation;
 import com.young04.lastproject.reservation.entity.ReservationStatus;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +22,11 @@ public interface ReservationRepository
 
     List<Reservation> findByMemberNoOrderByStartAtDesc(
             Long memberNo
+    );
+
+    Page<Reservation> findByMemberNoOrderByStartAtDesc(
+            Long memberNo,
+            Pageable pageable
     );
 
     boolean existsByServiceMenuNo(Long serviceMenuNo);

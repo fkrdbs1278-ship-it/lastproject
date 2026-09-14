@@ -220,6 +220,63 @@
         </div>
 
 
+        <!-- 리뷰 페이징 -->
+
+        <nav
+                th:if="${reviewPage != null and reviewPage.totalPages > 1}"
+                class="review-pagination"
+                aria-label="리뷰 페이지 이동"
+        >
+
+            <a
+                    th:if="${!reviewPage.first and !myReviewPage}"
+                    th:href="@{/reviews(page=${reviewPage.number - 1})}"
+                    class="review-pagination-button"
+            >
+                이전
+            </a>
+
+            <a
+                    th:if="${!reviewPage.first and myReviewPage}"
+                    th:href="@{/reviews/my(page=${reviewPage.number - 1})}"
+                    class="review-pagination-button"
+            >
+                이전
+            </a>
+
+
+            <span class="review-pagination-info">
+                <strong th:text="${reviewPage.number + 1}">
+                    1
+                </strong>
+
+                <span>/</span>
+
+                <span th:text="${reviewPage.totalPages}">
+                    1
+                </span>
+            </span>
+
+
+            <a
+                    th:if="${!reviewPage.last and !myReviewPage}"
+                    th:href="@{/reviews(page=${reviewPage.number + 1})}"
+                    class="review-pagination-button"
+            >
+                다음
+            </a>
+
+            <a
+                    th:if="${!reviewPage.last and myReviewPage}"
+                    th:href="@{/reviews/my(page=${reviewPage.number + 1})}"
+                    class="review-pagination-button"
+            >
+                다음
+            </a>
+
+        </nav>
+
+
     </div>
 
 </main>

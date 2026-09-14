@@ -8,6 +8,9 @@ import com.young04.lastproject.review.service.ReviewService;
 import com.young04.lastproject.global.exception.review.InvalidReviewReservationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +18,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,17 +33,38 @@ public class ReviewController {
 
     @GetMapping
     public String list(
+            @RequestParam(
+                    defaultValue = "0"
+            )
+            int page,
             Model model,
             @AuthenticationPrincipal CustomUserDetails loginUser
     ) {
 
-        List<ReviewResponse> reviews =
-                reviewService.getReviews();
+        Pageable pageable =
+                PageRequest.of(
+                        Math.max(
+                                page,
+                                0
+                        ),
+                        6
+                );
+
+
+        Page<ReviewResponse> reviewPage =
+                reviewService.getReviews(
+                        pageable
+                );
 
 
         model.addAttribute(
                 "reviews",
-                reviews
+                reviewPage.getContent()
+        );
+
+        model.addAttribute(
+                "reviewPage",
+                reviewPage
         );
 
         model.addAttribute(
@@ -76,6 +99,10 @@ public class ReviewController {
 
     @GetMapping("/my")
     public String myList(
+            @RequestParam(
+                    defaultValue = "0"
+            )
+            int page,
             Model model,
             @AuthenticationPrincipal CustomUserDetails loginUser
     ) {
@@ -86,15 +113,31 @@ public class ReviewController {
         }
 
 
-        List<ReviewResponse> reviews =
+        Pageable pageable =
+                PageRequest.of(
+                        Math.max(
+                                page,
+                                0
+                        ),
+                        6
+                );
+
+
+        Page<ReviewResponse> reviewPage =
                 reviewService.getMyReviews(
-                        loginUser.getMemberNo()
+                        loginUser.getMemberNo(),
+                        pageable
                 );
 
 
         model.addAttribute(
                 "reviews",
-                reviews
+                reviewPage.getContent()
+        );
+
+        model.addAttribute(
+                "reviewPage",
+                reviewPage
         );
 
         model.addAttribute(

@@ -889,3 +889,69 @@ body {
 
     white-space: nowrap;
 }
+
+
+/* =========================================================
+   내 예약 페이징
+   ========================================================= */
+
+.user-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 18px;
+    padding-top: 16px;
+
+    border-top: 1px solid #eeeeee;
+}
+
+.user-pagination.hidden {
+    display: none;
+}
+
+.user-pagination-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 68px;
+    height: 38px;
+
+    padding: 0 14px;
+
+    border: 1px solid #d7d7d7;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #333333;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.user-pagination-button:hover:not(:disabled) {
+    border-color: #999999;
+    background: #fafafa;
+}
+
+.user-pagination-button:disabled {
+    cursor: default;
+    opacity: 0.4;
+}
+
+.user-pagination-info {
+    min-width: 58px;
+
+    color: #555555;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-align: center;
+}
