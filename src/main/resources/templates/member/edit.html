@@ -237,6 +237,7 @@
                     <!-- 전화번호 설명 -->
 
                     <p class="field-help">
+                        <span class="field-help-icon">ⓘ</span>
                         숫자만 입력해도 자동으로 하이픈(-)이 추가됩니다.
                         전화번호를 변경하는 경우 새 번호 인증이 필요합니다.
                     </p>
@@ -246,7 +247,7 @@
 
                     <p
                             id="updatePhoneChangeMessage"
-                            class="phone-verification-message"
+                            class="phone-verification-message phone-change-message"
                             aria-live="polite"
                     ></p>
 
@@ -328,7 +329,8 @@
                         생년월일
                     </label>
 
-                    <div class="birthdate-readonly">
+                    <!-- 수정 불가능한 값 표시 -->
+                    <div class="readonly-field birthdate-readonly">
                         <span th:text="*{birthDate}">
                             2000-01-01
                         </span>
@@ -341,6 +343,7 @@
                     >
 
                     <p class="field-help">
+                        <span class="field-help-icon">ⓘ</span>
                         생년월일은 회원가입 후 변경할 수 없습니다.
                     </p>
 
@@ -355,7 +358,8 @@
                         성별
                     </label>
 
-                    <div class="gender-readonly">
+                    <!-- 수정 불가능한 값 표시 -->
+                    <div class="readonly-field gender-readonly">
 
                         <span
                                 th:if="*{gender == 'M'}"
@@ -377,7 +381,14 @@
 
                     </div>
 
+                    <!-- 기존 성별 값을 form에 유지 -->
+                    <input
+                            type="hidden"
+                            th:field="*{gender}"
+                    >
+
                     <p class="field-help">
+                        <span class="field-help-icon">ⓘ</span>
                         성별은 회원가입 후 변경할 수 없습니다.
                     </p>
 

@@ -328,3 +328,160 @@
         width: 100%;
     }
 }
+
+/* 회원정보 안내 문구 */
+
+.field-help {
+    margin-top: 8px;
+    padding: 10px 12px;
+
+    font-size: 13px;
+    line-height: 1.5;
+    color: #666;
+
+    background-color: #f8f8f8;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+}
+
+/* 수정 불가능한 회원정보= */
+
+.readonly-field {
+    width: 100%;
+    min-height: 44px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 13px 14px;
+
+    border: 1px solid #ddd;
+    border-radius: 8px;
+
+    background-color: #f5f5f5;
+    color: #555;
+
+    font-size: 14px;
+
+    box-sizing: border-box;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   회원정보 안내 문구
+========================= */
+
+/* 안내 아이콘 */
+
+.field-help-icon {
+    margin-right: 4px;
+
+    font-weight: 700;
+    color: #777;
+}
+
+/* =========================
+   전화번호 변경 안내 메시지
+========================= */
+
+.phone-change-message {
+    margin-top: 8px;
+    padding: 10px 12px;
+
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+
+    background-color: #f8f8f8;
+
+    color: #555;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* 메시지가 없을 때 빈 박스 숨김 */
+.phone-change-message:empty {
+    display: none;
+}
+
+/* 안내 아이콘 */
+.phone-change-message:not(:empty)::before {
+    content: "ⓘ";
+    margin-right: 6px;
+    color: #777;
+    font-weight: 700;
+}
+/* 오류 상태 */
+.phone-change-message.error {
+    background-color: #fff5f5;
+    border-color: #f1c7c7;
+    color: #d93025;
+}
+
+/* 성공 상태 */
+.phone-change-message.success {
+    background-color: #f3fbf5;
+    border-color: #c9e7d1;
+    color: #188038;
+}
+
+.phone-verification-message.error {
+    color: #d93025;
+    font-weight: 600;
+}
+
+.phone-verification-message.success {
+    color: #188038;
+    font-weight: 600;
+}
+
+/* =========================
+   전화번호 인증 남은 시간
+========================= */
+
+.phone-verification-timer {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+
+    color: #555;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* 인증시간 만료 */
+.phone-verification-timer.expired {
+    background-color: #fff5f5;
+    border-color: #f1c7c7;
+
+    color: #d93025;
+}
+
+
+/* 내용 없으면 숨기기 */
+.phone-verification-timer:empty {
+    display: none;
+}
+
+
+.phone-verification-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 8px;
+}
