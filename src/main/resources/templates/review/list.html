@@ -81,15 +81,6 @@
             <div class="review-header-actions">
 
                 <a
-                        th:if="${myReviewPage}"
-                        th:href="@{/reviews}"
-                        class="review-list-button"
-                >
-                    전체 리뷰 보기
-                </a>
-
-
-                <a
                         th:if="${currentMemberNo != null}"
                         th:href="@{/my-reservations}"
                         class="review-write-button"
