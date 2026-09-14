@@ -290,6 +290,12 @@
                     cancelAdmin(r.reservationNo)
                 );
             }
+
+            if (r.status === "COMPLETED") {
+                addAction(actions, "결제", () =>
+                    openDetail(r.reservationNo)
+                );
+            }
         });
     }
 
@@ -343,6 +349,11 @@
                   `).join("")
                 : `<div class="empty-box">첨부된 참고 이미지가 없습니다.</div>`;
 
+            const paymentSection =
+                r.status === "COMPLETED"
+                    ? await buildPaymentSection(r.reservationNo)
+                    : "";
+
             detailContent.innerHTML = `
                 <div class="detail-grid">
                     <div class="detail-block">
@@ -391,6 +402,8 @@
                     ${styleBlock}
                 </div>
 
+                ${paymentSection}
+
                 <h3>고객 참고 이미지</h3>
                 <p class="field-help">
                     관리자 권한이 확인된 보호 API를 통해 조회됩니다.
@@ -398,10 +411,155 @@
                 <div class="detail-images">${images}</div>
             `;
 
+            bindPaymentActions(r.reservationNo);
+
             detailOverlay.classList.remove("hidden");
         } catch (error) {
             showMessage(error.message, true);
         }
+    }
+
+    async function buildPaymentSection(reservationNo) {
+        try {
+            const response = await fetch(
+                `/admin/api/reservations/${reservationNo}/payment`
+            );
+
+            if (response.status === 204) {
+                return `
+                    <h3 id="paymentSectionTitle">결제 정보</h3>
+                    <div class="empty-box">
+                        결제 대기 정보가 없습니다.
+                        새로 시술 완료되는 예약부터 자동 생성됩니다.
+                    </div>
+                `;
+            }
+
+            const payment = await readJson(response);
+
+            if (!response.ok) {
+                throw new Error(
+                    payment.message || "결제 정보 조회에 실패했습니다."
+                );
+            }
+
+            const methodText = payment.paymentMethod
+                ? paymentMethodText(payment.paymentMethod)
+                : "미선택";
+
+            const status = payment.paymentStatus || "UNPAID";
+
+            return `
+                <h3 id="paymentSectionTitle">결제 정보</h3>
+                <div class="detail-grid payment-detail-grid">
+                    <div class="detail-block">
+                        <strong>정상 금액</strong><br>
+                        ${formatMoney(payment.originalAmount)}
+                    </div>
+                    <div class="detail-block">
+                        <strong>할인 금액</strong><br>
+                        ${formatMoney(payment.discountAmount)}
+                    </div>
+                    <div class="detail-block">
+                        <strong>최종 결제금액</strong><br>
+                        ${formatMoney(payment.paymentAmount)}
+                    </div>
+                    <div class="detail-block">
+                        <strong>결제 상태</strong><br>
+                        ${paymentStatusText(status)}
+                    </div>
+                    <div class="detail-block">
+                        <strong>결제 수단</strong><br>
+                        ${methodText}
+                    </div>
+                    ${payment.paidAt
+                        ? `<div class="detail-block"><strong>결제일시</strong><br>${formatDateTime(payment.paidAt)}</div>`
+                        : ""}
+                </div>
+
+                ${status === "UNPAID"
+                    ? `
+                        <div class="field">
+                            <span>결제 수단</span>
+                            <select id="reservationPaymentMethod">
+                                <option value="CARD">카드</option>
+                                <option value="CASH">현금</option>
+                                <option value="TRANSFER">계좌이체</option>
+                            </select>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button id="completeReservationPayment"
+                                    type="button"
+                                    class="primary-button">
+                                ${formatMoney(payment.paymentAmount)} 결제 완료
+                            </button>
+                        </div>
+                      `
+                    : ""}
+            `;
+        } catch (error) {
+            return `
+                <h3 id="paymentSectionTitle">결제 정보</h3>
+                <div class="empty-box">
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+        }
+    }
+
+    function bindPaymentActions(reservationNo) {
+        const button =
+            document.getElementById("completeReservationPayment");
+
+        const methodSelect =
+            document.getElementById("reservationPaymentMethod");
+
+        if (!button || !methodSelect) return;
+
+        button.addEventListener("click", async () => {
+            const paymentMethod = methodSelect.value;
+
+            if (!paymentMethod) {
+                showMessage("결제 수단을 선택해주세요.", true);
+                return;
+            }
+
+            if (!confirm(
+                `${paymentMethodText(paymentMethod)} 결제로 완료 처리하시겠습니까?`
+            )) {
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+                const response = await fetch(
+                    `/admin/api/reservations/${reservationNo}/payment/complete?` +
+                    new URLSearchParams({ paymentMethod }),
+                    {
+                        method: "POST",
+                        headers: csrfHeaders()
+                    }
+                );
+
+                const body = await readJson(response);
+
+                if (!response.ok) {
+                    throw new Error(
+                        body.message || "결제 완료 처리에 실패했습니다."
+                    );
+                }
+
+                showMessage("결제가 완료되었습니다.", false);
+                await loadReservations();
+                await openDetail(reservationNo);
+            } catch (error) {
+                showMessage(error.message, true);
+            } finally {
+                button.disabled = false;
+            }
+        });
     }
 
     async function changeStatus(reservationNo, action) {
@@ -1577,6 +1735,28 @@
             ONLINE: "온라인",
             PHONE: "전화 예약"
         }[source] || source || "-";
+    }
+
+    function paymentMethodText(method) {
+        return {
+            CARD: "카드",
+            CASH: "현금",
+            TRANSFER: "계좌이체",
+            PREPAID: "선불"
+        }[method] || method || "-";
+    }
+
+    function paymentStatusText(status) {
+        return {
+            UNPAID: "결제 대기",
+            PAID: "결제 완료",
+            REFUNDED: "환불 완료"
+        }[status] || status || "-";
+    }
+
+    function formatMoney(value) {
+        return new Intl.NumberFormat("ko-KR")
+            .format(Number(value || 0)) + "원";
     }
 
     function dayName(day) {

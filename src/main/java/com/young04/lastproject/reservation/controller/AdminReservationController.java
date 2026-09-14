@@ -1,6 +1,9 @@
 package com.young04.lastproject.reservation.controller;
 
 import com.young04.lastproject.noshow.service.NoShowService;
+import com.young04.lastproject.payment.dto.ReservationPaymentResponse;
+import com.young04.lastproject.payment.entity.PaymentMethod;
+import com.young04.lastproject.payment.service.PaymentService;
 import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.CanceledBy;
 import com.young04.lastproject.reservation.service.AdminReservationService;
@@ -23,6 +26,7 @@ public class AdminReservationController {
     private final ReservationService reservationService;
     private final AdminReservationService adminReservationService;
     private final NoShowService noShowService;
+    private final PaymentService paymentService;
 
     @GetMapping
     public ResponseEntity<AdminReservationSearchResponse> search(
@@ -69,6 +73,31 @@ public class AdminReservationController {
     ) {
         return ResponseEntity.ok(
                 reservationService.completeReservation(reservationNo)
+        );
+    }
+
+    // 시술 완료 후 생성된 결제 대기 정보를 예약 번호로 조회
+    @GetMapping("/{reservationNo}/payment")
+    public ResponseEntity<ReservationPaymentResponse> payment(
+            @PathVariable Long reservationNo
+    ) {
+        return paymentService
+                .findReservationPayment(reservationNo)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.noContent().build());
+    }
+
+    // 관리자 현장 결제 완료 처리
+    @PostMapping("/{reservationNo}/payment/complete")
+    public ResponseEntity<ReservationPaymentResponse> completePayment(
+            @PathVariable Long reservationNo,
+            @RequestParam PaymentMethod paymentMethod
+    ) {
+        return ResponseEntity.ok(
+                paymentService.completePaymentByReservationNo(
+                        reservationNo,
+                        paymentMethod
+                )
         );
     }
 

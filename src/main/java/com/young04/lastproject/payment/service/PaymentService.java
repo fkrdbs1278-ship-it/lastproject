@@ -87,6 +87,44 @@ public class PaymentService {
     }
 
     /**
+     * 예약 번호로 결제 정보를 조회합니다.
+     */
+    public Optional<ReservationPaymentResponse> findReservationPayment(
+            Long reservationNo
+    ) {
+        return paymentRepository
+                .findByReservation_ReservationNo(reservationNo)
+                .map(ReservationPaymentResponse::from);
+    }
+
+    /**
+     * 관리자 예약 화면에서 예약 번호 기준으로 결제 완료 처리합니다.
+     */
+    @Transactional
+    public ReservationPaymentResponse completePaymentByReservationNo(
+            Long reservationNo,
+            PaymentMethod paymentMethod
+    ) {
+        if (paymentMethod == PaymentMethod.PREPAID) {
+            throw new IllegalArgumentException(
+                    "관리자 현장 결제는 카드, 현금, 계좌이체만 선택할 수 있습니다."
+            );
+        }
+
+        Payment payment = paymentRepository
+                .findByReservation_ReservationNo(reservationNo)
+                .orElseThrow(
+                        () -> new IllegalStateException(
+                                "해당 예약의 결제 대기 정보를 찾을 수 없습니다."
+                        )
+                );
+
+        payment.pay(paymentMethod);
+
+        return ReservationPaymentResponse.from(payment);
+    }
+
+    /**
      * 관리자 결제 완료 처리
      */
     @Transactional
@@ -542,16 +580,16 @@ public class PaymentService {
 
             if (
                     payment.getMember() != null
-                            && payment.getMember().getName() != null
-                            && !payment.getMember().getName().isBlank()
+                    && payment.getMember().getName() != null
+                    && !payment.getMember().getName().isBlank()
             ) {
                 customerName =
                         payment.getMember().getName();
 
             } else if (
                     reservation != null
-                            && reservation.getGuestName() != null
-                            && !reservation.getGuestName().isBlank()
+                    && reservation.getGuestName() != null
+                    && !reservation.getGuestName().isBlank()
             ) {
                 customerName =
                         reservation.getGuestName();
@@ -559,8 +597,8 @@ public class PaymentService {
 
             if (
                     reservation != null
-                            && reservation.getServiceNameSnapshot() != null
-                            && !reservation.getServiceNameSnapshot().isBlank()
+                    && reservation.getServiceNameSnapshot() != null
+                    && !reservation.getServiceNameSnapshot().isBlank()
             ) {
                 serviceName =
                         reservation.getServiceNameSnapshot();

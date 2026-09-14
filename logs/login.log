@@ -32,3 +32,7 @@
 2026-09-14 14:06:36.296 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
 2026-09-14 14:07:05.146 INFO  LOGIN_SUCCESS memberId=asdasd memberNo=1 ip=0:0:0:0:0:0:0:1
 2026-09-14 14:07:33.212 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
+2026-09-14 14:42:11.726 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
+2026-09-14 14:59:36.060 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
+2026-09-14 15:01:50.365 INFO  LOGIN_SUCCESS memberId=asdasd memberNo=1 ip=0:0:0:0:0:0:0:1
+2026-09-14 15:02:37.298 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1

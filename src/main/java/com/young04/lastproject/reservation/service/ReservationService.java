@@ -1,6 +1,7 @@
 package com.young04.lastproject.reservation.service;
 
 import com.young04.lastproject.businesshour.repository.BusinessHourRepository;
+import com.young04.lastproject.payment.service.PaymentService;
 import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.*;
 import com.young04.lastproject.reservation.exception.*;
@@ -30,6 +31,9 @@ public class ReservationService {
     private final ReservationPricingService reservationPricingService;
 
     private final ReviewRepository reviewRepository;
+
+    // 시술 완료 시 결제 대기(UNPAID) 데이터를 생성
+    private final PaymentService paymentService;
 
     // 시술 완료 시 연결된 자재를 자동 차감
     private final MaterialUsageService materialUsageService;
@@ -255,6 +259,9 @@ public class ReservationService {
 
         // 예약 상태를 시술 완료로 변경
         reservation.complete();
+
+        // 시술 완료된 예약에 결제 대기(UNPAID) 데이터가 없으면 1건 생성
+        paymentService.createUnpaidPaymentIfAbsent(reservation);
 
         // 시술에 연결된 자재가 있으면 실제 사용량만큼 자동 차감
         materialUsageService.deductMaterialsForReservation(
