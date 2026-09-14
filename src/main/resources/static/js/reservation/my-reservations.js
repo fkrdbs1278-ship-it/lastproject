@@ -8,6 +8,7 @@
     const list = document.getElementById("reservationList");
     const refreshButton = document.getElementById("refreshReservations");
     const messageBox = document.getElementById("messageBox");
+    const flashErrorMessage = page.dataset.errorMessage || "";
 
     const detailOverlay = document.getElementById("memberDetailOverlay");
     const detailContent = document.getElementById("memberDetailContent");
@@ -58,6 +59,13 @@
         e.preventDefault();
         await saveEdit();
     });
+
+    if (flashErrorMessage) {
+        showMessage(
+            flashErrorMessage,
+            true
+        );
+    }
 
     loadReservations();
 
@@ -147,10 +155,17 @@
                         : ""}
 
                     ${reservation.status === "COMPLETED"
-                        ? `<a class="secondary-button review-write-link"
-                              href="/reviews/write?reservationNo=${reservation.reservationNo}">
-                                리뷰 작성
-                           </a>`
+                        ? (
+                            reservation.reviewed === true
+                                ? `<span class="secondary-button review-completed-button"
+                                         aria-disabled="true">
+                                        리뷰 완료
+                                   </span>`
+                                : `<a class="secondary-button review-write-link"
+                                      href="/reviews/write?reservationNo=${reservation.reservationNo}">
+                                        리뷰 작성
+                                   </a>`
+                          )
                         : ""}
                 </div>
             `;

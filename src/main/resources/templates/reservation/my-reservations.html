@@ -26,7 +26,8 @@
 <main class="reservation-page my-reservation-page"
       id="myReservationPage"
       th:attr="data-member-no=${memberNo},
-               data-logged-in=${isLoggedIn}">
+               data-logged-in=${isLoggedIn},
+               data-error-message=${errorMessage}">
 
     <section class="mypage-header reservation-user-heading">
         <div>

@@ -45,7 +45,28 @@ public class ReservationResponse {
     private boolean modifiable;
     private boolean cancelable;
 
-    public static ReservationResponse from(Reservation r) {
+    /*
+     * 완료 예약에 리뷰가 이미 작성되었는지 표시한다.
+     * 내 예약 화면의 리뷰 작성 버튼 상태 결정에 사용한다.
+     */
+    private boolean reviewed;
+
+
+    public static ReservationResponse from(
+            Reservation reservation
+    ) {
+
+        return from(
+                reservation,
+                false
+        );
+    }
+
+
+    public static ReservationResponse from(
+            Reservation r,
+            boolean reviewed
+    ) {
         boolean active =
                 r.getStatus() == ReservationStatus.REQUESTED
                         || r.getStatus() == ReservationStatus.CONFIRMED;
@@ -79,6 +100,7 @@ public class ReservationResponse {
                 .updatedAt(r.getUpdatedAt())
                 .modifiable(active)
                 .cancelable(active)
+                .reviewed(reviewed)
                 .build();
     }
 }

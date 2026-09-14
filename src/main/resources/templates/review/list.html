@@ -59,26 +59,45 @@
 
             <div>
 
-                <h1>
+                <h1
+                        th:text="${myReviewPage}
+                            ? '내 리뷰'
+                            : '고객 리뷰'"
+                >
                     고객 리뷰
                 </h1>
 
-                <p>
+                <p
+                        th:text="${myReviewPage}
+                            ? '내가 작성한 리뷰를 확인하고 관리할 수 있습니다.'
+                            : 'SALON CRM을 이용한 고객들의 리뷰입니다.'"
+                >
                     SALON CRM을 이용한 고객들의 리뷰입니다.
                 </p>
 
             </div>
 
 
-            <!-- 로그인 회원에게만 작성 버튼 -->
+            <div class="review-header-actions">
 
-            <a
-                    th:if="${currentMemberNo != null}"
-                    th:href="@{/my-reservations}"
-                    class="review-write-button"
-            >
-                완료 예약에서 리뷰 작성
-            </a>
+                <a
+                        th:if="${myReviewPage}"
+                        th:href="@{/reviews}"
+                        class="review-list-button"
+                >
+                    전체 리뷰 보기
+                </a>
+
+
+                <a
+                        th:if="${currentMemberNo != null}"
+                        th:href="@{/my-reservations}"
+                        class="review-write-button"
+                >
+                    완료 예약에서 리뷰 작성
+                </a>
+
+            </div>
 
         </section>
 
@@ -99,7 +118,13 @@
                 class="review-empty"
         >
 
-            아직 작성된 리뷰가 없습니다.
+            <span
+                    th:text="${myReviewPage}
+                        ? '아직 작성한 리뷰가 없습니다.'
+                        : '아직 작성된 리뷰가 없습니다.'"
+            >
+                아직 작성된 리뷰가 없습니다.
+            </span>
 
         </div>
 

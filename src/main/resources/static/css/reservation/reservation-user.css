@@ -866,3 +866,26 @@ body {
 .reservation-price-preview .price-event strong { color:#a04f66; }
 .reservation-price-preview .price-final { padding-top:8px; border-top:1px solid #eee; color:#222; }
 .reservation-price-preview .price-final strong { font-size:17px; }
+
+
+/* =========================================================
+   리뷰 작성 완료 상태
+   ========================================================= */
+
+.review-completed-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: default;
+
+    border-color: #e1e1e1;
+
+    background: #f3f3f3;
+
+    color: #8a8a8a;
+
+    pointer-events: none;
+
+    white-space: nowrap;
+}

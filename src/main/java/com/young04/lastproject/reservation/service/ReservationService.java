@@ -5,6 +5,7 @@ import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.*;
 import com.young04.lastproject.reservation.exception.*;
 import com.young04.lastproject.reservation.repository.ReservationRepository;
+import com.young04.lastproject.review.repository.ReviewRepository;
 import com.young04.lastproject.reservation.notification.ReservationNotificationPublisher;
 import com.young04.lastproject.reservation.notification.ReservationNotificationType;
 import com.young04.lastproject.servicematerial.service.MaterialUsageService;
@@ -27,6 +28,8 @@ public class ReservationService {
     private final BusinessHourRepository businessHourRepository;
     private final ReservationNotificationPublisher notificationPublisher;
     private final ReservationPricingService reservationPricingService;
+
+    private final ReviewRepository reviewRepository;
 
     // 시술 완료 시 연결된 자재를 자동 차감
     private final MaterialUsageService materialUsageService;
@@ -378,10 +381,22 @@ public class ReservationService {
     public List<ReservationResponse> getMemberReservations(
             Long memberNo
     ) {
+
         return reservationRepository
-                .findByMemberNoOrderByStartAtDesc(memberNo)
+                .findByMemberNoOrderByStartAtDesc(
+                        memberNo
+                )
                 .stream()
-                .map(ReservationResponse::from)
+                .map(reservation ->
+                        ReservationResponse.from(
+                                reservation,
+                                reviewRepository
+                                        .existsByReservationNo(
+                                                reservation
+                                                        .getReservationNo()
+                                        )
+                        )
+                )
                 .toList();
     }
 

@@ -588,3 +588,41 @@
         flex-wrap: wrap;
     }
 }
+
+/* =========================================================
+   전체 리뷰 / 내 리뷰 상단 액션
+   ========================================================= */
+
+.review-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.review-list-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+    padding: 0 16px;
+
+    border: 1px solid #d4d4d4;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #333333;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.review-list-button:hover {
+    border-color: #999999;
+    background: #fafafa;
+}

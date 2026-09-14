@@ -44,6 +44,11 @@ public class ReviewController {
                 reviews
         );
 
+        model.addAttribute(
+                "myReviewPage",
+                false
+        );
+
 
         /*
          * 로그인한 경우에만 현재 회원 번호 전달
@@ -57,6 +62,50 @@ public class ReviewController {
                     loginUser.getMemberNo()
             );
         }
+
+
+        return "review/list";
+    }
+
+
+    /* =========================================================
+       내 리뷰 목록
+
+       마이페이지에서 진입하는 회원 전용 화면
+    ========================================================= */
+
+    @GetMapping("/my")
+    public String myList(
+            Model model,
+            @AuthenticationPrincipal CustomUserDetails loginUser
+    ) {
+
+        if (loginUser == null) {
+
+            return "redirect:/member/login";
+        }
+
+
+        List<ReviewResponse> reviews =
+                reviewService.getMyReviews(
+                        loginUser.getMemberNo()
+                );
+
+
+        model.addAttribute(
+                "reviews",
+                reviews
+        );
+
+        model.addAttribute(
+                "currentMemberNo",
+                loginUser.getMemberNo()
+        );
+
+        model.addAttribute(
+                "myReviewPage",
+                true
+        );
 
 
         return "review/list";
@@ -114,7 +163,9 @@ public class ReviewController {
             Model model,
 
             @AuthenticationPrincipal
-            CustomUserDetails loginUser
+            CustomUserDetails loginUser,
+
+            RedirectAttributes redirectAttributes
     ) {
 
         /*
@@ -131,8 +182,19 @@ public class ReviewController {
         }
 
         try {
-            reviewService.validateWritableReservation(loginUser.getMemberNo(), reservationNo);
+
+            reviewService.validateWritableReservation(
+                    loginUser.getMemberNo(),
+                    reservationNo
+            );
+
         } catch (InvalidReviewReservationException e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    e.getMessage()
+            );
+
             return "redirect:/my-reservations";
         }
 
