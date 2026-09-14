@@ -1,3 +1,20 @@
+/* =========================================================
+   SALON ADMIN 공통 색상
+   관리자 대시보드 / 예약 관리 / 시술 메뉴 관리와 동일한
+   rose 계열을 이벤트 관리에도 적용한다.
+   ========================================================= */
+
+:root {
+    --rose: #b06f8d;
+    --rose-dark: #965a76;
+    --rose-light: #f5e8ef;
+    --admin-background: #f5f6f8;
+    --admin-surface: #ffffff;
+    --admin-text-main: #1f2228;
+    --admin-text-sub: #858a94;
+    --admin-border: #e1e5eb;
+}
+
 /* 이벤트 관리 페이지 공통 설정 */
 * {
     box-sizing: border-box;
@@ -6,8 +23,8 @@
 body {
     min-height: 100%;
     margin: 0;
-    color: #1f2937;
-    background: #f7f8fa;
+    color: var(--admin-text-main);
+    background: var(--admin-background);
     font-family:
             "Pretendard",
             "Noto Sans KR",
@@ -45,21 +62,21 @@ input {
 .page-category {
     display: block;
     margin-bottom: 7px;
-    color: #5b6bc7;
+    color: var(--rose-dark);
     font-size: 13px;
     font-weight: 800;
 }
 
 .salon-event-header h1 {
     margin: 0;
-    color: #172033;
+    color: var(--admin-text-main);
     font-size: 30px;
     line-height: 1.25;
 }
 
 .salon-event-header p {
     margin: 8px 0 0;
-    color: #718096;
+    color: var(--admin-text-sub);
     font-size: 14px;
 }
 
@@ -88,13 +105,13 @@ input {
 
 .primary-button {
     color: #ffffff;
-    border: 1px solid #5b6bc7;
-    background: #5b6bc7;
+    border: 1px solid var(--rose-dark);
+    background: var(--rose-dark);
 }
 
 .primary-button:hover {
-    border-color: #4959b4;
-    background: #4959b4;
+    border-color: var(--rose);
+    background: var(--rose);
 }
 
 .secondary-button {
@@ -147,7 +164,7 @@ input {
     width: 270px;
     height: 42px;
     padding: 0 14px;
-    color: #1f2937;
+    color: var(--admin-text-main);
     border: 1px solid #cfd8e5;
     border-radius: 8px;
     outline: none;
@@ -155,8 +172,8 @@ input {
 }
 
 .event-search-form input[type="search"]:focus {
-    border-color: #6677d2;
-    box-shadow: 0 0 0 3px rgba(91, 107, 199, 0.12);
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.11);
 }
 
 .event-search-form input::placeholder {
@@ -201,14 +218,14 @@ input {
 }
 
 .event-filter-buttons a:hover {
-    color: #4f60be;
-    border-color: #7c8ada;
+    color: var(--rose-dark);
+    border-color: #c9a8b8;
 }
 
 .event-filter-buttons a.active {
     color: #ffffff;
-    border-color: #5b6bc7;
-    background: #5b6bc7;
+    border-color: var(--rose-dark);
+    background: var(--rose-dark);
 }
 
 /* 이벤트 목록 영역 */
@@ -268,12 +285,12 @@ input {
 }
 
 .event-title-cell a {
-    color: #172033;
+    color: var(--admin-text-main);
     font-weight: 800;
 }
 
 .event-title-cell a:hover {
-    color: #5364c3;
+    color: var(--rose-dark);
     text-decoration: underline;
 }
 
@@ -358,15 +375,15 @@ input {
 }
 
 .detail-button {
-    color: #5364c3;
-    border: 1px solid #aeb8eb;
-    background: #f7f8ff;
+    color: var(--rose-dark);
+    border: 1px solid #d7bdca;
+    background: #fcf5f8;
 }
 
 .detail-button:hover {
     color: #ffffff;
-    border-color: #5b6bc7;
-    background: #5b6bc7;
+    border-color: var(--rose-dark);
+    background: var(--rose-dark);
 }
 
 .edit-button {
@@ -466,7 +483,7 @@ input {
 .form-group select,
 .form-group textarea {
     width: 100%;
-    color: #1f2937;
+    color: var(--admin-text-main);
     border: 1px solid #cfd8e5;
     border-radius: 9px;
     outline: none;
@@ -493,8 +510,8 @@ input {
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: #6677d2;
-    box-shadow: 0 0 0 3px rgba(91, 107, 199, 0.12);
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.11);
 }
 
 /* 입력 안내 문구 */
@@ -624,7 +641,7 @@ input {
 
 .event-detail-heading h2 {
     margin: 0;
-    color: #172033;
+    color: var(--admin-text-main);
     font-size: 25px;
     line-height: 1.4;
 }
@@ -728,10 +745,10 @@ input {
     display: block;
     overflow: hidden;
     padding: 14px 16px;
-    color: #5364c3;
+    color: var(--rose-dark);
     border: 1px solid #dce3ec;
     border-radius: 9px;
-    background: #f8f9ff;
+    background: #fcf7f9;
     font-size: 13px;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -868,13 +885,62 @@ input {
 /* 관리자 사이드바와 이벤트 화면 배치 */
 .salonevent-admin-layout {
     min-height: 100vh;
-    background: #f7f8fa;
+    background: var(--admin-background);
 }
 
 .salonevent-admin-content {
     min-width: 0;
     min-height: 100vh;
     margin-left: 250px;
-    background: #f7f8fa;
+    background: var(--admin-background);
 }
 .event-discount-value{color:#a24f68;font-weight:900;}
+
+
+/* =========================================================
+   최종 관리자 테마 보정
+   ========================================================= */
+
+.salon-event-page .primary-button,
+.salon-event-page .event-filter-buttons a.active,
+.salon-event-page .detail-button:hover {
+    border-color: var(--rose-dark);
+    background: var(--rose-dark);
+    color: #ffffff;
+}
+
+.salon-event-page .primary-button:hover,
+.salon-event-page .event-filter-buttons a.active:hover,
+.salon-event-page .detail-button:hover {
+    border-color: var(--rose);
+    background: var(--rose);
+}
+
+.salon-event-page .event-filter-buttons a:hover,
+.salon-event-page .detail-button,
+.salon-event-page .event-title-cell a:hover,
+.salon-event-page .event-image-url-section a {
+    color: var(--rose-dark);
+}
+
+.salon-event-page .event-filter-buttons a:hover,
+.salon-event-page .detail-button {
+    border-color: #c9a8b8;
+}
+
+.salon-event-page .detail-button,
+.salon-event-page .event-image-url-section a {
+    background: #fcf5f8;
+}
+
+.salon-event-page input:focus,
+.salon-event-page select:focus,
+.salon-event-page textarea:focus {
+    border-color: var(--rose) !important;
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.11) !important;
+}
+
+.salonevent-admin-layout,
+.salonevent-admin-content {
+    background: var(--admin-background);
+}

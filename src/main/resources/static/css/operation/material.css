@@ -1,3 +1,20 @@
+/* =========================================================
+   SALON ADMIN 공통 색상
+   관리자 대시보드 / 예약 관리 / 시술 메뉴 관리와 동일한
+   rose 계열을 재고 관리에도 적용한다.
+   ========================================================= */
+
+:root {
+    --rose: #b06f8d;
+    --rose-dark: #965a76;
+    --rose-light: #f5e8ef;
+    --admin-background: #f5f6f8;
+    --admin-surface: #ffffff;
+    --admin-text-main: #1f2228;
+    --admin-text-sub: #858a94;
+    --admin-border: #e1e5eb;
+}
+
 /* 자재 화면 공통 영역 */
 html,
 body {
@@ -8,7 +25,7 @@ body {
 /* 공통 사이드바와 자재 관리 화면 배치 */
 .material-admin-layout {
     min-height: 100vh;
-    background-color: #f7f8fa;
+    background-color: var(--admin-background);
 }
 
 /* 사이드바의 width에 padding이 포함되도록 크기 계산 통일 */
@@ -43,7 +60,7 @@ body {
     padding: 40px;
     font-family: "Pretendard", "Noto Sans KR", sans-serif;
     color: #2f3542;
-    background-color: #f7f8fa;
+    background-color: var(--admin-background);
 }
 
 /* 목록 화면 제목과 자재 등록 버튼 */
@@ -74,7 +91,7 @@ body {
     padding: 0 22px;
     border-radius: 10px;
     color: #ffffff;
-    background-color: #5c6bc0;
+    background-color: var(--rose-dark);
     text-decoration: none;
     font-size: 15px;
     font-weight: 700;
@@ -105,12 +122,12 @@ body {
 }
 
 .history-button:hover {
-    border-color: #5c6bc0;
-    color: #5c6bc0;
+    border-color: var(--rose);
+    color: var(--rose-dark);
 }
 
 .primary-button:hover {
-    background-color: #4959ad;
+    background-color: var(--rose);
 }
 
 /* 등록·수정 완료 메시지 */
@@ -208,8 +225,8 @@ body {
 }
 
 .search-form input:focus {
-    border-color: #5c6bc0;
-    box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.12);
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.11);
 }
 
 .search-form button {
@@ -279,7 +296,7 @@ body {
 }
 
 .recent-search-clear:hover {
-    color: #5c6bc0;
+    color: var(--rose-dark);
     text-decoration: underline;
 }
 
@@ -319,7 +336,7 @@ body {
 }
 
 .recent-search-list li:hover {
-    background-color: #f7f8fc;
+    background-color: #fcf7f9;
 }
 
 .search-suggestion-button {
@@ -341,8 +358,8 @@ body {
 .search-suggestion-button:hover,
 .search-suggestion-button:focus,
 .search-suggestion-button.active {
-    color: #4f5dab;
-    background-color: #f7f8fc;
+    color: var(--rose-dark);
+    background-color: #fcf7f9;
     outline: none;
 }
 
@@ -357,7 +374,7 @@ body {
 }
 
 .recent-search-list a:hover {
-    color: #4f5dab;
+    color: var(--rose-dark);
 }
 
 .recent-search-remove {
@@ -398,14 +415,14 @@ body {
 }
 
 .filter-buttons a:hover {
-    border-color: #aeb6d8;
-    color: #4f5dab;
+    border-color: #c9a8b8;
+    color: var(--rose-dark);
 }
 
 .filter-buttons a.active {
-    border-color: #5c6bc0;
+    border-color: var(--rose);
     color: #ffffff;
-    background-color: #5c6bc0;
+    background-color: var(--rose-dark);
 }
 
 /* 자재 목록 테이블 */
@@ -468,7 +485,7 @@ body {
 }
 
 .material-name:hover {
-    color: #5c6bc0;
+    color: var(--rose-dark);
     text-decoration: underline;
 }
 
@@ -521,8 +538,8 @@ body {
 }
 
 .edit-button:hover {
-    border-color: #5c6bc0;
-    color: #5c6bc0;
+    border-color: var(--rose);
+    color: var(--rose-dark);
 }
 
 /* 관리 열의 삭제 폼 */
@@ -601,8 +618,8 @@ body {
 }
 
 .back-button:hover {
-    border-color: #5c6bc0;
-    color: #5c6bc0;
+    border-color: var(--rose);
+    color: var(--rose-dark);
 }
 
 /* 자재 입력 폼 */
@@ -661,8 +678,8 @@ body {
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #5c6bc0;
-    box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.12);
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.11);
 }
 
 .form-group input[readonly] {
@@ -723,19 +740,19 @@ body {
 
 .cancel-button:hover {
     border-color: #9ca3ae;
-    background-color: #f7f8fa;
+    background-color: var(--admin-background);
 }
 
 .save-button {
-    border: 1px solid #5c6bc0;
+    border: 1px solid var(--rose-dark);
     color: #ffffff;
-    background-color: #5c6bc0;
+    background-color: var(--rose-dark);
     cursor: pointer;
 }
 
 .save-button:hover {
-    border-color: #4959ad;
-    background-color: #4959ad;
+    border-color: var(--rose);
+    background-color: var(--rose);
 }
 
 /* 자재 상세 화면 제목 영역 */
@@ -763,7 +780,7 @@ body {
 }
 
 .detail-number {
-    color: #5c6bc0;
+    color: var(--rose-dark);
     font-size: 13px;
     font-weight: 700;
 }
@@ -891,13 +908,13 @@ body {
 
 .page-button:hover,
 .page-number:hover {
-    border-color: #6573d0;
-    color: #5968c8;
+    border-color: #c9a8b8;
+    color: var(--rose-dark);
 }
 
 .page-number.active {
-    border-color: #606fce;
-    background: #606fce;
+    border-color: var(--rose-dark);
+    background: var(--rose-dark);
     color: #ffffff;
 }
 
@@ -906,4 +923,61 @@ body {
     border-color: #e5e8ee;
     background: #f4f5f7;
     color: #b6bbc4;
+}
+
+/* =========================================================
+   최종 관리자 테마 보정
+   ========================================================= */
+
+.material-page .primary-button,
+.material-page .filter-buttons a.active,
+.material-page .save-button,
+.material-page .page-number.active {
+    border-color: var(--rose-dark);
+    background: var(--rose-dark);
+    color: #ffffff;
+}
+
+.material-page .primary-button:hover,
+.material-page .save-button:hover,
+.material-page .page-number.active:hover {
+    border-color: var(--rose);
+    background: var(--rose);
+}
+
+.material-page .history-button:hover,
+.material-page .filter-buttons a:hover,
+.material-page .edit-button:hover,
+.material-page .back-button:hover,
+.material-page .material-name:hover,
+.material-page .recent-search-clear:hover,
+.material-page .recent-search-list a:hover,
+.material-page .search-suggestion-button:hover,
+.material-page .search-suggestion-button:focus,
+.material-page .search-suggestion-button.active,
+.material-page .detail-number,
+.material-page .page-button:hover,
+.material-page .page-number:hover {
+    color: var(--rose-dark);
+}
+
+.material-page .history-button:hover,
+.material-page .filter-buttons a:hover,
+.material-page .edit-button:hover,
+.material-page .back-button:hover,
+.material-page .page-button:hover,
+.material-page .page-number:hover {
+    border-color: #c9a8b8;
+}
+
+.material-page input:focus,
+.material-page select:focus {
+    border-color: var(--rose) !important;
+    box-shadow: 0 0 0 3px rgba(176, 111, 141, 0.11) !important;
+}
+
+.material-admin-layout,
+.material-admin-content,
+.material-page {
+    background-color: var(--admin-background);
 }
