@@ -479,11 +479,14 @@ public class ReservationService {
                 normalizeMemo(requestMemo)
         );
 
-        var price = reservationPricingService.calculate(
-                reservation.getMemberNo(),
-                reservation.getGuestPhone(),
-                serviceMenuNo, start
-        );
+        var price =
+                reservationPricingService.calculate(
+                        reservation.getMemberNo(),
+                        reservation.getGuestPhone(),
+                        serviceMenuNo,
+                        start,
+                        reservationNo
+                );
         reservation.applyPricing(
                 price.getOriginalPrice(),
                 price.getEventNo(),

@@ -29,6 +29,24 @@ public class ReservationPricingService {
             LocalDateTime startAt
     ) {
 
+        return calculate(
+                memberNo,
+                guestPhone,
+                serviceMenuNo,
+                startAt,
+                null
+        );
+    }
+
+
+    public ReservationPricePreviewResponse calculate(
+            Long memberNo,
+            String guestPhone,
+            Long serviceMenuNo,
+            LocalDateTime startAt,
+            Long excludedReservationNo
+    ) {
+
         var menu =
                 serviceMenuReader.getActiveServiceMenu(
                         serviceMenuNo
@@ -38,9 +56,10 @@ public class ReservationPricingService {
                 menu.price();
 
         boolean firstVisit =
-                isFirstVisit(
+                isFirstVisitEligible(
                         memberNo,
-                        guestPhone
+                        guestPhone,
+                        excludedReservationNo
                 );
 
 
@@ -236,10 +255,17 @@ public class ReservationPricingService {
     }
 
 
-    private boolean isFirstVisit(
+    private boolean isFirstVisitEligible(
             Long memberNo,
-            String guestPhone
+            String guestPhone,
+            Long excludedReservationNo
     ) {
+
+        long reservationNoToExclude =
+                excludedReservationNo == null
+                        ? -1L
+                        : excludedReservationNo;
+
 
         if (memberNo != null) {
 
@@ -260,7 +286,42 @@ public class ReservationPricingService {
                             .getSingleResult();
 
 
-            return completedCount.longValue() == 0;
+            if (completedCount.longValue() > 0) {
+
+                return false;
+            }
+
+
+            Number activeFirstVisitCount =
+                    (Number) entityManager
+                            .createNativeQuery(
+                                    """
+                                    SELECT COUNT(*)
+                                    FROM RESERVATION R
+                                    JOIN SALON_EVENT E
+                                      ON E.EVENT_NO = R.EVENT_NO_SNAPSHOT
+                                    WHERE R.MEMBER_NO = :memberNo
+                                      AND R.STATUS IN (
+                                            'REQUESTED',
+                                            'CONFIRMED'
+                                          )
+                                      AND E.EVENT_TYPE = 'FIRST_VISIT'
+                                      AND R.RESERVATION_NO
+                                            <> :excludedReservationNo
+                                    """
+                            )
+                            .setParameter(
+                                    "memberNo",
+                                    memberNo
+                            )
+                            .setParameter(
+                                    "excludedReservationNo",
+                                    reservationNoToExclude
+                            )
+                            .getSingleResult();
+
+
+            return activeFirstVisitCount.longValue() == 0;
         }
 
 
@@ -268,9 +329,9 @@ public class ReservationPricingService {
                 guestPhone == null
                         ? null
                         : guestPhone.replaceAll(
-                        "[^0-9]",
-                        ""
-                );
+                                "[^0-9]",
+                                ""
+                        );
 
 
         if (
@@ -300,7 +361,43 @@ public class ReservationPricingService {
                         .getSingleResult();
 
 
-        return completedCount.longValue() == 0;
+        if (completedCount.longValue() > 0) {
+
+            return false;
+        }
+
+
+        Number activeFirstVisitCount =
+                (Number) entityManager
+                        .createNativeQuery(
+                                """
+                                SELECT COUNT(*)
+                                FROM RESERVATION R
+                                JOIN SALON_EVENT E
+                                  ON E.EVENT_NO = R.EVENT_NO_SNAPSHOT
+                                WHERE R.CUSTOMER_TYPE = 'GUEST'
+                                  AND R.GUEST_PHONE = :guestPhone
+                                  AND R.STATUS IN (
+                                        'REQUESTED',
+                                        'CONFIRMED'
+                                      )
+                                  AND E.EVENT_TYPE = 'FIRST_VISIT'
+                                  AND R.RESERVATION_NO
+                                        <> :excludedReservationNo
+                                """
+                        )
+                        .setParameter(
+                                "guestPhone",
+                                normalizedPhone
+                        )
+                        .setParameter(
+                                "excludedReservationNo",
+                                reservationNoToExclude
+                        )
+                        .getSingleResult();
+
+
+        return activeFirstVisitCount.longValue() == 0;
     }
 
 
