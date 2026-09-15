@@ -114,22 +114,50 @@
                         아이디
                     </label>
 
-                    <input
-                            type="text"
-                            id="memberId"
-                            th:field="*{memberId}"
-                            placeholder="아이디를 입력해주세요."
-                            minlength="4"
-                            maxlength="20"
-                            autocomplete="username"
-                    >
 
+                    <!-- 아이디 입력 + 중복 확인 버튼 -->
+                    <div class="member-id-row">
+
+                        <input
+                                type="text"
+                                id="memberId"
+                                th:field="*{memberId}"
+                                placeholder="아이디를 입력해주세요."
+                                minlength="4"
+                                maxlength="20"
+                                autocomplete="username"
+                                autocapitalize="none"
+                                spellcheck="false"
+                        >
+
+                        <button
+                                type="button"
+                                id="memberIdCheckButton"
+                                class="member-id-check-button"
+                        >
+                            중복 확인
+                        </button>
+
+                    </div>
+
+
+                    <!-- 아이디 입력 규칙 -->
                     <p class="field-help">
                         영문 소문자, 숫자, _, -를 사용하여 4~20자로 입력해주세요.
                     </p>
 
 
+                    <!-- JS 실시간 검사 / 중복 확인 결과 -->
                     <p
+                            id="memberIdMessage"
+                            class="member-id-message"
+                            aria-live="polite"
+                    ></p>
+
+
+                    <!-- 서버 검증 오류 -->
+                    <p
+                            id="memberIdServerError"
                             class="field-error"
                             th:if="${#fields.hasErrors('memberId')}"
                             th:errors="*{memberId}"
@@ -542,25 +570,36 @@
                 </div>
 
 
-                <!--약관 동의 -->
+                <!-- 약관 동의 -->
 
                 <div class="agreement-area">
 
-
                     <!-- 이용약관 -->
 
-                    <label class="agreement-item">
+                    <div class="agreement-row">
 
-                        <input
-                                type="checkbox"
-                                th:field="*{agreeTerms}"
+                        <label class="agreement-item">
+
+                            <input
+                                    type="checkbox"
+                                    th:field="*{agreeTerms}"
+                            >
+
+                            <span>
+                                이용약관에 동의합니다. (필수)
+                            </span>
+
+                        </label>
+
+                        <button
+                                type="button"
+                                class="agreement-detail-button"
+                                data-dialog="termsDialog"
                         >
+                            내용보기
+                        </button>
 
-                        <span>
-                            이용약관에 동의합니다. (필수)
-                        </span>
-
-                    </label>
+                    </div>
 
 
                     <p
@@ -574,18 +613,30 @@
 
                     <!-- 개인정보 -->
 
-                    <label class="agreement-item">
+                    <div class="agreement-row">
 
-                        <input
-                                type="checkbox"
-                                th:field="*{agreePrivacy}"
+                        <label class="agreement-item">
+
+                            <input
+                                    type="checkbox"
+                                    th:field="*{agreePrivacy}"
+                            >
+
+                            <span>
+                                개인정보 수집 및 이용에 동의합니다. (필수)
+                            </span>
+
+                        </label>
+
+                        <button
+                                type="button"
+                                class="agreement-detail-button"
+                                data-dialog="privacyDialog"
                         >
+                            내용보기
+                        </button>
 
-                        <span>
-                            개인정보 수집 및 이용에 동의합니다. (필수)
-                        </span>
-
-                    </label>
+                    </div>
 
 
                     <p
@@ -610,6 +661,163 @@
                 </button>
 
             </form>
+
+
+            <!-- =========================================================
+            이용약관 Modal
+            ========================================================= -->
+
+            <dialog
+                    id="termsDialog"
+                    class="agreement-dialog"
+            >
+
+                <div class="agreement-dialog-content">
+
+                    <div class="agreement-dialog-header">
+
+                        <h2>
+                            이용약관
+                        </h2>
+
+                        <button
+                                type="button"
+                                class="agreement-dialog-close"
+                                aria-label="닫기"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <div class="agreement-dialog-body">
+
+                        <h3>제1조 목적</h3>
+
+                        <p>
+                            본 약관은 SALON CRM 서비스 이용과 관련하여
+                            서비스 제공자와 이용자 간의 권리, 의무 및
+                            책임사항을 정하는 것을 목적으로 합니다.
+                        </p>
+
+
+                        <h3>제2조 서비스 이용</h3>
+
+                        <p>
+                            회원은 회원가입 후 예약, 마이페이지 등
+                            서비스에서 제공하는 기능을 이용할 수 있습니다.
+                        </p>
+
+
+                        <h3>제3조 회원의 의무</h3>
+
+                        <p>
+                            회원은 정확한 정보를 입력해야 하며,
+                            다른 사람의 정보를 도용해서는 안 됩니다.
+                        </p>
+
+                        <p class="agreement-dialog-notice">
+                            ※ 실제 서비스 운영 시에는 최종 이용약관 내용으로
+                            교체해주세요.
+                        </p>
+
+                    </div>
+
+
+                    <div class="agreement-dialog-footer">
+
+                        <button
+                                type="button"
+                                class="agreement-dialog-confirm"
+                        >
+                            확인
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </dialog>
+
+
+            <!-- =========================================================
+                 개인정보 수집 및 이용 Modal
+            ========================================================= -->
+
+            <dialog
+                    id="privacyDialog"
+                    class="agreement-dialog"
+            >
+
+                <div class="agreement-dialog-content">
+
+                    <div class="agreement-dialog-header">
+
+                        <h2>
+                            개인정보 수집 및 이용 안내
+                        </h2>
+
+                        <button
+                                type="button"
+                                class="agreement-dialog-close"
+                                aria-label="닫기"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+
+                    <div class="agreement-dialog-body">
+
+                        <h3>수집하는 개인정보</h3>
+
+                        <p>
+                            아이디, 이름, 닉네임, 이메일, 전화번호,
+                            생년월일, 성별 등 회원가입 과정에서 입력한
+                            정보를 수집할 수 있습니다.
+                        </p>
+
+
+                        <h3>이용 목적</h3>
+
+                        <p>
+                            회원 식별, 예약 서비스 제공,
+                            회원정보 관리 및 서비스 운영을 위해 사용합니다.
+                        </p>
+
+
+                        <h3>보유 및 이용 기간</h3>
+
+                        <p>
+                            개인정보는 서비스 운영 목적에 필요한 기간 동안
+                            보관되며, 관련 법령 또는 서비스 정책에 따라
+                            처리됩니다.
+                        </p>
+
+                        <p class="agreement-dialog-notice">
+                            ※ 실제 서비스 운영 시에는 적용되는 개인정보
+                            처리방침과 보유기간을 정확히 기재해주세요.
+                        </p>
+
+                    </div>
+
+
+                    <div class="agreement-dialog-footer">
+
+                        <button
+                                type="button"
+                                class="agreement-dialog-confirm"
+                        >
+                            확인
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </dialog>
 
 
             <!-- Login Link -->

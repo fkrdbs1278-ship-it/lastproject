@@ -8,6 +8,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const signupButton =
         document.querySelector("#signupButton");
 
+    /* 아이디 */
+
+    const memberIdInput =
+        document.querySelector("#memberId");
+
+    const memberIdCheckButton =
+        document.querySelector("#memberIdCheckButton");
+
+    const memberIdMessage =
+        document.querySelector("#memberIdMessage");
+
+    const memberIdServerError =
+        document.querySelector("#memberIdServerError");
+
+
+    /*
+     * 중복 확인 완료 여부
+     *
+     * true  = 현재 입력된 아이디 중복 확인 완료
+     * false = 다시 중복 확인 필요
+     */
+    let memberIdChecked = false;
+
+
+    /*
+     * 마지막으로 중복 확인에 성공한 아이디
+     */
+    let checkedMemberId = "";
+
 
     const password = document.querySelector("#password");
     const passwordCheck = document.querySelector("#passwordCheck");
@@ -26,6 +55,147 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const birthDate =
         document.querySelector("#birthDate");
+
+
+
+    /* =========================================================
+        아이디 검사
+        ========================================================= */
+
+    /*
+     * 아이디 허용 규칙
+     *
+     * 영문 소문자
+     * 숫자
+     * _
+     * -
+     *
+     * 4 ~ 20자
+     */
+    const memberIdPattern =
+        /^[a-z0-9_-]{4,20}$/;
+
+
+    /*
+     * 아이디 메시지 초기화
+     */
+    function clearMemberIdMessage() {
+
+        if (!memberIdMessage) {
+            return;
+        }
+
+        memberIdMessage.textContent = "";
+
+        memberIdMessage.className =
+            "member-id-message";
+    }
+
+
+    /*
+     * 아이디 실시간 형식 검사
+     */
+    function validateMemberId() {
+
+        if (!memberIdInput || !memberIdMessage) {
+            return false;
+        }
+
+
+        const memberId =
+            memberIdInput.value.trim();
+
+
+        /*
+         * 입력값이 바뀌면
+         * 기존 중복 확인 결과는 무효
+         */
+        memberIdChecked = false;
+        checkedMemberId = "";
+
+
+        /*
+         * 서버에서 내려온 기존 Validation 오류 제거
+         */
+        if (memberIdServerError) {
+
+            memberIdServerError.textContent = "";
+
+            memberIdServerError.style.display =
+                "none";
+        }
+
+
+        /*
+         * 아무것도 입력하지 않은 경우
+         */
+        if (memberId === "") {
+
+            clearMemberIdMessage();
+
+            return false;
+        }
+
+
+        /*
+         * 한글 포함
+         */
+        if (
+            /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(memberId)
+        ) {
+
+            memberIdMessage.textContent =
+                "아이디는 영어로 입력해주세요.";
+
+            memberIdMessage.className =
+                "member-id-message error";
+
+            return false;
+        }
+
+
+        /*
+         * 대문자 포함
+         */
+        if (/[A-Z]/.test(memberId)) {
+
+            memberIdMessage.textContent =
+                "아이디는 영문 소문자로 입력해주세요.";
+
+            memberIdMessage.className =
+                "member-id-message error";
+
+            return false;
+        }
+
+
+        /*
+         * 허용되지 않는 문자 또는 길이
+         */
+        if (!memberIdPattern.test(memberId)) {
+
+            memberIdMessage.textContent =
+                "영문 소문자, 숫자, _, -를 사용하여 4~20자로 입력해주세요.";
+
+            memberIdMessage.className =
+                "member-id-message error";
+
+            return false;
+        }
+
+
+        /*
+         * 형식은 정상
+         * 아직 중복 확인 전
+         */
+        memberIdMessage.textContent =
+            "사용 가능한 형식입니다. 중복 확인을 해주세요.";
+
+        memberIdMessage.className =
+            "member-id-message";
+
+        return true;
+    }
 
 
     /* 비밀번호 조건 표시 요소 */
@@ -402,8 +572,521 @@ document.addEventListener("DOMContentLoaded", () => {
             );
     }
 
+    /* =========================================================
+        서버 Validation 오류 제거
+        ========================================================= */
+
+    /*
+     * 서버에서 출력한 빨간 오류 메시지를 숨긴다.
+     */
+    function hideServerError(
+        errorElement
+    ) {
+
+        if (!errorElement) {
+            return;
+        }
+
+
+        errorElement.textContent =
+            "";
+
+        errorElement.style.display =
+            "none";
+    }
+
+
+    /*
+     * 해당 입력칸이 속한 form-group의
+     * 서버 Validation 오류를 제거한다.
+     */
+    function clearServerValidationError(
+        input
+    ) {
+
+        if (!input) {
+            return;
+        }
+
+
+        const formGroup =
+            input.closest(
+                ".form-group"
+            );
+
+
+        if (!formGroup) {
+            return;
+        }
+
+
+        const errors =
+            formGroup.querySelectorAll(
+                ".field-error"
+            );
+
+
+        errors.forEach(
+            (error) => {
+
+                hideServerError(
+                    error
+                );
+            }
+        );
+    }
+
 
     /* Event */
+
+    /* =========================================================
+    약관 / 개인정보 내용보기
+    ========================================================= */
+
+    const agreementDetailButtons =
+        document.querySelectorAll(
+            ".agreement-detail-button"
+        );
+
+
+    agreementDetailButtons.forEach(
+        (button) => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const dialogId =
+                        button.dataset.dialog;
+
+
+                    const dialog =
+                        document.getElementById(
+                            dialogId
+                        );
+
+
+                    if (!dialog) {
+                        return;
+                    }
+
+
+                    dialog.showModal();
+                }
+            );
+        }
+    );
+
+
+    /* 닫기 / 확인 버튼 */
+
+    document
+        .querySelectorAll(
+            ".agreement-dialog"
+        )
+        .forEach(
+            (dialog) => {
+
+                const closeButton =
+                    dialog.querySelector(
+                        ".agreement-dialog-close"
+                    );
+
+
+                const confirmButton =
+                    dialog.querySelector(
+                        ".agreement-dialog-confirm"
+                    );
+
+
+                if (closeButton) {
+
+                    closeButton.addEventListener(
+                        "click",
+                        () => {
+
+                            dialog.close();
+                        }
+                    );
+                }
+
+
+                if (confirmButton) {
+
+                    confirmButton.addEventListener(
+                        "click",
+                        () => {
+
+                            dialog.close();
+                        }
+                    );
+                }
+
+
+                /*
+                 * 모달 바깥 영역 클릭 시 닫기
+                 */
+                dialog.addEventListener(
+                    "click",
+                    (event) => {
+
+                        if (
+                            event.target === dialog
+                        ) {
+
+                            dialog.close();
+                        }
+                    }
+                );
+            }
+        );
+
+
+
+
+
+    /* =========================================================
+    입력값 수정 시 기존 서버 오류 제거
+    ========================================================= */
+
+    if (signupForm) {
+
+        const validationFields =
+            signupForm.querySelectorAll(
+                ".form-group input, "
+                + ".form-group select"
+            );
+
+
+        validationFields.forEach(
+            (field) => {
+
+                /*
+                 * 문자 입력
+                 */
+                field.addEventListener(
+                    "input",
+                    () => {
+
+                        clearServerValidationError(
+                            field
+                        );
+                    }
+                );
+
+
+                /*
+                 * 날짜 / 라디오 / select 등
+                 */
+                field.addEventListener(
+                    "change",
+                    () => {
+
+                        clearServerValidationError(
+                            field
+                        );
+                    }
+                );
+            }
+        );
+    }
+
+
+    /* =========================================================
+     약관 동의 서버 오류 제거
+    ========================================================= */
+
+    if (signupForm) {
+
+        const agreementInputs =
+            signupForm.querySelectorAll(
+                ".agreement-item input"
+            );
+
+
+        agreementInputs.forEach(
+            (checkbox) => {
+
+                checkbox.addEventListener(
+                    "change",
+                    () => {
+
+                        /*
+                         * 체크되지 않은 상태라면
+                         * 오류를 지우지 않는다.
+                         */
+                        if (!checkbox.checked) {
+                            return;
+                        }
+
+
+                        const agreementItem =
+                            checkbox.closest(
+                                ".agreement-item"
+                            );
+
+
+                        if (!agreementItem) {
+                            return;
+                        }
+
+
+                        /*
+                         * label 바로 다음의
+                         * field-error 찾기
+                         */
+                        const errorElement =
+                            agreementItem
+                                .nextElementSibling;
+
+
+                        if (
+                            errorElement &&
+                            errorElement
+                                .classList
+                                .contains(
+                                    "field-error"
+                                )
+                        ) {
+
+                            hideServerError(
+                                errorElement
+                            );
+                        }
+                    }
+                );
+            }
+        );
+    }
+
+    if (memberIdInput) {
+
+        memberIdInput.addEventListener(
+            "input",
+            validateMemberId
+        );
+    }
+
+    /* 아이디 중복 확인 */
+
+    if (
+        memberIdInput &&
+        memberIdCheckButton &&
+        memberIdMessage
+    ) {
+
+        memberIdCheckButton.addEventListener(
+            "click",
+            async () => {
+
+                /*
+                 * 먼저 형식 검사
+                 */
+                if (!validateMemberId()) {
+
+                    memberIdInput.focus();
+
+                    return;
+                }
+
+
+                const memberId =
+                    memberIdInput.value.trim();
+
+
+                /*
+                 * CSRF
+                 */
+                const csrfToken =
+                    document
+                        .querySelector(
+                            'meta[name="_csrf"]'
+                        )
+                        ?.getAttribute(
+                            "content"
+                        );
+
+                const csrfHeader =
+                    document
+                        .querySelector(
+                            'meta[name="_csrf_header"]'
+                        )
+                        ?.getAttribute(
+                            "content"
+                        );
+
+
+                const headers = {
+
+                    "Content-Type":
+                        "application/x-www-form-urlencoded;charset=UTF-8"
+                };
+
+
+                if (
+                    csrfToken &&
+                    csrfHeader
+                ) {
+
+                    headers[csrfHeader] =
+                        csrfToken;
+                }
+
+
+                /*
+                 * 검사 중 버튼 비활성화
+                 */
+                memberIdCheckButton.disabled =
+                    true;
+
+                memberIdCheckButton.textContent =
+                    "확인 중...";
+
+
+                memberIdMessage.textContent =
+                    "아이디 중복 여부를 확인하고 있습니다.";
+
+                memberIdMessage.className =
+                    "member-id-message";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/member/id-check",
+                            {
+
+                                method:
+                                    "POST",
+
+                                headers:
+                                headers,
+
+                                body:
+                                    new URLSearchParams(
+                                        {
+                                            memberId:
+                                            memberId
+                                        }
+                                    )
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "아이디 중복 확인 요청 실패"
+                        );
+                    }
+
+
+                    const data =
+                        await response.json();
+
+
+                    /*
+                     * 중복 확인 요청 중
+                     * 사용자가 아이디를 변경한 경우
+                     */
+                    if (
+                        memberIdInput.value.trim()
+                        !== memberId
+                    ) {
+
+                        memberIdChecked =
+                            false;
+
+                        checkedMemberId =
+                            "";
+
+                        memberIdMessage.textContent =
+                            "아이디가 변경되었습니다. 다시 중복 확인해주세요.";
+
+                        memberIdMessage.className =
+                            "member-id-message error";
+
+                        return;
+                    }
+
+
+                    /*
+                     * 서버 응답이
+                     *
+                     * isDuplicate
+                     * 또는
+                     * duplicate
+                     *
+                     * 둘 중 어느 이름이어도 처리 가능
+                     */
+                    const isDuplicate =
+                        data.isDuplicate
+                        ?? data.duplicate
+                        ?? false;
+
+
+                    if (isDuplicate) {
+
+                        memberIdChecked =
+                            false;
+
+                        checkedMemberId =
+                            "";
+
+                        memberIdMessage.textContent =
+                            "이미 사용 중인 아이디입니다.";
+
+                        memberIdMessage.className =
+                            "member-id-message error";
+
+                    } else {
+
+                        memberIdChecked =
+                            true;
+
+                        checkedMemberId =
+                            memberId;
+
+                        memberIdMessage.textContent =
+                            "사용 가능한 아이디입니다. ✓";
+
+                        memberIdMessage.className =
+                            "member-id-message success";
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        "아이디 중복 확인 오류:",
+                        error
+                    );
+
+
+                    memberIdChecked =
+                        false;
+
+                    checkedMemberId =
+                        "";
+
+                    memberIdMessage.textContent =
+                        "아이디 중복 확인 중 오류가 발생했습니다.";
+
+                    memberIdMessage.className =
+                        "member-id-message error";
+
+                } finally {
+
+                    memberIdCheckButton.disabled =
+                        false;
+
+                    memberIdCheckButton.textContent =
+                        "중복 확인";
+                }
+            }
+        );
+    }
 
     if (password) {
 
@@ -439,6 +1122,72 @@ document.addEventListener("DOMContentLoaded", () => {
             (event) => {
 
                 /*
+                 * 현재 입력되어 있는 아이디
+                 */
+                const currentMemberId =
+                    memberIdInput
+                        ?.value
+                        .trim()
+                    ?? "";
+
+
+                /*
+                 * 아이디 형식이 잘못됐거나
+                 * 중복 확인을 하지 않았거나
+                 * 중복 확인 후 아이디가 변경된 경우
+                 */
+                if (
+                    !memberIdPattern.test(
+                        currentMemberId
+                    ) ||
+                    !memberIdChecked ||
+                    checkedMemberId !== currentMemberId
+                ) {
+
+                    event.preventDefault();
+
+
+                    if (memberIdMessage) {
+
+                        /*
+                         * 아이디 형식 자체가 잘못된 경우
+                         */
+                        if (
+                            !memberIdPattern.test(
+                                currentMemberId
+                            )
+                        ) {
+
+                            memberIdMessage.textContent =
+                                "올바른 아이디를 입력해주세요.";
+
+                        } else {
+
+                            /*
+                             * 형식은 맞지만
+                             * 중복 확인이 안 된 경우
+                             */
+                            memberIdMessage.textContent =
+                                "아이디 중복 확인을 해주세요.";
+                        }
+
+
+                        memberIdMessage.className =
+                            "member-id-message error";
+                    }
+
+
+                    if (memberIdInput) {
+
+                        memberIdInput.focus();
+                    }
+
+
+                    return;
+                }
+
+
+                /*
                  * 이미 한번 제출된 경우
                  */
                 if (
@@ -462,7 +1211,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 /*
                  * 버튼 비활성화
                  */
-                signupButton.disabled = true;
+                signupButton.disabled =
+                    true;
+
 
                 signupButton.textContent =
                     "가입 처리 중...";

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 
 @Controller
@@ -27,6 +28,33 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+
+    /* =========================================================
+        아이디 중복 확인
+
+        POST /member/id-check
+
+        true  = 이미 사용 중인 아이디
+        false = 사용 가능한 아이디
+    ========================================================= */
+
+    @PostMapping("/id-check")
+    @ResponseBody
+    public Map<String, Boolean> checkMemberId(
+            @RequestParam("memberId")
+            String memberId
+    ) {
+
+        boolean isDuplicate =
+                memberService.isMemberIdDuplicate(
+                        memberId
+                );
+
+        return Map.of(
+                "isDuplicate",
+                isDuplicate
+        );
+    }
 
     /* 마이페이지 */
 

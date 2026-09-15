@@ -163,6 +163,36 @@ public class MemberService {
     }
 
 
+
+    /* =========================================================
+        아이디 중복 확인
+
+        true  = 중복
+        false = 사용 가능
+    ========================================================= */
+
+    public boolean isMemberIdDuplicate(
+            String memberId
+    ) {
+
+        if (
+                memberId == null ||
+                        memberId.isBlank()
+        ) {
+
+            return false;
+        }
+
+
+        return memberRepository
+                .existsByMemberId(
+                        memberId.trim()
+                );
+    }
+
+
+
+
     /* 회원가입 Validation
        Service에서 처리하는 회원가입 비즈니스 규칙 */
 
