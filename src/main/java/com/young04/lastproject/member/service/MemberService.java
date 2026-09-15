@@ -1,5 +1,6 @@
 package com.young04.lastproject.member.service;
 
+import com.young04.lastproject.customerprofile.service.CustomerProfileService;
 import com.young04.lastproject.global.exception.member.DuplicateEmailException;
 import com.young04.lastproject.global.exception.member.DuplicateMemberIdException;
 import com.young04.lastproject.global.exception.member.InvalidBirthDateException;
@@ -33,6 +34,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final PhoneVerificationService phoneVerificationService;
+
+    private final CustomerProfileService customerProfileService;
 
 
     /* 회원가입 */
@@ -119,6 +122,14 @@ public class MemberService {
 
         Member savedMember =
                 memberRepository.save(member);
+
+
+        /* 회원가입과 동시에 CRM 고객 프로필 생성 / 연결 */
+
+        customerProfileService
+                .syncMemberCustomer(
+                        savedMember
+                );
 
 
         /*  사용한 휴대전화 인증정보 제거
@@ -481,6 +492,14 @@ public class MemberService {
 
 
         );
+
+
+        /* 회원 이름 / 전화번호 변경 내용을 CRM에도 동기화 */
+
+        customerProfileService
+                .syncMemberCustomer(
+                        member
+                );
 
         /* 전화번호 변경 인증 사용 완료 */
 

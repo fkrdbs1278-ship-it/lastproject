@@ -10,6 +10,7 @@ import com.young04.lastproject.customerprofile.exception.CustomerNotFoundExcepti
 import com.young04.lastproject.customerprofile.exception.DuplicateCustomerPhoneException;
 import com.young04.lastproject.customerprofile.repository.CustomerProfileRepository;
 import com.young04.lastproject.customerprofile.repository.CustomerProfileRepositoryCustom;
+import com.young04.lastproject.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -212,6 +213,182 @@ public class CustomerProfileService {
                         .existsByPhone(
                                 digits
                         );
+    }
+
+
+
+    // =====================================================
+    // 회원 고객 생성 / 동기화
+    // =====================================================
+
+    /**
+     * MEMBER와 CUSTOMER_PROFILE을 연결합니다.
+     *
+     * 1. 이미 MEMBER_NO로 연결된 고객이 있으면
+     *    회원 이름 / 전화번호를 동기화합니다.
+     *
+     * 2. 같은 전화번호의 GUEST 고객이 있으면
+     *    기존 방문 / 결제 / 등급 정보는 유지한 채
+     *    MEMBER 고객으로 전환합니다.
+     *
+     * 3. 아무 고객도 없으면 NORMAL 등급의
+     *    새 MEMBER 고객을 생성합니다.
+     */
+    @Transactional
+    public CustomerProfile syncMemberCustomer(
+            Member member
+    ) {
+
+        if (member == null
+                || member.getNo() == null) {
+
+            throw new IllegalArgumentException(
+                    "저장된 회원 정보가 필요합니다."
+            );
+        }
+
+        String customerName =
+                member.getName() == null
+                        ? null
+                        : member.getName().trim();
+
+        String digits =
+                extractPhoneDigits(
+                        member.getPhone()
+                );
+
+        String formattedPhone =
+                formatPhone(
+                        digits
+                );
+
+        // -------------------------------------------------
+        // 1. 이미 회원번호로 연결된 CRM 고객
+        // -------------------------------------------------
+
+        Optional<CustomerProfile> memberCustomer =
+                customerProfileRepository
+                        .findByMemberNo(
+                                member.getNo()
+                        );
+
+        if (memberCustomer.isPresent()) {
+
+            CustomerProfile customer =
+                    memberCustomer.get();
+
+            Optional<CustomerProfile> phoneOwner =
+                    findByPhone(
+                            formattedPhone
+                    );
+
+            if (phoneOwner.isPresent()
+                    && !phoneOwner.get()
+                    .getCustomerId()
+                    .equals(
+                            customer.getCustomerId()
+                    )) {
+
+                throw new IllegalStateException(
+                        "해당 전화번호가 다른 CRM 고객과 연결되어 있습니다."
+                );
+            }
+
+            customer.linkMember(
+                    member.getNo(),
+                    customerName,
+                    formattedPhone
+            );
+
+            log.info(
+                    "회원 CRM 동기화 완료 memberNo={}, customerId={}",
+                    member.getNo(),
+                    customer.getCustomerId()
+            );
+
+            return customer;
+        }
+
+
+        // -------------------------------------------------
+        // 2. 같은 전화번호의 기존 GUEST 고객
+        //    → 회원 고객으로 승격
+        // -------------------------------------------------
+
+        Optional<CustomerProfile> phoneCustomer =
+                findByPhone(
+                        formattedPhone
+                );
+
+        if (phoneCustomer.isPresent()) {
+
+            CustomerProfile customer =
+                    phoneCustomer.get();
+
+            if (customer.getMemberNo() != null
+                    && !customer.getMemberNo()
+                    .equals(
+                            member.getNo()
+                    )) {
+
+                throw new IllegalStateException(
+                        "해당 전화번호가 이미 다른 회원 고객과 연결되어 있습니다."
+                );
+            }
+
+            customer.linkMember(
+                    member.getNo(),
+                    customerName,
+                    formattedPhone
+            );
+
+            log.info(
+                    "기존 GUEST 고객 회원 연결 완료 memberNo={}, customerId={}",
+                    member.getNo(),
+                    customer.getCustomerId()
+            );
+
+            return customer;
+        }
+
+
+        // -------------------------------------------------
+        // 3. 신규 MEMBER 고객 생성
+        // -------------------------------------------------
+
+        CustomerGrade normalGrade =
+                customerGradeService
+                        .findByGradeCode(
+                                "NORMAL"
+                        )
+                        .orElseThrow(
+                                () -> new CustomerGradeNotFoundException(
+                                        "NORMAL"
+                                )
+                        );
+
+        CustomerProfile customer =
+                CustomerProfile
+                        .createMemberCustomer(
+                                member.getNo(),
+                                customerName,
+                                formattedPhone,
+                                normalGrade
+                        );
+
+        CustomerProfile savedCustomer =
+                customerProfileRepository
+                        .save(
+                                customer
+                        );
+
+        log.info(
+                "회원 CRM 고객 생성 완료 memberNo={}, customerId={}",
+                member.getNo(),
+                savedCustomer.getCustomerId()
+        );
+
+        return savedCustomer;
     }
 
 

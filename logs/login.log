@@ -45,3 +45,5 @@
 2026-09-15 10:14:55.589 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
 2026-09-15 10:24:30.303 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
 2026-09-15 10:27:38.149 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
+2026-09-15 10:31:27.791 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
+2026-09-15 11:23:40.547 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1

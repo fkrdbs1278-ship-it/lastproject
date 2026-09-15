@@ -155,6 +155,116 @@ public class CustomerProfile {
 
 
     // =====================================================
+    // 회원 고객 생성
+    // =====================================================
+
+    public static CustomerProfile createMemberCustomer(
+            Long memberNo,
+            String customerName,
+            String phone,
+            CustomerGrade normalGrade
+    ) {
+
+        if (memberNo == null) {
+
+            throw new IllegalArgumentException(
+                    "회원 번호는 필수입니다."
+            );
+        }
+
+        if (customerName == null
+                || customerName.trim().isEmpty()) {
+
+            throw new IllegalArgumentException(
+                    "고객명은 필수입니다."
+            );
+        }
+
+        if (phone == null
+                || phone.trim().isEmpty()) {
+
+            throw new IllegalArgumentException(
+                    "전화번호는 필수입니다."
+            );
+        }
+
+        if (normalGrade == null) {
+
+            throw new IllegalArgumentException(
+                    "기본 고객 등급은 필수입니다."
+            );
+        }
+
+        CustomerProfile customer =
+                new CustomerProfile();
+
+        customer.memberNo =
+                memberNo;
+
+        customer.customerName =
+                customerName.trim();
+
+        customer.phone =
+                phone.trim();
+
+        customer.customerType =
+                "MEMBER";
+
+        customer.customerGrade =
+                normalGrade;
+
+        customer.gradeManualYn =
+                "N";
+
+        customer.lastVisitDate =
+                null;
+
+        customer.visitCount =
+                0;
+
+        customer.totalPayment =
+                BigDecimal.ZERO;
+
+        customer.activeYn =
+                "Y";
+
+        return customer;
+    }
+
+
+
+    // =====================================================
+    // 기존 비회원 고객을 회원 고객으로 연결 / 회원정보 동기화
+    // =====================================================
+
+    public void linkMember(
+            Long memberNo,
+            String customerName,
+            String phone
+    ) {
+
+        if (memberNo == null) {
+
+            throw new IllegalArgumentException(
+                    "회원 번호는 필수입니다."
+            );
+        }
+
+        updateBasicInfo(
+                customerName,
+                phone
+        );
+
+        this.memberNo =
+                memberNo;
+
+        this.customerType =
+                "MEMBER";
+    }
+
+
+
+    // =====================================================
     // 전화예약 / 비회원 고객 생성
     // =====================================================
 
