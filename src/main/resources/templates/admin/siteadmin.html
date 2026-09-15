@@ -28,6 +28,16 @@
       th:action="@{/admin/siteadmin/save}"
       method="post"
       enctype="multipart/form-data">
+
+    <!-- 기존 저장 구조 호환용 값: 서비스 안내 UI는 제거하고 비노출 상태로 유지 -->
+    <input type="hidden"
+           name="serviceVisible"
+           value="false">
+
+    <input type="hidden"
+           name="serviceTitle"
+           value="서비스 안내">
+
 </form>
 
 <div class="admin-layout">
@@ -121,18 +131,55 @@
                             </nav>
 
                         </header>
-
-
                         <!-- Hero -->
                         <section class="preview-hero"
                                  id="previewHero">
 
-                            <img id="previewHeroImage"
-                                 src="/images/hero/hero1.jpg"
-                                 th:src="${siteSetting != null and siteSetting.heroImageUrl != null
-                                    ? siteSetting.heroImageUrl
-                                    : '/images/hero/hero1.jpg'}"
-                                 alt="메인 이미지">
+                            <!-- 사용자 메인과 동일한 4장 구조
+                                 1번만 관리자 업로드 이미지로 교체 가능 -->
+                            <div class="preview-hero-backgrounds"
+                                 id="previewHeroBackgrounds">
+
+                                <div class="preview-hero-background active"
+                                     data-slide="0">
+
+                                    <img id="previewHeroImage"
+                                         src="/images/hero/hero1.jpg"
+                                         th:src="${siteSetting != null
+                                            and siteSetting.heroImageUrl != null
+                                            ? siteSetting.heroImageUrl
+                                            : '/images/hero/hero1.jpg'}"
+                                         alt="메인 이미지 1">
+                                </div>
+
+
+                                <div class="preview-hero-background"
+                                     data-slide="1">
+
+                                    <img src="/images/hero/hero2.jpg"
+                                         th:src="@{/images/hero/hero2.jpg}"
+                                         alt="메인 이미지 2">
+                                </div>
+
+
+                                <div class="preview-hero-background"
+                                     data-slide="2">
+
+                                    <img src="/images/hero/hero3.jpg"
+                                         th:src="@{/images/hero/hero3.jpg}"
+                                         alt="메인 이미지 3">
+                                </div>
+
+
+                                <div class="preview-hero-background"
+                                     data-slide="3">
+
+                                    <img src="/images/hero/hero4.jpg"
+                                         th:src="@{/images/hero/hero4.jpg}"
+                                         alt="메인 이미지 4">
+                                </div>
+
+                            </div>
 
 
                             <div class="preview-hero-overlay"></div>
@@ -157,57 +204,50 @@
 
                             </div>
 
-                        </section>
+
+                            <!-- 이전 / 다음 -->
+                            <button id="previewHeroPrev"
+                                    class="preview-hero-slider-button preview-hero-slider-prev"
+                                    type="button"
+                                    aria-label="이전 이미지">
+                                ‹
+                            </button>
+
+                            <button id="previewHeroNext"
+                                    class="preview-hero-slider-button preview-hero-slider-next"
+                                    type="button"
+                                    aria-label="다음 이미지">
+                                ›
+                            </button>
 
 
-                        <!-- 서비스 안내 -->
-                        <section class="preview-section"
-                                 id="previewServiceSection"
-                                 th:style="${siteSetting != null and !siteSetting.serviceVisible} ? 'display:none;' : ''">
+                            <!-- 슬라이드 점 -->
+                            <div id="previewHeroDots"
+                                 class="preview-hero-dots">
 
-                            <h3 id="previewServiceTitle"
-                                th:text="${siteSetting != null
-                                    ? siteSetting.serviceTitle
-                                    : '서비스 안내'}">
-                                서비스 안내
-                            </h3>
+                                <button type="button"
+                                        class="preview-hero-dot active"
+                                        data-slide="0"
+                                        aria-label="첫 번째 이미지"></button>
 
+                                <button type="button"
+                                        class="preview-hero-dot"
+                                        data-slide="1"
+                                        aria-label="두 번째 이미지"></button>
 
-                            <div class="preview-service-grid">
+                                <button type="button"
+                                        class="preview-hero-dot"
+                                        data-slide="2"
+                                        aria-label="세 번째 이미지"></button>
 
-                                <article>
-                                    <strong>시술 메뉴</strong>
-
-                                    <p>
-                                        커트, 펌, 염색, 클리닉 등
-                                        다양한 시술 메뉴와 가격을 확인할 수 있습니다.
-                                    </p>
-                                </article>
-
-
-                                <article>
-                                    <strong>헤어스타일</strong>
-
-                                    <p>
-                                        다양한 헤어스타일 이미지를 확인하고
-                                        원하는 스타일을 찾아볼 수 있습니다.
-                                    </p>
-                                </article>
-
-
-                                <article>
-                                    <strong>마이페이지</strong>
-
-                                    <p>
-                                        예약, 결제, 쿠폰 및 리뷰 내역을
-                                        한 곳에서 확인할 수 있습니다.
-                                    </p>
-                                </article>
+                                <button type="button"
+                                        class="preview-hero-dot"
+                                        data-slide="3"
+                                        aria-label="네 번째 이미지"></button>
 
                             </div>
 
                         </section>
-
 
                         <!-- 헤어스타일 -->
                         <section class="preview-section preview-style-section"
@@ -352,7 +392,7 @@
 
                     <label class="editor-field">
 
-                        <span>메인 이미지</span>
+                        <span>메인 이미지 (1번 슬라이드)</span>
 
                         <input id="heroImageInput"
                                name="heroImage"
@@ -361,72 +401,14 @@
                                accept="image/*">
 
                         <small>
-                            이미지를 선택하면 왼쪽 미리보기에 바로 표시됩니다.
+                            선택한 이미지는 1번 슬라이드에 적용됩니다.
+                            2~4번 기본 이미지는 그대로 유지되며,
+                            저장하면 사용자 메인 화면에도 반영됩니다.
                         </small>
 
                     </label>
 
                 </section>
-
-
-                <!-- 서비스 안내 설정 -->
-                <section class="editor-section">
-
-                    <div class="editor-section-title">
-
-                        <span class="section-number">
-                            02
-                        </span>
-
-                        <div>
-                            <h3>서비스 안내</h3>
-
-                            <p>
-                                메인 페이지의 서비스 안내 영역을 설정합니다.
-                            </p>
-                        </div>
-
-                    </div>
-
-
-                    <label class="toggle-row">
-
-                        <div>
-                            <strong>서비스 안내 노출</strong>
-
-                            <p>
-                                사용자 메인에 서비스 안내 영역을 표시합니다.
-                            </p>
-                        </div>
-
-
-                        <input id="serviceVisibleInput"
-                               name="serviceVisible"
-                               value="true"
-                               form="siteSettingForm"
-                               type="checkbox"
-                               th:checked="${siteSetting == null or siteSetting.serviceVisible}">
-
-                    </label>
-
-
-                    <label class="editor-field">
-
-                        <span>영역 제목</span>
-
-                        <input id="serviceTitleInput"
-                               name="serviceTitle"
-                               form="siteSettingForm"
-                               type="text"
-                               value="서비스 안내"
-                               th:value="${siteSetting != null
-                                   ? siteSetting.serviceTitle
-                                   : '서비스 안내'}">
-
-                    </label>
-
-                </section>
-
 
                 <!-- 헤어스타일 영역 설정 -->
                 <section class="editor-section">
@@ -434,7 +416,7 @@
                     <div class="editor-section-title">
 
                         <span class="section-number">
-                            03
+                            02
                         </span>
 
                         <div>
@@ -535,10 +517,13 @@
 
 </div>
 
-<!-- 저장 완료 토스트 메시지 -->
+<!-- 저장 결과 토스트 메시지 -->
 <div id="siteadminToast"
-     class="siteadmin-toast">
-    변경사항이 미리보기에 적용되었습니다.
+     class="siteadmin-toast"
+     th:classappend="${errorMessage != null} ? ' error' : ''"
+     th:text="${message != null
+        ? message
+        : (errorMessage != null ? errorMessage : '')}">
 </div>
 
 <script src="/js/admin/siteadmin.js"
