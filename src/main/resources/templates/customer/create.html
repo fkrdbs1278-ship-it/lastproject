@@ -27,6 +27,10 @@
     <link rel="stylesheet"
           th:href="@{/css/customer/create.css}">
 
+    <script th:src="@{/js/customer/create.js}"
+            defer>
+    </script>
+
 </head>
 
 
@@ -142,6 +146,7 @@
         ================================================== -->
 
         <form class="create-form"
+              id="customerCreateForm"
               method="post"
               th:action="@{/admin/customers/new}"
               th:object="${customerCreateRequest}">
@@ -191,6 +196,11 @@
 
                     고객명을 확인해 주세요.
 
+                </div>
+
+                <div class="field-error client-field-error"
+                     id="customerNameClientError"
+                     hidden>
                 </div>
 
 
@@ -249,189 +259,25 @@
 
                 </div>
 
+                <div class="field-error client-field-error"
+                     id="phoneClientError"
+                     hidden>
+                </div>
+
 
             </div>
 
 
 
-            <!-- =================================================
-                 기본 등록 정보 안내
-            ================================================== -->
-
-            <section class="default-info">
-
-
-                <div class="default-info-header">
-
-
-                    <div>
-
-                        <p class="default-label">
-                            DEFAULT SETTINGS
-                        </p>
-
-
-                        <h3>
-                            신규 고객 기본 설정
-                        </h3>
-
-                    </div>
-
-
-                    <span class="automatic-badge">
-                        자동 적용
-                    </span>
-
-
-                </div>
-
-
-
-                <div class="default-grid">
-
-
-                    <!-- 고객 유형 -->
-
-                    <div class="default-item">
-
-                        <span>
-                            고객 유형
-                        </span>
-
-                        <strong>
-                            비회원
-                        </strong>
-
-                        <small>
-                            GUEST
-                        </small>
-
-                    </div>
-
-
-
-                    <!-- 고객 등급 -->
-
-                    <div class="default-item">
-
-                        <span>
-                            고객 등급
-                        </span>
-
-                        <strong>
-                            일반
-                        </strong>
-
-                        <small>
-                            NORMAL
-                        </small>
-
-                    </div>
-
-
-
-                    <!-- 등급 관리 -->
-
-                    <div class="default-item">
-
-                        <span>
-                            등급 관리
-                        </span>
-
-                        <strong>
-                            자동 관리
-                        </strong>
-
-                        <small>
-                            기본 상태
-                        </small>
-
-                    </div>
-
-
-
-                    <!-- 방문 횟수 -->
-
-                    <div class="default-item">
-
-                        <span>
-                            방문 횟수
-                        </span>
-
-                        <strong>
-                            0회
-                        </strong>
-
-                        <small>
-                            신규 고객
-                        </small>
-
-                    </div>
-
-
-
-                    <!-- 누적 결제 -->
-
-                    <div class="default-item">
-
-                        <span>
-                            누적 결제
-                        </span>
-
-                        <strong>
-                            0원
-                        </strong>
-
-                        <small>
-                            초기값
-                        </small>
-
-                    </div>
-
-
-
-                    <!-- 활성 상태 -->
-
-                    <div class="default-item">
-
-                        <span>
-                            활성 상태
-                        </span>
-
-                        <strong class="active-text">
-                            활성
-                        </strong>
-
-                        <small>
-                            ACTIVE
-                        </small>
-
-                    </div>
-
-
-                </div>
-
-
-            </section>
-
-
-
-            <!-- =================================================
-                 등록 완료 안내
-            ================================================== -->
-
-            <div class="registration-guide">
-
+            <div class="registration-summary">
 
                 <strong>
-                    등록 후
+                    등록 기본값
                 </strong>
 
-
-                <p>
-                    고객 등록이 완료되면 해당 고객의 상세 CRM 화면으로 이동합니다.
-                </p>
-
+                <span>
+                    비회원 · 일반 등급 · 자동 관리 · 방문/결제 0
+                </span>
 
             </div>
 
@@ -451,6 +297,7 @@
 
 
                 <button type="submit"
+                        id="submitButton"
                         class="submit-button">
                     고객 등록
                 </button>

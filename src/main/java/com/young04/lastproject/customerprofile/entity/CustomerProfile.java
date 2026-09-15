@@ -463,6 +463,46 @@ public class CustomerProfile {
 
 
     // =====================================================
+    // CRM 집계 정보 동기화
+    // =====================================================
+
+    public void synchronizeStatistics(
+            LocalDate lastVisitDate,
+            Integer visitCount,
+            BigDecimal totalPayment
+    ) {
+
+        if (visitCount == null
+                || visitCount < 0) {
+
+            throw new IllegalArgumentException(
+                    "방문 횟수는 0 이상이어야 합니다."
+            );
+        }
+
+
+        if (totalPayment == null
+                || totalPayment.signum() < 0) {
+
+            throw new IllegalArgumentException(
+                    "누적 결제 금액은 0 이상이어야 합니다."
+            );
+        }
+
+
+        this.lastVisitDate =
+                lastVisitDate;
+
+        this.visitCount =
+                visitCount;
+
+        this.totalPayment =
+                totalPayment;
+    }
+
+
+
+    // =====================================================
     // 고객 등급 자동 적용
     // =====================================================
 

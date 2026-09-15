@@ -71,8 +71,7 @@
 
 
             <p class="page-description">
-                고객 기본정보와 방문 현황,
-                고객 등급을 관리합니다.
+                고객 정보와 방문·결제 현황, 등급을 한 화면에서 관리합니다.
             </p>
 
         </div>
@@ -85,6 +84,14 @@
             <a class="header-button"
                th:href="@{/admin/customers}">
                 ← 고객 목록
+            </a>
+
+
+            <a class="header-button"
+               th:href="@{/admin/customers/{customerId}/memos(
+                    customerId=${customer.customerId}
+               )}">
+                상담 메모
             </a>
 
 
@@ -113,6 +120,14 @@
 
         정상적으로 처리되었습니다.
 
+    </div>
+
+
+
+    <div class="alert error"
+         th:if="${errorMessage != null}"
+         th:text="${errorMessage}">
+        입력값을 확인해 주세요.
     </div>
 
 
@@ -1056,158 +1071,6 @@
 
 
 
-    <!-- =====================================================
-         고객 CRM 메뉴
-    ====================================================== -->
-
-    <section class="detail-panel"
-             id="memo-section">
-
-
-        <div class="panel-header">
-
-
-            <div>
-
-                <p class="panel-label">
-                    CRM MENU
-                </p>
-
-
-                <h2>
-                    고객 CRM 기능
-                </h2>
-
-            </div>
-
-
-            <p>
-                상담메모와 시술이력을 확인합니다.
-            </p>
-
-
-        </div>
-
-
-
-        <div class="crm-menu-grid">
-
-
-            <!-- 고객 목록 -->
-
-            <a class="crm-menu-card"
-               th:href="@{/admin/customers}">
-
-
-                <span class="crm-menu-number">
-                    01
-                </span>
-
-
-                <div>
-
-
-                    <strong>
-                        고객 목록
-                    </strong>
-
-
-                    <p>
-                        전체 고객 목록과 검색 화면으로 이동합니다.
-                    </p>
-
-
-                </div>
-
-
-                <span class="crm-arrow">
-                    →
-                </span>
-
-
-            </a>
-
-
-
-            <!-- 상담 메모 -->
-
-            <a class="crm-menu-card"
-               th:href="@{/admin/customers/{customerId}/memos(
-                   customerId=${customer.customerId}
-               )}">
-
-
-                <span class="crm-menu-number">
-                    02
-                </span>
-
-
-                <div>
-
-
-                    <strong>
-                        상담 메모
-                    </strong>
-
-
-                    <p>
-                        상담 및 고객 특이사항을 관리합니다.
-                    </p>
-
-
-                </div>
-
-
-                <span class="crm-arrow">
-                    →
-                </span>
-
-
-            </a>
-
-
-
-            <!-- 시술 이력 -->
-
-            <a class="crm-menu-card"
-               th:href="@{/admin/customers/{customerId}/treatments(
-                   customerId=${customer.customerId}
-               )}">
-
-
-                <span class="crm-menu-number">
-                    03
-                </span>
-
-
-                <div>
-
-
-                    <strong>
-                        시술 이력
-                    </strong>
-
-
-                    <p>
-                        고객별 시술 내역을 확인합니다.
-                    </p>
-
-
-                </div>
-
-
-                <span class="crm-arrow">
-                    →
-                </span>
-
-
-            </a>
-
-
-        </div>
-
-
-    </section>
 
 
 </main>

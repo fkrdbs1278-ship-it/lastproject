@@ -3,7 +3,9 @@ package com.young04.lastproject.customerprofile.controller;
 import com.young04.lastproject.customergrade.service.CustomerGradeService;
 import com.young04.lastproject.customerprofile.dto.CustomerCreateRequest;
 import com.young04.lastproject.customerprofile.dto.CustomerSearchCondition;
+import com.young04.lastproject.customerprofile.exception.DuplicateCustomerPhoneException;
 import com.young04.lastproject.customerprofile.entity.CustomerProfile;
+import com.young04.lastproject.customerprofile.service.CustomerCrmSyncService;
 import com.young04.lastproject.customerprofile.service.CustomerProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,8 @@ public class AdminCustomerController {
     private final CustomerProfileService customerProfileService;
 
     private final CustomerGradeService customerGradeService;
+
+    private final CustomerCrmSyncService customerCrmSyncService;
 
 
 
@@ -109,6 +113,14 @@ public class AdminCustomerController {
                 currentPage,
                 pageSize
         );
+
+
+        // -------------------------------------------------
+        // 결제 / 시술 최신 데이터 CRM 동기화
+        // -------------------------------------------------
+
+        customerCrmSyncService
+                .synchronizeAllCustomers();
 
 
         // -------------------------------------------------
@@ -248,11 +260,37 @@ public class AdminCustomerController {
         // 고객 등록
         // -------------------------------------------------
 
-        CustomerProfile savedCustomer =
-                customerProfileService
-                        .createGuestCustomer(
-                                request
-                        );
+        CustomerProfile savedCustomer;
+
+
+        try {
+
+            savedCustomer =
+                    customerProfileService
+                            .createGuestCustomer(
+                                    request
+                            );
+
+        } catch (DuplicateCustomerPhoneException exception) {
+
+            bindingResult.rejectValue(
+                    "phone",
+                    "phone.duplicate",
+                    exception.getMessage()
+            );
+
+            return "customer/create";
+
+        } catch (IllegalArgumentException exception) {
+
+            bindingResult.rejectValue(
+                    "phone",
+                    "phone.invalid",
+                    exception.getMessage()
+            );
+
+            return "customer/create";
+        }
 
 
         redirectAttributes.addFlashAttribute(
@@ -291,6 +329,12 @@ public class AdminCustomerController {
                 "관리자 고객 상세 조회 customerId={}",
                 customerId
         );
+
+
+        customerCrmSyncService
+                .synchronizeCustomer(
+                        customerId
+                );
 
 
         CustomerProfile customer =
@@ -352,12 +396,26 @@ public class AdminCustomerController {
         );
 
 
-        customerProfileService
-                .updateCustomer(
-                        customerId,
-                        customerName,
-                        phone
-                );
+        try {
+
+            customerProfileService
+                    .updateCustomer(
+                            customerId,
+                            customerName,
+                            phone
+                    );
+
+        } catch (DuplicateCustomerPhoneException
+                 | IllegalArgumentException exception) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    exception.getMessage()
+            );
+
+            return "redirect:/admin/customers/"
+                    + customerId;
+        }
 
 
         redirectAttributes.addFlashAttribute(
@@ -525,7 +583,8 @@ public class AdminCustomerController {
 
 
         return "redirect:/admin/customers/"
-                + customerId;
+                + customerId
+                + "#grade-section";
     }
 
 
@@ -578,7 +637,8 @@ public class AdminCustomerController {
 
 
         return "redirect:/admin/customers/"
-                + customerId;
+                + customerId
+                + "#grade-section";
     }
 
 
@@ -616,6 +676,7 @@ public class AdminCustomerController {
 
 
         return "redirect:/admin/customers/"
-                + customerId;
+                + customerId
+                + "#grade-section";
     }
 }

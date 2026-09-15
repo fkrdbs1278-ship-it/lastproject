@@ -764,3 +764,31 @@ select {
     }
 
 }
+
+/* =========================================================
+   최종 UI 정리
+========================================================= */
+
+.treatment-page {
+    padding-top: 30px;
+    padding-bottom: 42px;
+}
+
+.treatment-header {
+    margin-bottom: 20px;
+}
+
+.customer-summary-card,
+.treatment-panel {
+    margin-bottom: 16px;
+}
+
+.treatment-panel {
+    padding: 22px;
+}
+
+.treatment-table th,
+.treatment-table td {
+    padding-right: 16px;
+    padding-left: 16px;
+}

@@ -36,6 +36,17 @@
     gap: 12px;
 
     padding: 4px 0 38px;
+
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.customer-sidebar-logo:hover .customer-logo-symbol {
+    transform: translateY(-1px);
+
+    box-shadow:
+            0 9px 22px rgba(0, 0, 0, 0.3);
 }
 
 .customer-logo-symbol {
@@ -61,6 +72,10 @@
 
     font-size: 22px;
     font-weight: 800;
+
+    transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
 }
 
 .customer-logo-text {
@@ -187,4 +202,37 @@
 
     border-top:
             1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* =========================================================
+   로그아웃 버튼
+========================================================= */
+
+.customer-sidebar-logout-form {
+    width: 100%;
+    margin: 0;
+}
+
+.customer-sidebar-logout-button {
+    width: 100%;
+
+    border: 0;
+    background: transparent;
+
+    font: inherit;
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.customer-sidebar-logout-button:hover {
+    background-color: #2b2f38;
+    color: #ffffff;
+
+    transform: translateX(2px);
+}
+
+.customer-sidebar-logout-button:focus-visible {
+    outline: 2px solid rgba(196, 127, 159, 0.9);
+    outline-offset: 2px;
 }

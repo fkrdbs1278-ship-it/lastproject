@@ -1,6 +1,7 @@
 package com.young04.lastproject.reservation.service;
 
 import com.young04.lastproject.businesshour.repository.BusinessHourRepository;
+import com.young04.lastproject.customerprofile.service.CustomerCrmSyncService;
 import com.young04.lastproject.payment.service.PaymentService;
 import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.*;
@@ -36,6 +37,9 @@ public class ReservationService {
 
     // 시술 완료 시 결제 대기(UNPAID) 데이터를 생성
     private final PaymentService paymentService;
+
+    // 시술 완료 데이터를 고객 CRM 시술 이력과 방문 통계에 동기화
+    private final CustomerCrmSyncService customerCrmSyncService;
 
     // 시술 완료 시 연결된 자재를 자동 차감
     private final MaterialUsageService materialUsageService;
@@ -264,6 +268,11 @@ public class ReservationService {
 
         // 시술 완료된 예약에 결제 대기(UNPAID) 데이터가 없으면 1건 생성
         paymentService.createUnpaidPaymentIfAbsent(reservation);
+
+        // 고객 CRM 시술 이력 / 방문 횟수 / 최근 방문일 동기화
+        customerCrmSyncService.synchronizeCompletedReservation(
+                reservation
+        );
 
         // 시술에 연결된 자재가 있으면 실제 사용량만큼 자동 차감
         materialUsageService.deductMaterialsForReservation(

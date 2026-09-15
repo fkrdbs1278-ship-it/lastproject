@@ -2,9 +2,12 @@ package com.young04.lastproject.payment.repository;
 
 import com.young04.lastproject.payment.entity.Payment;
 import com.young04.lastproject.payment.entity.PaymentStatus;
+import com.young04.lastproject.reservation.entity.CustomerType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -33,6 +36,32 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             LocalDateTime start,
             LocalDateTime end
     );
+
+
+    @Query("""
+            select coalesce(sum(p.paymentAmount), 0)
+            from Payment p
+            where p.paymentStatus = :paymentStatus
+              and p.reservation.memberNo = :memberNo
+            """)
+    Long sumPaymentAmountByMemberNo(
+            @Param("memberNo") Long memberNo,
+            @Param("paymentStatus") PaymentStatus paymentStatus
+    );
+
+    @Query("""
+            select coalesce(sum(p.paymentAmount), 0)
+            from Payment p
+            where p.paymentStatus = :paymentStatus
+              and p.reservation.customerType = :customerType
+              and p.reservation.guestPhone = :guestPhone
+            """)
+    Long sumPaymentAmountByGuestPhone(
+            @Param("guestPhone") String guestPhone,
+            @Param("customerType") CustomerType customerType,
+            @Param("paymentStatus") PaymentStatus paymentStatus
+    );
+
 
     /**
      * 최근 결제/환불 내역 조회

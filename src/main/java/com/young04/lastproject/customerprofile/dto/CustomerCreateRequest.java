@@ -76,12 +76,9 @@ public class CustomerCreateRequest {
      * 010 1234 5678
      *
      *
-     * 정확한 전화번호 자리수 검증과
-     * 하이픈 자동 변환은
-     *
-     * CustomerProfileService
-     *
-     * 에서 처리합니다.
+     * Bean Validation에서 기본 전화번호 형식을 검증하고,
+     * CustomerProfileService에서 숫자 추출과 표준 포맷 변환을
+     * 한 번 더 수행합니다.
      */
     @NotBlank(
             message = "전화번호를 입력해 주세요."
@@ -91,8 +88,8 @@ public class CustomerCreateRequest {
             message = "전화번호는 20자 이하로 입력해 주세요."
     )
     @Pattern(
-            regexp = "^[0-9\\-\\s]+$",
-            message = "전화번호는 숫자, 하이픈(-), 공백만 입력할 수 있습니다."
+            regexp = "^(?:02[-\\s]?\\d{3,4}[-\\s]?\\d{4}|0\\d{2}[-\\s]?\\d{3,4}[-\\s]?\\d{4})$",
+            message = "전화번호 형식을 확인해 주세요. 예: 010-1234-5678"
     )
     private String phone;
 }

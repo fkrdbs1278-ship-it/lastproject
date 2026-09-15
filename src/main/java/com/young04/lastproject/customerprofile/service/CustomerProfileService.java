@@ -646,6 +646,41 @@ public class CustomerProfileService {
 
 
     // =====================================================
+    // CRM 집계 정보 동기화
+    // =====================================================
+
+    @Transactional
+    public CustomerProfile synchronizeStatistics(
+            Long customerId,
+            LocalDate lastVisitDate,
+            Integer visitCount,
+            BigDecimal totalPayment
+    ) {
+
+        CustomerProfile customer =
+                getCustomerById(
+                        customerId
+                );
+
+
+        customer.synchronizeStatistics(
+                lastVisitDate,
+                visitCount,
+                totalPayment
+        );
+
+
+        applyAutomaticGradeToCustomer(
+                customer
+        );
+
+
+        return customer;
+    }
+
+
+
+    // =====================================================
     // 자동 등급 적용
     // =====================================================
 

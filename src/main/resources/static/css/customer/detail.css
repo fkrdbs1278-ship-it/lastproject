@@ -935,3 +935,47 @@ textarea {
     }
 
 }
+
+/* =========================================================
+   최종 UI 정리
+========================================================= */
+
+.customer-detail-page {
+    padding-top: 30px;
+    padding-bottom: 42px;
+}
+
+.detail-header {
+    margin-bottom: 20px;
+}
+
+.customer-summary-card,
+.detail-panel {
+    margin-bottom: 16px;
+}
+
+.detail-panel {
+    padding: 22px;
+}
+
+.panel-header {
+    margin-bottom: 18px;
+}
+
+.alert.error {
+    border: 1px solid #f0c7c7;
+    background-color: #fff5f5;
+    color: #a44747;
+}
+
+#grade-section {
+    border-color: #e6d3dc;
+}
+
+.grade-rule-grid {
+    gap: 10px;
+}
+
+.grade-management-area {
+    gap: 12px;
+}

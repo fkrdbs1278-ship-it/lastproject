@@ -919,3 +919,28 @@ select {
     }
 
 }
+
+/* =========================================================
+   최종 UI 정리
+========================================================= */
+
+.customer-page {
+    padding-top: 30px;
+    padding-bottom: 42px;
+}
+
+.page-header {
+    margin-bottom: 20px;
+}
+
+.search-section {
+    margin-bottom: 16px;
+}
+
+.management-buttons {
+    flex-wrap: nowrap;
+}
+
+.management-column {
+    min-width: 230px;
+}

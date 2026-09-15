@@ -1,5 +1,6 @@
 package com.young04.lastproject.payment.service;
 
+import com.young04.lastproject.customerprofile.service.CustomerCrmSyncService;
 import com.young04.lastproject.member.entity.Member;
 import com.young04.lastproject.member.repository.MemberRepository;
 import com.young04.lastproject.payment.dto.*;
@@ -25,7 +26,10 @@ import java.util.stream.Collectors;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+
     private final MemberRepository memberRepository;
+
+    private final CustomerCrmSyncService customerCrmSyncService;
 
     /**
      * 시술 완료 시 해당 예약의 PAYMENT가 없으면 UNPAID 1건을 생성합니다.
@@ -121,6 +125,10 @@ public class PaymentService {
 
         payment.pay(paymentMethod);
 
+        customerCrmSyncService.synchronizePayment(
+                payment
+        );
+
         return ReservationPaymentResponse.from(payment);
     }
 
@@ -141,6 +149,11 @@ public class PaymentService {
                 );
 
         payment.pay(paymentMethod);
+
+        customerCrmSyncService.synchronizePayment(
+                payment
+        );
+
         return payment;
     }
 
@@ -158,6 +171,11 @@ public class PaymentService {
                 );
 
         payment.refund();
+
+        customerCrmSyncService.synchronizePayment(
+                payment
+        );
+
         return payment;
     }
 

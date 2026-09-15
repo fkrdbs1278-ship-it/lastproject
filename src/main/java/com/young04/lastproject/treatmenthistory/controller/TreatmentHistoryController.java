@@ -1,6 +1,7 @@
 package com.young04.lastproject.treatmenthistory.controller;
 
 import com.young04.lastproject.customerprofile.entity.CustomerProfile;
+import com.young04.lastproject.customerprofile.service.CustomerCrmSyncService;
 import com.young04.lastproject.customerprofile.service.CustomerProfileService;
 import com.young04.lastproject.treatmenthistory.dto.TreatmentHistoryResponse;
 import com.young04.lastproject.treatmenthistory.service.TreatmentHistoryService;
@@ -29,6 +30,8 @@ public class TreatmentHistoryController {
     // 고객 기본정보 조회
     private final CustomerProfileService customerProfileService;
 
+    private final CustomerCrmSyncService customerCrmSyncService;
+
 
     // =====================================================
     // 고객별 시술 이력 조회
@@ -41,7 +44,17 @@ public class TreatmentHistoryController {
     ) {
 
         // -------------------------------------------------
-        // 1. 고객 정보 조회
+        // 1. 완료 예약 / 결제 최신 데이터 CRM 동기화
+        // -------------------------------------------------
+
+        customerCrmSyncService
+                .synchronizeCustomer(
+                        customerId
+                );
+
+
+        // -------------------------------------------------
+        // 2. 고객 정보 조회
         // -------------------------------------------------
 
         CustomerProfile customer =
@@ -50,7 +63,7 @@ public class TreatmentHistoryController {
 
 
         // -------------------------------------------------
-        // 2. 고객별 시술 이력 조회
+        // 3. 고객별 시술 이력 조회
         // -------------------------------------------------
 
         List<TreatmentHistoryResponse> treatments =
@@ -70,7 +83,7 @@ public class TreatmentHistoryController {
 
 
         // -------------------------------------------------
-        // 3. 화면 전달
+        // 4. 화면 전달
         // -------------------------------------------------
 
         model.addAttribute(

@@ -73,6 +73,26 @@ public interface ReservationRepository
             String guestPhone
     );
 
+
+    List<Reservation>
+    findByStatusOrderByStartAtAsc(
+            ReservationStatus status
+    );
+
+    List<Reservation>
+    findByMemberNoAndStatusOrderByStartAtAsc(
+            Long memberNo,
+            ReservationStatus status
+    );
+
+    List<Reservation>
+    findByCustomerTypeAndGuestPhoneAndStatusOrderByStartAtAsc(
+            CustomerType customerType,
+            String guestPhone,
+            ReservationStatus status
+    );
+
+
     // JPQL: 기존 시작 < 신규 종료 AND 기존 종료 > 신규 시작
     @Query("""
             select count(r)

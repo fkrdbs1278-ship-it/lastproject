@@ -621,3 +621,66 @@ textarea {
     }
 
 }
+
+/* =========================================================
+   최종 UI 정리
+========================================================= */
+
+.create-page {
+    padding-top: 32px;
+    padding-bottom: 40px;
+}
+
+.page-header {
+    margin-bottom: 20px;
+}
+
+.create-panel {
+    max-width: 760px;
+    padding: 24px;
+}
+
+.panel-header {
+    margin-bottom: 20px;
+}
+
+.registration-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-top: 4px;
+    padding: 13px 15px;
+
+    border: 1px solid #eadde3;
+    border-radius: 10px;
+
+    background-color: #fbf7f9;
+}
+
+.registration-summary strong {
+    color: #6c5360;
+    font-size: 12px;
+}
+
+.registration-summary span {
+    color: #858a94;
+    font-size: 11px;
+}
+
+.button-area {
+    margin-top: 22px;
+}
+
+
+.form-control.input-error {
+    border-color: #cf7078;
+    background-color: #fffafa;
+
+    box-shadow: 0 0 0 3px rgba(207, 112, 120, 0.1);
+}
+
+.client-field-error {
+    margin-top: 7px;
+}
