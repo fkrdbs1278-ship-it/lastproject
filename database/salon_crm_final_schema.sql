@@ -1218,6 +1218,56 @@ CREATE TABLE SITE_SETTING (
 
 
 -- =====================================================================
+-- SECTION 7. 기존 회원 고객 데이터 반영
+-- =====================================================================
+
+-- =====================================================================
+-- 기존 일반 회원(USER) -> 고객 CRM 등록
+-- 기존 MEMBER 일반 회원(USER)을 CUSTOMER_PROFILE에 등록
+-- 관리자(ADMIN)는 고객 CRM 대상에서 제외
+-- MEMBER_NO 또는 전화번호가 이미 존재하면 중복 등록하지 않음
+-- =====================================================================
+
+INSERT INTO CUSTOMER_PROFILE (
+    MEMBER_NO,
+    CUSTOMER_NAME,
+    PHONE,
+    CUSTOMER_TYPE,
+    GRADE_CODE,
+    GRADE_MANUAL_YN,
+    LAST_VISIT_DATE,
+    VISIT_COUNT,
+    TOTAL_PAYMENT,
+    ACTIVE_YN
+)
+SELECT
+    M.NO,
+    M.NAME,
+    M.PHONE,
+    'MEMBER',
+    'NORMAL',
+    'N',
+    NULL,
+    0,
+    0,
+    'Y'
+FROM MEMBER M
+WHERE M.ROLE = 'USER'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM CUSTOMER_PROFILE CP
+      WHERE CP.MEMBER_NO = M.NO
+  )
+  AND NOT EXISTS (
+      SELECT 1
+      FROM CUSTOMER_PROFILE CP
+      WHERE REPLACE(CP.PHONE, '-', '') = REPLACE(M.PHONE, '-', '')
+  );
+
+COMMIT;
+
+
+-- =====================================================================
 -- SECTION 8. 구현 시 반드시 지켜야 할 핵심 로직 메모
 -- =====================================================================
 
