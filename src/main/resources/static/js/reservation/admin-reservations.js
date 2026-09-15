@@ -23,7 +23,7 @@
     const cancelOverlay = document.getElementById("adminCancelOverlay");
     const cancelReservationNo = document.getElementById("adminCancelReservationNo");
     const cancelReason = document.getElementById("adminCancelReason");
-    const cancelReasonCount = document.getElementById("adminCancelReasonCount");
+    const cancelReasonCount = document.getElementById("cancelReasonCount");
     const closeCancelButton = document.getElementById("closeAdminCancel");
     const backCancelButton = document.getElementById("backAdminCancel");
     const confirmCancelButton = document.getElementById("confirmAdminCancel");
@@ -113,10 +113,15 @@
                     new URLSearchParams({ reason })
                 )
             );
+
             closeAdminCancelModal();
+
         } catch (error) {
+
             showMessage(error.message, true);
+
         } finally {
+
             confirmCancelButton.disabled = false;
         }
     });
@@ -136,7 +141,9 @@
     initializeSearchControls();
     initializeFromQuery();
 
+
     async function initializeFromQuery() {
+
         await loadReservations();
 
         const params =
@@ -173,47 +180,91 @@
         }
     }
 
+
     async function loadReservations() {
+
         tbody.innerHTML =
-            `<tr><td colspan="7" class="loading-box">예약을 불러오는 중입니다.</td></tr>`;
+            `<tr>
+                <td colspan="7"
+                    class="loading-box">
+                    예약을 불러오는 중입니다.
+                </td>
+             </tr>`;
 
         try {
+
             const response = await fetch(
                 `/admin/api/reservations?${buildParams()}`
             );
-            const body = await readJson(response);
+
+            const body =
+                await readJson(response);
 
             if (!response.ok) {
-                throw new Error(body.message || "예약 검색에 실패했습니다.");
+                throw new Error(
+                    body.message ||
+                    "예약 검색에 실패했습니다."
+                );
             }
 
-            totalPages = Math.max(body.totalPages || 0, 1);
-            currentPage = body.page || 0;
-            renderRows(body.content || []);
+            totalPages =
+                Math.max(
+                    body.totalPages || 0,
+                    1
+                );
+
+            currentPage =
+                body.page || 0;
+
+            renderRows(
+                body.content || []
+            );
 
             if (resultCount) {
-                resultCount.textContent = `${body.totalElements || 0}건`;
+                resultCount.textContent =
+                    `${body.totalElements || 0}건`;
             }
 
-            pageInfo.textContent = `${currentPage + 1} / ${totalPages}`;
-            prevButton.disabled = currentPage <= 0;
-            nextButton.disabled = currentPage + 1 >= totalPages;
+            pageInfo.textContent =
+                `${currentPage + 1} / ${totalPages}`;
+
+            prevButton.disabled =
+                currentPage <= 0;
+
+            nextButton.disabled =
+                currentPage + 1 >= totalPages;
+
         } catch (error) {
+
             tbody.innerHTML =
-                `<tr><td colspan="7">${escapeHtml(error.message)}</td></tr>`;
+                `<tr>
+                    <td colspan="7">
+                        ${escapeHtml(error.message)}
+                    </td>
+                 </tr>`;
         }
     }
 
+
     function renderRows(rows) {
+
         tbody.innerHTML = "";
 
         if (!rows.length) {
+
             tbody.innerHTML =
-                `<tr><td colspan="7" class="empty-box">검색된 예약이 없습니다.</td></tr>`;
+                `<tr>
+                    <td colspan="7"
+                        class="empty-box">
+                        검색된 예약이 없습니다.
+                    </td>
+                 </tr>`;
+
             return;
         }
 
         rows.forEach(item => {
+
             const r =
                 item.reservation || item;
 
@@ -235,17 +286,21 @@
                 );
 
             const maskedPhone =
-                item.maskedPhone
-                || "-";
+                item.maskedPhone || "-";
 
             const customer = `
                 <div class="customer-cell">
-                    <strong>${escapeHtml(customerName)}</strong>
+
+                    <strong>
+                        ${escapeHtml(customerName)}
+                    </strong>
+
                     <small>
                         ${customerTypeText}
                         ·
                         ${escapeHtml(maskedPhone)}
                     </small>
+
                 </div>
             `;
 
@@ -258,1620 +313,4377 @@
                     )
                     : "-";
 
+
             tr.innerHTML = `
-                <td><span class="reservation-no-badge">#${r.reservationNo}</span></td>
-                <td>${customer}</td>
-                <td><strong class="service-name-cell">${escapeHtml(r.serviceName)}</strong></td>
-                <td><span class="reservation-time-cell">${formatDateTime(r.startAt)}</span></td>
+
                 <td>
-                    <span class="status-badge status-${r.status}">
+                    <span class="reservation-no-badge">
+                        #${r.reservationNo}
+                    </span>
+                </td>
+
+                <td>
+                    ${customer}
+                </td>
+
+                <td>
+                    <strong class="service-name-cell">
+                        ${escapeHtml(r.serviceName)}
+                    </strong>
+                </td>
+
+                <td>
+                    <span class="reservation-time-cell">
+                        ${formatDateTime(r.startAt)}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="
+                        status-badge
+                        status-${r.status}
+                    ">
                         ${statusText(r.status)}
                     </span>
                 </td>
-                <td><span class="memo-cell" title="${escapeAttribute(r.requestMemo || "")}">${memo}</span></td>
+
                 <td>
-                    <div class="action-group" data-no="${r.reservationNo}">
-                        <button type="button"
-                                class="action-button detail-button">
+                    <span
+                        class="memo-cell"
+                        title="${escapeAttribute(
+                r.requestMemo || ""
+            )}">
+                        ${memo}
+                    </span>
+                </td>
+
+                <td>
+                    <div
+                        class="action-group"
+                        data-no="${r.reservationNo}">
+
+                        <button
+                            type="button"
+                            class="action-button detail-button">
                             상세
                         </button>
+
                     </div>
                 </td>
             `;
 
+
             tbody.appendChild(tr);
 
-            const actions = tr.querySelector(".action-group");
+
+            const actions =
+                tr.querySelector(".action-group");
+
 
             actions.querySelector(".detail-button")
-                ?.addEventListener("click", () =>
-                    openDetail(r.reservationNo)
+                ?.addEventListener(
+                    "click",
+                    () =>
+                        openDetail(
+                            r.reservationNo
+                        )
                 );
+
 
             if (r.status === "REQUESTED") {
-                addAction(actions, "확정", () =>
-                    withScrollPreserved(() =>
-                        changeStatus(r.reservationNo, "confirm")
-                    )
+
+                addAction(
+                    actions,
+                    "확정",
+                    () =>
+                        withScrollPreserved(
+                            () =>
+                                changeStatus(
+                                    r.reservationNo,
+                                    "confirm"
+                                )
+                        )
                 );
-                addAction(actions, "취소", () =>
-                    cancelAdmin(r.reservationNo)
+
+                addAction(
+                    actions,
+                    "취소",
+                    () =>
+                        cancelAdmin(
+                            r.reservationNo
+                        )
                 );
             }
+
 
             if (r.status === "CONFIRMED") {
-                addAction(actions, "완료", () =>
-                    withScrollPreserved(() =>
-                        changeStatus(r.reservationNo, "complete")
-                    )
+
+                addAction(
+                    actions,
+                    "완료",
+                    () =>
+                        withScrollPreserved(
+                            () =>
+                                changeStatus(
+                                    r.reservationNo,
+                                    "complete"
+                                )
+                        )
                 );
-                addAction(actions, "노쇼", () =>
-                    noShow(r.reservationNo)
+
+                addAction(
+                    actions,
+                    "노쇼",
+                    () =>
+                        noShow(
+                            r.reservationNo
+                        )
                 );
-                addAction(actions, "취소", () =>
-                    cancelAdmin(r.reservationNo)
+
+                addAction(
+                    actions,
+                    "취소",
+                    () =>
+                        cancelAdmin(
+                            r.reservationNo
+                        )
                 );
             }
 
+
             if (r.status === "COMPLETED") {
-                addAction(actions, "결제", () =>
-                    openDetail(r.reservationNo)
+
+                addAction(
+                    actions,
+                    "결제",
+                    () =>
+                        openDetail(
+                            r.reservationNo
+                        )
                 );
             }
         });
     }
 
+
     async function openDetail(reservationNo) {
+
         try {
+
             const response = await fetch(
                 `/admin/api/reservations/${reservationNo}`
             );
-            const body = await readJson(response);
+
+            const body =
+                await readJson(response);
 
             if (!response.ok) {
-                throw new Error(body.message || "상세 조회에 실패했습니다.");
+
+                throw new Error(
+                    body.message ||
+                    "상세 조회에 실패했습니다."
+                );
             }
 
-            const r = body.reservation;
+            const r =
+                body.reservation;
+
 
             const customer =
                 r.customerType === "MEMBER"
-                    ? `${escapeHtml(body.memberName || "회원")} / ${escapeHtml(body.memberPhone || "")}`
-                    : `${escapeHtml(r.guestName || "")} / ${escapeHtml(r.guestPhone || "")}`;
+                    ? `${escapeHtml(
+                        body.memberName || "회원"
+                    )} / ${escapeHtml(
+                        body.memberPhone || ""
+                    )}`
+                    : `${escapeHtml(
+                        r.guestName || ""
+                    )} / ${escapeHtml(
+                        r.guestPhone || ""
+                    )}`;
 
-            const styleBlock = body.hairStyleTitle
-                ? `
-                    <div class="detail-block">
-                        <strong>선택 예시 스타일</strong><br>
-                        ${escapeHtml(body.hairStyleTitle)}
+
+            const detailItem =
+                (
+                    label,
+                    value,
+                    icon,
+                    extraClass = ""
+                ) => `
+
+                    <div class="
+                        reservation-detail-item
+                        ${extraClass}
+                    ">
+
+                        <span
+                            class="reservation-detail-icon"
+                            aria-hidden="true">
+
+                            ${icon}
+
+                        </span>
+
+
+                        <div class="reservation-detail-text">
+
+                            <span class="reservation-detail-label">
+                                ${label}
+                            </span>
+
+                            <strong class="reservation-detail-value">
+                                ${value}
+                            </strong>
+
+                        </div>
+
+                    </div>
+                `;
+
+
+            const iconCalendar = `
+                <svg viewBox="0 0 24 24">
+                    <rect
+                        x="4"
+                        y="5"
+                        width="16"
+                        height="15"
+                        rx="2">
+                    </rect>
+
+                    <path d="
+                        M8 3V7
+                        M16 3V7
+                        M4 10H20
+                    ">
+                    </path>
+                </svg>
+            `;
+
+
+            const iconUser = `
+                <svg viewBox="0 0 24 24">
+
+                    <circle
+                        cx="12"
+                        cy="8"
+                        r="3">
+                    </circle>
+
+                    <path d="
+                        M6 19
+                        C6.7 15.6 8.7 14 12 14
+                        C15.3 14 17.3 15.6 18 19
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const iconClock = `
+                <svg viewBox="0 0 24 24">
+
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="8">
+                    </circle>
+
+                    <path d="
+                        M12 7
+                        V12
+                        L15 14
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const iconLink = `
+                <svg viewBox="0 0 24 24">
+
+                    <path d="
+                        M9 15
+                        L15 9
+                    ">
+                    </path>
+
+                    <path d="
+                        M7.5 10.5
+                        L5.5 12.5
+                        C4.1 13.9 4.1 16.1 5.5 17.5
+                        C6.9 18.9 9.1 18.9 10.5 17.5
+                        L12.5 15.5
+                    ">
+                    </path>
+
+                    <path d="
+                        M11.5 8.5
+                        L13.5 6.5
+                        C14.9 5.1 17.1 5.1 18.5 6.5
+                        C19.9 7.9 19.9 10.1 18.5 11.5
+                        L16.5 13.5
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const iconScissors = `
+                <svg viewBox="0 0 24 24">
+
+                    <circle
+                        cx="7"
+                        cy="7"
+                        r="2.5">
+                    </circle>
+
+                    <circle
+                        cx="7"
+                        cy="17"
+                        r="2.5">
+                    </circle>
+
+                    <path d="
+                        M9 9
+                        L19 18
+
+                        M9 15
+                        L19 6
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const iconMemo = `
+                <svg viewBox="0 0 24 24">
+
+                    <path d="
+                        M5 5
+                        H19
+                        V16
+                        H10
+                        L6 19
+                        V16
+                        H5
+                        V5Z
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const iconCheck = `
+                <svg viewBox="0 0 24 24">
+
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="8">
+                    </circle>
+
+                    <path d="
+                        M8 12
+                        L11 15
+                        L16 9
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const iconStar = `
+                <svg viewBox="0 0 24 24">
+
+                    <path d="
+                        M12 3.5
+                        L14.4 8.4
+                        L19.8 9.2
+                        L15.9 13
+                        L16.8 18.4
+                        L12 15.9
+                        L7.2 18.4
+                        L8.1 13
+                        L4.2 9.2
+                        L9.6 8.4
+                        L12 3.5Z
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const styleValue =
+                body.hairStyleTitle
+                    ? `
+                        ${escapeHtml(
+                        body.hairStyleTitle
+                    )}
+
                         ${body.hairStyleImageUrl
-                            ? `<div class="detail-style-image-wrap">
-                                   <img class="hair-style-image"
-                                        src="${escapeAttribute(body.hairStyleImageUrl)}"
-                                        alt="">
-                               </div>`
-                            : ""}
-                    </div>
-                  `
-                : `
-                    <div class="detail-block">
-                        <strong>선택 예시 스타일</strong><br>선택 안 함
-                    </div>
-                  `;
+                        ? `
+                                <div class="detail-style-image-wrap">
 
-            const images = (body.images || []).length
-                ? body.images.map(img => `
-                    <a href="${escapeAttribute(img.fileUrl)}"
-                       target="_blank"
-                       rel="noopener"
-                       class="protected-image-link">
-                        <img src="${escapeAttribute(img.fileUrl)}"
-                             alt="${escapeAttribute(img.originalFileName || "참고 이미지")}">
-                    </a>
-                  `).join("")
-                : `<div class="empty-box">첨부된 참고 이미지가 없습니다.</div>`;
+                                    <img
+                                        class="hair-style-image"
+                                        src="${escapeAttribute(
+                            body.hairStyleImageUrl
+                        )}"
+                                        alt="">
+
+                                </div>
+                              `
+                        : ""}
+                      `
+                    : "선택 안 함";
+
+
+            const images =
+                (body.images || []).length
+
+                    ? body.images.map(img => `
+
+                        <a
+                            href="${escapeAttribute(
+                        img.fileUrl
+                    )}"
+                            target="_blank"
+                            rel="noopener"
+                            class="protected-image-link">
+
+                            <img
+                                src="${escapeAttribute(
+                        img.fileUrl
+                    )}"
+                                alt="${escapeAttribute(
+                        img.originalFileName ||
+                        "참고 이미지"
+                    )}">
+
+                        </a>
+
+                      `).join("")
+
+                    : `
+                        <div class="reservation-image-empty">
+
+                            <span
+                                class="reservation-image-empty-icon"
+                                aria-hidden="true">
+
+                                <svg viewBox="0 0 24 24">
+
+                                    <rect
+                                        x="3"
+                                        y="4"
+                                        width="18"
+                                        height="16"
+                                        rx="2">
+                                    </rect>
+
+                                    <circle
+                                        cx="8.5"
+                                        cy="9"
+                                        r="1.5">
+                                    </circle>
+
+                                    <path d="
+                                        M5 18
+                                        L10 13
+                                        L13 16
+                                        L16 12
+                                        L20 16
+                                    ">
+                                    </path>
+
+                                </svg>
+
+                            </span>
+
+                            <span>
+                                첨부된 참고 이미지가 없습니다.
+                            </span>
+
+                        </div>
+                      `;
+
 
             const paymentSection =
                 r.status === "COMPLETED"
-                    ? await buildPaymentSection(r.reservationNo)
+                    ? await buildPaymentSection(
+                        r.reservationNo
+                    )
                     : "";
 
+
             detailContent.innerHTML = `
-                <div class="detail-grid">
-                    <div class="detail-block">
-                        <strong>예약번호</strong><br>${r.reservationNo}
+
+                <!-- 예약 정보 -->
+                <section class="reservation-detail-section">
+
+                    <div class="reservation-detail-section-header">
+
+                        <span
+                            class="reservation-section-icon"
+                            aria-hidden="true">
+
+                            ${iconCalendar}
+
+                        </span>
+
+
+                        <div>
+
+                            <h3>
+                                예약 정보
+                            </h3>
+
+                            <p>
+                                고객의 예약 정보와 시술 내용을 확인하세요.
+                            </p>
+
+                        </div>
+
                     </div>
-                    <div class="detail-block">
-                        <strong>고객</strong><br>${customer}
+
+
+                    <div class="reservation-detail-grid">
+
+                        ${detailItem(
+                "예약번호",
+                r.reservationNo,
+                iconCalendar
+            )}
+
+
+                        ${detailItem(
+                "고객",
+                customer,
+                iconUser
+            )}
+
+
+                        ${detailItem(
+                "고객 유형",
+                r.customerType === "MEMBER"
+                    ? "회원"
+                    : "비회원",
+                iconUser
+            )}
+
+
+                        ${detailItem(
+                "예약 경로",
+                sourceText(
+                    r.reservationSource
+                ),
+                iconLink
+            )}
+
+
+                        ${detailItem(
+                "시술",
+                escapeHtml(
+                    r.serviceName
+                ),
+                iconScissors
+            )}
+
+
+                        ${detailItem(
+                "예약시간",
+                `
+                                ${formatDateTime(
+                    r.startAt
+                )}
+                                ~
+                                ${formatTime(
+                    r.endAt
+                )}
+                            `,
+                iconClock
+            )}
+
+
+                        ${detailItem(
+                "소요시간",
+                `${r.durationMinutes}분`,
+                iconClock
+            )}
+
+
+                        ${detailItem(
+                "상태",
+                `
+                                <span class="
+                                    reservation-detail-status
+                                    status-${r.status}
+                                ">
+                                    ${statusText(
+                    r.status
+                )}
+                                </span>
+                            `,
+                iconCheck
+            )}
+
+
+                        ${detailItem(
+                "요청사항",
+                escapeHtml(
+                    r.requestMemo || "없음"
+                ),
+                iconMemo
+            )}
+
+
+                        ${detailItem(
+                "생성일시",
+                formatDateTime(
+                    r.createdAt
+                ),
+                iconCalendar
+            )}
+
+
+                        ${r.confirmedAt
+                ? detailItem(
+                    "확정일시",
+                    formatDateTime(
+                        r.confirmedAt
+                    ),
+                    iconCheck
+                )
+                : ""}
+
+
+                        ${r.completedAt
+                ? detailItem(
+                    "완료일시",
+                    formatDateTime(
+                        r.completedAt
+                    ),
+                    iconCheck
+                )
+                : ""}
+
+
+                        ${r.canceledAt
+                ? detailItem(
+                    "취소일시",
+                    formatDateTime(
+                        r.canceledAt
+                    ),
+                    iconClock
+                )
+                : ""}
+
+
+                        ${r.cancelReason
+                ? detailItem(
+                    "취소사유",
+                    escapeHtml(
+                        r.cancelReason
+                    ),
+                    iconMemo,
+                    "detail-wide"
+                )
+                : ""}
+
+
+                        ${detailItem(
+                "선택 예시 스타일",
+                styleValue,
+                iconStar,
+                "detail-wide"
+            )}
+
                     </div>
-                    <div class="detail-block">
-                        <strong>고객 유형</strong><br>${r.customerType === "MEMBER" ? "회원" : "비회원"}
-                    </div>
-                    <div class="detail-block">
-                        <strong>예약 경로</strong><br>${sourceText(r.reservationSource)}
-                    </div>
-                    <div class="detail-block">
-                        <strong>시술</strong><br>${escapeHtml(r.serviceName)}
-                    </div>
-                    <div class="detail-block">
-                        <strong>예약시간</strong><br>
-                        ${formatDateTime(r.startAt)} ~ ${formatTime(r.endAt)}
-                    </div>
-                    <div class="detail-block">
-                        <strong>소요시간</strong><br>${r.durationMinutes}분
-                    </div>
-                    <div class="detail-block">
-                        <strong>상태</strong><br>${statusText(r.status)}
-                    </div>
-                    <div class="detail-block">
-                        <strong>요청사항</strong><br>${escapeHtml(r.requestMemo || "없음")}
-                    </div>
-                    <div class="detail-block">
-                        <strong>생성일시</strong><br>${formatDateTime(r.createdAt)}
-                    </div>
-                    ${r.confirmedAt
-                        ? `<div class="detail-block"><strong>확정일시</strong><br>${formatDateTime(r.confirmedAt)}</div>`
-                        : ""}
-                    ${r.completedAt
-                        ? `<div class="detail-block"><strong>완료일시</strong><br>${formatDateTime(r.completedAt)}</div>`
-                        : ""}
-                    ${r.canceledAt
-                        ? `<div class="detail-block"><strong>취소일시</strong><br>${formatDateTime(r.canceledAt)}</div>`
-                        : ""}
-                    ${r.cancelReason
-                        ? `<div class="detail-block"><strong>취소사유</strong><br>${escapeHtml(r.cancelReason)}</div>`
-                        : ""}
-                    ${styleBlock}
-                </div>
+
+                </section>
+
 
                 ${paymentSection}
 
-                <h3>고객 참고 이미지</h3>
-                <p class="field-help">
-                    관리자 권한이 확인된 보호 API를 통해 조회됩니다.
-                </p>
-                <div class="detail-images">${images}</div>
+
+                <!-- 고객 참고 이미지 -->
+                <section class="
+                    reservation-detail-section
+                    reservation-image-section
+                ">
+
+                    <div class="reservation-detail-section-header">
+
+                        <span
+                            class="reservation-section-icon"
+                            aria-hidden="true">
+
+                            <svg viewBox="0 0 24 24">
+
+                                <rect
+                                    x="3"
+                                    y="4"
+                                    width="18"
+                                    height="16"
+                                    rx="2">
+                                </rect>
+
+                                <circle
+                                    cx="8.5"
+                                    cy="9"
+                                    r="1.5">
+                                </circle>
+
+                                <path d="
+                                    M5 18
+                                    L10 13
+                                    L13 16
+                                    L16 12
+                                    L20 16
+                                ">
+                                </path>
+
+                            </svg>
+
+                        </span>
+
+
+                        <div>
+
+                            <h3>
+                                고객 참고 이미지
+                            </h3>
+
+                            <p>
+                                관리자 권한이 확인된 보호 API를 통해 조회됩니다.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="detail-images">
+                        ${images}
+                    </div>
+
+                </section>
             `;
 
-            bindPaymentActions(r.reservationNo);
 
-            detailOverlay.classList.remove("hidden");
+            bindPaymentActions(
+                r.reservationNo
+            );
+
+
+            detailOverlay.classList.remove(
+                "hidden"
+            );
+
+
         } catch (error) {
-            showMessage(error.message, true);
+
+            showMessage(
+                error.message,
+                true
+            );
         }
     }
 
+
     async function buildPaymentSection(reservationNo) {
+
         try {
+
             const response = await fetch(
                 `/admin/api/reservations/${reservationNo}/payment`
             );
 
-            if (response.status === 204) {
-                return `
-                    <h3 id="paymentSectionTitle">결제 정보</h3>
-                    <div class="empty-box">
-                        결제 대기 정보가 없습니다.
-                        새로 시술 완료되는 예약부터 자동 생성됩니다.
+
+            const paymentHeader = `
+
+                <div class="reservation-detail-section-header">
+
+                    <span
+                        class="reservation-section-icon"
+                        aria-hidden="true">
+
+                        <svg viewBox="0 0 24 24">
+
+                            <rect
+                                x="3"
+                                y="6"
+                                width="18"
+                                height="13"
+                                rx="2">
+                            </rect>
+
+                            <path d="
+                                M3 10
+                                H21
+                            ">
+                            </path>
+
+                        </svg>
+
+                    </span>
+
+
+                    <div>
+
+                        <h3>
+                            결제 정보
+                        </h3>
+
+                        <p>
+                            결제 금액 및 결제 상태를 확인하세요.
+                        </p>
+
                     </div>
+
+                </div>
+            `;
+
+
+            if (response.status === 204) {
+
+                return `
+
+                    <section class="reservation-detail-section">
+
+                        ${paymentHeader}
+
+
+                        <div class="reservation-payment-empty">
+
+                            결제 대기 정보가 없습니다.
+                            <br>
+                            새로 시술 완료되는 예약부터 자동 생성됩니다.
+
+                        </div>
+
+                    </section>
                 `;
             }
 
-            const payment = await readJson(response);
+
+            const payment =
+                await readJson(response);
+
 
             if (!response.ok) {
+
                 throw new Error(
-                    payment.message || "결제 정보 조회에 실패했습니다."
+                    payment.message ||
+                    "결제 정보 조회에 실패했습니다."
                 );
             }
 
-            const methodText = payment.paymentMethod
-                ? paymentMethodText(payment.paymentMethod)
-                : "미선택";
 
-            const status = payment.paymentStatus || "UNPAID";
+            const methodText =
+                payment.paymentMethod
+                    ? paymentMethodText(
+                        payment.paymentMethod
+                    )
+                    : "미선택";
 
-            return `
-                <h3 id="paymentSectionTitle">결제 정보</h3>
-                <div class="detail-grid payment-detail-grid">
-                    <div class="detail-block">
-                        <strong>정상 금액</strong><br>
-                        ${formatMoney(payment.originalAmount)}
-                    </div>
-                    <div class="detail-block">
-                        <strong>할인 금액</strong><br>
-                        ${formatMoney(payment.discountAmount)}
-                    </div>
-                    <div class="detail-block">
-                        <strong>최종 결제금액</strong><br>
-                        ${formatMoney(payment.paymentAmount)}
-                    </div>
-                    <div class="detail-block">
-                        <strong>결제 상태</strong><br>
-                        ${paymentStatusText(status)}
-                    </div>
-                    <div class="detail-block">
-                        <strong>결제 수단</strong><br>
-                        ${methodText}
-                    </div>
-                    ${payment.paidAt
-                        ? `<div class="detail-block"><strong>결제일시</strong><br>${formatDateTime(payment.paidAt)}</div>`
-                        : ""}
-                </div>
 
-                ${status === "UNPAID"
-                    ? `
-                        <div class="field">
-                            <span>결제 수단</span>
-                            <select id="reservationPaymentMethod">
-                                <option value="CARD">카드</option>
-                                <option value="CASH">현금</option>
-                                <option value="TRANSFER">계좌이체</option>
-                            </select>
+            const status =
+                payment.paymentStatus ||
+                "UNPAID";
+
+
+            const paymentItem =
+                (
+                    label,
+                    value,
+                    icon
+                ) => `
+
+                    <div class="reservation-detail-item">
+
+                        <span
+                            class="reservation-detail-icon"
+                            aria-hidden="true">
+
+                            ${icon}
+
+                        </span>
+
+
+                        <div class="reservation-detail-text">
+
+                            <span class="reservation-detail-label">
+                                ${label}
+                            </span>
+
+                            <strong class="reservation-detail-value">
+                                ${value}
+                            </strong>
+
                         </div>
 
-                        <div class="modal-actions">
-                            <button id="completeReservationPayment"
-                                    type="button"
-                                    class="primary-button">
-                                ${formatMoney(payment.paymentAmount)} 결제 완료
-                            </button>
-                        </div>
-                      `
-                    : ""}
+                    </div>
+                `;
+
+
+            const iconMoney = `
+                <svg viewBox="0 0 24 24">
+
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="7">
+                    </circle>
+
+                    <path d="
+                        M9 9.5H15
+                        M9 12H15
+                        M9 14.5H15
+                    ">
+                    </path>
+
+                </svg>
             `;
-        } catch (error) {
+
+
+            const iconTag = `
+                <svg viewBox="0 0 24 24">
+
+                    <path d="
+                        M4 7
+                        V5
+                        H9
+                        L19 15
+                        L14 20
+                        L4 10
+                        V7Z
+                    ">
+                    </path>
+
+                    <circle
+                        cx="7.5"
+                        cy="7.5"
+                        r="1">
+                    </circle>
+
+                </svg>
+            `;
+
+
+            const iconCard = `
+                <svg viewBox="0 0 24 24">
+
+                    <rect
+                        x="3"
+                        y="6"
+                        width="18"
+                        height="13"
+                        rx="2">
+                    </rect>
+
+                    <path d="
+                        M3 10
+                        H21
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const iconCheck = `
+                <svg viewBox="0 0 24 24">
+
+                    <circle
+                        cx="12"
+                        cy="12"
+                        r="8">
+                    </circle>
+
+                    <path d="
+                        M8 12
+                        L11 15
+                        L16 9
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
+            const iconCalendar = `
+                <svg viewBox="0 0 24 24">
+
+                    <rect
+                        x="4"
+                        y="5"
+                        width="16"
+                        height="15"
+                        rx="2">
+                    </rect>
+
+                    <path d="
+                        M8 3V7
+                        M16 3V7
+                        M4 10H20
+                    ">
+                    </path>
+
+                </svg>
+            `;
+
+
             return `
-                <h3 id="paymentSectionTitle">결제 정보</h3>
-                <div class="empty-box">
-                    ${escapeHtml(error.message)}
-                </div>
+
+                <section class="reservation-detail-section">
+
+                    ${paymentHeader}
+
+
+                    <div class="
+                        reservation-detail-grid
+                        payment-detail-grid
+                    ">
+
+
+                        ${paymentItem(
+                "정상 금액",
+                formatMoney(
+                    payment.originalAmount
+                ),
+                iconMoney
+            )}
+
+
+                        ${paymentItem(
+                "할인 금액",
+                formatMoney(
+                    payment.discountAmount
+                ),
+                iconTag
+            )}
+
+
+                        ${paymentItem(
+                "최종 결제금액",
+                `
+                                <span class="payment-total-value">
+
+                                    ${formatMoney(
+                    payment.paymentAmount
+                )}
+
+                                </span>
+                            `,
+                iconCard
+            )}
+
+
+                        ${paymentItem(
+                "결제 상태",
+                `
+                                <span class="
+                                    payment-status-value
+                                    payment-status-${status}
+                                ">
+
+                                    ${paymentStatusText(
+                    status
+                )}
+
+                                </span>
+                            `,
+                iconCheck
+            )}
+
+
+                        ${paymentItem(
+                "결제 수단",
+                methodText,
+                iconCard
+            )}
+
+
+                        ${payment.paidAt
+                ? paymentItem(
+                    "결제일시",
+                    formatDateTime(
+                        payment.paidAt
+                    ),
+                    iconCalendar
+                )
+                : ""}
+
+                    </div>
+
+
+                    ${status === "UNPAID"
+                ? `
+
+                            <div class="reservation-payment-action">
+
+                                <label class="field">
+
+                                    <span>
+                                        결제 수단
+                                    </span>
+
+                                    <select id="reservationPaymentMethod">
+
+                                        <option value="CARD">
+                                            카드
+                                        </option>
+
+                                        <option value="CASH">
+                                            현금
+                                        </option>
+
+                                        <option value="TRANSFER">
+                                            계좌이체
+                                        </option>
+
+                                    </select>
+
+                                </label>
+
+
+                                <div class="modal-actions">
+
+                                    <button
+                                        id="completeReservationPayment"
+                                        type="button"
+                                        class="primary-button">
+
+                                        ${formatMoney(
+                    payment.paymentAmount
+                )}
+                                        결제 완료
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+                          `
+                : ""}
+
+                </section>
+            `;
+
+
+        } catch (error) {
+
+            return `
+
+                <section class="reservation-detail-section">
+
+                    <div class="reservation-detail-section-header">
+
+                        <div>
+
+                            <h3>
+                                결제 정보
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="reservation-payment-empty">
+
+                        ${escapeHtml(
+                error.message
+            )}
+
+                    </div>
+
+                </section>
             `;
         }
     }
 
+
     function bindPaymentActions(reservationNo) {
+
         const button =
-            document.getElementById("completeReservationPayment");
+            document.getElementById(
+                "completeReservationPayment"
+            );
 
         const methodSelect =
-            document.getElementById("reservationPaymentMethod");
+            document.getElementById(
+                "reservationPaymentMethod"
+            );
 
-        if (!button || !methodSelect) return;
 
-        button.addEventListener("click", async () => {
-            const paymentMethod = methodSelect.value;
+        if (!button || !methodSelect) {
+            return;
+        }
 
-            if (!paymentMethod) {
-                showMessage("결제 수단을 선택해주세요.", true);
-                return;
-            }
 
-            if (!confirm(
-                `${paymentMethodText(paymentMethod)} 결제로 완료 처리하시겠습니까?`
-            )) {
-                return;
-            }
+        button.addEventListener(
+            "click",
+            async () => {
 
-            button.disabled = true;
+                const paymentMethod =
+                    methodSelect.value;
 
-            try {
-                const response = await fetch(
-                    `/admin/api/reservations/${reservationNo}/payment/complete?` +
-                    new URLSearchParams({ paymentMethod }),
-                    {
-                        method: "POST",
-                        headers: csrfHeaders()
-                    }
-                );
 
-                const body = await readJson(response);
+                if (!paymentMethod) {
 
-                if (!response.ok) {
-                    throw new Error(
-                        body.message || "결제 완료 처리에 실패했습니다."
+                    showMessage(
+                        "결제 수단을 선택해주세요.",
+                        true
                     );
+
+                    return;
                 }
 
-                showMessage("결제가 완료되었습니다.", false);
-                await loadReservations();
-                await openDetail(reservationNo);
-            } catch (error) {
-                showMessage(error.message, true);
-            } finally {
-                button.disabled = false;
+
+                if (!confirm(
+                    `${paymentMethodText(
+                        paymentMethod
+                    )} 결제로 완료 처리하시겠습니까?`
+                )) {
+                    return;
+                }
+
+
+                button.disabled = true;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `/admin/api/reservations/${reservationNo}/payment/complete?`
+                            +
+                            new URLSearchParams({
+                                paymentMethod
+                            }),
+                            {
+                                method: "POST",
+                                headers: csrfHeaders()
+                            }
+                        );
+
+
+                    const body =
+                        await readJson(response);
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            body.message ||
+                            "결제 완료 처리에 실패했습니다."
+                        );
+                    }
+
+
+                    showMessage(
+                        "결제가 완료되었습니다.",
+                        false
+                    );
+
+
+                    await loadReservations();
+
+                    await openDetail(
+                        reservationNo
+                    );
+
+
+                } catch (error) {
+
+                    showMessage(
+                        error.message,
+                        true
+                    );
+
+
+                } finally {
+
+                    button.disabled = false;
+                }
             }
-        });
+        );
     }
 
-    async function changeStatus(reservationNo, action) {
+
+    async function changeStatus(
+        reservationNo,
+        action
+    ) {
+
         await postAction(
             `/admin/api/reservations/${reservationNo}/${action}`
         );
     }
 
-    function cancelAdmin(reservationNo) {
-        openAdminCancelModal(reservationNo);
+
+    function cancelAdmin(
+        reservationNo
+    ) {
+
+        openAdminCancelModal(
+            reservationNo
+        );
     }
 
-    function openAdminCancelModal(reservationNo) {
-        if (!cancelOverlay || !cancelReservationNo || !cancelReason) {
-            showMessage("취소 화면을 열 수 없습니다.", true);
+
+    function openAdminCancelModal(
+        reservationNo
+    ) {
+
+        if (
+            !cancelOverlay ||
+            !cancelReservationNo ||
+            !cancelReason
+        ) {
+
+            showMessage(
+                "취소 화면을 열 수 없습니다.",
+                true
+            );
+
             return;
         }
 
-        cancelReservationNo.value = String(reservationNo);
+
+        cancelReservationNo.value =
+            String(reservationNo);
+
         cancelReason.value = "";
+
 
         if (cancelReasonCount) {
             cancelReasonCount.textContent = "0";
         }
 
-        cancelOverlay.classList.remove("hidden");
+
+        cancelOverlay.classList.remove(
+            "hidden"
+        );
+
 
         requestAnimationFrame(() => {
             cancelReason.focus();
         });
     }
 
+
     function closeAdminCancelModal() {
-        cancelOverlay?.classList.add("hidden");
+
+        cancelOverlay?.classList.add(
+            "hidden"
+        );
+
 
         if (cancelReservationNo) {
             cancelReservationNo.value = "";
         }
 
+
         if (cancelReason) {
             cancelReason.value = "";
         }
+
 
         if (cancelReasonCount) {
             cancelReasonCount.textContent = "0";
         }
     }
 
-    async function noShow(reservationNo) {
-        const reason = prompt("노쇼 사유를 입력해주세요.", "예약시간 미방문");
-        if (reason === null) return;
 
-        const adminMemo = prompt("관리자 메모를 입력해주세요.", "");
-        if (adminMemo === null) return;
+    async function noShow(
+        reservationNo
+    ) {
 
-        await withScrollPreserved(() =>
-            postAction(
-                `/admin/api/reservations/${reservationNo}/no-show?` +
-                new URLSearchParams({
-                    reason: reason.trim(),
-                    adminMemo: adminMemo.trim()
-                })
-            )
-        );
-    }
+        const reason =
+            prompt(
+                "노쇼 사유를 입력해주세요.",
+                "예약시간 미방문"
+            );
 
-    async function postAction(url) {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: csrfHeaders()
-        });
-
-        const body = await readJson(response);
-
-        if (!response.ok) {
-            throw new Error(body.message || "처리에 실패했습니다.");
-        }
-
-        showMessage("처리가 완료되었습니다.", false);
-        await loadReservations();
-    }
-
-    // -----------------------------------------------------------------
-    // 전화 예약
-    // -----------------------------------------------------------------
-
-    async function openPhoneReservation() {
-        try {
-            await ensureServiceMenus();
-
-            toolTitle.textContent = "전화 예약 등록";
-            phoneSelectedTime = null;
-
-            toolContent.innerHTML = `
-                <form id="phoneReservationForm">
-                    <div class="form-two-columns">
-                        <label class="field">
-                            <span>예약자 이름</span>
-                            <input id="phoneGuestName"
-                                   type="text"
-                                   maxlength="50"
-                                   required>
-                        </label>
-
-                        <label class="field">
-                            <span>휴대전화</span>
-                            <input id="phoneGuestPhone"
-                                   type="tel"
-                                   placeholder="01012345678"
-                                   maxlength="13"
-                                   required>
-                        </label>
-
-                        <label class="field">
-                            <span>시술</span>
-                            <select id="phoneServiceMenu" required>
-                                ${serviceMenus.map(menu => `
-                                    <option value="${menu.serviceMenuNo}">
-                                        ${escapeHtml(menu.name)}
-                                        (${menu.durationMin}분)
-                                    </option>
-                                `).join("")}
-                            </select>
-                        </label>
-
-                        <label class="field">
-                            <span>예약 날짜</span>
-                            <input id="phoneReservationDate"
-                                   type="date"
-                                   required>
-                        </label>
-                    </div>
-
-                    <div class="field">
-                        <span>예약 가능 시간</span>
-                        <div id="phoneAvailabilityNotice" class="availability-notice hidden"></div>
-                        <div id="phoneTimeSlots" class="time-slots">
-                            <div class="empty-box">날짜를 선택해주세요.</div>
-                        </div>
-                    </div>
-
-                    <label class="field">
-                        <span>요청사항</span>
-                        <textarea id="phoneRequestMemo"
-                                  maxlength="500"
-                                  rows="4"></textarea>
-                    </label>
-
-                    <div class="modal-actions">
-                        <button type="submit" class="primary-button">
-                            전화 예약 등록
-                        </button>
-                        <button type="button"
-                                id="cancelPhoneReservation"
-                                class="secondary-button">
-                            취소
-                        </button>
-                    </div>
-                </form>
-            `;
-
-            toolOverlay.classList.remove("hidden");
-
-            const dateInput =
-                document.getElementById("phoneReservationDate");
-            const serviceSelect =
-                document.getElementById("phoneServiceMenu");
-
-            dateInput.min = todayString();
-
-            dateInput.addEventListener("change", () => {
-                phoneSelectedTime = null;
-                loadPhoneTimes();
-            });
-
-            serviceSelect.addEventListener("change", () => {
-                phoneSelectedTime = null;
-                loadPhoneTimes();
-            });
-
-            document.getElementById("cancelPhoneReservation")
-                .addEventListener("click", closeTool);
-
-            document.getElementById("phoneReservationForm")
-                .addEventListener("submit", async e => {
-                    e.preventDefault();
-                    await submitPhoneReservation();
-                });
-        } catch (error) {
-            showMessage(error.message, true);
-        }
-    }
-
-    async function loadPhoneTimes() {
-        const serviceMenuNo =
-            Number(document.getElementById("phoneServiceMenu")?.value);
-        const date =
-            document.getElementById("phoneReservationDate")?.value;
-        const container =
-            document.getElementById("phoneTimeSlots");
-        const noticeContainer =
-            document.getElementById("phoneAvailabilityNotice");
-
-        if (!container) return;
-
-        if (!serviceMenuNo || !date) {
-            container.innerHTML =
-                `<div class="empty-box">시술과 날짜를 선택해주세요.</div>`;
-
-            noticeContainer?.classList.add("hidden");
-            if (noticeContainer) {
-                noticeContainer.innerHTML = "";
-            }
+        if (reason === null) {
             return;
         }
 
-        container.innerHTML =
-            `<div class="loading-box">예약 가능 시간을 조회하는 중입니다.</div>`;
+
+        const adminMemo =
+            prompt(
+                "관리자 메모를 입력해주세요.",
+                ""
+            );
+
+        if (adminMemo === null) {
+            return;
+        }
+
+
+        await withScrollPreserved(
+            () =>
+                postAction(
+                    `/admin/api/reservations/${reservationNo}/no-show?`
+                    +
+                    new URLSearchParams({
+                        reason:
+                            reason.trim(),
+
+                        adminMemo:
+                            adminMemo.trim()
+                    })
+                )
+        );
+    }
+
+
+    async function postAction(url) {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method: "POST",
+                    headers: csrfHeaders()
+                }
+            );
+
+
+        const body =
+            await readJson(response);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                body.message ||
+                "처리에 실패했습니다."
+            );
+        }
+
+
+        showMessage(
+            "처리가 완료되었습니다.",
+            false
+        );
+
+
+        await loadReservations();
+    }
+
+
+    // =========================================================
+    // 전화 예약
+    // =========================================================
+
+    async function openPhoneReservation() {
 
         try {
-            const [timeResponse, noticeResponse] =
-                await Promise.all([
-                    fetch(
-                        `/api/reservations/available-times?` +
-                        new URLSearchParams({
-                            date,
-                            serviceMenuNo: String(serviceMenuNo)
-                        })
-                    ),
-                    fetch(
-                        `/api/reservations/availability-notices?` +
-                        new URLSearchParams({ date })
-                    )
-                ]);
 
-            const timeBody = await readJson(timeResponse);
-            const noticeBody = await readJson(noticeResponse);
+            await ensureServiceMenus();
+
+
+            toolTitle.textContent =
+                "전화 예약 등록";
+
+
+            phoneSelectedTime = null;
+
+
+            toolContent.innerHTML = `
+
+                <form id="phoneReservationForm">
+
+                    <div class="form-two-columns">
+
+                        <label class="field">
+
+                            <span>
+                                예약자 이름
+                            </span>
+
+                            <input
+                                id="phoneGuestName"
+                                type="text"
+                                maxlength="50"
+                                required>
+
+                        </label>
+
+
+                        <label class="field">
+
+                            <span>
+                                휴대전화
+                            </span>
+
+                            <input
+                                id="phoneGuestPhone"
+                                type="tel"
+                                placeholder="01012345678"
+                                maxlength="13"
+                                required>
+
+                        </label>
+
+
+                        <label class="field">
+
+                            <span>
+                                시술
+                            </span>
+
+                            <select
+                                id="phoneServiceMenu"
+                                required>
+
+                                ${serviceMenus.map(
+                menu => `
+
+                                        <option
+                                            value="${menu.serviceMenuNo}">
+
+                                            ${escapeHtml(
+                    menu.name
+                )}
+
+                                            (${menu.durationMin}분)
+
+                                        </option>
+
+                                    `
+            ).join("")}
+
+                            </select>
+
+                        </label>
+
+
+                        <label class="field">
+
+                            <span>
+                                예약 날짜
+                            </span>
+
+                            <input
+                                id="phoneReservationDate"
+                                type="date"
+                                required>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <span>
+                            예약 가능 시간
+                        </span>
+
+                        <div
+                            id="phoneAvailabilityNotice"
+                            class="
+                                availability-notice
+                                hidden
+                            ">
+                        </div>
+
+
+                        <div
+                            id="phoneTimeSlots"
+                            class="time-slots">
+
+                            <div class="empty-box">
+                                날짜를 선택해주세요.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <label class="field">
+
+                        <span>
+                            요청사항
+                        </span>
+
+                        <textarea
+                            id="phoneRequestMemo"
+                            maxlength="500"
+                            rows="4">
+                        </textarea>
+
+                    </label>
+
+
+                    <div class="modal-actions">
+
+                        <button
+                            type="submit"
+                            class="primary-button">
+
+                            전화 예약 등록
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="cancelPhoneReservation"
+                            class="secondary-button">
+
+                            취소
+
+                        </button>
+
+                    </div>
+
+                </form>
+            `;
+
+
+            toolOverlay.classList.remove(
+                "hidden"
+            );
+
+
+            const dateInput =
+                document.getElementById(
+                    "phoneReservationDate"
+                );
+
+
+            const serviceSelect =
+                document.getElementById(
+                    "phoneServiceMenu"
+                );
+
+
+            dateInput.min =
+                todayString();
+
+
+            dateInput.addEventListener(
+                "change",
+                () => {
+
+                    phoneSelectedTime =
+                        null;
+
+                    loadPhoneTimes();
+                }
+            );
+
+
+            serviceSelect.addEventListener(
+                "change",
+                () => {
+
+                    phoneSelectedTime =
+                        null;
+
+                    loadPhoneTimes();
+                }
+            );
+
+
+            document.getElementById(
+                "cancelPhoneReservation"
+            )
+                .addEventListener(
+                    "click",
+                    closeTool
+                );
+
+
+            document.getElementById(
+                "phoneReservationForm"
+            )
+                .addEventListener(
+                    "submit",
+                    async e => {
+
+                        e.preventDefault();
+
+                        await submitPhoneReservation();
+                    }
+                );
+
+
+        } catch (error) {
+
+            showMessage(
+                error.message,
+                true
+            );
+        }
+    }
+
+
+    async function loadPhoneTimes() {
+
+        const serviceMenuNo =
+            Number(
+                document.getElementById(
+                    "phoneServiceMenu"
+                )?.value
+            );
+
+
+        const date =
+            document.getElementById(
+                "phoneReservationDate"
+            )?.value;
+
+
+        const container =
+            document.getElementById(
+                "phoneTimeSlots"
+            );
+
+
+        const noticeContainer =
+            document.getElementById(
+                "phoneAvailabilityNotice"
+            );
+
+
+        if (!container) {
+            return;
+        }
+
+
+        if (
+            !serviceMenuNo ||
+            !date
+        ) {
+
+            container.innerHTML =
+                `<div class="empty-box">
+                    시술과 날짜를 선택해주세요.
+                 </div>`;
+
+
+            noticeContainer?.classList.add(
+                "hidden"
+            );
+
+
+            if (noticeContainer) {
+                noticeContainer.innerHTML = "";
+            }
+
+
+            return;
+        }
+
+
+        container.innerHTML =
+            `<div class="loading-box">
+                예약 가능 시간을 조회하는 중입니다.
+             </div>`;
+
+
+        try {
+
+            const [
+                timeResponse,
+                noticeResponse
+            ] = await Promise.all([
+
+                fetch(
+                    `/api/reservations/available-times?`
+                    +
+                    new URLSearchParams({
+                        date,
+                        serviceMenuNo:
+                            String(serviceMenuNo)
+                    })
+                ),
+
+                fetch(
+                    `/api/reservations/availability-notices?`
+                    +
+                    new URLSearchParams({
+                        date
+                    })
+                )
+            ]);
+
+
+            const timeBody =
+                await readJson(
+                    timeResponse
+                );
+
+
+            const noticeBody =
+                await readJson(
+                    noticeResponse
+                );
+
 
             if (!timeResponse.ok) {
+
                 throw new Error(
-                    timeBody.message || "예약 가능 시간 조회에 실패했습니다."
+                    timeBody.message ||
+                    "예약 가능 시간 조회에 실패했습니다."
                 );
             }
 
+
             if (noticeResponse.ok) {
+
                 renderAvailabilityNotice(
                     noticeContainer,
                     noticeBody
                 );
             }
 
-            if (!Array.isArray(timeBody)
-                    || timeBody.length === 0) {
+
+            if (
+                !Array.isArray(timeBody) ||
+                timeBody.length === 0
+            ) {
+
                 container.innerHTML =
-                    `<div class="empty-box">${
-                        escapeHtml(
-                            bestUnavailableMessage(noticeBody)
-                                || "예약 가능한 시간이 없습니다."
-                        )
-                    }</div>`;
+                    `<div class="empty-box">
+
+                        ${escapeHtml(
+                        bestUnavailableMessage(
+                            noticeBody
+                        ) ||
+                        "예약 가능한 시간이 없습니다."
+                    )}
+
+                     </div>`;
+
+
                 return;
             }
 
+
             container.innerHTML = "";
 
+
             timeBody.forEach(slot => {
-                const start = timeValue(slot.startTime);
-                const end = timeValue(slot.endTime);
+
+                const start =
+                    timeValue(
+                        slot.startTime
+                    );
+
+
+                const end =
+                    timeValue(
+                        slot.endTime
+                    );
+
 
                 const button =
-                    document.createElement("button");
+                    document.createElement(
+                        "button"
+                    );
 
-                button.type = "button";
-                button.className = "time-button";
-                button.textContent = `${start} ~ ${end}`;
 
-                button.addEventListener("click", () => {
-                    phoneSelectedTime = start;
+                button.type =
+                    "button";
 
-                    container
-                        .querySelectorAll(".time-button")
-                        .forEach(el =>
-                            el.classList.remove("selected")
+
+                button.className =
+                    "time-button";
+
+
+                button.textContent =
+                    `${start} ~ ${end}`;
+
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        phoneSelectedTime =
+                            start;
+
+
+                        container
+                            .querySelectorAll(
+                                ".time-button"
+                            )
+                            .forEach(el =>
+                                el.classList.remove(
+                                    "selected"
+                                )
+                            );
+
+
+                        button.classList.add(
+                            "selected"
                         );
+                    }
+                );
 
-                    button.classList.add("selected");
-                });
 
-                container.appendChild(button);
+                container.appendChild(
+                    button
+                );
             });
+
+
         } catch (error) {
+
             container.innerHTML =
-                `<div class="empty-box">${escapeHtml(error.message)}</div>`;
+                `<div class="empty-box">
+                    ${escapeHtml(
+                    error.message
+                )}
+                 </div>`;
         }
     }
 
+
     function renderAvailabilityNotice(
-            container,
-            notice
+        container,
+        notice
     ) {
-        if (!container || !notice) return;
 
-        const lines = [];
-
-        const hasAllDayNotice =
-            (notice.notices || [])
-                .some(item => item.allDay);
-
-        if (notice.openDay === false
-                && notice.dayMessage
-                && !hasAllDayNotice) {
-            lines.push({
-                type: "closed",
-                text: notice.dayMessage
-            });
-        }
-
-        (notice.notices || []).forEach(item => {
-            let text =
-                item.message || item.title || "";
-
-            if (!item.allDay &&
-                item.startTime &&
-                item.endTime) {
-                text +=
-                    ` (${String(item.startTime).slice(0, 5)}` +
-                    ` ~ ${String(item.endTime).slice(0, 5)})`;
-            }
-
-            lines.push({
-                type:
-                    item.noticeType === "PERSONAL"
-                        ? "personal"
-                        : "holiday",
-                text
-            });
-        });
-
-        if (!lines.length) {
-            container.classList.add("hidden");
-            container.innerHTML = "";
+        if (!container || !notice) {
             return;
         }
 
+
+        const lines = [];
+
+
+        const hasAllDayNotice =
+            (notice.notices || [])
+                .some(
+                    item =>
+                        item.allDay
+                );
+
+
+        if (
+            notice.openDay === false &&
+            notice.dayMessage &&
+            !hasAllDayNotice
+        ) {
+
+            lines.push({
+                type: "closed",
+                text:
+                notice.dayMessage
+            });
+        }
+
+
+        (notice.notices || [])
+            .forEach(item => {
+
+                let text =
+                    item.message ||
+                    item.title ||
+                    "";
+
+
+                if (
+                    !item.allDay &&
+                    item.startTime &&
+                    item.endTime
+                ) {
+
+                    text +=
+                        ` (${String(
+                            item.startTime
+                        ).slice(0, 5)}`
+                        +
+                        ` ~ ${String(
+                            item.endTime
+                        ).slice(0, 5)})`;
+                }
+
+
+                lines.push({
+
+                    type:
+                        item.noticeType === "PERSONAL"
+                            ? "personal"
+                            : "holiday",
+
+                    text
+                });
+            });
+
+
+        if (!lines.length) {
+
+            container.classList.add(
+                "hidden"
+            );
+
+            container.innerHTML = "";
+
+            return;
+        }
+
+
         container.innerHTML =
             lines.map(line => `
-                <div class="availability-notice-item availability-${line.type}">
-                    ${escapeHtml(line.text)}
+
+                <div class="
+                    availability-notice-item
+                    availability-${line.type}
+                ">
+
+                    ${escapeHtml(
+                line.text
+            )}
+
                 </div>
+
             `).join("");
 
-        container.classList.remove("hidden");
+
+        container.classList.remove(
+            "hidden"
+        );
     }
 
+
     function bestUnavailableMessage(notice) {
-        if (!notice) return null;
+
+        if (!notice) {
+            return null;
+        }
+
 
         const allDay =
             (notice.notices || [])
-                .find(item => item.allDay);
+                .find(
+                    item =>
+                        item.allDay
+                );
+
 
         if (allDay) {
-            return allDay.message || allDay.title;
+
+            return (
+                allDay.message ||
+                allDay.title
+            );
         }
 
+
         if (notice.openDay === false) {
-            return notice.dayMessage
-                || "정기 휴무일입니다.";
+
+            return (
+                notice.dayMessage ||
+                "정기 휴무일입니다."
+            );
         }
+
 
         return null;
     }
 
 
     async function submitPhoneReservation() {
-        const guestName =
-            document.getElementById("phoneGuestName").value.trim();
-        const guestPhone =
-            document.getElementById("phoneGuestPhone").value.trim();
-        const serviceMenuNo =
-            Number(document.getElementById("phoneServiceMenu").value);
-        const date =
-            document.getElementById("phoneReservationDate").value;
-        const requestMemo =
-            document.getElementById("phoneRequestMemo").value.trim();
 
-        if (!guestName ||
-            !/^010-?\d{4}-?\d{4}$/.test(guestPhone) ||
+        const guestName =
+            document.getElementById(
+                "phoneGuestName"
+            ).value.trim();
+
+
+        const guestPhone =
+            document.getElementById(
+                "phoneGuestPhone"
+            ).value.trim();
+
+
+        const serviceMenuNo =
+            Number(
+                document.getElementById(
+                    "phoneServiceMenu"
+                ).value
+            );
+
+
+        const date =
+            document.getElementById(
+                "phoneReservationDate"
+            ).value;
+
+
+        const requestMemo =
+            document.getElementById(
+                "phoneRequestMemo"
+            ).value.trim();
+
+
+        if (
+            !guestName ||
+            !/^010-?\d{4}-?\d{4}$/.test(
+                guestPhone
+            ) ||
             !serviceMenuNo ||
             !date ||
-            !phoneSelectedTime) {
+            !phoneSelectedTime
+        ) {
+
             return showMessage(
                 "이름, 010 휴대전화 번호, 시술, 날짜, 시간을 확인해주세요.",
                 true
             );
         }
 
-        const response = await fetch(
-            "/admin/api/reservations/phone",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...csrfHeaders()
-                },
-                body: JSON.stringify({
-                    guestName,
-                    guestPhone,
-                    serviceMenuNo,
-                    hairStyleNo: null,
-                    startAt: `${date}T${phoneSelectedTime}:00`,
-                    requestMemo: requestMemo || null
-                })
-            }
-        );
 
-        const body = await readJson(response);
+        const response =
+            await fetch(
+                "/admin/api/reservations/phone",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        ...csrfHeaders()
+                    },
+
+                    body: JSON.stringify({
+
+                        guestName,
+
+                        guestPhone,
+
+                        serviceMenuNo,
+
+                        hairStyleNo:
+                            null,
+
+                        startAt:
+                            `${date}T${phoneSelectedTime}:00`,
+
+                        requestMemo:
+                            requestMemo ||
+                            null
+                    })
+                }
+            );
+
+
+        const body =
+            await readJson(response);
+
 
         if (!response.ok) {
+
             return showMessage(
-                body.message || "전화 예약 등록에 실패했습니다.",
+                body.message ||
+                "전화 예약 등록에 실패했습니다.",
                 true
             );
         }
 
-        const y = window.scrollY;
+
+        const y =
+            window.scrollY;
+
+
         closeTool();
+
+
         showMessage(
             `전화 예약이 등록되었습니다. 예약번호 #${body.reservationNo}`,
             false
         );
+
+
         await loadReservations();
+
         restoreScroll(y);
     }
 
-    // -----------------------------------------------------------------
+
+    // =========================================================
     // 영업시간
-    // -----------------------------------------------------------------
+    // =========================================================
 
     async function openBusinessHours() {
-        toolTitle.textContent = "영업시간 / 정기휴무";
+
+        toolTitle.textContent =
+            "영업시간 / 정기휴무";
+
+
         toolContent.innerHTML =
-            `<div class="loading-box">영업시간을 불러오는 중입니다.</div>`;
-        toolOverlay.classList.remove("hidden");
+            `<div class="loading-box">
+                영업시간을 불러오는 중입니다.
+             </div>`;
 
-        try {
-            const response =
-                await fetch("/admin/api/business-hours");
-            const body = await readJson(response);
 
-            if (!response.ok) {
-                throw new Error(body.message || "영업시간 조회에 실패했습니다.");
-            }
-
-            toolContent.innerHTML = `
-                <div class="admin-setting-list">
-                    ${(body || []).map(hour => `
-                        <div class="admin-setting-row"
-                             data-day="${hour.dayOfWeek}">
-                            <strong>${dayName(hour.dayOfWeek)}</strong>
-
-                            <label class="inline-check">
-                                <input type="checkbox"
-                                       class="business-open"
-                                       ${hour.open ? "checked" : ""}>
-                                영업
-                            </label>
-
-                            <input type="time"
-                                   class="business-open-time"
-                                   value="${escapeAttribute(hour.openTime || "")}"
-                                   ${hour.open ? "" : "disabled"}>
-
-                            <span>~</span>
-
-                            <input type="time"
-                                   class="business-close-time"
-                                   value="${escapeAttribute(hour.closeTime || "")}"
-                                   ${hour.open ? "" : "disabled"}>
-
-                            <button type="button"
-                                    class="secondary-button save-business-hour">
-                                저장
-                            </button>
-                        </div>
-                    `).join("")}
-                </div>
-            `;
-
-            toolContent.querySelectorAll(".admin-setting-row")
-                .forEach(row => {
-                    const open =
-                        row.querySelector(".business-open");
-                    const openTime =
-                        row.querySelector(".business-open-time");
-                    const closeTime =
-                        row.querySelector(".business-close-time");
-
-                    open.addEventListener("change", () => {
-                        openTime.disabled = !open.checked;
-                        closeTime.disabled = !open.checked;
-                    });
-
-                    row.querySelector(".save-business-hour")
-                        .addEventListener("click", () =>
-                            saveBusinessHour(row)
-                        );
-                });
-        } catch (error) {
-            toolContent.innerHTML =
-                `<div class="empty-box">${escapeHtml(error.message)}</div>`;
-        }
-    }
-
-    async function saveBusinessHour(row) {
-        const dayOfWeek = Number(row.dataset.day);
-        const open = row.querySelector(".business-open").checked;
-        const openTime = row.querySelector(".business-open-time").value;
-        const closeTime = row.querySelector(".business-close-time").value;
-
-        if (open && (!openTime || !closeTime)) {
-            return showMessage("영업일은 오픈/마감 시간을 입력해주세요.", true);
-        }
-
-        const response = await fetch(
-            `/admin/api/business-hours/${dayOfWeek}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...csrfHeaders()
-                },
-                body: JSON.stringify({
-                    open,
-                    openTime: open ? openTime : null,
-                    closeTime: open ? closeTime : null
-                })
-            }
+        toolOverlay.classList.remove(
+            "hidden"
         );
 
-        const body = await readJson(response);
-
-        if (!response.ok) {
-            return showMessage(
-                body.message || "영업시간 저장에 실패했습니다.",
-                true
-            );
-        }
-
-        showMessage(`${dayName(dayOfWeek)} 영업시간이 저장되었습니다.`, false);
-    }
-
-    // -----------------------------------------------------------------
-    // 휴일
-    // -----------------------------------------------------------------
-
-    async function openHolidays() {
-        toolTitle.textContent = "임시 휴일 / 휴가 관리";
-        toolContent.innerHTML =
-            `<div class="loading-box">휴일을 불러오는 중입니다.</div>`;
-        toolOverlay.classList.remove("hidden");
 
         try {
+
             const response =
-                await fetch("/admin/api/holidays");
-            const body = await readJson(response);
+                await fetch(
+                    "/admin/api/business-hours"
+                );
+
+
+            const body =
+                await readJson(response);
+
 
             if (!response.ok) {
-                throw new Error(body.message || "휴일 조회에 실패했습니다.");
-            }
 
-            renderHolidayTool(Array.isArray(body) ? body : []);
-        } catch (error) {
-            toolContent.innerHTML =
-                `<div class="empty-box">${escapeHtml(error.message)}</div>`;
-        }
-    }
-
-    function renderHolidayTool(items) {
-        toolContent.innerHTML = `
-            <form id="holidayForm" class="admin-editor-form">
-                <input type="hidden" id="holidayNo">
-
-                <div class="form-two-columns">
-                    <label class="field">
-                        <span>유형</span>
-                        <select id="holidayType">
-                            <option value="TEMPORARY">임시 휴일</option>
-                            <option value="VACATION">휴가</option>
-                            <option value="ETC">기타</option>
-                        </select>
-                    </label>
-
-                    <label class="field">
-                        <span>제목</span>
-                        <input id="holidayTitle"
-                               type="text"
-                               maxlength="100"
-                               required>
-                    </label>
-
-                    <label class="field">
-                        <span>시작</span>
-                        <input id="holidayStartAt"
-                               type="datetime-local"
-                               required>
-                    </label>
-
-                    <label class="field">
-                        <span>종료</span>
-                        <input id="holidayEndAt"
-                               type="datetime-local"
-                               required>
-                    </label>
-                </div>
-
-                <label class="inline-check editor-check">
-                    <input id="holidayAllDay" type="checkbox">
-                    하루 전체 일정
-                </label>
-
-                <label class="field">
-                    <span>메모</span>
-                    <textarea id="holidayMemo"
-                              maxlength="500"
-                              rows="3"></textarea>
-                </label>
-
-                <div class="modal-actions">
-                    <button type="submit" class="primary-button">
-                        저장
-                    </button>
-                    <button id="resetHolidayForm"
-                            type="button"
-                            class="secondary-button">
-                        새 일정
-                    </button>
-                </div>
-            </form>
-
-            <h3>등록된 휴일</h3>
-            <div class="admin-record-list">
-                ${items.length
-                    ? items.map(holiday => holidayCard(holiday)).join("")
-                    : `<div class="empty-box">등록된 휴일이 없습니다.</div>`}
-            </div>
-        `;
-
-        document.getElementById("holidayForm")
-            .addEventListener("submit", async e => {
-                e.preventDefault();
-                await saveHoliday();
-            });
-
-        document.getElementById("resetHolidayForm")
-            .addEventListener("click", resetHolidayForm);
-
-        toolContent.querySelectorAll(".edit-holiday")
-            .forEach(button => {
-                button.addEventListener("click", () => {
-                    const item =
-                        items.find(v =>
-                            String(v.salonHolidayNo) === button.dataset.no
-                        );
-                    if (item) fillHolidayForm(item);
-                });
-            });
-
-        toolContent.querySelectorAll(".delete-holiday")
-            .forEach(button => {
-                button.addEventListener("click", async () => {
-                    if (!confirm("이 휴일을 삭제하시겠습니까?")) return;
-                    await deleteHoliday(Number(button.dataset.no));
-                });
-            });
-    }
-
-    function holidayCard(item) {
-        return `
-            <article class="admin-record-card">
-                <div>
-                    <strong>${escapeHtml(item.title)}</strong>
-                    <div>${holidayTypeText(item.holidayType)}</div>
-                    <div>
-                        ${formatDateTime(item.startAt)}
-                        ~ ${formatDateTime(item.endAt)}
-                    </div>
-                    ${item.memo
-                        ? `<div>${escapeHtml(item.memo)}</div>`
-                        : ""}
-                </div>
-                <div class="action-group">
-                    <button type="button"
-                            class="action-button edit-holiday"
-                            data-no="${item.salonHolidayNo}">
-                        수정
-                    </button>
-                    <button type="button"
-                            class="action-button delete-holiday"
-                            data-no="${item.salonHolidayNo}">
-                        삭제
-                    </button>
-                </div>
-            </article>
-        `;
-    }
-
-    function fillHolidayForm(item) {
-        document.getElementById("holidayNo").value =
-            item.salonHolidayNo;
-        document.getElementById("holidayType").value =
-            item.holidayType;
-        document.getElementById("holidayTitle").value =
-            item.title || "";
-        document.getElementById("holidayStartAt").value =
-            localDateTimeInput(item.startAt);
-        document.getElementById("holidayEndAt").value =
-            localDateTimeInput(item.endAt);
-        document.getElementById("holidayAllDay").checked =
-            item.allDay === true;
-        document.getElementById("holidayMemo").value =
-            item.memo || "";
-    }
-
-    function resetHolidayForm() {
-        document.getElementById("holidayForm").reset();
-        document.getElementById("holidayNo").value = "";
-    }
-
-    async function saveHoliday() {
-        const no = document.getElementById("holidayNo").value;
-        const payload = {
-            holidayType: document.getElementById("holidayType").value,
-            title: document.getElementById("holidayTitle").value.trim(),
-            startAt: toApiDateTime(
-                document.getElementById("holidayStartAt").value
-            ),
-            endAt: toApiDateTime(
-                document.getElementById("holidayEndAt").value
-            ),
-            allDay: document.getElementById("holidayAllDay").checked,
-            memo:
-                document.getElementById("holidayMemo").value.trim() || null
-        };
-
-        if (!payload.title || !payload.startAt || !payload.endAt) {
-            return showMessage("제목, 시작, 종료 시간을 입력해주세요.", true);
-        }
-
-        const response = await fetch(
-            no
-                ? `/admin/api/holidays/${no}`
-                : "/admin/api/holidays",
-            {
-                method: no ? "PUT" : "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...csrfHeaders()
-                },
-                body: JSON.stringify(payload)
-            }
-        );
-
-        const body = await readJson(response);
-
-        if (!response.ok) {
-            return showMessage(
-                body.message || "휴일 저장에 실패했습니다.",
-                true
-            );
-        }
-
-        showMessage("휴일이 저장되었습니다.", false);
-        await openHolidays();
-    }
-
-    async function deleteHoliday(no) {
-        const response = await fetch(
-            `/admin/api/holidays/${no}`,
-            {
-                method: "DELETE",
-                headers: csrfHeaders()
-            }
-        );
-
-        if (!response.ok) {
-            const body = await readJson(response);
-            return showMessage(
-                body.message || "휴일 삭제에 실패했습니다.",
-                true
-            );
-        }
-
-        showMessage("휴일이 삭제되었습니다.", false);
-        await openHolidays();
-    }
-
-    // -----------------------------------------------------------------
-    // 개인 일정 / 예약 불가 시간
-    // -----------------------------------------------------------------
-
-    async function openAvailabilityBlocks() {
-        toolTitle.textContent = "개인 일정 / 예약 불가 시간";
-        toolContent.innerHTML =
-            `<div class="loading-box">개인 일정을 불러오는 중입니다.</div>`;
-        toolOverlay.classList.remove("hidden");
-
-        try {
-            const response =
-                await fetch("/admin/api/availability-blocks");
-            const body = await readJson(response);
-
-            if (!response.ok) {
                 throw new Error(
-                    body.message || "개인 일정 조회에 실패했습니다."
+                    body.message ||
+                    "영업시간 조회에 실패했습니다."
                 );
             }
 
-            renderBlockTool(Array.isArray(body) ? body : []);
+
+            toolContent.innerHTML = `
+
+                <div class="admin-setting-list">
+
+                    ${(body || []).map(hour => `
+
+                        <div
+                            class="admin-setting-row"
+                            data-day="${hour.dayOfWeek}">
+
+                            <strong>
+                                ${dayName(
+                hour.dayOfWeek
+            )}
+                            </strong>
+
+
+                            <label class="inline-check">
+
+                                <input
+                                    type="checkbox"
+                                    class="business-open"
+                                    ${hour.open
+                ? "checked"
+                : ""}>
+
+                                영업
+
+                            </label>
+
+
+                            <input
+                                type="time"
+                                class="business-open-time"
+                                value="${escapeAttribute(
+                hour.openTime || ""
+            )}"
+                                ${hour.open
+                ? ""
+                : "disabled"}>
+
+
+                            <span>
+                                ~
+                            </span>
+
+
+                            <input
+                                type="time"
+                                class="business-close-time"
+                                value="${escapeAttribute(
+                hour.closeTime || ""
+            )}"
+                                ${hour.open
+                ? ""
+                : "disabled"}>
+
+
+                            <button
+                                type="button"
+                                class="
+                                    secondary-button
+                                    save-business-hour
+                                ">
+
+                                저장
+
+                            </button>
+
+                        </div>
+
+                    `).join("")}
+
+                </div>
+            `;
+
+
+            toolContent
+                .querySelectorAll(
+                    ".admin-setting-row"
+                )
+                .forEach(row => {
+
+                    const open =
+                        row.querySelector(
+                            ".business-open"
+                        );
+
+
+                    const openTime =
+                        row.querySelector(
+                            ".business-open-time"
+                        );
+
+
+                    const closeTime =
+                        row.querySelector(
+                            ".business-close-time"
+                        );
+
+
+                    open.addEventListener(
+                        "change",
+                        () => {
+
+                            openTime.disabled =
+                                !open.checked;
+
+                            closeTime.disabled =
+                                !open.checked;
+                        }
+                    );
+
+
+                    row.querySelector(
+                        ".save-business-hour"
+                    )
+                        .addEventListener(
+                            "click",
+                            () =>
+                                saveBusinessHour(
+                                    row
+                                )
+                        );
+                });
+
+
         } catch (error) {
+
             toolContent.innerHTML =
-                `<div class="empty-box">${escapeHtml(error.message)}</div>`;
+                `<div class="empty-box">
+                    ${escapeHtml(
+                    error.message
+                )}
+                 </div>`;
         }
     }
 
-    function renderBlockTool(items) {
+
+    async function saveBusinessHour(row) {
+
+        const dayOfWeek =
+            Number(
+                row.dataset.day
+            );
+
+
+        const open =
+            row.querySelector(
+                ".business-open"
+            ).checked;
+
+
+        const openTime =
+            row.querySelector(
+                ".business-open-time"
+            ).value;
+
+
+        const closeTime =
+            row.querySelector(
+                ".business-close-time"
+            ).value;
+
+
+        if (
+            open &&
+            (
+                !openTime ||
+                !closeTime
+            )
+        ) {
+
+            return showMessage(
+                "영업일은 오픈/마감 시간을 입력해주세요.",
+                true
+            );
+        }
+
+
+        const response =
+            await fetch(
+                `/admin/api/business-hours/${dayOfWeek}`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        ...csrfHeaders()
+                    },
+
+                    body: JSON.stringify({
+
+                        open,
+
+                        openTime:
+                            open
+                                ? openTime
+                                : null,
+
+                        closeTime:
+                            open
+                                ? closeTime
+                                : null
+                    })
+                }
+            );
+
+
+        const body =
+            await readJson(response);
+
+
+        if (!response.ok) {
+
+            return showMessage(
+                body.message ||
+                "영업시간 저장에 실패했습니다.",
+                true
+            );
+        }
+
+
+        showMessage(
+            `${dayName(
+                dayOfWeek
+            )} 영업시간이 저장되었습니다.`,
+            false
+        );
+    }
+
+
+    // =========================================================
+    // 휴일
+    // =========================================================
+
+    async function openHolidays() {
+
+        toolTitle.textContent =
+            "임시 휴일 / 휴가 관리";
+
+
+        toolContent.innerHTML =
+            `<div class="loading-box">
+                휴일을 불러오는 중입니다.
+             </div>`;
+
+
+        toolOverlay.classList.remove(
+            "hidden"
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/admin/api/holidays"
+                );
+
+
+            const body =
+                await readJson(response);
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    body.message ||
+                    "휴일 조회에 실패했습니다."
+                );
+            }
+
+
+            renderHolidayTool(
+                Array.isArray(body)
+                    ? body
+                    : []
+            );
+
+
+        } catch (error) {
+
+            toolContent.innerHTML =
+                `<div class="empty-box">
+                    ${escapeHtml(
+                    error.message
+                )}
+                 </div>`;
+        }
+    }
+
+
+    function renderHolidayTool(items) {
+
         toolContent.innerHTML = `
-            <form id="blockForm" class="admin-editor-form">
-                <input type="hidden" id="blockNo">
+
+            <form
+                id="holidayForm"
+                class="admin-editor-form">
+
+                <input
+                    type="hidden"
+                    id="holidayNo">
+
 
                 <div class="form-two-columns">
-                    <label class="field">
-                        <span>제목</span>
-                        <input id="blockTitle"
-                               type="text"
-                               maxlength="100"
-                               placeholder="점심 / 외출 / 병원 / 교육"
-                               required>
-                    </label>
 
                     <label class="field">
-                        <span>시작</span>
-                        <input id="blockStartAt"
-                               type="datetime-local"
-                               required>
+
+                        <span>
+                            유형
+                        </span>
+
+                        <select id="holidayType">
+
+                            <option value="TEMPORARY">
+                                임시 휴일
+                            </option>
+
+                            <option value="VACATION">
+                                휴가
+                            </option>
+
+                            <option value="ETC">
+                                기타
+                            </option>
+
+                        </select>
+
                     </label>
 
+
                     <label class="field">
-                        <span>종료</span>
-                        <input id="blockEndAt"
-                               type="datetime-local"
-                               required>
+
+                        <span>
+                            제목
+                        </span>
+
+                        <input
+                            id="holidayTitle"
+                            type="text"
+                            maxlength="100"
+                            required>
+
                     </label>
+
+
+                    <label class="field">
+
+                        <span>
+                            시작
+                        </span>
+
+                        <input
+                            id="holidayStartAt"
+                            type="datetime-local"
+                            required>
+
+                    </label>
+
+
+                    <label class="field">
+
+                        <span>
+                            종료
+                        </span>
+
+                        <input
+                            id="holidayEndAt"
+                            type="datetime-local"
+                            required>
+
+                    </label>
+
                 </div>
 
-                <label class="inline-check editor-check">
-                    <input id="blockAllDay" type="checkbox">
+
+                <label class="
+                    inline-check
+                    editor-check
+                ">
+
+                    <input
+                        id="holidayAllDay"
+                        type="checkbox">
+
                     하루 전체 일정
+
                 </label>
+
 
                 <label class="field">
-                    <span>메모</span>
-                    <textarea id="blockMemo"
-                              maxlength="500"
-                              rows="3"></textarea>
+
+                    <span>
+                        메모
+                    </span>
+
+                    <textarea
+                        id="holidayMemo"
+                        maxlength="500"
+                        rows="3">
+                    </textarea>
+
                 </label>
 
+
                 <div class="modal-actions">
-                    <button type="submit" class="primary-button">
+
+                    <button
+                        type="submit"
+                        class="primary-button">
+
                         저장
+
                     </button>
-                    <button id="resetBlockForm"
-                            type="button"
-                            class="secondary-button">
+
+
+                    <button
+                        id="resetHolidayForm"
+                        type="button"
+                        class="secondary-button">
+
                         새 일정
+
                     </button>
+
                 </div>
+
             </form>
 
-            <h3>등록된 개인 일정</h3>
+
+            <h3>
+                등록된 휴일
+            </h3>
+
+
             <div class="admin-record-list">
+
                 ${items.length
-                    ? items.map(block => blockCard(block)).join("")
-                    : `<div class="empty-box">등록된 개인 일정이 없습니다.</div>`}
+
+            ? items
+                .map(
+                    holiday =>
+                        holidayCard(
+                            holiday
+                        )
+                )
+                .join("")
+
+            : `
+                        <div class="empty-box">
+                            등록된 휴일이 없습니다.
+                        </div>
+                      `
+        }
+
             </div>
         `;
 
-        document.getElementById("blockForm")
-            .addEventListener("submit", async e => {
-                e.preventDefault();
-                await saveBlock();
+
+        document.getElementById(
+            "holidayForm"
+        )
+            .addEventListener(
+                "submit",
+                async e => {
+
+                    e.preventDefault();
+
+                    await saveHoliday();
+                }
+            );
+
+
+        document.getElementById(
+            "resetHolidayForm"
+        )
+            .addEventListener(
+                "click",
+                resetHolidayForm
+            );
+
+
+        toolContent
+            .querySelectorAll(
+                ".edit-holiday"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const item =
+                            items.find(
+                                v =>
+                                    String(
+                                        v.salonHolidayNo
+                                    )
+                                    ===
+                                    button.dataset.no
+                            );
+
+
+                        if (item) {
+                            fillHolidayForm(
+                                item
+                            );
+                        }
+                    }
+                );
             });
 
-        document.getElementById("resetBlockForm")
-            .addEventListener("click", resetBlockForm);
 
-        toolContent.querySelectorAll(".edit-block")
+        toolContent
+            .querySelectorAll(
+                ".delete-holiday"
+            )
             .forEach(button => {
-                button.addEventListener("click", () => {
-                    const item =
-                        items.find(v =>
-                            String(v.salonHolidayNo) === button.dataset.no
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        if (!confirm(
+                            "이 휴일을 삭제하시겠습니까?"
+                        )) {
+                            return;
+                        }
+
+
+                        await deleteHoliday(
+                            Number(
+                                button.dataset.no
+                            )
                         );
-                    if (item) fillBlockForm(item);
-                });
-            });
-
-        toolContent.querySelectorAll(".delete-block")
-            .forEach(button => {
-                button.addEventListener("click", async () => {
-                    if (!confirm("이 개인 일정을 삭제하시겠습니까?")) return;
-                    await deleteBlock(Number(button.dataset.no));
-                });
+                    }
+                );
             });
     }
 
-    function blockCard(item) {
+
+    function holidayCard(item) {
+
         return `
+
             <article class="admin-record-card">
+
                 <div>
-                    <strong>${escapeHtml(item.title)}</strong>
+
+                    <strong>
+                        ${escapeHtml(
+            item.title
+        )}
+                    </strong>
+
                     <div>
-                        ${formatDateTime(item.startAt)}
-                        ~ ${formatDateTime(item.endAt)}
+                        ${holidayTypeText(
+            item.holidayType
+        )}
                     </div>
+
+                    <div>
+                        ${formatDateTime(
+            item.startAt
+        )}
+                        ~
+                        ${formatDateTime(
+            item.endAt
+        )}
+                    </div>
+
                     ${item.memo
-                        ? `<div>${escapeHtml(item.memo)}</div>`
-                        : ""}
+            ? `
+                            <div>
+                                ${escapeHtml(
+                item.memo
+            )}
+                            </div>
+                          `
+            : ""}
+
                 </div>
+
+
                 <div class="action-group">
-                    <button type="button"
-                            class="action-button edit-block"
-                            data-no="${item.salonHolidayNo}">
+
+                    <button
+                        type="button"
+                        class="action-button edit-holiday"
+                        data-no="${item.salonHolidayNo}">
+
                         수정
+
                     </button>
-                    <button type="button"
-                            class="action-button delete-block"
-                            data-no="${item.salonHolidayNo}">
+
+
+                    <button
+                        type="button"
+                        class="action-button delete-holiday"
+                        data-no="${item.salonHolidayNo}">
+
                         삭제
+
                     </button>
+
                 </div>
+
             </article>
         `;
     }
 
-    function fillBlockForm(item) {
-        document.getElementById("blockNo").value =
+
+    function fillHolidayForm(item) {
+
+        document.getElementById(
+            "holidayNo"
+        ).value =
             item.salonHolidayNo;
-        document.getElementById("blockTitle").value =
+
+
+        document.getElementById(
+            "holidayType"
+        ).value =
+            item.holidayType;
+
+
+        document.getElementById(
+            "holidayTitle"
+        ).value =
             item.title || "";
-        document.getElementById("blockStartAt").value =
-            localDateTimeInput(item.startAt);
-        document.getElementById("blockEndAt").value =
-            localDateTimeInput(item.endAt);
-        document.getElementById("blockAllDay").checked =
+
+
+        document.getElementById(
+            "holidayStartAt"
+        ).value =
+            localDateTimeInput(
+                item.startAt
+            );
+
+
+        document.getElementById(
+            "holidayEndAt"
+        ).value =
+            localDateTimeInput(
+                item.endAt
+            );
+
+
+        document.getElementById(
+            "holidayAllDay"
+        ).checked =
             item.allDay === true;
-        document.getElementById("blockMemo").value =
+
+
+        document.getElementById(
+            "holidayMemo"
+        ).value =
             item.memo || "";
     }
 
-    function resetBlockForm() {
-        document.getElementById("blockForm").reset();
-        document.getElementById("blockNo").value = "";
+
+    function resetHolidayForm() {
+
+        document.getElementById(
+            "holidayForm"
+        ).reset();
+
+
+        document.getElementById(
+            "holidayNo"
+        ).value = "";
     }
 
-    async function saveBlock() {
-        const no = document.getElementById("blockNo").value;
+
+    async function saveHoliday() {
+
+        const no =
+            document.getElementById(
+                "holidayNo"
+            ).value;
+
+
         const payload = {
-            title: document.getElementById("blockTitle").value.trim(),
-            startAt: toApiDateTime(
-                document.getElementById("blockStartAt").value
-            ),
-            endAt: toApiDateTime(
-                document.getElementById("blockEndAt").value
-            ),
-            allDay: document.getElementById("blockAllDay").checked,
+
+            holidayType:
+            document.getElementById(
+                "holidayType"
+            ).value,
+
+            title:
+                document.getElementById(
+                    "holidayTitle"
+                ).value.trim(),
+
+            startAt:
+                toApiDateTime(
+                    document.getElementById(
+                        "holidayStartAt"
+                    ).value
+                ),
+
+            endAt:
+                toApiDateTime(
+                    document.getElementById(
+                        "holidayEndAt"
+                    ).value
+                ),
+
+            allDay:
+            document.getElementById(
+                "holidayAllDay"
+            ).checked,
+
             memo:
-                document.getElementById("blockMemo").value.trim() || null
+                document.getElementById(
+                    "holidayMemo"
+                ).value.trim() ||
+                null
         };
 
-        if (!payload.title || !payload.startAt || !payload.endAt) {
-            return showMessage("제목, 시작, 종료 시간을 입력해주세요.", true);
-        }
 
-        const response = await fetch(
-            no
-                ? `/admin/api/availability-blocks/${no}`
-                : "/admin/api/availability-blocks",
-            {
-                method: no ? "PUT" : "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...csrfHeaders()
-                },
-                body: JSON.stringify(payload)
-            }
-        );
+        if (
+            !payload.title ||
+            !payload.startAt ||
+            !payload.endAt
+        ) {
 
-        const body = await readJson(response);
-
-        if (!response.ok) {
             return showMessage(
-                body.message || "개인 일정 저장에 실패했습니다.",
+                "제목, 시작, 종료 시간을 입력해주세요.",
                 true
             );
         }
 
-        showMessage("개인 일정이 저장되었습니다.", false);
-        await openAvailabilityBlocks();
-    }
-
-    async function deleteBlock(no) {
-        const response = await fetch(
-            `/admin/api/availability-blocks/${no}`,
-            {
-                method: "DELETE",
-                headers: csrfHeaders()
-            }
-        );
-
-        if (!response.ok) {
-            const body = await readJson(response);
-            return showMessage(
-                body.message || "개인 일정 삭제에 실패했습니다.",
-                true
-            );
-        }
-
-        showMessage("개인 일정이 삭제되었습니다.", false);
-        await openAvailabilityBlocks();
-    }
-
-    // -----------------------------------------------------------------
-    // 공통
-    // -----------------------------------------------------------------
-
-    async function ensureServiceMenus() {
-        if (serviceMenus.length) return;
 
         const response =
-            await fetch("/api/reservations/service-menus");
-        const body = await readJson(response);
+            await fetch(
+
+                no
+                    ? `/admin/api/holidays/${no}`
+                    : "/admin/api/holidays",
+
+                {
+                    method:
+                        no
+                            ? "PUT"
+                            : "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        ...csrfHeaders()
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+                }
+            );
+
+
+        const body =
+            await readJson(response);
+
 
         if (!response.ok) {
-            throw new Error(body.message || "시술 메뉴 조회에 실패했습니다.");
+
+            return showMessage(
+                body.message ||
+                "휴일 저장에 실패했습니다.",
+                true
+            );
         }
 
-        serviceMenus = Array.isArray(body) ? body : [];
+
+        showMessage(
+            "휴일이 저장되었습니다.",
+            false
+        );
+
+
+        await openHolidays();
     }
 
-    function addAction(container, label, handler) {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "action-button";
-        button.textContent = label;
-        button.addEventListener("click", handler);
-        container.appendChild(button);
+
+    async function deleteHoliday(no) {
+
+        const response =
+            await fetch(
+                `/admin/api/holidays/${no}`,
+                {
+                    method:
+                        "DELETE",
+
+                    headers:
+                        csrfHeaders()
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const body =
+                await readJson(response);
+
+
+            return showMessage(
+                body.message ||
+                "휴일 삭제에 실패했습니다.",
+                true
+            );
+        }
+
+
+        showMessage(
+            "휴일이 삭제되었습니다.",
+            false
+        );
+
+
+        await openHolidays();
     }
+
+
+    // =========================================================
+    // 개인 일정 / 예약 불가 시간
+    // =========================================================
+
+    async function openAvailabilityBlocks() {
+
+        toolTitle.textContent =
+            "개인 일정 / 예약 불가 시간";
+
+
+        toolContent.innerHTML =
+            `<div class="loading-box">
+                개인 일정을 불러오는 중입니다.
+             </div>`;
+
+
+        toolOverlay.classList.remove(
+            "hidden"
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/admin/api/availability-blocks"
+                );
+
+
+            const body =
+                await readJson(response);
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    body.message ||
+                    "개인 일정 조회에 실패했습니다."
+                );
+            }
+
+
+            renderBlockTool(
+                Array.isArray(body)
+                    ? body
+                    : []
+            );
+
+
+        } catch (error) {
+
+            toolContent.innerHTML =
+                `<div class="empty-box">
+
+                    ${escapeHtml(
+                    error.message
+                )}
+
+                 </div>`;
+        }
+    }
+
+
+    function renderBlockTool(items) {
+
+        toolContent.innerHTML = `
+
+            <form
+                id="blockForm"
+                class="admin-editor-form">
+
+                <input
+                    type="hidden"
+                    id="blockNo">
+
+
+                <div class="form-two-columns">
+
+                    <label class="field">
+
+                        <span>
+                            제목
+                        </span>
+
+                        <input
+                            id="blockTitle"
+                            type="text"
+                            maxlength="100"
+                            placeholder="점심 / 외출 / 병원 / 교육"
+                            required>
+
+                    </label>
+
+
+                    <label class="field">
+
+                        <span>
+                            시작
+                        </span>
+
+                        <input
+                            id="blockStartAt"
+                            type="datetime-local"
+                            required>
+
+                    </label>
+
+
+                    <label class="field">
+
+                        <span>
+                            종료
+                        </span>
+
+                        <input
+                            id="blockEndAt"
+                            type="datetime-local"
+                            required>
+
+                    </label>
+
+                </div>
+
+
+                <label class="
+                    inline-check
+                    editor-check
+                ">
+
+                    <input
+                        id="blockAllDay"
+                        type="checkbox">
+
+                    하루 전체 일정
+
+                </label>
+
+
+                <label class="field">
+
+                    <span>
+                        메모
+                    </span>
+
+                    <textarea
+                        id="blockMemo"
+                        maxlength="500"
+                        rows="3">
+                    </textarea>
+
+                </label>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="submit"
+                        class="primary-button">
+
+                        저장
+
+                    </button>
+
+
+                    <button
+                        id="resetBlockForm"
+                        type="button"
+                        class="secondary-button">
+
+                        새 일정
+
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <h3>
+                등록된 개인 일정
+            </h3>
+
+
+            <div class="admin-record-list">
+
+                ${items.length
+
+            ? items
+                .map(
+                    block =>
+                        blockCard(
+                            block
+                        )
+                )
+                .join("")
+
+            : `
+                        <div class="empty-box">
+                            등록된 개인 일정이 없습니다.
+                        </div>
+                      `
+        }
+
+            </div>
+        `;
+
+
+        document.getElementById(
+            "blockForm"
+        )
+            .addEventListener(
+                "submit",
+                async e => {
+
+                    e.preventDefault();
+
+                    await saveBlock();
+                }
+            );
+
+
+        document.getElementById(
+            "resetBlockForm"
+        )
+            .addEventListener(
+                "click",
+                resetBlockForm
+            );
+
+
+        toolContent
+            .querySelectorAll(
+                ".edit-block"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const item =
+                            items.find(
+                                v =>
+                                    String(
+                                        v.salonHolidayNo
+                                    )
+                                    ===
+                                    button.dataset.no
+                            );
+
+
+                        if (item) {
+
+                            fillBlockForm(
+                                item
+                            );
+                        }
+                    }
+                );
+            });
+
+
+        toolContent
+            .querySelectorAll(
+                ".delete-block"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        if (!confirm(
+                            "이 개인 일정을 삭제하시겠습니까?"
+                        )) {
+                            return;
+                        }
+
+
+                        await deleteBlock(
+                            Number(
+                                button.dataset.no
+                            )
+                        );
+                    }
+                );
+            });
+    }
+
+
+    function blockCard(item) {
+
+        return `
+
+            <article class="admin-record-card">
+
+                <div>
+
+                    <strong>
+                        ${escapeHtml(
+            item.title
+        )}
+                    </strong>
+
+
+                    <div>
+
+                        ${formatDateTime(
+            item.startAt
+        )}
+
+                        ~
+
+                        ${formatDateTime(
+            item.endAt
+        )}
+
+                    </div>
+
+
+                    ${item.memo
+            ? `
+                            <div>
+                                ${escapeHtml(
+                item.memo
+            )}
+                            </div>
+                          `
+            : ""}
+
+                </div>
+
+
+                <div class="action-group">
+
+                    <button
+                        type="button"
+                        class="action-button edit-block"
+                        data-no="${item.salonHolidayNo}">
+
+                        수정
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="action-button delete-block"
+                        data-no="${item.salonHolidayNo}">
+
+                        삭제
+
+                    </button>
+
+                </div>
+
+            </article>
+        `;
+    }
+
+
+    function fillBlockForm(item) {
+
+        document.getElementById(
+            "blockNo"
+        ).value =
+            item.salonHolidayNo;
+
+
+        document.getElementById(
+            "blockTitle"
+        ).value =
+            item.title || "";
+
+
+        document.getElementById(
+            "blockStartAt"
+        ).value =
+            localDateTimeInput(
+                item.startAt
+            );
+
+
+        document.getElementById(
+            "blockEndAt"
+        ).value =
+            localDateTimeInput(
+                item.endAt
+            );
+
+
+        document.getElementById(
+            "blockAllDay"
+        ).checked =
+            item.allDay === true;
+
+
+        document.getElementById(
+            "blockMemo"
+        ).value =
+            item.memo || "";
+    }
+
+
+    function resetBlockForm() {
+
+        document.getElementById(
+            "blockForm"
+        ).reset();
+
+
+        document.getElementById(
+            "blockNo"
+        ).value = "";
+    }
+
+
+    async function saveBlock() {
+
+        const no =
+            document.getElementById(
+                "blockNo"
+            ).value;
+
+
+        const payload = {
+
+            title:
+                document.getElementById(
+                    "blockTitle"
+                ).value.trim(),
+
+            startAt:
+                toApiDateTime(
+                    document.getElementById(
+                        "blockStartAt"
+                    ).value
+                ),
+
+            endAt:
+                toApiDateTime(
+                    document.getElementById(
+                        "blockEndAt"
+                    ).value
+                ),
+
+            allDay:
+            document.getElementById(
+                "blockAllDay"
+            ).checked,
+
+            memo:
+                document.getElementById(
+                    "blockMemo"
+                ).value.trim() ||
+                null
+        };
+
+
+        if (
+            !payload.title ||
+            !payload.startAt ||
+            !payload.endAt
+        ) {
+
+            return showMessage(
+                "제목, 시작, 종료 시간을 입력해주세요.",
+                true
+            );
+        }
+
+
+        const response =
+            await fetch(
+
+                no
+                    ? `/admin/api/availability-blocks/${no}`
+                    : "/admin/api/availability-blocks",
+
+                {
+                    method:
+                        no
+                            ? "PUT"
+                            : "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        ...csrfHeaders()
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+                }
+            );
+
+
+        const body =
+            await readJson(response);
+
+
+        if (!response.ok) {
+
+            return showMessage(
+                body.message ||
+                "개인 일정 저장에 실패했습니다.",
+                true
+            );
+        }
+
+
+        showMessage(
+            "개인 일정이 저장되었습니다.",
+            false
+        );
+
+
+        await openAvailabilityBlocks();
+    }
+
+
+    async function deleteBlock(no) {
+
+        const response =
+            await fetch(
+                `/admin/api/availability-blocks/${no}`,
+                {
+                    method:
+                        "DELETE",
+
+                    headers:
+                        csrfHeaders()
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const body =
+                await readJson(response);
+
+
+            return showMessage(
+                body.message ||
+                "개인 일정 삭제에 실패했습니다.",
+                true
+            );
+        }
+
+
+        showMessage(
+            "개인 일정이 삭제되었습니다.",
+            false
+        );
+
+
+        await openAvailabilityBlocks();
+    }
+
+
+    // =========================================================
+    // 공통
+    // =========================================================
+
+    async function ensureServiceMenus() {
+
+        if (serviceMenus.length) {
+            return;
+        }
+
+
+        const response =
+            await fetch(
+                "/api/reservations/service-menus"
+            );
+
+
+        const body =
+            await readJson(response);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                body.message ||
+                "시술 메뉴 조회에 실패했습니다."
+            );
+        }
+
+
+        serviceMenus =
+            Array.isArray(body)
+                ? body
+                : [];
+    }
+
+
+    function addAction(
+        container,
+        label,
+        handler
+    ) {
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.type =
+            "button";
+
+
+        button.className =
+            "action-button";
+
+
+        button.textContent =
+            label;
+
+
+        button.addEventListener(
+            "click",
+            handler
+        );
+
+
+        container.appendChild(
+            button
+        );
+    }
+
 
     function closeDetail() {
-        detailOverlay?.classList.add("hidden");
+
+        detailOverlay?.classList.add(
+            "hidden"
+        );
     }
+
 
     function closeTool() {
-        toolOverlay?.classList.add("hidden");
-        toolContent.innerHTML = "";
-        phoneSelectedTime = null;
+
+        toolOverlay?.classList.add(
+            "hidden"
+        );
+
+
+        toolContent.innerHTML =
+            "";
+
+
+        phoneSelectedTime =
+            null;
     }
 
+
     async function withScrollPreserved(task) {
-        const y = window.scrollY;
+
+        const y =
+            window.scrollY;
+
+
         try {
+
             await task();
+
+
         } catch (error) {
-            showMessage(error.message, true);
+
+            showMessage(
+                error.message,
+                true
+            );
+
+
         } finally {
+
             restoreScroll(y);
         }
     }
 
+
     function restoreScroll(y) {
-        requestAnimationFrame(() => {
-            window.scrollTo({
-                top: y,
-                left: 0,
-                behavior: "instant"
-            });
-        });
+
+        requestAnimationFrame(
+            () => {
+
+                window.scrollTo({
+                    top: y,
+                    left: 0,
+                    behavior: "instant"
+                });
+            }
+        );
     }
+
 
     function initializeSearchControls() {
+
         if (guestPhoneSearch) {
-            guestPhoneSearch.addEventListener("input", () => {
-                guestPhoneSearch.value =
-                    guestPhoneSearch.value
-                        .replace(/\D/g, "")
-                        .slice(0, 11);
-            });
+
+            guestPhoneSearch.addEventListener(
+                "input",
+                () => {
+
+                    guestPhoneSearch.value =
+                        guestPhoneSearch.value
+                            .replace(
+                                /\D/g,
+                                ""
+                            )
+                            .slice(
+                                0,
+                                11
+                            );
+                }
+            );
         }
 
-        const now = new Date();
-        const minDate = new Date(
-            now.getFullYear() - 2,
-            0,
-            1
-        );
-        const maxDate = new Date(
-            now.getFullYear() + 2,
-            11,
-            31
-        );
 
-        const toDateString = date =>
-            `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        const now =
+            new Date();
 
-        [startFromInput, startToInput].forEach(input => {
-            if (!input) return;
-            input.min = toDateString(minDate);
-            input.max = toDateString(maxDate);
-        });
+
+        const minDate =
+            new Date(
+                now.getFullYear() - 2,
+                0,
+                1
+            );
+
+
+        const maxDate =
+            new Date(
+                now.getFullYear() + 2,
+                11,
+                31
+            );
+
+
+        const toDateString =
+            date =>
+                `${date.getFullYear()}-`
+                +
+                `${String(
+                    date.getMonth() + 1
+                ).padStart(2, "0")}-`
+                +
+                `${String(
+                    date.getDate()
+                ).padStart(2, "0")}`;
+
+
+        [
+            startFromInput,
+            startToInput
+        ]
+            .forEach(input => {
+
+                if (!input) {
+                    return;
+                }
+
+
+                input.min =
+                    toDateString(
+                        minDate
+                    );
+
+
+                input.max =
+                    toDateString(
+                        maxDate
+                    );
+            });
     }
 
+
     function buildParams() {
-        const params = new URLSearchParams();
 
-        put(params, "reservationNo", value("reservationNoSearch"));
-        put(params, "status", value("status"));
-        put(params, "customerType", value("customerType"));
-        put(params, "guestName", value("guestName"));
-        put(params, "guestPhone", value("guestPhone"));
+        const params =
+            new URLSearchParams();
 
-        const startFrom = value("startFrom");
-        const startTo = value("startTo");
+
+        put(
+            params,
+            "reservationNo",
+            value(
+                "reservationNoSearch"
+            )
+        );
+
+
+        put(
+            params,
+            "status",
+            value(
+                "status"
+            )
+        );
+
+
+        put(
+            params,
+            "customerType",
+            value(
+                "customerType"
+            )
+        );
+
+
+        put(
+            params,
+            "guestName",
+            value(
+                "guestName"
+            )
+        );
+
+
+        put(
+            params,
+            "guestPhone",
+            value(
+                "guestPhone"
+            )
+        );
+
+
+        const startFrom =
+            value(
+                "startFrom"
+            );
+
+
+        const startTo =
+            value(
+                "startTo"
+            );
+
 
         if (startFrom) {
-            params.set("startFrom", `${startFrom}T00:00:00`);
+
+            params.set(
+                "startFrom",
+                `${startFrom}T00:00:00`
+            );
         }
+
 
         if (startTo) {
-            const d = new Date(`${startTo}T00:00:00`);
-            d.setDate(d.getDate() + 1);
+
+            const d =
+                new Date(
+                    `${startTo}T00:00:00`
+                );
+
+
+            d.setDate(
+                d.getDate() + 1
+            );
+
+
             const date =
-                `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-            params.set("startTo", `${date}T00:00:00`);
+                `${d.getFullYear()}-`
+                +
+                `${String(
+                    d.getMonth() + 1
+                ).padStart(2, "0")}-`
+                +
+                `${String(
+                    d.getDate()
+                ).padStart(2, "0")}`;
+
+
+            params.set(
+                "startTo",
+                `${date}T00:00:00`
+            );
         }
 
-        params.set("page", String(currentPage));
-        params.set("size", String(pageSize));
+
+        params.set(
+            "page",
+            String(
+                currentPage
+            )
+        );
+
+
+        params.set(
+            "size",
+            String(
+                pageSize
+            )
+        );
+
 
         return params;
     }
 
+
     function value(id) {
-        return document.getElementById(id)?.value.trim() || "";
+
+        return (
+            document.getElementById(
+                id
+            )?.value.trim()
+            ||
+            ""
+        );
     }
 
-    function put(params, key, val) {
-        if (val) params.set(key, val);
+
+    function put(
+        params,
+        key,
+        val
+    ) {
+
+        if (val) {
+
+            params.set(
+                key,
+                val
+            );
+        }
     }
+
 
     function statusText(status) {
+
         return {
-            REQUESTED: "신청",
-            CONFIRMED: "확정",
-            COMPLETED: "완료",
-            CANCELED: "취소",
-            NO_SHOW: "노쇼"
-        }[status] || status || "-";
+
+                REQUESTED:
+                    "신청",
+
+                CONFIRMED:
+                    "확정",
+
+                COMPLETED:
+                    "완료",
+
+                CANCELED:
+                    "취소",
+
+                NO_SHOW:
+                    "노쇼"
+
+            }[status]
+            ||
+            status
+            ||
+            "-";
     }
+
 
     function sourceText(source) {
+
         return {
-            ONLINE: "온라인",
-            PHONE: "전화 예약"
-        }[source] || source || "-";
+
+                ONLINE:
+                    "온라인",
+
+                PHONE:
+                    "전화 예약"
+
+            }[source]
+            ||
+            source
+            ||
+            "-";
     }
+
 
     function paymentMethodText(method) {
+
         return {
-            CARD: "카드",
-            CASH: "현금",
-            TRANSFER: "계좌이체",
-            PREPAID: "선불"
-        }[method] || method || "-";
+
+                CARD:
+                    "카드",
+
+                CASH:
+                    "현금",
+
+                TRANSFER:
+                    "계좌이체",
+
+                PREPAID:
+                    "선불"
+
+            }[method]
+            ||
+            method
+            ||
+            "-";
     }
+
 
     function paymentStatusText(status) {
+
         return {
-            UNPAID: "결제 대기",
-            PAID: "결제 완료",
-            REFUNDED: "환불 완료"
-        }[status] || status || "-";
+
+                UNPAID:
+                    "결제 대기",
+
+                PAID:
+                    "결제 완료",
+
+                REFUNDED:
+                    "환불 완료"
+
+            }[status]
+            ||
+            status
+            ||
+            "-";
     }
+
 
     function formatMoney(value) {
-        return new Intl.NumberFormat("ko-KR")
-            .format(Number(value || 0)) + "원";
+
+        return (
+            new Intl.NumberFormat(
+                "ko-KR"
+            )
+                .format(
+                    Number(
+                        value || 0
+                    )
+                )
+            +
+            "원"
+        );
     }
+
 
     function dayName(day) {
+
         return {
-            1: "월요일",
-            2: "화요일",
-            3: "수요일",
-            4: "목요일",
-            5: "금요일",
-            6: "토요일",
-            7: "일요일"
-        }[day] || `${day}요일`;
+
+                1:
+                    "월요일",
+
+                2:
+                    "화요일",
+
+                3:
+                    "수요일",
+
+                4:
+                    "목요일",
+
+                5:
+                    "금요일",
+
+                6:
+                    "토요일",
+
+                7:
+                    "일요일"
+
+            }[day]
+            ||
+            `${day}요일`;
     }
+
 
     function holidayTypeText(type) {
+
         return {
-            TEMPORARY: "임시 휴일",
-            VACATION: "휴가",
-            PERSONAL: "개인 일정",
-            ETC: "기타"
-        }[type] || type;
+
+                TEMPORARY:
+                    "임시 휴일",
+
+                VACATION:
+                    "휴가",
+
+                PERSONAL:
+                    "개인 일정",
+
+                ETC:
+                    "기타"
+
+            }[type]
+            ||
+            type;
     }
 
+
     function formatDateTime(value) {
+
         return value
-            ? String(value).replace("T", " ").slice(0, 16)
+            ? String(value)
+                .replace(
+                    "T",
+                    " "
+                )
+                .slice(
+                    0,
+                    16
+                )
             : "-";
     }
 
+
     function formatTime(value) {
-        return value ? String(value).slice(11, 16) : "";
+
+        return value
+            ? String(value)
+                .slice(
+                    11,
+                    16
+                )
+            : "";
     }
+
 
     function timeValue(value) {
-        return value ? String(value).slice(0, 5) : "";
+
+        return value
+            ? String(value)
+                .slice(
+                    0,
+                    5
+                )
+            : "";
     }
+
 
     function todayString() {
-        const d = new Date();
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+        const d =
+            new Date();
+
+
+        return (
+            `${d.getFullYear()}-`
+            +
+            `${String(
+                d.getMonth() + 1
+            ).padStart(2, "0")}-`
+            +
+            `${String(
+                d.getDate()
+            ).padStart(2, "0")}`
+        );
     }
+
 
     function localDateTimeInput(value) {
-        return value ? String(value).slice(0, 16) : "";
+
+        return value
+            ? String(value)
+                .slice(
+                    0,
+                    16
+                )
+            : "";
     }
 
+
     function toApiDateTime(value) {
-        if (!value) return null;
+
+        if (!value) {
+            return null;
+        }
+
+
         return value.length === 16
             ? `${value}:00`
             : value;
     }
 
-    function csrfHeaders() {
-        const token =
-            document.querySelector('meta[name="_csrf"]')?.content;
-        const header =
-            document.querySelector('meta[name="_csrf_header"]')?.content;
 
-        return token && header
-            ? { [header]: token }
+    function csrfHeaders() {
+
+        const token =
+            document.querySelector(
+                'meta[name="_csrf"]'
+            )?.content;
+
+
+        const header =
+            document.querySelector(
+                'meta[name="_csrf_header"]'
+            )?.content;
+
+
+        return (
+            token &&
+            header
+        )
+            ? {
+                [header]:
+                token
+            }
             : {};
     }
 
+
     async function readJson(response) {
-        const text = await response.text();
-        if (!text) return {};
+
+        const text =
+            await response.text();
+
+
+        if (!text) {
+            return {};
+        }
+
 
         try {
-            return JSON.parse(text);
+
+            return JSON.parse(
+                text
+            );
+
+
         } catch {
-            return { message: text };
+
+            return {
+                message:
+                text
+            };
         }
     }
 
-    function showMessage(message, error) {
-        messageBox.textContent = message;
-        messageBox.classList.toggle("error", Boolean(error));
-        messageBox.classList.remove("hidden");
 
-        setTimeout(() => {
-            messageBox.classList.add("hidden");
-        }, 3500);
+    function showMessage(
+        message,
+        error
+    ) {
+
+        messageBox.textContent =
+            message;
+
+
+        messageBox.classList.toggle(
+            "error",
+            Boolean(error)
+        );
+
+
+        messageBox.classList.remove(
+            "hidden"
+        );
+
+
+        setTimeout(
+            () => {
+
+                messageBox.classList.add(
+                    "hidden"
+                );
+
+            },
+            3500
+        );
     }
 
+
     function escapeHtml(value) {
-        const div = document.createElement("div");
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+
         div.textContent =
-            value == null ? "" : String(value);
+            value == null
+                ? ""
+                : String(value);
+
+
         return div.innerHTML;
     }
 
+
     function escapeAttribute(value) {
-        return escapeHtml(value).replace(/"/g, "&quot;");
+
+        return escapeHtml(
+            value
+        )
+            .replace(
+                /"/g,
+                "&quot;"
+            );
     }
+
 })();
