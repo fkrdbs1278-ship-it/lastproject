@@ -253,520 +253,172 @@
 
 
     <!-- =====================================================
-         고객 기본 정보
+         고객 핵심 현황
     ====================================================== -->
 
-    <section class="detail-panel">
+    <section class="detail-panel customer-overview-panel">
 
-
-        <div class="panel-header">
-
-
+        <div class="panel-header compact">
             <div>
-
-                <p class="panel-label">
-                    CUSTOMER INFORMATION
-                </p>
-
-
-                <h2>
-                    고객 정보
-                </h2>
-
+                <h2>고객 현황</h2>
+                <p class="panel-subtext">방문·결제·관리 상태를 빠르게 확인합니다.</p>
             </div>
-
-
-            <p>
-                고객 CRM에 등록된 기본정보입니다.
-            </p>
-
-
         </div>
 
+        <div class="customer-overview-grid">
 
-
-        <div class="customer-info-grid">
-
-
-            <!-- 고객번호 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    고객번호
-                </span>
-
-
-                <strong th:text="${customer.customerId}">
-                    1
-                </strong>
-
-
-            </div>
-
-
-
-            <!-- 고객명 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    고객명
-                </span>
-
-
-                <strong th:text="${customer.customerName}">
-                    홍길동
-                </strong>
-
-
-            </div>
-
-
-
-            <!-- 전화번호 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    전화번호
-                </span>
-
-
-                <strong th:text="${customer.phone}">
-                    010-1234-5678
-                </strong>
-
-
-            </div>
-
-
-
-            <!-- 고객 유형 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    고객 유형
-                </span>
-
-
-                <strong th:text="${customer.customerType == 'MEMBER'
-                ? '회원'
-                : '비회원'}">
-
-                    비회원
-
-                </strong>
-
-
-            </div>
-
-
-
-            <!-- 현재 등급 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    현재 등급
-                </span>
-
-
-                <strong th:if="${customer.customerGrade != null}"
-                        th:text="${customer.customerGrade.gradeName}">
-
-                    일반
-
-                </strong>
-
-
-                <strong th:if="${customer.customerGrade == null}">
-                    -
-                </strong>
-
-
-            </div>
-
-
-
-            <!-- 최근 방문일 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    최근 방문일
-                </span>
-
-
+            <div class="overview-item">
+                <span>최근 방문일</span>
                 <strong th:if="${customer.lastVisitDate != null}"
-                        th:text="${customer.lastVisitDate}">
-
-                    2026-08-31
-
-                </strong>
-
-
-                <strong th:if="${customer.lastVisitDate == null}">
-                    방문 이력 없음
-                </strong>
-
-
+                        th:text="${customer.lastVisitDate}">2026-08-31</strong>
+                <strong th:if="${customer.lastVisitDate == null}">방문 이력 없음</strong>
             </div>
 
-
-
-            <!-- 누적 방문 횟수 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    누적 방문 횟수
-                </span>
-
-
+            <div class="overview-item">
+                <span>누적 방문</span>
                 <strong>
-
-                    <span th:text="${customer.visitCount != null
-                    ? customer.visitCount
-                    : 0}">
-
-                        0
-
-                    </span>
-
-                    회
-
+                    <b th:text="${customer.visitCount != null ? customer.visitCount : 0}">0</b>회
                 </strong>
-
-
             </div>
 
-
-
-            <!-- 누적 결제 금액 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    누적 결제 금액
-                </span>
-
-
+            <div class="overview-item emphasis">
+                <span>누적 결제</span>
                 <strong>
-
-                    <span th:text="${customer.totalPayment != null
-                    ? #numbers.formatInteger(
-                        customer.totalPayment,
-                        0,
-                        'COMMA'
-                      )
-                    : 0}">
-
-                        0
-
-                    </span>
-
-                    원
-
+                    <b th:text="${customer.totalPayment != null
+                    ? #numbers.formatInteger(customer.totalPayment, 0, 'COMMA')
+                    : 0}">0</b>원
                 </strong>
-
-
             </div>
 
-
-
-            <!-- 활성 상태 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    활성 상태
-                </span>
-
-
+            <div class="overview-item">
+                <span>고객 상태</span>
                 <span class="status-badge"
-                      th:classappend="${customer.activeYn == 'Y'}
-                      ? ' active'
-                      : ' inactive'"
-                      th:text="${customer.activeYn == 'Y'}
-                      ? '활성'
-                      : '비활성'">
-
-                    활성
-
-                </span>
-
-
+                      th:classappend="${customer.activeYn == 'Y'} ? ' active' : ' inactive'"
+                      th:text="${customer.activeYn == 'Y'} ? '활성' : '비활성'">활성</span>
             </div>
 
-
-
-            <!-- 등급 관리 방식 -->
-
-            <div class="info-item">
-
-
-                <span class="info-label">
-                    등급 관리 방식
-                </span>
-
-
-                <strong class="manual"
-                        th:if="${customer.gradeManualYn == 'Y'}">
-
-                    관리자 수동 지정
-
-                </strong>
-
-
-                <strong class="automatic"
-                        th:if="${customer.gradeManualYn != 'Y'}">
-
-                    자동 관리
-
-                </strong>
-
-
+            <div class="overview-item">
+                <span>등급 관리</span>
+                <strong class="manual" th:if="${customer.gradeManualYn == 'Y'}">수동 지정</strong>
+                <strong class="automatic" th:if="${customer.gradeManualYn != 'Y'}">자동 관리</strong>
             </div>
-
 
         </div>
-
 
     </section>
 
 
 
     <!-- =====================================================
-         고객 기본정보 수정
+         고객 기본정보 / 상태 관리
     ====================================================== -->
 
-    <section class="detail-panel">
+    <div class="customer-management-grid">
 
+        <section class="detail-panel customer-edit-panel">
 
-        <div class="panel-header">
-
-
-            <div>
-
-                <p class="panel-label">
-                    CUSTOMER EDIT
-                </p>
-
-
-                <h2>
-                    고객 기본정보 수정
-                </h2>
-
+            <div class="panel-header compact">
+                <div>
+                    <h2>기본정보 수정</h2>
+                    <p class="panel-subtext">고객명과 전화번호를 수정합니다.</p>
+                </div>
             </div>
-
-
-            <p>
-                고객명과 전화번호를 수정할 수 있습니다.
-            </p>
-
-
-        </div>
-
-
-
-        <form method="post"
-              class="manual-grade-form"
-              th:action="@{/admin/customers/{customerId}/update(
-                  customerId=${customer.customerId}
-              )}">
-
-
-            <!-- CSRF -->
-
-            <input type="hidden"
-                   th:if="${_csrf != null}"
-                   th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}">
-
-
-
-            <!-- 고객명 -->
-
-            <label for="customerName">
-                고객명
-            </label>
-
-
-            <input type="text"
-                   id="customerName"
-                   name="customerName"
-                   maxlength="50"
-                   required
-                   th:value="${customer.customerName}"
-                   placeholder="고객명을 입력해주세요.">
-
-
-
-            <!-- 전화번호 -->
-
-            <label for="phone">
-                전화번호
-            </label>
-
-
-            <input type="text"
-                   id="phone"
-                   name="phone"
-                   maxlength="20"
-                   required
-                   th:value="${customer.phone}"
-                   placeholder="010-1234-5678">
-
-
-            <p class="grade-description">
-                하이픈 없이 입력해도
-                010-1234-5678 형식으로 저장됩니다.
-            </p>
-
-
-
-            <button type="submit"
-                    class="grade-button primary">
-
-                고객 정보 수정
-
-            </button>
-
-
-        </form>
-
-
-    </section>
-
-
-
-    <!-- =====================================================
-         고객 활성 / 비활성 관리
-    ====================================================== -->
-
-    <section class="detail-panel">
-
-
-        <div class="panel-header">
-
-
-            <div>
-
-                <p class="panel-label">
-                    CUSTOMER STATUS
-                </p>
-
-
-                <h2>
-                    고객 상태 관리
-                </h2>
-
-            </div>
-
-
-            <p>
-                고객 데이터를 삭제하지 않고
-                활성 상태만 변경합니다.
-            </p>
-
-
-        </div>
-
-
-
-        <!-- =================================================
-             현재 활성 고객
-        ================================================== -->
-
-        <div th:if="${customer.activeYn == 'Y'}">
-
-
-            <p class="grade-description">
-                현재 고객은 활성 상태입니다.
-                비활성 처리하면 고객 정보는 유지되지만
-                비활성 고객으로 관리됩니다.
-            </p>
-
 
             <form method="post"
-                  th:action="@{/admin/customers/{customerId}/deactivate(
+                  class="customer-edit-form"
+                  th:action="@{/admin/customers/{customerId}/update(
                       customerId=${customer.customerId}
                   )}">
-
 
                 <input type="hidden"
                        th:if="${_csrf != null}"
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}">
 
+                <div class="edit-field-grid">
+                    <div class="edit-field">
+                        <label for="customerName">고객명</label>
+                        <input type="text"
+                               id="customerName"
+                               name="customerName"
+                               maxlength="50"
+                               required
+                               th:value="${customer.customerName}"
+                               placeholder="고객명을 입력해주세요.">
+                    </div>
 
-                <button type="submit"
-                        class="grade-button"
-                        onclick="return confirm('이 고객을 비활성 처리하시겠습니까?');">
+                    <div class="edit-field">
+                        <label for="phone">전화번호</label>
+                        <input type="text"
+                               id="phone"
+                               name="phone"
+                               maxlength="20"
+                               required
+                               th:value="${customer.phone}"
+                               placeholder="010-1234-5678">
+                    </div>
+                </div>
 
-                    고객 비활성 처리
-
-                </button>
-
-
-            </form>
-
-
-        </div>
-
-
-
-        <!-- =================================================
-             현재 비활성 고객
-        ================================================== -->
-
-        <div th:if="${customer.activeYn != 'Y'}">
-
-
-            <p class="grade-description">
-                현재 고객은 비활성 상태입니다.
-                다시 활성 처리하면 정상 고객으로 관리됩니다.
-            </p>
-
-
-            <form method="post"
-                  th:action="@{/admin/customers/{customerId}/activate(
-                      customerId=${customer.customerId}
-                  )}">
-
-
-                <input type="hidden"
-                       th:if="${_csrf != null}"
-                       th:name="${_csrf.parameterName}"
-                       th:value="${_csrf.token}">
-
-
-                <button type="submit"
-                        class="grade-button primary">
-
-                    고객 다시 활성화
-
-                </button>
-
+                <div class="edit-form-footer">
+                    <span>하이픈 없이 입력해도 자동으로 형식이 정리됩니다.</span>
+                    <button type="submit" class="grade-button primary">저장</button>
+                </div>
 
             </form>
 
+        </section>
 
-        </div>
 
+        <section class="detail-panel customer-status-panel">
 
-    </section>
+            <div class="panel-header compact">
+                <div>
+                    <h2>고객 상태</h2>
+                    <p class="panel-subtext">삭제 없이 활성 여부만 관리합니다.</p>
+                </div>
+            </div>
+
+            <div class="status-management" th:if="${customer.activeYn == 'Y'}">
+                <div>
+                    <span class="status-badge active">활성</span>
+                    <p>현재 정상 고객으로 관리 중입니다.</p>
+                </div>
+                <form method="post"
+                      th:action="@{/admin/customers/{customerId}/deactivate(
+                          customerId=${customer.customerId}
+                      )}">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <button type="submit"
+                            class="grade-button"
+                            onclick="return confirm('이 고객을 비활성 처리하시겠습니까?');">
+                        비활성 처리
+                    </button>
+                </form>
+            </div>
+
+            <div class="status-management" th:if="${customer.activeYn != 'Y'}">
+                <div>
+                    <span class="status-badge inactive">비활성</span>
+                    <p>고객 정보는 유지되며 목록에서 비활성 고객으로 관리됩니다.</p>
+                </div>
+                <form method="post"
+                      th:action="@{/admin/customers/{customerId}/activate(
+                          customerId=${customer.customerId}
+                      )}">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <button type="submit" class="grade-button primary">다시 활성화</button>
+                </form>
+            </div>
+
+        </section>
+
+    </div>
 
 
 
