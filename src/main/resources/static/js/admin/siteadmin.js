@@ -23,22 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("previewHeroImage");
 
 
-    // =====================================================
-    // 서비스 안내 영역
-    // =====================================================
-
-    const serviceVisibleInput =
-        document.getElementById("serviceVisibleInput");
-
-    const serviceTitleInput =
-        document.getElementById("serviceTitleInput");
-
-    const previewServiceSection =
-        document.getElementById("previewServiceSection");
-
-    const previewServiceTitle =
-        document.getElementById("previewServiceTitle");
-
 
     // =====================================================
     // 헤어스타일 영역
@@ -85,10 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         heroDescription:
             "원하는 시술과 헤어스타일을 확인하고\n편리하게 예약 서비스를 이용해보세요.",
-
-        serviceTitle:
-            "서비스 안내",
-
         styleTitle:
             "헤어스타일 둘러보기",
 
@@ -190,31 +170,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-    // =====================================================
-    // 서비스 안내 노출 / 숨김
-    // =====================================================
-
-    serviceVisibleInput.addEventListener("change", function () {
-
-        previewServiceSection.style.display =
-            serviceVisibleInput.checked
-                ? ""
-                : "none";
-
-    });
-
-
-    // =====================================================
-    // 서비스 안내 제목 실시간 변경
-    // =====================================================
-
-    serviceTitleInput.addEventListener("input", function () {
-
-        previewServiceTitle.textContent =
-            serviceTitleInput.value;
-
-    });
-
 
     // =====================================================
     // 헤어스타일 영역 노출 / 숨김
@@ -267,9 +222,6 @@ document.addEventListener("DOMContentLoaded", function () {
         heroDescriptionInput.value =
             defaultValues.heroDescription;
 
-        serviceTitleInput.value =
-            defaultValues.serviceTitle;
-
         styleTitleInput.value =
             defaultValues.styleTitle;
 
@@ -278,7 +230,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         // 노출 체크 초기화
-        serviceVisibleInput.checked = true;
         styleVisibleInput.checked = true;
 
 
@@ -289,9 +240,6 @@ document.addEventListener("DOMContentLoaded", function () {
         previewHeroDescription.textContent =
             defaultValues.heroDescription;
 
-        previewServiceTitle.textContent =
-            defaultValues.serviceTitle;
-
         previewStyleTitle.textContent =
             defaultValues.styleTitle;
 
@@ -299,7 +247,6 @@ document.addEventListener("DOMContentLoaded", function () {
             defaultValues.styleDescription;
 
 
-        previewServiceSection.style.display = "";
         previewStyleSection.style.display = "";
 
 

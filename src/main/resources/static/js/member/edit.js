@@ -8,6 +8,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const birthDate =
         document.querySelector("#birthDate");
 
+    const nameInput =
+        document.querySelector("#name");
+
+    const nicknameInput =
+        document.querySelector("#nickname");
+
+    const nameMessage =
+        document.querySelector("#nameMessage");
+
+    const nicknameMessage =
+        document.querySelector("#nicknameMessage");
+
 
     /* 전화번호 자동 하이픈 */
 
@@ -78,6 +90,83 @@ document.addEventListener("DOMContentLoaded", () => {
             + numbers.slice(7, 11)
         );
     }
+
+
+    function limitTextLength(
+        input,
+        maxLength
+    ) {
+
+        if (!input) {
+            return;
+        }
+
+
+        const characters =
+            Array.from(
+                input.value
+            );
+
+
+        if (characters.length > maxLength) {
+
+            input.value =
+                characters
+                    .slice(0, maxLength)
+                    .join("");
+        }
+    }
+
+
+    function validateTextLength(
+        input,
+        messageElement,
+        label
+    ) {
+
+        if (!input || !messageElement) {
+            return;
+        }
+
+
+        const value =
+            input.value.trim();
+
+
+        if (value.length === 0) {
+
+            messageElement.textContent = "";
+
+            messageElement.className =
+                "field-message";
+
+            return;
+        }
+
+
+        if (
+            value.length < 2 ||
+            value.length > 20
+        ) {
+
+            messageElement.textContent =
+                `${label}은(는) 2자 이상 20자 이하로 입력해주세요.`;
+
+            messageElement.className =
+                "field-message error";
+
+            return;
+        }
+
+
+        messageElement.textContent = "";
+
+        messageElement.className =
+            "field-message";
+    }
+
+
+
 
 
     /* 생년월일
@@ -178,6 +267,112 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector(
             "#updatePhoneVerifyMessage"
         );
+
+
+
+    if (nameInput) {
+
+        nameInput.addEventListener(
+            "input",
+            (event) => {
+
+                if (!event.isComposing) {
+
+                    limitTextLength(
+                        nameInput,
+                        20
+                    );
+                }
+
+
+                validateTextLength(
+                    nameInput,
+                    nameMessage,
+                    "이름"
+                );
+            }
+        );
+
+
+        nameInput.addEventListener(
+            "compositionend",
+            () => {
+
+                limitTextLength(
+                    nameInput,
+                    20
+                );
+
+
+                validateTextLength(
+                    nameInput,
+                    nameMessage,
+                    "이름"
+                );
+            }
+        );
+    }
+
+
+    if (nicknameInput) {
+
+        nicknameInput.addEventListener(
+            "input",
+            (event) => {
+
+                if (!event.isComposing) {
+
+                    limitTextLength(
+                        nicknameInput,
+                        20
+                    );
+                }
+
+
+                validateTextLength(
+                    nicknameInput,
+                    nicknameMessage,
+                    "닉네임"
+                );
+            }
+        );
+
+
+        nicknameInput.addEventListener(
+            "compositionend",
+            () => {
+
+                limitTextLength(
+                    nicknameInput,
+                    20
+                );
+
+
+                validateTextLength(
+                    nicknameInput,
+                    nicknameMessage,
+                    "닉네임"
+                );
+            }
+        );
+    }
+
+    /* =========================================================
+    처음 화면 진입 시 이름 / 닉네임 길이 검사
+    ========================================================= */
+
+    validateTextLength(
+        nameInput,
+        nameMessage,
+        "이름"
+    );
+
+
+    validateTextLength(
+        nicknameInput,
+        nicknameMessage,
+        "닉네임"
+    );
 
 
     /*

@@ -28,6 +28,16 @@
       th:action="@{/admin/siteadmin/save}"
       method="post"
       enctype="multipart/form-data">
+
+    <!-- 기존 저장 구조 호환용 값: 서비스 안내 UI는 제거하고 비노출 상태로 유지 -->
+    <input type="hidden"
+           name="serviceVisible"
+           value="false">
+
+    <input type="hidden"
+           name="serviceTitle"
+           value="서비스 안내">
+
 </form>
 
 <div class="admin-layout">
@@ -158,56 +168,6 @@
                             </div>
 
                         </section>
-
-
-                        <!-- 서비스 안내 -->
-                        <section class="preview-section"
-                                 id="previewServiceSection"
-                                 th:style="${siteSetting != null and !siteSetting.serviceVisible} ? 'display:none;' : ''">
-
-                            <h3 id="previewServiceTitle"
-                                th:text="${siteSetting != null
-                                    ? siteSetting.serviceTitle
-                                    : '서비스 안내'}">
-                                서비스 안내
-                            </h3>
-
-
-                            <div class="preview-service-grid">
-
-                                <article>
-                                    <strong>시술 메뉴</strong>
-
-                                    <p>
-                                        커트, 펌, 염색, 클리닉 등
-                                        다양한 시술 메뉴와 가격을 확인할 수 있습니다.
-                                    </p>
-                                </article>
-
-
-                                <article>
-                                    <strong>헤어스타일</strong>
-
-                                    <p>
-                                        다양한 헤어스타일 이미지를 확인하고
-                                        원하는 스타일을 찾아볼 수 있습니다.
-                                    </p>
-                                </article>
-
-
-                                <article>
-                                    <strong>마이페이지</strong>
-
-                                    <p>
-                                        예약, 결제, 쿠폰 및 리뷰 내역을
-                                        한 곳에서 확인할 수 있습니다.
-                                    </p>
-                                </article>
-
-                            </div>
-
-                        </section>
-
 
                         <!-- 헤어스타일 -->
                         <section class="preview-section preview-style-section"
@@ -368,73 +328,13 @@
 
                 </section>
 
-
-                <!-- 서비스 안내 설정 -->
-                <section class="editor-section">
-
-                    <div class="editor-section-title">
-
-                        <span class="section-number">
-                            02
-                        </span>
-
-                        <div>
-                            <h3>서비스 안내</h3>
-
-                            <p>
-                                메인 페이지의 서비스 안내 영역을 설정합니다.
-                            </p>
-                        </div>
-
-                    </div>
-
-
-                    <label class="toggle-row">
-
-                        <div>
-                            <strong>서비스 안내 노출</strong>
-
-                            <p>
-                                사용자 메인에 서비스 안내 영역을 표시합니다.
-                            </p>
-                        </div>
-
-
-                        <input id="serviceVisibleInput"
-                               name="serviceVisible"
-                               value="true"
-                               form="siteSettingForm"
-                               type="checkbox"
-                               th:checked="${siteSetting == null or siteSetting.serviceVisible}">
-
-                    </label>
-
-
-                    <label class="editor-field">
-
-                        <span>영역 제목</span>
-
-                        <input id="serviceTitleInput"
-                               name="serviceTitle"
-                               form="siteSettingForm"
-                               type="text"
-                               value="서비스 안내"
-                               th:value="${siteSetting != null
-                                   ? siteSetting.serviceTitle
-                                   : '서비스 안내'}">
-
-                    </label>
-
-                </section>
-
-
                 <!-- 헤어스타일 영역 설정 -->
                 <section class="editor-section">
 
                     <div class="editor-section-title">
 
                         <span class="section-number">
-                            03
+                            02
                         </span>
 
                         <div>

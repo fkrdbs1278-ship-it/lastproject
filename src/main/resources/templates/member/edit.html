@@ -133,7 +133,16 @@
                             id="name"
                             th:field="*{name}"
                             placeholder="이름을 입력해주세요."
+                            minlength="2"
+                            maxlength="20"
+                            autocomplete="name"
                     >
+
+                    <p
+                            id="nameMessage"
+                            class="field-message"
+                            aria-live="polite"
+                    ></p>
 
                     <p
                             class="field-error"
@@ -159,7 +168,16 @@
                             id="nickname"
                             th:field="*{nickname}"
                             placeholder="닉네임을 입력해주세요."
+                            minlength="2"
+                            maxlength="20"
+                            autocomplete="nickname"
                     >
+
+                    <p
+                            id="nicknameMessage"
+                            class="field-message"
+                            aria-live="polite"
+                    ></p>
 
                     <p
                             class="field-error"
