@@ -213,19 +213,41 @@
             return;
         }
 
-        rows.forEach(r => {
-            const tr = document.createElement("tr");
+        rows.forEach(item => {
+            const r =
+                item.reservation || item;
 
-            const customer =
+            const tr =
+                document.createElement("tr");
+
+            const customerTypeText =
                 r.customerType === "MEMBER"
-                    ? `<div class="customer-cell">
-                           <strong>회원 #${r.memberNo}</strong>
-                           <small>회원 예약</small>
-                       </div>`
-                    : `<div class="customer-cell">
-                           <strong>${escapeHtml(r.guestName || "비회원")}</strong>
-                           <small>${escapeHtml(r.guestPhone || "-")}</small>
-                       </div>`;
+                    ? "회원"
+                    : "비회원";
+
+            const customerName =
+                item.customerName
+                || r.guestName
+                || (
+                    r.customerType === "MEMBER"
+                        ? `회원 #${r.memberNo}`
+                        : "비회원"
+                );
+
+            const maskedPhone =
+                item.maskedPhone
+                || "-";
+
+            const customer = `
+                <div class="customer-cell">
+                    <strong>${escapeHtml(customerName)}</strong>
+                    <small>
+                        ${customerTypeText}
+                        ·
+                        ${escapeHtml(maskedPhone)}
+                    </small>
+                </div>
+            `;
 
             const memo =
                 r.requestMemo

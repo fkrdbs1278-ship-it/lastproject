@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 public class AdminReservationSearchResponse {
 
-    private List<ReservationResponse> content;
+    private List<AdminReservationListItemResponse> content;
     private int page;
     private int size;
     private long totalElements;

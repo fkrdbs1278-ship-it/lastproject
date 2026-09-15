@@ -1,8 +1,13 @@
 package com.young04.lastproject.reservation.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.young04.lastproject.member.entity.QMember;
 import com.young04.lastproject.reservation.dto.ReservationSearchCondition;
+import com.young04.lastproject.reservation.entity.CustomerType;
 import com.young04.lastproject.reservation.entity.QReservation;
 import com.young04.lastproject.reservation.entity.Reservation;
 import jakarta.persistence.EntityManager;
@@ -25,8 +30,14 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
             ReservationSearchCondition condition,
             Pageable pageable
     ) {
-        QReservation reservation = QReservation.reservation;
-        BooleanBuilder builder = new BooleanBuilder();
+        QReservation reservation =
+                QReservation.reservation;
+
+        QMember member =
+                QMember.member;
+
+        BooleanBuilder builder =
+                new BooleanBuilder();
 
         if (condition != null) {
             if (condition.getStatus() != null) {
@@ -63,22 +74,47 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
                 );
             }
 
-            if (condition.getGuestName() != null
-                    && !condition.getGuestName().isBlank()) {
+            if (
+                    condition.getGuestName() != null
+                    && !condition.getGuestName().isBlank()
+            ) {
+
                 builder.and(
-                        reservation.guestName.containsIgnoreCase(
-                                condition.getGuestName().trim()
+                        customerNameContains(
+                                reservation,
+                                member,
+                                condition
+                                        .getGuestName()
+                                        .trim()
                         )
                 );
             }
 
-            if (condition.getGuestPhone() != null
-                    && !condition.getGuestPhone().isBlank()) {
-                builder.and(
-                        reservation.guestPhone.contains(
-                                condition.getGuestPhone().trim()
-                        )
-                );
+
+            if (
+                    condition.getGuestPhone() != null
+                    && !condition.getGuestPhone().isBlank()
+            ) {
+
+                String normalizedPhone =
+                        condition
+                                .getGuestPhone()
+                                .replaceAll(
+                                        "\\D",
+                                        ""
+                                );
+
+
+                if (!normalizedPhone.isBlank()) {
+
+                    builder.and(
+                            customerPhoneContains(
+                                    reservation,
+                                    member,
+                                    normalizedPhone
+                            )
+                    );
+                }
             }
 
             if (condition.getStartFrom() != null) {
@@ -94,24 +130,128 @@ public class ReservationRepositoryImpl implements ReservationRepositoryCustom {
             }
         }
 
-        List<Reservation> content = queryFactory
-                .selectFrom(reservation)
-                .where(builder)
+        List<Reservation> content =
+                queryFactory
+                        .selectFrom(reservation)
+                        .leftJoin(member)
+                        .on(
+                                reservation.memberNo.eq(
+                                        member.no
+                                )
+                        )
+                        .where(builder)
                 .orderBy(reservation.startAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long total = queryFactory
-                .select(reservation.count())
-                .from(reservation)
-                .where(builder)
+        Long total =
+                queryFactory
+                        .select(
+                                reservation.count()
+                        )
+                        .from(reservation)
+                        .leftJoin(member)
+                        .on(
+                                reservation.memberNo.eq(
+                                        member.no
+                                )
+                        )
+                        .where(builder)
                 .fetchOne();
 
         return new PageImpl<>(
                 content,
                 pageable,
                 total == null ? 0L : total
+        );
+    }
+
+
+    private BooleanExpression customerNameContains(
+            QReservation reservation,
+            QMember member,
+            String customerName
+    ) {
+
+        BooleanExpression memberCondition =
+                reservation.customerType
+                        .eq(CustomerType.MEMBER)
+                        .and(
+                                member.name
+                                        .containsIgnoreCase(
+                                                customerName
+                                        )
+                        );
+
+
+        BooleanExpression guestCondition =
+                reservation.customerType
+                        .eq(CustomerType.GUEST)
+                        .and(
+                                reservation.guestName
+                                        .containsIgnoreCase(
+                                                customerName
+                                        )
+                        );
+
+
+        return memberCondition.or(
+                guestCondition
+        );
+    }
+
+
+    private BooleanExpression customerPhoneContains(
+            QReservation reservation,
+            QMember member,
+            String normalizedPhone
+    ) {
+
+        StringExpression normalizedMemberPhone =
+                normalizePhone(
+                        member.phone
+                );
+
+        StringExpression normalizedGuestPhone =
+                normalizePhone(
+                        reservation.guestPhone
+                );
+
+
+        BooleanExpression memberCondition =
+                reservation.customerType
+                        .eq(CustomerType.MEMBER)
+                        .and(
+                                normalizedMemberPhone.contains(
+                                        normalizedPhone
+                                )
+                        );
+
+
+        BooleanExpression guestCondition =
+                reservation.customerType
+                        .eq(CustomerType.GUEST)
+                        .and(
+                                normalizedGuestPhone.contains(
+                                        normalizedPhone
+                                )
+                        );
+
+
+        return memberCondition.or(
+                guestCondition
+        );
+    }
+
+
+    private StringExpression normalizePhone(
+            StringExpression phone
+    ) {
+
+        return Expressions.stringTemplate(
+                "replace(replace({0}, '-', ''), ' ', '')",
+                phone
         );
     }
 }

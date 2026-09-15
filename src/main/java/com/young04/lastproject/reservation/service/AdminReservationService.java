@@ -1,6 +1,7 @@
 package com.young04.lastproject.reservation.service;
 
 import com.young04.lastproject.reservation.dto.*;
+import com.young04.lastproject.reservation.entity.CustomerType;
 import com.young04.lastproject.reservation.entity.Reservation;
 import com.young04.lastproject.reservation.entity.ReservationSource;
 import com.young04.lastproject.reservation.exception.ReservationNotFoundException;
@@ -39,9 +40,10 @@ public class AdminReservationService {
 
         return AdminReservationSearchResponse.builder()
                 .content(
-                        reservationPage.getContent()
+                        reservationPage
+                                .getContent()
                                 .stream()
-                                .map(ReservationResponse::from)
+                                .map(this::toListItemResponse)
                                 .toList()
                 )
                 .page(reservationPage.getNumber())
@@ -50,6 +52,35 @@ public class AdminReservationService {
                 .totalPages(reservationPage.getTotalPages())
                 .build();
     }
+
+    private AdminReservationListItemResponse toListItemResponse(
+            Reservation reservation
+    ) {
+
+        MemberReservationInfo member =
+                null;
+
+
+        if (
+                reservation.getCustomerType()
+                        == CustomerType.MEMBER
+        ) {
+
+            member =
+                    reservationMemberReader
+                            .findMemberInfoByMemberNo(
+                                    reservation.getMemberNo()
+                            )
+                            .orElse(null);
+        }
+
+
+        return AdminReservationListItemResponse.from(
+                reservation,
+                member
+        );
+    }
+
 
     public AdminReservationDetailResponse detail(
             Long reservationNo
