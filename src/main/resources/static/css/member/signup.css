@@ -838,6 +838,20 @@
 }
 
 
+.field-message {
+    min-height: 18px;
+
+    margin-top: 4px;
+
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.field-message.error {
+    color: #d93025;
+}
+
+
 /* Mobile */
 
 @media (max-width: 600px) {

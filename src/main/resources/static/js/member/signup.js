@@ -8,6 +8,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const signupButton =
         document.querySelector("#signupButton");
 
+    const nameInput =
+        document.querySelector("#name");
+
+    const nicknameInput =
+        document.querySelector("#nickname");
+
+    const nameMessage =
+        document.querySelector("#nameMessage");
+
+    const nicknameMessage =
+        document.querySelector("#nicknameMessage");
+
+
     /* 아이디 */
 
     const memberIdInput =
@@ -637,6 +650,95 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    /* =========================================================
+    이름 / 닉네임 최대 글자 수 제한
+    ========================================================= */
+
+    function limitTextLength(
+        input,
+        maxLength
+    ) {
+
+        if (!input) {
+            return;
+        }
+
+
+        const characters =
+            Array.from(
+                input.value
+            );
+
+
+        if (
+            characters.length >
+            maxLength
+        ) {
+
+            input.value =
+                characters
+                    .slice(
+                        0,
+                        maxLength
+                    )
+                    .join("");
+        }
+    }
+
+
+    function validateTextLength(
+        input,
+        messageElement,
+        label
+    ) {
+
+        if (!input || !messageElement) {
+            return;
+        }
+
+
+        const value =
+            input.value.trim();
+
+
+        /*
+         * 빈 값은 서버의 필수값 Validation에 맡긴다.
+         */
+        if (value.length === 0) {
+
+            messageElement.textContent =
+                "";
+
+            messageElement.className =
+                "field-message";
+
+            return;
+        }
+
+
+        if (
+            value.length < 2 ||
+            value.length > 20
+        ) {
+
+            messageElement.textContent =
+                `${label}은(는) 2자 이상 20자 이하로 입력해주세요.`;
+
+            messageElement.className =
+                "field-message error";
+
+            return;
+        }
+
+
+        messageElement.textContent =
+            "";
+
+        messageElement.className =
+            "field-message";
+    }
+
+
     /* Event */
 
     /* =========================================================
@@ -740,6 +842,110 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
             }
         );
+
+
+
+
+    if (nameInput) {
+
+        nameInput.addEventListener(
+            "input",
+            (event) => {
+
+                /*
+                 * 한글 조합 중에는
+                 * 20자 강제 자르기만 하지 않는다.
+                 */
+                if (!event.isComposing) {
+
+                    limitTextLength(
+                        nameInput,
+                        20
+                    );
+                }
+
+
+                /*
+                 * 길이 검사는 조합 중에도 실행
+                 */
+                validateTextLength(
+                    nameInput,
+                    nameMessage,
+                    "이름"
+                );
+            }
+        );
+
+
+        nameInput.addEventListener(
+            "compositionend",
+            () => {
+
+                limitTextLength(
+                    nameInput,
+                    20
+                );
+
+
+                validateTextLength(
+                    nameInput,
+                    nameMessage,
+                    "이름"
+                );
+            }
+        );
+    }
+
+
+    if (nicknameInput) {
+
+        nicknameInput.addEventListener(
+            "input",
+            (event) => {
+
+                /*
+                 * 한글 조합 중에는
+                 * 20자 강제 자르기만 하지 않는다.
+                 */
+                if (!event.isComposing) {
+
+                    limitTextLength(
+                        nicknameInput,
+                        20
+                    );
+                }
+
+
+                /*
+                 * 길이 검사는 조합 중에도 실행
+                 */
+                validateTextLength(
+                    nicknameInput,
+                    nicknameMessage,
+                    "닉네임"
+                );
+            }
+        );
+
+
+        nicknameInput.addEventListener(
+            "compositionend",
+            () => {
+
+                limitTextLength(
+                    nicknameInput,
+                    20
+                );
+
+
+                validateTextLength(
+                    nicknameInput,
+                    nicknameMessage,
+                    "닉네임"
+                );
+            }
+        );
+    }
 
 
 
