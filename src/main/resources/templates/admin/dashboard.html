@@ -653,21 +653,27 @@
         <!-- 최근 매출 현황과 인기 시술을 같은 비율의 좌우 영역으로 표시 -->
         <section class="sales-insight-grid">
 
-            <!-- 최근 7일 매출 -->
-            <article class="dashboard-panel sales-chart-panel">
+            <!-- 조회 기간 매출 -->
+            <article id="salesOverview" class="dashboard-panel sales-chart-panel">
 
                 <div class="sales-chart-header">
 
                     <div class="sales-chart-title">
                         <p class="panel-label">SALES OVERVIEW</p>
-                        <h2>최근 7일 매출 현황</h2>
-                        <p>결제 완료 금액을 날짜별로 확인합니다.</p>
+                        <h2 th:text="${salesTrendUnit == 'MONTH'
+                                ? '월별 매출 추이'
+                                : (salesTrendUnit == 'YEAR'
+                                    ? '연도별 매출 추이'
+                                    : '일별 매출 추이')}">
+                            일별 매출 추이
+                        </h2>
+                        <p>결제 완료 금액을 조회 기간 기준으로 표시합니다.</p>
                     </div>
 
                     <div class="sales-chart-summary">
-                        <span>최근 7일 총매출</span>
-                        <strong id="weeklySalesTotal"
-                                th:text="${#numbers.formatInteger(weeklySalesTotal, 1, 'COMMA') + '원'}">
+                        <span>조회 기간 총매출</span>
+                        <strong id="salesPeriodTotal"
+                                th:text="${#numbers.formatInteger(salesPeriodTotal, 1, 'COMMA') + '원'}">
                             0원
                         </strong>
 
@@ -680,10 +686,68 @@
 
                 </div>
 
-                <!-- Controller에서 weeklySalesLabels와 weeklySalesAmounts를 전달하면 더미 데이터가 교체된다. -->
+                <!-- 매출 관리 화면과 같은 일/월/연도별 + 날짜 범위 조회 -->
+                <div class="sales-filter-panel">
+
+                    <div class="sales-period-tabs" aria-label="매출 조회 단위">
+                        <a th:href="@{/admin/dashboard(startDate=${salesStartDate}, endDate=${salesEndDate}, unit='DAY')}"
+                           class="sales-period-tab"
+                           th:classappend="${salesTrendUnit == 'DAY' ? ' active' : ''}">
+                            일별
+                        </a>
+
+                        <a th:href="@{/admin/dashboard(startDate=${salesStartDate}, endDate=${salesEndDate}, unit='MONTH')}"
+                           class="sales-period-tab"
+                           th:classappend="${salesTrendUnit == 'MONTH' ? ' active' : ''}">
+                            월별
+                        </a>
+
+                        <a th:href="@{/admin/dashboard(startDate=${salesStartDate}, endDate=${salesEndDate}, unit='YEAR')}"
+                           class="sales-period-tab"
+                           th:classappend="${salesTrendUnit == 'YEAR' ? ' active' : ''}">
+                            연도별
+                        </a>
+                    </div>
+
+                    <form class="sales-period-form"
+                          method="get"
+                          th:action="@{/admin/dashboard}">
+
+                        <input type="hidden"
+                               name="unit"
+                               th:value="${salesTrendUnit}">
+
+                        <label>
+                            <span>시작일</span>
+                            <input type="date"
+                                   id="salesStartDate"
+                                   name="startDate"
+                                   th:value="${salesStartDate}">
+                        </label>
+
+                        <span class="sales-period-divider">~</span>
+
+                        <label>
+                            <span>종료일</span>
+                            <input type="date"
+                                   id="salesEndDate"
+                                   name="endDate"
+                                   th:value="${salesEndDate}">
+                        </label>
+
+                        <button type="submit"
+                                class="sales-filter-button">
+                            조회
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <!-- Controller에서 전달한 조회 기간 실제 매출 데이터를 표시 -->
                 <div class="sales-chart-frame">
-                    <canvas id="weeklySalesChart"
-                            aria-label="최근 7일 날짜별 매출 막대그래프"
+                    <canvas id="salesTrendChart"
+                            aria-label="조회 기간 매출 막대그래프"
                             role="img"></canvas>
                 </div>
 
@@ -758,16 +822,136 @@
 
 </div>
 
-<!-- 최근 7일 실제 매출 그래프 표시용 라이브러리 -->
+<!-- 대시보드 매출 조회 기간과 스크롤 위치 유지 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector(".sales-period-form");
+        const startInput = document.getElementById("salesStartDate");
+        const endInput = document.getElementById("salesEndDate");
+        const unitInput = form
+            ? form.querySelector('input[name="unit"]')
+            : null;
+        const periodTabs = document.querySelectorAll(".sales-period-tab");
+
+        const scrollStorageKey = "adminDashboardSalesScrollY";
+
+        // 조회 또는 단위 변경 전 현재 화면 위치 저장
+        function saveSalesScrollPosition() {
+            sessionStorage.setItem(
+                scrollStorageKey,
+                String(window.scrollY)
+            );
+        }
+
+        // 새로고침 후 매출 영역을 보던 위치로 복원
+        const savedScrollY =
+            sessionStorage.getItem(scrollStorageKey);
+
+        if (savedScrollY !== null) {
+            sessionStorage.removeItem(scrollStorageKey);
+
+            requestAnimationFrame(function () {
+                window.scrollTo({
+                    top: Number(savedScrollY),
+                    behavior: "auto"
+                });
+            });
+        }
+
+        if (!form || !startInput || !endInput || !unitInput) {
+            return;
+        }
+
+        function parseLocalDate(value) {
+            if (!value) {
+                return null;
+            }
+
+            const parts = value.split("-").map(Number);
+
+            return new Date(
+                parts[0],
+                parts[1] - 1,
+                parts[2]
+            );
+        }
+
+        function formatLocalDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1)
+                .padStart(2, "0");
+            const day = String(date.getDate())
+                .padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function moveDate(date, days) {
+            const moved = new Date(date);
+            moved.setDate(moved.getDate() + days);
+            return moved;
+        }
+
+        // 일별 조회에서는 최대 7일 범위를 유지
+        // 종료일이 멀어지면 시작일이 자연스럽게 종료일 6일 전으로 이동
+        function normalizeSevenDayRange() {
+            if (unitInput.value !== "DAY") {
+                return;
+            }
+
+            const startDate = parseLocalDate(startInput.value);
+            const endDate = parseLocalDate(endInput.value);
+
+            if (!startDate || !endDate) {
+                return;
+            }
+
+            const oneDay = 24 * 60 * 60 * 1000;
+            const differenceDays =
+                Math.round((endDate - startDate) / oneDay);
+
+            if (differenceDays < 0 || differenceDays > 6) {
+                startInput.value =
+                    formatLocalDate(moveDate(endDate, -6));
+            }
+        }
+
+        // 종료일을 바꿨을 때 7일을 넘으면 시작일을 자동 조정
+        endInput.addEventListener(
+            "change",
+            normalizeSevenDayRange
+        );
+
+        // 시작일을 너무 앞쪽으로 선택한 경우에도 7일 범위로 정리
+        startInput.addEventListener(
+            "change",
+            normalizeSevenDayRange
+        );
+
+        form.addEventListener("submit", function () {
+            normalizeSevenDayRange();
+            saveSalesScrollPosition();
+        });
+
+        periodTabs.forEach(function (tab) {
+            tab.addEventListener(
+                "click",
+                saveSalesScrollPosition
+            );
+        });
+    });
+</script>
+
+<!-- 조회 기간 실제 매출 그래프 표시용 라이브러리 -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
-<!-- Controller에서 전달한 최근 7일 실제 매출 데이터를 그래프로 표시한다. -->
+<!-- Controller에서 전달한 조회 기간 실제 매출 데이터를 그래프로 표시한다. -->
 <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function () {
-        const salesLabels = /*[[${weeklySalesLabels}]]*/ [];
-        const salesAmounts = /*[[${weeklySalesAmounts}]]*/ [];
+        const salesLabels = /*[[${salesTrendLabels}]]*/ [];
+        const salesAmounts = /*[[${salesTrendAmounts}]]*/ [];
 
-        const chartCanvas = document.getElementById("weeklySalesChart");
+        const chartCanvas = document.getElementById("salesTrendChart");
 
         if (!chartCanvas || typeof Chart === "undefined") {
             return;

@@ -1,9 +1,3 @@
-/* =========================================================
-   SALON ADMIN 공통 색상
-   관리자 대시보드 / 예약 관리 / 시술 메뉴 관리와 동일한
-   rose 계열을 이벤트 관리에도 적용한다.
-   ========================================================= */
-
 :root {
     --rose: #b06f8d;
     --rose-dark: #965a76;
@@ -943,4 +937,108 @@ input {
 .salonevent-admin-layout,
 .salonevent-admin-content {
     background: var(--admin-background);
+}
+
+/* =========================================================
+   이벤트 목록 화면 - 운영 / 관리형 레이아웃
+   목록 화면에만 적용하며 등록·수정·상세 화면에는 영향을 주지 않는다.
+   ========================================================= */
+
+.event-list-page .salon-event-header {
+    align-items: flex-end;
+    margin-bottom: 26px;
+}
+
+.event-list-page .page-category {
+    margin-bottom: 7px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+}
+
+.event-list-page .event-search-card,
+.event-list-page .event-list-card {
+    overflow: visible;
+    margin-bottom: 20px;
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    background: var(--admin-surface);
+    box-shadow: 0 5px 18px rgba(31, 34, 40, 0.04);
+}
+
+.event-list-page .management-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 24px 16px;
+}
+
+.event-list-page .management-section-heading.list-heading {
+    align-items: center;
+}
+
+.event-list-page .section-eyebrow {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--rose-dark);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.event-list-page .management-section-heading h2 {
+    margin: 0;
+    color: var(--admin-text-main);
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+.event-list-page .list-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    color: var(--rose-dark);
+    background: var(--rose-light);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.event-list-page .list-count-badge strong {
+    margin-right: 2px;
+    font-size: 13px;
+}
+
+.event-list-page .event-search-section {
+    margin: 0;
+    padding: 0 24px 22px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.event-list-page .event-list-section {
+    overflow: hidden;
+    border: 0;
+    border-top: 1px solid var(--admin-border);
+    border-radius: 0 0 16px 16px;
+    box-shadow: none;
+}
+
+.event-list-page .event-table th {
+    background: #f7f8fa;
+}
+
+@media (max-width: 850px) {
+    .event-list-page .management-section-heading {
+        padding: 20px 18px 14px;
+    }
+
+    .event-list-page .event-search-section {
+        padding: 0 18px 20px;
+    }
 }

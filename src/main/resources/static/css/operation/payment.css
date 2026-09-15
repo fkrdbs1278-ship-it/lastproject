@@ -405,17 +405,17 @@ p:not(.payment-panel-label) {
 }
 
 .period-tab:hover {
-    border-color: #bfcbd9;
+    border-color: var(--payment-rose);
 
-    background-color: #f4f7fb;
+    background-color: #fcf5f8;
 }
 
 .period-tab.active {
     border-color:
-            var(--payment-blue);
+            var(--payment-rose);
 
     background-color:
-            var(--payment-blue);
+            var(--payment-rose);
 
     color: #ffffff;
 }
@@ -462,7 +462,7 @@ p:not(.payment-panel-label) {
 
 .payment-period-form input:focus {
     border-color:
-            var(--payment-blue);
+            var(--payment-rose);
 }
 
 .period-divider {
@@ -482,7 +482,7 @@ p:not(.payment-panel-label) {
     border: 0;
     border-radius: 9px;
 
-    background-color: #4b5565;
+    background-color: var(--payment-rose);
     color: #ffffff;
 
     font-size: 11px;
@@ -490,7 +490,7 @@ p:not(.payment-panel-label) {
 }
 
 .payment-search-button:hover {
-    background-color: #3e4756;
+    background-color: var(--payment-rose-dark);
 }
 
 
@@ -551,14 +551,14 @@ p:not(.payment-panel-label) {
 
 .payment-chart-area {
     fill:
-            url(#paymentPageAreaGradient);
+            rgba(176, 111, 141, 0.14);
 }
 
 .payment-chart-line {
     fill: none;
 
     stroke:
-            var(--payment-blue);
+            var(--payment-rose);
 
     stroke-width: 4;
 
@@ -570,7 +570,7 @@ p:not(.payment-panel-label) {
     fill: #ffffff;
 
     stroke:
-            var(--payment-blue);
+            var(--payment-rose);
 
     stroke-width: 3;
 }

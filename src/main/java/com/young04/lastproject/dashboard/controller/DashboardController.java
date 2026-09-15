@@ -11,9 +11,11 @@ import com.young04.lastproject.purchaseorderitem.service.PurchaseOrderItemServic
 import com.young04.lastproject.salonevent.service.SalonEventService;
 import com.young04.lastproject.dashboard.repository.DashboardStatisticsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
@@ -47,7 +49,20 @@ public class DashboardController {
 
     // 관리자 대시보드 조회
     @GetMapping("/admin/dashboard")
-    public String dashboard(Model model) {
+    public String dashboard(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate startDate,
+
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate endDate,
+
+            @RequestParam(defaultValue = "DAY")
+            String unit,
+
+            Model model
+    ) {
 
         // 실제 예약 현황
         var reservationSummary =
@@ -58,45 +73,75 @@ public class DashboardController {
                 reservationSummary
         );
 
-        // 오늘 포함 최근 7일 결제 완료(PAID) 매출
+        // 대시보드 매출 그래프는 처음 접속하면 오늘 포함 최근 7일을 표시
         LocalDate today = LocalDate.now();
-        LocalDate weekStart = today.minusDays(6);
 
-        var weeklyPaymentData = paymentService.getPaymentPage(
-                weekStart,
-                today,
-                PaymentTrendUnit.DAY
+        if (endDate == null) {
+            endDate = today;
+        }
+
+        if (startDate == null) {
+            startDate = endDate.minusDays(6);
+        }
+
+        // 시작일과 종료일이 반대로 입력되면 자동 교환
+        if (startDate.isAfter(endDate)) {
+            LocalDate temp = startDate;
+            startDate = endDate;
+            endDate = temp;
+        }
+
+        PaymentTrendUnit trendUnit =
+                PaymentTrendUnit.from(unit);
+
+        // 일별 조회는 최대 7일로 유지
+        // 종료일이 7일 범위를 넘으면 시작일을 종료일 기준 6일 전으로 자동 이동
+        if (
+                trendUnit == PaymentTrendUnit.DAY
+                        && startDate.plusDays(6).isBefore(endDate)
+        ) {
+            startDate = endDate.minusDays(6);
+        }
+
+        var salesPaymentData = paymentService.getPaymentPage(
+                startDate,
+                endDate,
+                trendUnit
         );
 
         // 상단 오늘 매출 / 오늘 결제 완료 건수
         model.addAttribute(
                 "paymentSummary",
-                weeklyPaymentData.getSummary()
+                salesPaymentData.getSummary()
         );
 
-        // 최근 7일 총매출
+        // 조회 기간 총매출
         model.addAttribute(
-                "weeklySalesTotal",
-                weeklyPaymentData.getPeriodTotal()
+                "salesPeriodTotal",
+                salesPaymentData.getPeriodTotal()
         );
 
-        // 최근 7일 그래프 날짜 라벨
+        // 조회 기간 그래프 라벨
         model.addAttribute(
-                "weeklySalesLabels",
-                weeklyPaymentData.getTrend()
+                "salesTrendLabels",
+                salesPaymentData.getTrend()
                         .stream()
                         .map(PaymentTrendDto::getLabel)
                         .toList()
         );
 
-        // 최근 7일 그래프 실제 매출 금액
+        // 조회 기간 그래프 실제 매출 금액
         model.addAttribute(
-                "weeklySalesAmounts",
-                weeklyPaymentData.getTrend()
+                "salesTrendAmounts",
+                salesPaymentData.getTrend()
                         .stream()
                         .map(PaymentTrendDto::getAmount)
                         .toList()
         );
+
+        model.addAttribute("salesStartDate", startDate);
+        model.addAttribute("salesEndDate", endDate);
+        model.addAttribute("salesTrendUnit", trendUnit.name());
 
         // 이번 달 결제 완료(PAID) 기준 인기 시술 TOP 5
         var monthlyPaymentData = paymentService.getPaymentPage(
