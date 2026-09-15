@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -189,6 +191,67 @@ public class HairStyleService {
         return hairStyles
                 .stream()
                 .map(HairStyleResponse::from)
+                .toList();
+    }
+
+    /* =========================================================
+        메인 페이지용 랜덤 헤어스타일
+
+        ACTIVE_YN = Y인 전체 헤어스타일 중
+        요청한 개수만 랜덤으로 반환
+
+        예)
+        getRandomHairStyles(9)
+        -> 활성 헤어스타일 중 랜덤 9개
+    ========================================================= */
+
+    public List<HairStyleResponse> getRandomHairStyles(
+            int count
+    ) {
+
+        /*
+         * 기존 사용자용 목록 조회 기능 재사용
+         *
+         * category = null
+         * -> 전체 카테고리
+         *
+         * gender = null
+         * -> 전체 성별
+         *
+         * ACTIVE_YN = Y만 조회됨
+         */
+        List<HairStyleResponse> hairStyles =
+                new ArrayList<>(
+                        getHairStyles(
+                                null,
+                                null
+                        )
+                );
+
+
+        /*
+         * 목록 순서를 랜덤으로 섞는다.
+         */
+        Collections.shuffle(
+                hairStyles
+        );
+
+
+        /*
+         * 요청한 개수만 반환한다.
+         *
+         * 전체 헤어스타일 수보다
+         * count가 더 큰 경우에도 오류가 나지 않도록
+         * Math.min() 사용
+         */
+        return hairStyles
+                .stream()
+                .limit(
+                        Math.min(
+                                count,
+                                hairStyles.size()
+                        )
+                )
                 .toList();
     }
 

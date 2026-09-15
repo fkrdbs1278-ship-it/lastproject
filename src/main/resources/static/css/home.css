@@ -3,7 +3,13 @@
 .hero {
     position: relative;
 
-    min-height: 420px;
+    width: 100%;
+
+    /*
+     * 기존 420px보다 크게 설정
+     * 서비스 안내 영역이 있던 자리까지 Hero 확장
+     */
+    height: clamp(620px, 72vh, 760px);
 
     display: flex;
     align-items: center;
@@ -195,7 +201,7 @@
     position: absolute;
 
     left: 50%;
-    bottom: 18px;
+    bottom: 28px;
 
     z-index: 3;
 
@@ -236,62 +242,12 @@
 }
 
 
-/* Feature */
-
-.feature-section {
-    max-width: 1200px;
-
-    margin: 0 auto;
-    padding: 70px 24px;
-}
-
-
-.feature-section .section-title {
-    font-size: 30px;
-
-    margin-bottom: 30px;
-}
-
-
-.feature-grid {
-    display: grid;
-
-    grid-template-columns:
-            repeat(3, 1fr);
-
-    gap: 20px;
-}
-
-
-.feature-card {
-    background-color: #ffffff;
-
-    border: 1px solid #dddddd;
-    border-radius: 12px;
-
-    padding: 30px;
-}
-
-
-.feature-card h3 {
-    margin-bottom: 12px;
-
-    font-size: 20px;
-}
-
-
-.feature-card p {
-    color: #666666;
-
-    line-height: 1.6;
-}
-
 /* =========================================
    Hairstyle Gallery
 ========================================= */
 
 .style-gallery-section {
-    padding: 40px 24px 100px;
+    padding: 60px 24px 100px;
 
     background-color: #ffffff;
 }
@@ -368,6 +324,20 @@
 
 .style-gallery-card {
     min-width: 0;
+
+    display: block;
+
+    color: inherit;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.style-gallery-card:focus-visible {
+    outline: 2px solid #222222;
+    outline-offset: 6px;
+
+    border-radius: 14px;
 }
 
 
@@ -418,9 +388,10 @@
  */
 @media (hover: hover) and (pointer: fine) {
 
-    .style-gallery-image:hover img {
+    .style-gallery-card:hover .style-gallery-image img {
         transform: scale(1.06);
     }
+
 }
 
 
@@ -496,7 +467,7 @@
 @media (max-width: 768px) {
 
     .hero {
-        min-height: 400px;
+        height: 520px;
     }
 
 
@@ -531,13 +502,9 @@
     }
 
 
-    .feature-grid {
-        grid-template-columns: 1fr;
-    }
-
     .style-gallery-section {
         padding:
-                30px
+                40px
                 20px
                 70px;
     }
@@ -554,10 +521,6 @@
     }
 
 
-    /*
-     * 모바일에서는 가운데 열 개념이
-     * 없어지므로 높이 차이 제거
-     */
     .style-gallery-card:nth-child(3n + 2) {
         margin-top: 0;
     }

@@ -209,6 +209,7 @@
 
             <article
                     th:each="hairStyle : ${hairStyles}"
+                    th:id="'hair-style-' + ${hairStyle.no}"
                     class="hair-card"
             >
 

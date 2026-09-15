@@ -108,6 +108,33 @@
 
     border: 1px solid #dddddd;
     border-radius: 14px;
+
+    /*
+     * 메인 페이지에서
+     * #hair-style-번호 위치로 이동했을 때
+     * 상단 헤더에 가려지지 않도록 여백 확보
+     */
+    scroll-margin-top: 110px;
+
+    transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease,
+            outline-color 0.25s ease;
+}
+
+/*
+ * 메인 페이지에서 선택한
+ * 헤어스타일 카드 강조
+ */
+.hair-card:target {
+    outline: 3px solid #222222;
+    outline-offset: 5px;
+
+    transform: translateY(-4px);
+
+    box-shadow:
+            0 8px 24px
+            rgba(0, 0, 0, 0.14);
 }
 
 

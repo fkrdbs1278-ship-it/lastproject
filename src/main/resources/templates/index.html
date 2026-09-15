@@ -298,73 +298,7 @@
     </section>
 
 
-    <!-- 주요 기능 -->
 
-    <!-- 관리자 설정에 따라 서비스 안내 영역 노출 -->
-    <section class="feature-section"
-             th:if="${siteSetting == null or siteSetting.serviceVisible}">
-
-        <h2 class="section-title"
-            th:text="${siteSetting != null
-                ? siteSetting.serviceTitle
-                : '서비스 안내'}">
-            서비스 안내
-        </h2>
-
-
-        <div class="feature-grid">
-
-
-            <!-- 시술 메뉴 -->
-
-            <div class="feature-card">
-
-                <h3>
-                    예약하기
-                </h3>
-
-                <p>
-                    커트, 펌, 염색, 클리닉 등
-                    다양한 스타일로 예약할 수 있습니다.
-                </p>
-
-            </div>
-
-
-            <!-- 헤어스타일 -->
-
-            <div class="feature-card">
-
-                <h3>
-                    헤어스타일
-                </h3>
-
-                <p>
-                    다양한 헤어스타일 이미지를 확인하고
-                    원하는 스타일을 찾아볼 수 있습니다.
-                </p>
-
-            </div>
-
-
-            <!-- 마이페이지 -->
-
-            <div class="feature-card">
-
-                <h3>
-                    마이페이지
-                </h3>
-
-                <p>
-                    예약, 결제, 쿠폰 및 리뷰 내역을
-                    한 곳에서 확인할 수 있습니다.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
 
     <!-- =========================================
      Hairstyle Gallery
@@ -414,195 +348,31 @@
                     id="styleGallery"
             >
 
-
-                <!-- 여성 : 보브 컬 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
+                <a
+                        th:each="style : ${randomHairStyles}"
+                        th:href="@{/hairstyles} + '#hair-style-' + ${style.no}"
+                        class="style-gallery-card reveal-on-scroll"
+                >
 
                     <div class="style-gallery-image">
 
                         <img
-                                th:src="@{/images/hairstyle/bob-curl.png}"
-                                alt="보브 컬"
+                                th:src="${style.imageUrl}"
+                                th:alt="${style.title}"
                                 loading="lazy"
                         >
 
                     </div>
 
-                    <p class="style-gallery-name">
-                        보브 컬
+
+                    <p
+                            class="style-gallery-name"
+                            th:text="${style.title}"
+                    >
+                        헤어스타일 이름
                     </p>
 
-                </article>
-
-
-                <!-- 여성 : 브라운 컬러 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
-
-                    <div class="style-gallery-image">
-
-                        <img
-                                th:src="@{/images/hairstyle/brown-color.png}"
-                                alt="브라운 컬러"
-                                loading="lazy"
-                        >
-
-                    </div>
-
-                    <p class="style-gallery-name">
-                        브라운 컬러
-                    </p>
-
-                </article>
-
-
-                <!-- 여성 : C컬 펌 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
-
-                    <div class="style-gallery-image">
-
-                        <img
-                                th:src="@{/images/hairstyle/c-curl-perm.png}"
-                                alt="C컬 펌"
-                                loading="lazy"
-                        >
-
-                    </div>
-
-                    <p class="style-gallery-name">
-                        C컬 펌
-                    </p>
-
-                </article>
-
-
-                <!-- 여성 : 레이어드 컷 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
-
-                    <div class="style-gallery-image">
-
-                        <img
-                                th:src="@{/images/hairstyle/layered-cut.png}"
-                                alt="레이어드 컷"
-                                loading="lazy"
-                        >
-
-                    </div>
-
-                    <p class="style-gallery-name">
-                        레이어드 컷
-                    </p>
-
-                </article>
-
-
-                <!-- 여성 : S컬 펌 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
-
-                    <div class="style-gallery-image">
-
-                        <img
-                                th:src="@{/images/hairstyle/s-curl-perm.png}"
-                                alt="S컬 펌"
-                                loading="lazy"
-                        >
-
-                    </div>
-
-                    <p class="style-gallery-name">
-                        S컬 펌
-                    </p>
-
-                </article>
-
-
-                <!-- 남성 : 댄디 컷 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
-
-                    <div class="style-gallery-image">
-
-                        <img
-                                th:src="@{/images/hairstyle/dandy-cut.png}"
-                                alt="댄디 컷"
-                                loading="lazy"
-                        >
-
-                    </div>
-
-                    <p class="style-gallery-name">
-                        댄디 컷
-                    </p>
-
-                </article>
-
-
-                <!-- 남성 : 다운 펌 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
-
-                    <div class="style-gallery-image">
-
-                        <img
-                                th:src="@{/images/hairstyle/down-perm.png}"
-                                alt="다운 펌"
-                                loading="lazy"
-                        >
-
-                    </div>
-
-                    <p class="style-gallery-name">
-                        다운 펌
-                    </p>
-
-                </article>
-
-
-                <!-- 남성 : 가르마 펌 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
-
-                    <div class="style-gallery-image">
-
-                        <img
-                                th:src="@{/images/hairstyle/part-perm.png}"
-                                alt="가르마 펌"
-                                loading="lazy"
-                        >
-
-                    </div>
-
-                    <p class="style-gallery-name">
-                        가르마 펌
-                    </p>
-
-                </article>
-
-
-                <!-- 남성 : 쉐도우 펌 -->
-
-                <article class="style-gallery-card reveal-on-scroll">
-
-                    <div class="style-gallery-image">
-
-                        <img
-                                th:src="@{/images/hairstyle/shadow-perm.png}"
-                                alt="쉐도우 펌"
-                                loading="lazy"
-                        >
-
-                    </div>
-
-                    <p class="style-gallery-name">
-                        쉐도우 펌
-                    </p>
-
-                </article>
-
+                </a>
 
             </div>
 

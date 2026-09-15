@@ -39,6 +39,7 @@
 2026-09-14 16:41:00.667 INFO  LOGIN_SUCCESS memberId=asdasd memberNo=1 ip=0:0:0:0:0:0:0:1
 2026-09-14 16:42:00.027 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
 2026-09-14 17:15:01.469 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
+2026-09-14 17:47:42.507 INFO  LOGIN_SUCCESS memberId=test01 memberNo=41 ip=0:0:0:0:0:0:0:1
 2026-09-14 17:24:05.892 INFO  LOGIN_SUCCESS memberId=asdasd memberNo=1 ip=0:0:0:0:0:0:0:1
 2026-09-14 17:24:40.810 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
 2026-09-15 09:53:49.510 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
@@ -48,3 +49,5 @@
 2026-09-15 10:31:27.791 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
 2026-09-15 11:23:40.547 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
 2026-09-15 11:42:00.534 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
+2026-09-15 13:07:41.213 INFO  LOGIN_SUCCESS memberId=test01 memberNo=41 ip=0:0:0:0:0:0:0:1
+2026-09-15 13:18:39.818 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
