@@ -94,4 +94,25 @@ public class SiteAdminController {
 
         return "redirect:/admin/siteadmin";
     }
+
+
+    @PostMapping("/reset-hero-image")
+    public String resetHeroImage(
+            RedirectAttributes redirectAttributes
+    ) {
+
+        siteSettingService.resetHeroImage();
+
+
+        redirectAttributes.addFlashAttribute(
+                "message",
+                "1번 슬라이드가 기본 이미지로 복원되었습니다."
+        );
+
+
+        return "redirect:/admin/siteadmin";
+    }
+
+
+
 }

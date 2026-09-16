@@ -786,3 +786,56 @@ body {
 
     transform: translateY(0);
 }
+
+/* 이벤트 이미지 내리기 버튼 */
+
+.hero-reset-form {
+    margin-top: 12px;
+}
+
+.hero-reset-button {
+    width: 100%;
+
+    padding: 11px 16px;
+
+    border: 1px solid #d8a2b9;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+    color: #a85f7f;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            background-color 0.2s ease,
+            color 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.15s ease;
+}
+
+
+/* 마우스 올렸을 때 */
+
+.hero-reset-button:hover {
+    background-color: #f8edf2;
+    border-color: #b96f8f;
+    color: #934d6d;
+}
+
+
+/* 클릭 */
+
+.hero-reset-button:active {
+    transform: translateY(1px);
+}
+
+
+/* 키보드 접근성 */
+
+.hero-reset-button:focus-visible {
+    outline: 3px solid rgba(185, 111, 143, 0.22);
+    outline-offset: 2px;
+}

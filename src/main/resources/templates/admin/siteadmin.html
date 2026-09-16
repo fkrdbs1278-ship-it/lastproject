@@ -408,6 +408,23 @@
 
                     </label>
 
+                    <!-- 1번 슬라이드를 기본 이미지로 복원 -->
+                    <form
+                            th:action="@{/admin/siteadmin/reset-hero-image}"
+                            method="post"
+                            class="hero-reset-form"
+                    >
+
+                        <button
+                                type="submit"
+                                class="hero-reset-button"
+                                onclick="return confirm('1번 슬라이드를 기본 이미지로 복원하시겠습니까?');"
+                        >
+                            이벤트 이미지 내리기
+                        </button>
+
+                    </form>
+
                 </section>
 
                 <!-- 헤어스타일 영역 설정 -->

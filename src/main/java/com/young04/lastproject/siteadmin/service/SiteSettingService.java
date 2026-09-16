@@ -45,6 +45,53 @@ public class SiteSettingService {
 
     private final SiteSettingRepository siteSettingRepository;
 
+    private static final String DEFAULT_HERO_IMAGE_URL =
+            "/images/hero/hero1.jpg";
+
+
+    @Transactional
+    public void resetHeroImage() {
+
+        SiteSetting setting =
+                siteSettingRepository
+                        .findTopByOrderBySiteSettingNoAsc()
+                        .orElseGet(
+                                this::createDefaultSetting
+                        );
+
+
+        // 현재 관리자 업로드 이미지 주소
+        String previousHeroImageUrl =
+                setting.getHeroImageUrl();
+
+
+        // 기본 이미지로 변경
+        setting.setHeroImageUrl(
+                DEFAULT_HERO_IMAGE_URL
+        );
+
+
+        // DB 저장
+        siteSettingRepository.save(
+                setting
+        );
+
+
+        /*
+         * 기존 이미지가 /siteadmin-upload/에
+         * 업로드된 파일이었다면 삭제
+         *
+         * hero1.jpg 같은 static 기본 이미지는
+         * deletePreviousUploadedHeroImage()에서
+         * 삭제하지 않음
+         */
+        deletePreviousUploadedHeroImage(
+                previousHeroImageUrl,
+                DEFAULT_HERO_IMAGE_URL
+        );
+    }
+
+
 
     // 현재 사용자 사이트 설정 조회
     public SiteSettingDto getCurrentSetting() {
