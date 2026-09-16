@@ -955,3 +955,21 @@ body {
 
     text-align: center;
 }
+/* =========================================================
+   예약 화면 액션 버튼 크기 통일
+   ========================================================= */
+
+.reservation-user-page .section-title-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.reservation-user-page .section-title-actions .secondary-button {
+    width: 132px;
+    min-height: 42px;
+    padding: 0 12px;
+    white-space: nowrap;
+}

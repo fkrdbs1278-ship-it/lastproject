@@ -18,12 +18,12 @@ public class ReservationCreateRequest {
 
     @Size(
             min = 2,
-            max = 50,
-            message = "예약자 이름은 2~50자로 입력해주세요."
+            max = 40,
+            message = "예약자 이름은 2~40자로 입력해주세요."
     )
     @Pattern(
-            regexp = "^[\\p{L}][\\p{L}\\p{M} .'-]{0,48}[\\p{L}\\p{M}]$",
-            message = "예약자 이름 형식이 올바르지 않습니다."
+            regexp = "^(?:[가-힣]{2,10}|(?=.{2,40}$)[A-Za-z]+(?:[ '-][A-Za-z]+)*)$",
+            message = "예약자 이름은 완성형 한글 2~10자 또는 영문 이름으로 입력해주세요."
     )
     private String guestName;
 

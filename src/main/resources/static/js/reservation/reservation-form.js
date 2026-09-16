@@ -92,14 +92,49 @@
         ETC: "기타"
     };
 
-    const today = new Date();
+    const MAX_ONLINE_BOOKING_DAYS = 365;
+
+    const today =
+        new Date();
+
+    const maxBookingDate =
+        new Date(today);
+
+    maxBookingDate.setDate(
+        maxBookingDate.getDate()
+        + MAX_ONLINE_BOOKING_DAYS
+    );
 
     dateInput.min = [
         today.getFullYear(),
-        String(today.getMonth() + 1)
-            .padStart(2, "0"),
-        String(today.getDate())
-            .padStart(2, "0")
+        String(
+            today.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        ),
+        String(
+            today.getDate()
+        ).padStart(
+            2,
+            "0"
+        )
+    ].join("-");
+
+    dateInput.max = [
+        maxBookingDate.getFullYear(),
+        String(
+            maxBookingDate.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        ),
+        String(
+            maxBookingDate.getDate()
+        ).padStart(
+            2,
+            "0"
+        )
     ].join("-");
 
     categoryRadios.forEach(radio => {
@@ -213,17 +248,52 @@
     dateInput.addEventListener(
         "change",
         async () => {
-            selectedDate =
+
+            const requestedDate =
                 dateInput.value;
+
+            if (
+                requestedDate
+                && dateInput.max
+                && requestedDate > dateInput.max
+            ) {
+
+                dateInput.value = "";
+                selectedDate = "";
+
+                clearSelectedTime();
+
+                timeSection
+                    .classList.add(
+                    "hidden"
+                );
+
+                updateSummary();
+
+                return showMessage(
+                    `예약은 오늘부터 ${MAX_ONLINE_BOOKING_DAYS}일 이내 날짜만 선택할 수 있습니다.`,
+                    true
+                );
+            }
+
+            selectedDate =
+                requestedDate;
 
             clearSelectedTime();
 
-            if (selectedMenuNo
-                    && selectedDate) {
+            if (
+                selectedMenuNo
+                && selectedDate
+            ) {
+
                 await loadAvailableTimes();
+
             } else {
+
                 timeSection
-                    .classList.add("hidden");
+                    .classList.add(
+                    "hidden"
+                );
             }
 
             updateSummary();
@@ -788,11 +858,21 @@
                 guestPhoneInput.value
                     .trim();
 
-            if (!/^[\p{L}][\p{L}\p{M} .'-]{0,48}[\p{L}\p{M}]$/u
-                    .test(name)) {
+            const validKoreanName =
+                /^[가-힣]{2,10}$/
+                    .test(name);
+
+            const validEnglishName =
+                /^(?=.{2,40}$)[A-Za-z]+(?:[ '-][A-Za-z]+)*$/
+                    .test(name);
+
+            if (
+                !validKoreanName
+                && !validEnglishName
+            ) {
 
                 return showMessage(
-                    "예약자 이름 형식을 확인해주세요.",
+                    "예약자 이름은 완성형 한글 2~10자 또는 영문 이름으로 입력해주세요.",
                     true
                 );
             }

@@ -44,6 +44,8 @@ public class ReservationService {
     // 시술 완료 시 연결된 자재를 자동 차감
     private final MaterialUsageService materialUsageService;
 
+    private static final int MAX_ONLINE_BOOKING_DAYS = 365;
+
 
     @Transactional
     public ReservationResponse createReservation(
@@ -61,9 +63,23 @@ public class ReservationService {
                 request.getServiceMenuNo()
         );
 
-        LocalDateTime start = request.getStartAt();
+        ReservationSource source =
+                request.getReservationSource() == null
+                        ? ReservationSource.ONLINE
+                        : request.getReservationSource();
+
+        LocalDateTime start =
+                request.getStartAt();
+
+        validateOnlineBookingWindow(
+                start,
+                source
+        );
+
         LocalDateTime end =
-                start.plusMinutes(menu.durationMin());
+                start.plusMinutes(
+                        menu.durationMin()
+                );
 
         lockReservationDay(start);
 
@@ -72,11 +88,6 @@ public class ReservationService {
                     "선택한 시간에는 예약할 수 없습니다."
             );
         }
-
-        ReservationSource source =
-                request.getReservationSource() == null
-                        ? ReservationSource.ONLINE
-                        : request.getReservationSource();
 
         Reservation reservation;
 
@@ -452,6 +463,11 @@ public class ReservationService {
     ) {
         validateModifiable(reservation);
 
+        validateOnlineBookingWindow(
+                start,
+                reservation.getReservationSource()
+        );
+
         var menu =
                 serviceMenuReader.getActiveServiceMenu(
                         serviceMenuNo
@@ -657,5 +673,40 @@ public class ReservationService {
 
     private boolean hasText(String value) {
         return value != null && !value.isBlank();
+    }
+
+    private void validateOnlineBookingWindow(
+            LocalDateTime startAt,
+            ReservationSource source
+    ) {
+
+        if (
+                source != ReservationSource.ONLINE
+                        || startAt == null
+        ) {
+
+            return;
+        }
+
+
+        LocalDateTime maximumStartAt =
+                LocalDateTime.now()
+                        .toLocalDate()
+                        .plusDays(
+                                MAX_ONLINE_BOOKING_DAYS
+                        )
+                        .atTime(
+                                23,
+                                59,
+                                59
+                        );
+
+
+        if (startAt.isAfter(maximumStartAt)) {
+
+            throw new ReservationUnavailableException(
+                    "온라인 예약은 오늘부터 365일 이내 날짜만 선택할 수 있습니다."
+            );
+        }
     }
 }
