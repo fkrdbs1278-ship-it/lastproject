@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.List;
 
 // 사용자 메인 페이지 이동을 처리하는 Controller
 @Controller
@@ -46,4 +47,30 @@ public class HomeController {
 
         return "index";
     }
+
+    @GetMapping("/api/hairstyles/random")
+    @ResponseBody
+    public List<HairStylePreviewResponse> randomHairStyles() {
+
+        return hairStyleService
+                .getRandomHairStyles(9)
+                .stream()
+                .map(style ->
+                        new HairStylePreviewResponse(
+                                style.getNo(),
+                                style.getTitle(),
+                                style.getImageUrl()
+                        )
+                )
+                .toList();
+    }
+
+
+    private record HairStylePreviewResponse(
+            Long no,
+            String title,
+            String imageUrl
+    ) {
+    }
+
 }

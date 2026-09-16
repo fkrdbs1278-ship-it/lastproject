@@ -315,11 +315,27 @@
                     HAIR STYLE
                 </p>
 
-                <h2 th:text="${siteSetting != null
-                        ? siteSetting.styleTitle
-                        : '헤어스타일 둘러보기'}">
-                    헤어스타일 둘러보기
-                </h2>
+
+                <div class="style-gallery-title-row">
+
+                    <h2 th:text="${siteSetting != null
+                ? siteSetting.styleTitle
+                : '헤어스타일 둘러보기'}">
+                        헤어스타일 둘러보기
+                    </h2>
+
+
+                    <button
+                            type="button"
+                            id="styleRefreshButton"
+                            class="style-refresh-button"
+                            aria-label="헤어스타일 새로고침"
+                    >
+                        ↻ 새로보기
+                    </button>
+
+                </div>
+
 
                 <p th:text="${siteSetting != null
                         ? siteSetting.styleDescription
