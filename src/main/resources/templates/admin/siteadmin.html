@@ -131,18 +131,55 @@
                             </nav>
 
                         </header>
-
-
                         <!-- Hero -->
                         <section class="preview-hero"
                                  id="previewHero">
 
-                            <img id="previewHeroImage"
-                                 src="/images/hero/hero1.jpg"
-                                 th:src="${siteSetting != null and siteSetting.heroImageUrl != null
-                                    ? siteSetting.heroImageUrl
-                                    : '/images/hero/hero1.jpg'}"
-                                 alt="메인 이미지">
+                            <!-- 사용자 메인과 동일한 4장 구조
+                                 1번만 관리자 업로드 이미지로 교체 가능 -->
+                            <div class="preview-hero-backgrounds"
+                                 id="previewHeroBackgrounds">
+
+                                <div class="preview-hero-background active"
+                                     data-slide="0">
+
+                                    <img id="previewHeroImage"
+                                         src="/images/hero/hero1.jpg"
+                                         th:src="${siteSetting != null
+                                            and siteSetting.heroImageUrl != null
+                                            ? siteSetting.heroImageUrl
+                                            : '/images/hero/hero1.jpg'}"
+                                         alt="메인 이미지 1">
+                                </div>
+
+
+                                <div class="preview-hero-background"
+                                     data-slide="1">
+
+                                    <img src="/images/hero/hero2.jpg"
+                                         th:src="@{/images/hero/hero2.jpg}"
+                                         alt="메인 이미지 2">
+                                </div>
+
+
+                                <div class="preview-hero-background"
+                                     data-slide="2">
+
+                                    <img src="/images/hero/hero3.jpg"
+                                         th:src="@{/images/hero/hero3.jpg}"
+                                         alt="메인 이미지 3">
+                                </div>
+
+
+                                <div class="preview-hero-background"
+                                     data-slide="3">
+
+                                    <img src="/images/hero/hero4.jpg"
+                                         th:src="@{/images/hero/hero4.jpg}"
+                                         alt="메인 이미지 4">
+                                </div>
+
+                            </div>
 
 
                             <div class="preview-hero-overlay"></div>
@@ -164,6 +201,49 @@
                                     원하는 시술과 헤어스타일을 확인하고
                                     편리하게 예약 서비스를 이용해보세요.
                                 </p>
+
+                            </div>
+
+
+                            <!-- 이전 / 다음 -->
+                            <button id="previewHeroPrev"
+                                    class="preview-hero-slider-button preview-hero-slider-prev"
+                                    type="button"
+                                    aria-label="이전 이미지">
+                                ‹
+                            </button>
+
+                            <button id="previewHeroNext"
+                                    class="preview-hero-slider-button preview-hero-slider-next"
+                                    type="button"
+                                    aria-label="다음 이미지">
+                                ›
+                            </button>
+
+
+                            <!-- 슬라이드 점 -->
+                            <div id="previewHeroDots"
+                                 class="preview-hero-dots">
+
+                                <button type="button"
+                                        class="preview-hero-dot active"
+                                        data-slide="0"
+                                        aria-label="첫 번째 이미지"></button>
+
+                                <button type="button"
+                                        class="preview-hero-dot"
+                                        data-slide="1"
+                                        aria-label="두 번째 이미지"></button>
+
+                                <button type="button"
+                                        class="preview-hero-dot"
+                                        data-slide="2"
+                                        aria-label="세 번째 이미지"></button>
+
+                                <button type="button"
+                                        class="preview-hero-dot"
+                                        data-slide="3"
+                                        aria-label="네 번째 이미지"></button>
 
                             </div>
 
@@ -312,7 +392,7 @@
 
                     <label class="editor-field">
 
-                        <span>메인 이미지</span>
+                        <span>메인 이미지 (1번 슬라이드)</span>
 
                         <input id="heroImageInput"
                                name="heroImage"
@@ -321,7 +401,9 @@
                                accept="image/*">
 
                         <small>
-                            이미지를 선택하면 왼쪽 미리보기에 바로 표시됩니다.
+                            선택한 이미지는 1번 슬라이드에 적용됩니다.
+                            2~4번 기본 이미지는 그대로 유지되며,
+                            저장하면 사용자 메인 화면에도 반영됩니다.
                         </small>
 
                     </label>
@@ -435,10 +517,13 @@
 
 </div>
 
-<!-- 저장 완료 토스트 메시지 -->
+<!-- 저장 결과 토스트 메시지 -->
 <div id="siteadminToast"
-     class="siteadmin-toast">
-    변경사항이 미리보기에 적용되었습니다.
+     class="siteadmin-toast"
+     th:classappend="${errorMessage != null} ? ' error' : ''"
+     th:text="${message != null
+        ? message
+        : (errorMessage != null ? errorMessage : '')}">
 </div>
 
 <script src="/js/admin/siteadmin.js"
