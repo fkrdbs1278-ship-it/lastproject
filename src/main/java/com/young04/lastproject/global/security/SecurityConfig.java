@@ -2,6 +2,7 @@ package com.young04.lastproject.global.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,14 +29,12 @@ public class SecurityConfig {
             CustomUserDetailsService customUserDetailsService,
             PasswordEncoder passwordEncoder
     ) {
-
         DaoAuthenticationProvider provider =
                 new DaoAuthenticationProvider(
                         customUserDetailsService
                 );
 
         provider.setPasswordEncoder(passwordEncoder);
-
         return provider;
     }
 
@@ -65,7 +64,6 @@ public class SecurityConfig {
 
         csrfHandler.setCsrfRequestAttributeName("_csrf");
 
-
         http
 
                 /* =================================================
@@ -90,90 +88,126 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-
-                        /*
-                         * 로그인하지 않아도 접근 가능
-                         */
+                        /* AWS Load Balancer / 운영 상태 확인 */
                         .requestMatchers(
-                                "/",
-                                "/member/signup",
-                                "/member/login",
+                                "/actuator/health",
+                                "/actuator/health/**"
+                        )
+                        .permitAll()
 
-                                "/reservation",
-                                "/guest-reservation",
-
-                                "/member/id-check",
-                                "/member/find-id",
-                                "/member/find-id/**",
-                                "/member/reset-password",
-                                "/member/reset-password/**",
-                                "/member/phone-verification/**",
+                        /* 정적 리소스 */
+                        .requestMatchers(
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
                                 "/uploads/**",
-
+                                "/siteadmin-upload/**",
+                                "/favicon.ico",
                                 "/error"
                         )
                         .permitAll()
 
-
-                        /*
-                         * 비회원도 사용할 수 있는 예약 API
-                         */
-                        .requestMatchers(
-                                "/api/reservations/available-times",
-                                "/api/reservations/service-menus",
-                                "/api/reservations/hair-styles",
-                                "/api/reservations/guest/**"
-                        )
-                        .permitAll()
-
-
-                        /*
-                         * 관리자 전용
-                         *
-                         * /admin/api/reservations
-                         * /admin/api/business-hours
-                         * /admin/api/holidays
-                         * /admin/api/availability-blocks
-                         *
-                         * 모두 여기 포함된다.
-                         */
+                        /* 관리자 기능 */
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
 
+                        /* 로컬/시연용 테스트 기능은 최소 관리자만 접근 */
+                        .requestMatchers(
+                                "/test/**",
+                                "/testcompany/**"
+                        )
+                        .hasRole("ADMIN")
 
-                        /*
-                         * 로그인 회원 예약
-                         */
+                        /* 회원 전용 화면 */
+                        .requestMatchers(
+                                "/member/mypage",
+                                "/member/mypage/**",
+                                "/member/edit/**",
+                                "/member/withdraw/**",
+                                "/member/payments",
+                                "/my-reservations"
+                        )
+                        .authenticated()
+
+                        /* 회원 전용 리뷰 기능 */
+                        .requestMatchers(
+                                "/reviews/my",
+                                "/reviews/write",
+                                "/reviews/*/edit",
+                                "/reviews/*/delete"
+                        )
+                        .authenticated()
+
+                        /* 로그인 회원 예약 API */
                         .requestMatchers(
                                 "/api/reservations/me",
                                 "/api/reservations/me/**"
                         )
                         .authenticated()
 
-
-                        /*
-                         * 기존 회원 전용
-                         */
+                        /* 공개 페이지 */
                         .requestMatchers(
-                                "/member/mypage",
-                                "/member/mypage/**",
-                                "/member/edit/**",
-                                "/member/withdraw/**",
-                                "/my-reservations"
+                                "/",
+                                "/member/signup",
+                                "/member/login",
+                                "/member/id-check",
+                                "/member/find-id",
+                                "/member/find-id/**",
+                                "/member/reset-password",
+                                "/member/reset-password/**",
+                                "/member/phone-verification/**",
+                                "/reservation",
+                                "/guest-reservation",
+                                "/hairstyles",
+                                "/hairstyles/**"
                         )
-                        .authenticated()
+                        .permitAll()
 
+                        /* 공개 리뷰 조회만 허용 */
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/reviews",
+                                "/reviews/*"
+                        )
+                        .permitAll()
+
+                        /* 메인 랜덤 헤어스타일 API */
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/hairstyles/random"
+                        )
+                        .permitAll()
+
+                        /* 공개 예약 생성 */
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/reservations"
+                        )
+                        .permitAll()
+
+                        /* 공개 예약 조회/선택용 API */
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/reservations/availability-notices",
+                                "/api/reservations/available-times",
+                                "/api/reservations/price-preview",
+                                "/api/reservations/service-menus",
+                                "/api/reservations/hair-styles",
+                                "/api/reservations/events"
+                        )
+                        .permitAll()
+
+                        /* 비회원 예약 조회/변경/취소/사진 */
+                        .requestMatchers("/api/reservations/guest/**")
+                        .permitAll()
 
                         /*
-                         * 현재 아직 개발 중인 나머지 페이지는 허용
-                         *
-                         * 기능이 추가될 때 권한을 조금씩 강화한다.
+                         * 위에서 의도적으로 공개하지 않은 신규 URL은
+                         * 기본적으로 로그인 사용자에게만 허용한다.
+                         * 기존 anyRequest().permitAll()로 인한 실수성 공개를 방지한다.
                          */
                         .anyRequest()
-                        .permitAll()
+                        .authenticated()
                 )
 
 
@@ -187,22 +221,7 @@ public class SecurityConfig {
                          * 우리가 만든 로그인 페이지
                          */
                         .loginPage("/member/login")
-
-
-                        /*
-                         * 로그인 form이 POST하는 주소
-                         *
-                         * Controller에서 처리하지 않는다.
-                         * Spring Security가 처리한다.
-                         */
-                        .loginProcessingUrl(
-                                "/member/login/process"
-                        )
-
-
-                        /*
-                         * 아이디 input name
-                         */
+                        .loginProcessingUrl("/member/login/process")
                         .usernameParameter("memberId")
 
 
@@ -224,7 +243,6 @@ public class SecurityConfig {
                          * 로그인 실패
                          */
                         .failureHandler(loginFailureHandler)
-
                         .permitAll()
                 )
 
@@ -241,19 +259,7 @@ public class SecurityConfig {
                          * POST 방식으로 요청할 예정
                          */
                         .logoutUrl("/member/logout")
-
-
-                        /*
-                         * 로그아웃 후 로그인 페이지
-                         */
-                        .logoutSuccessUrl(
-                                "/"
-                        )
-
-
-                        /*
-                         * 서버 세션 삭제
-                         */
+                        .logoutSuccessUrl("/")
                         .invalidateHttpSession(true)
 
 
@@ -276,7 +282,6 @@ public class SecurityConfig {
                 .httpBasic(
                         AbstractHttpConfigurer::disable
                 );
-
 
         return http.build();
     }

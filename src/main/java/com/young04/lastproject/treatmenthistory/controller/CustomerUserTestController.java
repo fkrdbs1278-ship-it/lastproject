@@ -6,6 +6,7 @@ import com.young04.lastproject.treatmenthistory.dto.TreatmentHistoryResponse;
 import com.young04.lastproject.treatmenthistory.service.TreatmentHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import java.util.List;
 
 
 @Slf4j
+@Profile("!prod")
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/test/customer")

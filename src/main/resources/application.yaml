@@ -19,7 +19,6 @@ spring:
       ddl-auto: validate
 
       naming:
-        #physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
     properties:
@@ -34,33 +33,14 @@ spring:
       max-file-size: 10MB
       max-request-size: 30MB
 
-
-# P6Spy를 사용하는 경우
-decorator:
-  datasource:
-    enabled: true
-
-    p6spy:
-      enable-logging: true
-      logging: slf4j
-      multiline: true
-
-
 logging:
   level:
     root: info
-
-    # 개발 중 SQL 확인용
-    p6spy: info
-
-    # 우리 프로젝트 코드
-    com.example.lastproject: debug
-
+    com.young04.lastproject: debug
 
 file:
   upload-dir: ${FILE_UPLOAD_DIR:uploads}
-#file:
-#  upload-dir: D:/kim/lastproject-upload
+  siteadmin-upload-dir: ${SITEADMIN_UPLOAD_DIR:siteadmin-upload}
 
 # 예약 문자 알림
 #
@@ -83,4 +63,3 @@ sms:
     api-key: ${SOLAPI_API_KEY:}
     api-secret: ${SOLAPI_API_SECRET:}
     sender: ${SOLAPI_SENDER:}
-

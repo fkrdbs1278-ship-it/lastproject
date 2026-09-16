@@ -80,3 +80,4 @@
 2026-09-16 14:02:15.770 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
 2026-09-16 14:13:20.635 INFO  LOGIN_SUCCESS memberId=test01 memberNo=41 ip=0:0:0:0:0:0:0:1
 2026-09-16 14:31:51.138 INFO  LOGIN_SUCCESS memberId=test03 memberNo=2 ip=0:0:0:0:0:0:0:1
+2026-09-16 17:26:41.463 INFO  LOGIN_SUCCESS memberId=user01 memberNo=21 ip=0:0:0:0:0:0:0:1

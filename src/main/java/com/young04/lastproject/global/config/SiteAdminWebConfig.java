@@ -1,5 +1,6 @@
 package com.young04.lastproject.global.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,23 +11,28 @@ import java.nio.file.Path;
 @Configuration
 public class SiteAdminWebConfig implements WebMvcConfigurer {
 
-    private static final Path SITEADMIN_UPLOAD_DIRECTORY =
-            Path.of("siteadmin-upload")
-                    .toAbsolutePath()
-                    .normalize();
+    private final Path siteAdminUploadDirectory;
 
+    public SiteAdminWebConfig(
+            @Value("${file.siteadmin-upload-dir:siteadmin-upload}")
+            String siteAdminUploadDir
+    ) {
+        this.siteAdminUploadDirectory =
+                Path.of(siteAdminUploadDir)
+                        .toAbsolutePath()
+                        .normalize();
+    }
 
     @Override
     public void addResourceHandlers(
             ResourceHandlerRegistry registry
     ) {
-
         registry
                 .addResourceHandler(
                         "/siteadmin-upload/**"
                 )
                 .addResourceLocations(
-                        SITEADMIN_UPLOAD_DIRECTORY
+                        siteAdminUploadDirectory
                                 .toUri()
                                 .toString()
                 );

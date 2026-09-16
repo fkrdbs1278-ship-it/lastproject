@@ -5,6 +5,7 @@ import com.young04.lastproject.purchaseorder.service.PurchaseOrderService;
 import com.young04.lastproject.purchaseorderitem.dto.PurchaseOrderItemResponse;
 import com.young04.lastproject.purchaseorderitem.service.PurchaseOrderItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 // 외부 공급업체의 발주 확인과 출고 처리를 테스트하는 Controller
+@Profile("!prod")
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/testcompany/purchaseorder")

@@ -5,6 +5,7 @@ import com.young04.lastproject.siteadmin.dto.SiteSettingRequest;
 import com.young04.lastproject.siteadmin.entity.SiteSetting;
 import com.young04.lastproject.siteadmin.repository.SiteSettingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,11 +30,6 @@ public class SiteSettingService {
     private static final String HERO_UPLOAD_URL_PREFIX =
             "/siteadmin-upload/";
 
-    private static final Path HERO_UPLOAD_DIRECTORY =
-            Path.of("siteadmin-upload")
-                    .toAbsolutePath()
-                    .normalize();
-
     private static final Set<String> ALLOWED_IMAGE_EXTENSIONS =
             Set.of(
                     "jpg",
@@ -44,6 +40,9 @@ public class SiteSettingService {
 
 
     private final SiteSettingRepository siteSettingRepository;
+
+    @Value("${file.siteadmin-upload-dir:siteadmin-upload}")
+    private String siteAdminUploadDir;
 
     private static final String DEFAULT_HERO_IMAGE_URL =
             "/images/hero/hero1.jpg";
@@ -297,19 +296,19 @@ public class SiteSettingService {
         try {
 
             Files.createDirectories(
-                    HERO_UPLOAD_DIRECTORY
+                    heroUploadDirectory()
             );
 
 
             Path savePath =
-                    HERO_UPLOAD_DIRECTORY
+                    heroUploadDirectory()
                             .resolve(savedFileName)
                             .normalize();
 
 
             if (
                     !savePath.startsWith(
-                            HERO_UPLOAD_DIRECTORY
+                            heroUploadDirectory()
                     )
             ) {
 
@@ -336,6 +335,13 @@ public class SiteSettingService {
                     exception
             );
         }
+    }
+
+
+    private Path heroUploadDirectory() {
+        return Path.of(siteAdminUploadDir)
+                .toAbsolutePath()
+                .normalize();
     }
 
 
@@ -453,14 +459,14 @@ public class SiteSettingService {
         try {
 
             Path previousPath =
-                    HERO_UPLOAD_DIRECTORY
+                    heroUploadDirectory()
                             .resolve(previousFileName)
                             .normalize();
 
 
             if (
                     previousPath.startsWith(
-                            HERO_UPLOAD_DIRECTORY
+                            heroUploadDirectory()
                     )
             ) {
 
