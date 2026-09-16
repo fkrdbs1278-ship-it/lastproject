@@ -165,6 +165,157 @@ document.addEventListener("DOMContentLoaded", () => {
             "field-message";
     }
 
+    /* 이름 실시간 검사 */
+
+    function validateName() {
+
+        if (!nameInput || !nameMessage) {
+            return;
+        }
+
+
+        const value =
+            nameInput.value;
+
+
+        /* 빈 값 */
+
+        if (value.length === 0) {
+
+            nameMessage.textContent = "";
+
+            nameMessage.className =
+                "field-message";
+
+            return;
+        }
+
+
+        /* 길이 검사 */
+
+        if (
+            value.length < 2 ||
+            value.length > 20
+        ) {
+
+            nameMessage.textContent =
+                "이름은 2자 이상 20자 이하로 입력해주세요.";
+
+            nameMessage.className =
+                "field-message error";
+
+            return;
+        }
+
+
+        /*
+         * 허용:
+         * 홍길동
+         * Lee
+         * Lee Jae Heon
+         *
+         * 불가:
+         * Lee  Jae
+         * 앞/뒤 공백
+         * 숫자
+         * 특수문자
+         */
+        if (
+            !/^[가-힣a-zA-Z]+(?: [가-힣a-zA-Z]+)*$/
+                .test(value)
+        ) {
+
+            nameMessage.textContent =
+                "이름은 한글, 영문과 단어 사이 한 칸의 공백만 사용할 수 있습니다.";
+
+            nameMessage.className =
+                "field-message error";
+
+            return;
+        }
+
+
+        /* 정상 */
+
+        nameMessage.textContent = "";
+
+        nameMessage.className =
+            "field-message";
+    }
+
+
+
+
+
+
+    function validateNickname() {
+
+        if (!nicknameInput || !nicknameMessage) {
+            return;
+        }
+
+        const value =
+            nicknameInput.value;
+
+
+        if (value.length === 0) {
+
+            nicknameMessage.textContent = "";
+
+            nicknameMessage.className =
+                "field-message";
+
+            return;
+        }
+
+
+        if (/\s/.test(value)) {
+
+            nicknameMessage.textContent =
+                "닉네임에는 공백을 사용할 수 없습니다.";
+
+            nicknameMessage.className =
+                "field-message error";
+
+            return;
+        }
+
+
+        if (
+            value.length < 2 ||
+            value.length > 20
+        ) {
+
+            nicknameMessage.textContent =
+                "닉네임은 2자 이상 20자 이하로 입력해주세요.";
+
+            nicknameMessage.className =
+                "field-message error";
+
+            return;
+        }
+
+
+        if (
+            !/^[가-힣a-zA-Z0-9]+$/.test(value)
+        ) {
+
+            nicknameMessage.textContent =
+                "닉네임은 한글, 영문, 숫자만 사용할 수 있습니다.";
+
+            nicknameMessage.className =
+                "field-message error";
+
+            return;
+        }
+
+
+        nicknameMessage.textContent = "";
+
+        nicknameMessage.className =
+            "field-message";
+    }
+
 
 
 
@@ -276,6 +427,10 @@ document.addEventListener("DOMContentLoaded", () => {
             "input",
             (event) => {
 
+                /*
+                 * 한글 조합 중에는
+                 * 20자 강제 자르기만 하지 않는다.
+                 */
                 if (!event.isComposing) {
 
                     limitTextLength(
@@ -285,11 +440,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                validateTextLength(
-                    nameInput,
-                    nameMessage,
-                    "이름"
-                );
+                /*
+                 * 이름 형식 실시간 검사
+                 */
+                validateName();
             }
         );
 
@@ -304,11 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                validateTextLength(
-                    nameInput,
-                    nameMessage,
-                    "이름"
-                );
+                validateName();
             }
         );
     }
@@ -329,11 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                validateTextLength(
-                    nicknameInput,
-                    nicknameMessage,
-                    "닉네임"
-                );
+                validateNickname();
             }
         );
 
@@ -348,11 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                validateTextLength(
-                    nicknameInput,
-                    nicknameMessage,
-                    "닉네임"
-                );
+                validateNickname();
             }
         );
     }
@@ -361,18 +503,10 @@ document.addEventListener("DOMContentLoaded", () => {
     처음 화면 진입 시 이름 / 닉네임 길이 검사
     ========================================================= */
 
-    validateTextLength(
-        nameInput,
-        nameMessage,
-        "이름"
-    );
+    validateName();
 
 
-    validateTextLength(
-        nicknameInput,
-        nicknameMessage,
-        "닉네임"
-    );
+    validateNickname();
 
 
     /*
