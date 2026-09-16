@@ -21,7 +21,9 @@ public class SiteAdminController {
 
     // 사용자 사이트 관리 화면 조회
     @GetMapping
-    public String siteAdmin(Model model) {
+    public String siteAdmin(
+            Model model
+    ) {
 
         // 현재 사이트 설정값을 관리자 화면에 전달
         model.addAttribute(
@@ -29,11 +31,13 @@ public class SiteAdminController {
                 siteSettingService.getCurrentSetting()
         );
 
+
         // 설정 저장용 DTO
         model.addAttribute(
                 "siteSettingRequest",
                 new SiteSettingRequest()
         );
+
 
         return "admin/siteadmin";
     }
@@ -63,16 +67,52 @@ public class SiteAdminController {
         }
 
 
-        // 관리자에서 변경한 설정 DB 저장
-        siteSettingService.saveSetting(request);
+        try {
+
+            // 문구 + Hero 1번 이미지 + 헤어스타일 설정 저장
+            siteSettingService.saveSetting(
+                    request
+            );
 
 
-        // 저장 완료 메시지
-        redirectAttributes.addFlashAttribute(
-                "message",
-                "사용자 사이트 설정이 저장되었습니다."
-        );
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "사용자 사이트 설정이 저장되었습니다."
+            );
+
+        } catch (
+                IllegalArgumentException
+                | IllegalStateException exception
+        ) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    exception.getMessage()
+            );
+        }
+
 
         return "redirect:/admin/siteadmin";
     }
+
+
+    @PostMapping("/reset-hero-image")
+    public String resetHeroImage(
+            RedirectAttributes redirectAttributes
+    ) {
+
+        siteSettingService.resetHeroImage();
+
+
+        redirectAttributes.addFlashAttribute(
+                "message",
+                "1번 슬라이드가 기본 이미지로 복원되었습니다."
+        );
+
+
+        return "redirect:/admin/siteadmin";
+    }
+
+
+
 }

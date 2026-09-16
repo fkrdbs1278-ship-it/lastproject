@@ -300,14 +300,6 @@
 
 
 
-    <!-- =========================================
-     Hairstyle Gallery
-
-     현재는 static 이미지 사용.
-     나중에 HairStyle DB Merge 후
-     DB 조회 방식으로 교체 예정.
-    ========================================= -->
-
     <!-- 관리자 설정에 따라 헤어스타일 영역 노출 -->
     <section class="style-gallery-section"
              th:if="${siteSetting == null or siteSetting.styleVisible}">
@@ -323,11 +315,27 @@
                     HAIR STYLE
                 </p>
 
-                <h2 th:text="${siteSetting != null
-                        ? siteSetting.styleTitle
-                        : '헤어스타일 둘러보기'}">
-                    헤어스타일 둘러보기
-                </h2>
+
+                <div class="style-gallery-title-row">
+
+                    <h2 th:text="${siteSetting != null
+                ? siteSetting.styleTitle
+                : '헤어스타일 둘러보기'}">
+                        헤어스타일 둘러보기
+                    </h2>
+
+
+                    <button
+                            type="button"
+                            id="styleRefreshButton"
+                            class="style-refresh-button"
+                            aria-label="헤어스타일 새로고침"
+                    >
+                        ↻ 새로보기
+                    </button>
+
+                </div>
+
 
                 <p th:text="${siteSetting != null
                         ? siteSetting.styleDescription

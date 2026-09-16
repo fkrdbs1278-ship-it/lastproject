@@ -281,9 +281,7 @@ document.addEventListener(
     }
 );
 
-/* =========================================
-   Hairstyle Scroll Reveal
-========================================= */
+/* Hairstyle Scroll Reveal */
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -381,6 +379,152 @@ document.addEventListener(
                 );
             }
         );
+
+    }
+);
+
+/* Hairstyle Random Refresh */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const refreshButton =
+            document.querySelector(
+                "#styleRefreshButton"
+            );
+
+        const styleGallery =
+            document.querySelector(
+                "#styleGallery"
+            );
+
+
+        if (
+            !refreshButton ||
+            !styleGallery
+        ) {
+            return;
+        }
+
+
+        refreshButton.addEventListener(
+            "click",
+            async () => {
+
+                /*
+                 * 연속 클릭 방지
+                 */
+                refreshButton.disabled = true;
+
+                refreshButton.classList.add(
+                    "loading"
+                );
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/api/hairstyles/random"
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "헤어스타일 조회 실패"
+                        );
+                    }
+
+
+                    const styles =
+                        await response.json();
+
+
+                    /*
+                     * 기존 카드 제거
+                     */
+                    styleGallery.innerHTML = "";
+
+
+                    /*
+                     * 새 랜덤 카드 생성
+                     */
+                    styles.forEach(
+                        (style) => {
+
+                            const card =
+                                document.createElement(
+                                    "a"
+                                );
+
+
+                            card.className =
+                                "style-gallery-card reveal-on-scroll is-visible";
+
+
+                            card.href =
+                                `/hairstyles#hair-style-${style.no}`;
+
+
+                            card.innerHTML = `
+                                <div class="style-gallery-image">
+                                    <img
+                                        src="${style.imageUrl}"
+                                        alt="${escapeHtml(style.title)}"
+                                        loading="lazy"
+                                    >
+                                </div>
+
+                                <p class="style-gallery-name">
+                                    ${escapeHtml(style.title)}
+                                </p>
+                            `;
+
+
+                            styleGallery.appendChild(
+                                card
+                            );
+                        }
+                    );
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "헤어스타일을 다시 불러오지 못했습니다."
+                    );
+
+                } finally {
+
+                    refreshButton.disabled =
+                        false;
+
+                    refreshButton.classList.remove(
+                        "loading"
+                    );
+                }
+            }
+        );
+
+
+        /*
+         * HTML 특수문자 처리
+         */
+        function escapeHtml(value) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.textContent =
+                value ?? "";
+
+            return div.innerHTML;
+        }
 
     }
 );

@@ -125,6 +125,7 @@
                                 placeholder="아이디를 입력해주세요."
                                 minlength="4"
                                 maxlength="20"
+                                pattern="[a-z0-9_-]{4,20}"
                                 autocomplete="username"
                                 autocapitalize="none"
                                 spellcheck="false"
@@ -309,8 +310,19 @@
                             id="name"
                             th:field="*{name}"
                             placeholder="이름을 입력해주세요."
+                            minlength="2"
+                            maxlength="20"
+                            autocomplete="name"
                     >
 
+                    <!-- JS 실시간 검사 메시지 -->
+                    <p
+                            id="nameMessage"
+                            class="field-message"
+                            aria-live="polite"
+                    ></p>
+
+                    <!-- 서버 Validation 오류 -->
                     <p
                             class="field-error"
                             th:if="${#fields.hasErrors('name')}"
@@ -320,7 +332,6 @@
                     </p>
 
                 </div>
-
 
                 <!-- 닉네임 -->
 
@@ -335,8 +346,19 @@
                             id="nickname"
                             th:field="*{nickname}"
                             placeholder="닉네임을 입력해주세요."
+                            minlength="2"
+                            maxlength="20"
+                            autocomplete="nickname"
                     >
 
+                    <!-- JS 실시간 검사 메시지 -->
+                    <p
+                            id="nicknameMessage"
+                            class="field-message"
+                            aria-live="polite"
+                    ></p>
+
+                    <!-- 서버 Validation 오류 -->
                     <p
                             class="field-error"
                             th:if="${#fields.hasErrors('nickname')}"

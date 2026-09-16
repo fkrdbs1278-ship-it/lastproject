@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     // =====================================================
-    // 메인 화면
+    // 공통 요소
     // =====================================================
+
+    const siteSettingForm =
+        document.getElementById("siteSettingForm");
 
     const heroTitleInput =
         document.getElementById("heroTitleInput");
@@ -13,6 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const heroImageInput =
         document.getElementById("heroImageInput");
 
+    const previewHero =
+        document.getElementById("previewHero");
+
     const previewHeroTitle =
         document.getElementById("previewHeroTitle");
 
@@ -22,22 +28,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const previewHeroImage =
         document.getElementById("previewHeroImage");
 
+    const previewHeroSlides =
+        Array.from(
+            document.querySelectorAll(
+                ".preview-hero-background"
+            )
+        );
 
-    // =====================================================
-    // 서비스 안내 영역
-    // =====================================================
+    const previewHeroDots =
+        Array.from(
+            document.querySelectorAll(
+                ".preview-hero-dot"
+            )
+        );
 
-    const serviceVisibleInput =
-        document.getElementById("serviceVisibleInput");
+    const previewHeroPrev =
+        document.getElementById("previewHeroPrev");
 
-    const serviceTitleInput =
-        document.getElementById("serviceTitleInput");
-
-    const previewServiceSection =
-        document.getElementById("previewServiceSection");
-
-    const previewServiceTitle =
-        document.getElementById("previewServiceTitle");
+    const previewHeroNext =
+        document.getElementById("previewHeroNext");
 
 
     // =====================================================
@@ -64,18 +73,373 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
-    // 버튼
+    // 버튼 / 토스트
     // =====================================================
 
     const resetButton =
         document.getElementById("resetButton");
 
-    const saveButton =
-        document.getElementById("saveButton");
+    const toast =
+        document.getElementById("siteadminToast");
+
+    let toastTimer;
+
+
+    function showToast(message, isError = false) {
+
+        if (!toast) {
+            return;
+        }
+
+        clearTimeout(toastTimer);
+
+        toast.textContent = message;
+        toast.classList.toggle("error", isError);
+        toast.classList.add("show");
+
+        toastTimer = setTimeout(function () {
+            toast.classList.remove("show");
+        }, 2400);
+    }
+
+
+    // redirect 후 서버에서 전달한 저장 결과가 있으면 표시
+    if (
+        toast
+        && toast.textContent.trim() !== ""
+    ) {
+        showToast(
+            toast.textContent.trim(),
+            toast.classList.contains("error")
+        );
+    }
 
 
     // =====================================================
-    // 기본값
+    // Hero 슬라이더
+    // 사용자 메인과 같은 4장 흐름
+    // =====================================================
+
+    let currentHeroSlide = 0;
+    let heroSlideTimer = null;
+
+    const heroSlideInterval = 5000;
+
+
+    function showHeroSlide(index) {
+
+        if (previewHeroSlides.length === 0) {
+            return;
+        }
+
+        currentHeroSlide =
+            (
+                index
+                + previewHeroSlides.length
+            )
+            % previewHeroSlides.length;
+
+
+        previewHeroSlides.forEach(
+            function (slide, slideIndex) {
+
+                slide.classList.toggle(
+                    "active",
+                    slideIndex === currentHeroSlide
+                );
+
+            }
+        );
+
+
+        previewHeroDots.forEach(
+            function (dot, dotIndex) {
+
+                dot.classList.toggle(
+                    "active",
+                    dotIndex === currentHeroSlide
+                );
+
+            }
+        );
+    }
+
+
+    function stopHeroSlider() {
+
+        if (heroSlideTimer !== null) {
+
+            clearInterval(heroSlideTimer);
+            heroSlideTimer = null;
+        }
+    }
+
+
+    function startHeroSlider() {
+
+        stopHeroSlider();
+
+        if (previewHeroSlides.length <= 1) {
+            return;
+        }
+
+        heroSlideTimer =
+            setInterval(function () {
+
+                showHeroSlide(
+                    currentHeroSlide + 1
+                );
+
+            }, heroSlideInterval);
+    }
+
+
+    function restartHeroSlider() {
+
+        startHeroSlider();
+    }
+
+
+    if (previewHeroPrev) {
+
+        previewHeroPrev.addEventListener(
+            "click",
+            function () {
+
+                showHeroSlide(
+                    currentHeroSlide - 1
+                );
+
+                restartHeroSlider();
+            }
+        );
+    }
+
+
+    if (previewHeroNext) {
+
+        previewHeroNext.addEventListener(
+            "click",
+            function () {
+
+                showHeroSlide(
+                    currentHeroSlide + 1
+                );
+
+                restartHeroSlider();
+            }
+        );
+    }
+
+
+    previewHeroDots.forEach(
+        function (dot) {
+
+            dot.addEventListener(
+                "click",
+                function () {
+
+                    const targetIndex =
+                        Number(dot.dataset.slide);
+
+                    showHeroSlide(targetIndex);
+                    restartHeroSlider();
+                }
+            );
+        }
+    );
+
+
+    if (previewHero) {
+
+        previewHero.addEventListener(
+            "mouseenter",
+            stopHeroSlider
+        );
+
+        previewHero.addEventListener(
+            "mouseleave",
+            startHeroSlider
+        );
+    }
+
+
+    showHeroSlide(0);
+    startHeroSlider();
+
+
+    // =====================================================
+    // 메인 제목 / 설명 실시간 미리보기
+    // =====================================================
+
+    if (heroTitleInput && previewHeroTitle) {
+
+        heroTitleInput.addEventListener(
+            "input",
+            function () {
+
+                previewHeroTitle.textContent =
+                    heroTitleInput.value;
+            }
+        );
+    }
+
+
+    if (
+        heroDescriptionInput
+        && previewHeroDescription
+    ) {
+
+        heroDescriptionInput.addEventListener(
+            "input",
+            function () {
+
+                previewHeroDescription.textContent =
+                    heroDescriptionInput.value;
+            }
+        );
+    }
+
+
+    // =====================================================
+    // 메인 이미지 실시간 미리보기
+    // 1번 슬라이드만 교체
+    // =====================================================
+
+    const initialHeroImage =
+        previewHeroImage
+            ? previewHeroImage.src
+            : "/images/hero/hero1.jpg";
+
+
+    if (heroImageInput && previewHeroImage) {
+
+        heroImageInput.addEventListener(
+            "change",
+            function () {
+
+                const file =
+                    heroImageInput.files[0];
+
+
+                if (!file) {
+                    return;
+                }
+
+
+                if (
+                    !file.type
+                    || !file.type.startsWith("image/")
+                ) {
+
+                    heroImageInput.value = "";
+
+                    showToast(
+                        "이미지 파일만 선택할 수 있습니다.",
+                        true
+                    );
+
+                    return;
+                }
+
+
+                const maxSize =
+                    10 * 1024 * 1024;
+
+                if (file.size > maxSize) {
+
+                    heroImageInput.value = "";
+
+                    showToast(
+                        "메인 이미지는 10MB 이하만 업로드할 수 있습니다.",
+                        true
+                    );
+
+                    return;
+                }
+
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload =
+                    function (event) {
+
+                        previewHeroImage.src =
+                            event.target.result;
+
+                        showHeroSlide(0);
+                        restartHeroSlider();
+
+                        showToast(
+                            "1번 슬라이드 미리보기에 이미지를 적용했습니다."
+                        );
+                    };
+
+
+                reader.readAsDataURL(file);
+            }
+        );
+    }
+
+
+    // =====================================================
+    // 헤어스타일 영역
+    // =====================================================
+
+    if (
+        styleVisibleInput
+        && previewStyleSection
+    ) {
+
+        styleVisibleInput.addEventListener(
+            "change",
+            function () {
+
+                previewStyleSection.style.display =
+                    styleVisibleInput.checked
+                        ? ""
+                        : "none";
+            }
+        );
+    }
+
+
+    if (
+        styleTitleInput
+        && previewStyleTitle
+    ) {
+
+        styleTitleInput.addEventListener(
+            "input",
+            function () {
+
+                previewStyleTitle.textContent =
+                    styleTitleInput.value;
+            }
+        );
+    }
+
+
+    if (
+        styleDescriptionInput
+        && previewStyleDescription
+    ) {
+
+        styleDescriptionInput.addEventListener(
+            "input",
+            function () {
+
+                previewStyleDescription.textContent =
+                    styleDescriptionInput.value;
+            }
+        );
+    }
+
+
+    // =====================================================
+    // 초기화
     // =====================================================
 
     const defaultValues = {
@@ -86,249 +450,117 @@ document.addEventListener("DOMContentLoaded", function () {
         heroDescription:
             "원하는 시술과 헤어스타일을 확인하고\n편리하게 예약 서비스를 이용해보세요.",
 
-        serviceTitle:
-            "서비스 안내",
-
         styleTitle:
             "헤어스타일 둘러보기",
 
         styleDescription:
-            "다양한 스타일을 확인하고\n원하는 헤어스타일을 찾아보세요.",
-
-        heroImage:
-            "/images/hero/hero1.jpg"
+            "다양한 스타일을 확인하고\n원하는 헤어스타일을 찾아보세요."
     };
 
 
-    // =====================================================
-    // 토스트 메시지 생성
-    // =====================================================
+    if (resetButton) {
 
-    const toast =
-        document.createElement("div");
+        resetButton.addEventListener(
+            "click",
+            function () {
 
-    toast.className =
-        "siteadmin-toast";
+                heroTitleInput.value =
+                    defaultValues.heroTitle;
 
-    document.body.appendChild(toast);
+                heroDescriptionInput.value =
+                    defaultValues.heroDescription;
 
+                styleTitleInput.value =
+                    defaultValues.styleTitle;
 
-    let toastTimer;
+                styleDescriptionInput.value =
+                    defaultValues.styleDescription;
 
-
-    // 토스트 메시지 표시
-    function showToast(message) {
-
-        clearTimeout(toastTimer);
-
-        toast.textContent = message;
-
-        toast.classList.add("show");
+                styleVisibleInput.checked = true;
 
 
-        toastTimer = setTimeout(function () {
+                previewHeroTitle.textContent =
+                    defaultValues.heroTitle;
 
-            toast.classList.remove("show");
+                previewHeroDescription.textContent =
+                    defaultValues.heroDescription;
 
-        }, 2000);
+                previewStyleTitle.textContent =
+                    defaultValues.styleTitle;
+
+                previewStyleDescription.textContent =
+                    defaultValues.styleDescription;
+
+                previewStyleSection.style.display = "";
+
+
+                // 선택 중이던 파일은 취소하고
+                // 현재 DB에 저장되어 있던 1번 이미지를 다시 표시
+                heroImageInput.value = "";
+                previewHeroImage.src =
+                    initialHeroImage;
+
+                showHeroSlide(0);
+                restartHeroSlider();
+
+
+                showToast(
+                    "미리보기 설정을 초기화했습니다."
+                );
+            }
+        );
     }
 
 
     // =====================================================
-    // 메인 제목 실시간 미리보기
+    // 제출 직전 파일 최종 검증
     // =====================================================
 
-    heroTitleInput.addEventListener("input", function () {
+    if (siteSettingForm) {
 
-        previewHeroTitle.textContent =
-            heroTitleInput.value;
+        siteSettingForm.addEventListener(
+            "submit",
+            function (event) {
 
-    });
+                const file =
+                    heroImageInput
+                        ? heroImageInput.files[0]
+                        : null;
 
 
-    // =====================================================
-    // 메인 설명 실시간 미리보기
-    // =====================================================
+                if (
+                    file
+                    && (
+                        !file.type
+                        || !file.type.startsWith("image/")
+                    )
+                ) {
 
-    heroDescriptionInput.addEventListener("input", function () {
+                    event.preventDefault();
 
-        previewHeroDescription.textContent =
-            heroDescriptionInput.value;
+                    showToast(
+                        "이미지 파일만 업로드할 수 있습니다.",
+                        true
+                    );
 
-    });
+                    return;
+                }
 
 
-    // =====================================================
-    // 메인 이미지 실시간 미리보기
-    // =====================================================
+                if (
+                    file
+                    && file.size > 10 * 1024 * 1024
+                ) {
 
-    heroImageInput.addEventListener("change", function () {
+                    event.preventDefault();
 
-        const file =
-            heroImageInput.files[0];
-
-
-        if (!file) {
-            return;
-        }
-
-
-        const reader =
-            new FileReader();
-
-
-        reader.onload = function (event) {
-
-            previewHeroImage.src =
-                event.target.result;
-
-        };
-
-
-        reader.readAsDataURL(file);
-
-    });
-
-
-    // =====================================================
-    // 서비스 안내 노출 / 숨김
-    // =====================================================
-
-    serviceVisibleInput.addEventListener("change", function () {
-
-        previewServiceSection.style.display =
-            serviceVisibleInput.checked
-                ? ""
-                : "none";
-
-    });
-
-
-    // =====================================================
-    // 서비스 안내 제목 실시간 변경
-    // =====================================================
-
-    serviceTitleInput.addEventListener("input", function () {
-
-        previewServiceTitle.textContent =
-            serviceTitleInput.value;
-
-    });
-
-
-    // =====================================================
-    // 헤어스타일 영역 노출 / 숨김
-    // =====================================================
-
-    styleVisibleInput.addEventListener("change", function () {
-
-        previewStyleSection.style.display =
-            styleVisibleInput.checked
-                ? ""
-                : "none";
-
-    });
-
-
-    // =====================================================
-    // 헤어스타일 제목 실시간 변경
-    // =====================================================
-
-    styleTitleInput.addEventListener("input", function () {
-
-        previewStyleTitle.textContent =
-            styleTitleInput.value;
-
-    });
-
-
-    // =====================================================
-    // 헤어스타일 설명 실시간 변경
-    // =====================================================
-
-    styleDescriptionInput.addEventListener("input", function () {
-
-        previewStyleDescription.textContent =
-            styleDescriptionInput.value;
-
-    });
-
-
-    // =====================================================
-    // 초기화
-    // =====================================================
-
-    resetButton.addEventListener("click", function () {
-
-        // 입력값 초기화
-        heroTitleInput.value =
-            defaultValues.heroTitle;
-
-        heroDescriptionInput.value =
-            defaultValues.heroDescription;
-
-        serviceTitleInput.value =
-            defaultValues.serviceTitle;
-
-        styleTitleInput.value =
-            defaultValues.styleTitle;
-
-        styleDescriptionInput.value =
-            defaultValues.styleDescription;
-
-
-        // 노출 체크 초기화
-        serviceVisibleInput.checked = true;
-        styleVisibleInput.checked = true;
-
-
-        // 미리보기 초기화
-        previewHeroTitle.textContent =
-            defaultValues.heroTitle;
-
-        previewHeroDescription.textContent =
-            defaultValues.heroDescription;
-
-        previewServiceTitle.textContent =
-            defaultValues.serviceTitle;
-
-        previewStyleTitle.textContent =
-            defaultValues.styleTitle;
-
-        previewStyleDescription.textContent =
-            defaultValues.styleDescription;
-
-
-        previewServiceSection.style.display = "";
-        previewStyleSection.style.display = "";
-
-
-        // 이미지 초기화
-        previewHeroImage.src =
-            defaultValues.heroImage;
-
-        heroImageInput.value = "";
-
-
-        // 토스트 표시
-        showToast(
-            "미리보기 설정을 초기화했습니다."
+                    showToast(
+                        "메인 이미지는 10MB 이하만 업로드할 수 있습니다.",
+                        true
+                    );
+                }
+            }
         );
-
-    });
-
-
-    // =====================================================
-    // 변경사항 저장
-    // 현재는 DB 저장 전 단계
-    // =====================================================
-
-    saveButton.addEventListener("click", function () {
-
-        showToast(
-            "변경사항이 미리보기에 적용되었습니다."
-        );
-
-    });
+    }
 
 });
