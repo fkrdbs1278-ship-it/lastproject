@@ -1,10 +1,6 @@
-# 테스트 프로필은 DB 접속 정보를 별도로 덮어쓰지 않습니다.
-# src/main/resources/application.yaml의 DB_URL / DB_USERNAME / DB_PASSWORD를 그대로 사용합니다.
-#
-# 이유:
-# - 팀원마다 Oracle 설치 위치/계정이 다를 수 있음
-# - 최종 공통 schema + dummy SQL은 동일하지만 접속 자격증명은 개인 환경값
-# - localhost:1521:XE / orcltest 같은 특정 개발자 설정에 테스트가 묶이는 문제 방지
+# 최종 통합 테스트 프로필
+# DB 접속정보는 운영 코드와 동일하게 환경변수(DB_URL / DB_USERNAME / DB_PASSWORD)를 사용한다.
+# 실제 운영 DB가 아닌 테스트용 Oracle Schema 사용을 권장한다.
 
 spring:
   jpa:
@@ -15,12 +11,13 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         highlight_sql: false
     open-in-view: false
 
 file:
-  upload-dir: build/test-uploads
+  upload-dir: build/final-test-uploads
+  siteadmin-upload-dir: build/final-test-siteadmin-upload
 
 sms:
   provider: log
@@ -28,4 +25,6 @@ sms:
 logging:
   level:
     root: info
-    p6spy: warn
+    com.young04.lastproject: info
+    org.hibernate.SQL: warn
+    org.hibernate.orm.jdbc.bind: warn

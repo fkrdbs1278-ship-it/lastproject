@@ -83,7 +83,9 @@ class AwsProductionStabilityContractTest {
             String relativePath
     ) throws IOException {
         return Files.readString(
-                Path.of(relativePath)
-        );
+                        Path.of(relativePath)
+                )
+                .replace("\r\n", "\n")
+                .replace("\r", "\n");
     }
 }
