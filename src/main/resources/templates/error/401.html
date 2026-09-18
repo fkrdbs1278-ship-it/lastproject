@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>401 | SALON CRM</title>
+
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/header.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/error/error.css}">
+</head>
+<body>
+<header th:replace="~{layout/header :: header}"></header>
+
+<main class="error-page">
+    <div class="error-container">
+        <section class="error-card" aria-labelledby="errorTitle">
+            <p class="error-eyebrow">UNAUTHORIZED</p>
+            <p class="error-code" aria-hidden="true">401</p>
+            <h1 class="error-title" id="errorTitle">로그인이 필요한 서비스입니다.</h1>
+            <p class="error-description">현재 요청은 로그인 후 이용할 수 있습니다.</p>
+            <p class="error-help">로그인한 뒤 다시 이용해 주세요. 로그인 상태가 만료되었다면 다시 로그인해 주세요.</p>
+
+            <div class="error-actions">
+                <a class="error-button error-button-primary"
+                   th:href="@{/member/login}">로그인</a>
+                <a class="error-button error-button-secondary"
+                   th:href="@{/}">홈으로</a>
+            </div>
+
+            <p class="error-note">문제가 계속되면 잠시 후 다시 시도해 주세요.</p>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>

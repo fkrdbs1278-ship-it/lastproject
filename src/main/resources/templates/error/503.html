@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>503 | SALON CRM</title>
+
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/header.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/error/error.css}">
+</head>
+<body>
+<header th:replace="~{layout/header :: header}"></header>
+
+<main class="error-page">
+    <div class="error-container">
+        <section class="error-card" aria-labelledby="errorTitle">
+            <p class="error-eyebrow">SERVICE UNAVAILABLE</p>
+            <p class="error-code" aria-hidden="true">503</p>
+            <h1 class="error-title" id="errorTitle">현재 서비스를 이용하기 어렵습니다.</h1>
+            <p class="error-description">서버 점검 또는 일시적인 과부하로 요청을 처리할 수 없습니다.</p>
+            <p class="error-help">잠시 후 다시 접속해 주세요.</p>
+
+            <div class="error-actions">
+                <a class="error-button error-button-primary"
+                   th:href="@{/}">홈으로</a>
+                <a class="error-button error-button-secondary"
+                   th:href="@{/reservation}">예약 페이지</a>
+            </div>
+
+            <p class="error-note">문제가 계속되면 잠시 후 다시 시도해 주세요.</p>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>

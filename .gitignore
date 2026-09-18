@@ -39,3 +39,8 @@ out/
 ### Log files ###
 logs/
 *.log
+### Runtime uploads / local secrets ###
+uploads/
+siteadmin-upload/
+.env
+.env.*

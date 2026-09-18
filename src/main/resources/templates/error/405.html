@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>405 | SALON CRM</title>
+
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/header.css}">
+    <link rel="stylesheet" th:href="@{/css/layout/footer.css}">
+    <link rel="stylesheet" th:href="@{/css/error/error.css}">
+</head>
+<body>
+<header th:replace="~{layout/header :: header}"></header>
+
+<main class="error-page">
+    <div class="error-container">
+        <section class="error-card" aria-labelledby="errorTitle">
+            <p class="error-eyebrow">METHOD NOT ALLOWED</p>
+            <p class="error-code" aria-hidden="true">405</p>
+            <h1 class="error-title" id="errorTitle">허용되지 않은 요청 방식입니다.</h1>
+            <p class="error-description">현재 주소에서는 요청한 방식으로 기능을 실행할 수 없습니다.</p>
+            <p class="error-help">페이지를 새로 열어 정상적인 버튼이나 메뉴를 통해 다시 시도해 주세요.</p>
+
+            <div class="error-actions">
+                <a class="error-button error-button-primary"
+                   th:href="@{/}">홈으로</a>
+                <a class="error-button error-button-secondary"
+                   th:href="@{/reservation}">예약 페이지</a>
+            </div>
+
+            <p class="error-note">문제가 계속되면 잠시 후 다시 시도해 주세요.</p>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
