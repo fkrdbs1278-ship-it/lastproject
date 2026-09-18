@@ -32,8 +32,12 @@ public class ReservationImageWebConfig
                         .toString();
 
         /*
-         * 예시 헤어스타일, 이벤트 등 기존 /uploads/** 자원은
-         * 다른 파트와의 호환성을 위해 그대로 둔다.
+         * 예약 참고 이미지 등 업로드 파일을
+         * /uploads/** URL로 제공한다.
+         *
+         * 헤어스타일 예시 이미지는
+         * src/main/resources/static/images/hairstyle 에서
+         * 정적 리소스로 제공한다.
          */
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(location);
