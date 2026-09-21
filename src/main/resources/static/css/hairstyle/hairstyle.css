@@ -1,7 +1,7 @@
 /* Hair Style Page */
 
 .hair-page {
-    padding: 60px 20px;
+    padding: 60px 0;
 }
 
 
@@ -10,6 +10,7 @@
     max-width: 1200px;
 
     margin: 0 auto;
+    padding: 0 24px;
 }
 
 
@@ -413,7 +414,12 @@
 @media (max-width: 600px) {
 
     .hair-page {
-        padding: 40px 16px;
+        padding: 40px 0;
+    }
+
+
+    .hair-container {
+        padding: 0 16px;
     }
 
 
