@@ -24,20 +24,18 @@ body {
 /* reservation.css의 독립 페이지 여백을
    공통 header/footer가 있는 사용자 사이트 기준으로 재정렬 */
 .reservation-page {
-    width: 100%;
-    max-width: 1200px;
+    width: min(1120px, calc(100% - 40px));
     min-height: calc(100vh - 210px);
     margin: 0 auto;
-    padding: 56px 24px 30px;
+    padding: 56px 0 30px;
 }
 
 .reservation-user-page {
-    max-width: 1200px;
+    max-width: 1120px;
 }
 
 .my-reservation-page {
-    width: 100%;
-    max-width: 1200px;
+    width: min(1000px, calc(100% - 40px));
     padding-top: 60px;
 }
 
@@ -325,7 +323,7 @@ body {
    ========================================================= */
 
 .guest-reservation-page {
-    max-width: 1200px;
+    max-width: 1000px;
 }
 
 .guest-lookup-card {
@@ -389,9 +387,8 @@ body {
 @media (max-width: 820px) {
     .reservation-page,
     .my-reservation-page {
-        width: 100%;
-        max-width: 1200px;
-        padding: 40px 16px 30px;
+        width: min(100% - 32px, 1120px);
+        padding-top: 40px;
     }
 
     .reservation-user-heading {
@@ -416,9 +413,8 @@ body {
 @media (max-width: 520px) {
     .reservation-page,
     .my-reservation-page {
-        width: 100%;
-        max-width: 1200px;
-        padding: 30px 12px 30px;
+        width: min(100% - 24px, 1120px);
+        padding-top: 30px;
     }
 
     .reservation-user-heading h1,
@@ -976,4 +972,57 @@ body {
     min-height: 42px;
     padding: 0 12px;
     white-space: nowrap;
+}
+
+/* 카드의 숨긴 radio가 공통 input width:100%를 상속해 문서를 넓히지 않도록 한다.
+   display:none을 쓰지 않아 키보드 선택과 label 클릭을 유지한다. */
+.reservation-page .service-category-card,
+.reservation-page .menu-card,
+.reservation-page .hair-style-card {
+    position: relative;
+    min-width: 0;
+}
+
+.reservation-page input.service-category-radio,
+.reservation-page input.menu-radio,
+.reservation-page input.hair-style-radio {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.reservation-page .service-category-radio:focus-visible + .service-category-content,
+.reservation-page .menu-radio:focus-visible + .menu-content,
+.reservation-page .hair-style-radio:focus-visible + .hair-style-content {
+    outline: 2px solid #333333;
+    outline-offset: 3px;
+}
+
+.reservation-page .panel,
+.reservation-page .field,
+.reservation-page .reservation-summary {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.reservation-page input:not([type="radio"]),
+.reservation-page textarea,
+.reservation-page select {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 520px) {
+    .reservation-user-page .section-title-actions .secondary-button {
+        width: 100%;
+    }
 }

@@ -116,7 +116,7 @@ public class PaymentService {
         }
 
         Payment payment = paymentRepository
-                .findByReservation_ReservationNo(reservationNo)
+                .findByReservationNoForUpdate(reservationNo)
                 .orElseThrow(
                         () -> new IllegalStateException(
                                 "해당 예약의 결제 대기 정보를 찾을 수 없습니다."
@@ -141,7 +141,7 @@ public class PaymentService {
             PaymentMethod paymentMethod
     ) {
         Payment payment = paymentRepository
-                .findById(paymentNo)
+                .findByIdForUpdate(paymentNo)
                 .orElseThrow(
                         () -> new IllegalArgumentException(
                                 "결제 정보를 찾을 수 없습니다. paymentNo=" + paymentNo
@@ -163,7 +163,7 @@ public class PaymentService {
     @Transactional
     public Payment refundPayment(Long paymentNo) {
         Payment payment = paymentRepository
-                .findById(paymentNo)
+                .findByIdForUpdate(paymentNo)
                 .orElseThrow(
                         () -> new IllegalArgumentException(
                                 "결제 정보를 찾을 수 없습니다. paymentNo=" + paymentNo

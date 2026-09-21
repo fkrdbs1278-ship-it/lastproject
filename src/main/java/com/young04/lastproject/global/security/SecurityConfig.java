@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 public class SecurityConfig {
@@ -64,6 +65,12 @@ public class SecurityConfig {
 
         csrfHandler.setCsrfRequestAttributeName("_csrf");
 
+        RequestMatcher apiRequest = request -> {
+            String path = request.getRequestURI().substring(request.getContextPath().length());
+            return path.startsWith("/api/") || path.startsWith("/admin/api/");
+        };
+        ApiSecurityErrorHandler apiErrors = new ApiSecurityErrorHandler();
+
         http
 
                 /* =================================================
@@ -79,6 +86,12 @@ public class SecurityConfig {
 
                 .csrf(csrf -> csrf
                         .csrfTokenRequestHandler(csrfHandler)
+                )
+
+                // fetch 요청에 로그인 HTML(최종 200)이 반환되지 않도록 한다.
+                .exceptionHandling(exceptions -> exceptions
+                        .defaultAuthenticationEntryPointFor(apiErrors, apiRequest)
+                        .defaultAccessDeniedHandlerFor(apiErrors, apiRequest)
                 )
 
 

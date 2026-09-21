@@ -18,9 +18,12 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -258,7 +261,8 @@ public class ReservationImageService {
         validateFile(file);
 
         Reservation reservation =
-                requireReservation(reservationNo);
+                reservationRepository.findByIdForUpdate(reservationNo)
+                        .orElseThrow(() -> new ReservationNotFoundException(reservationNo));
 
         long currentCount =
                 reservationImageRepository
@@ -300,21 +304,34 @@ public class ReservationImageService {
             );
         }
 
-        try {
+        try (InputStream input = file.getInputStream()) {
             Files.createDirectories(
                     reservationDirectory
             );
 
             Files.copy(
-                    file.getInputStream(),
+                    input,
                     target,
                     StandardCopyOption.REPLACE_EXISTING
             );
         } catch (IOException e) {
+            deleteQuietly(target);
             throw new ReservationImageException(
                     "예약 사진 저장에 실패했습니다.",
                     e
             );
+        }
+
+        // JPA 오류가 save 이후 flush/commit에서 발생해도 고아 파일을 남기지 않는다.
+        if (TransactionSynchronizationManager.isSynchronizationActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCompletion(int status) {
+                    if (status == STATUS_ROLLED_BACK) {
+                        deleteQuietly(target);
+                    }
+                }
+            });
         }
 
         /*

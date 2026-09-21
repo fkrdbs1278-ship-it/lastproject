@@ -6,6 +6,8 @@ import com.young04.lastproject.reservation.entity.CustomerType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,6 +22,14 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
      * 예약 번호로 결제 조회
      */
     Optional<Payment> findByReservation_ReservationNo(Long reservationNo);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Payment p where p.reservation.reservationNo = :reservationNo")
+    Optional<Payment> findByReservationNoForUpdate(@Param("reservationNo") Long reservationNo);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select p from Payment p where p.paymentNo = :paymentNo")
+    Optional<Payment> findByIdForUpdate(@Param("paymentNo") Long paymentNo);
 
     /**
      * 예약에 결제 데이터가 있는지 확인

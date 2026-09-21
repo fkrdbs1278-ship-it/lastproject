@@ -18,7 +18,7 @@
         (page.dataset.linkedServiceMenuNos || "")
             .split(",")
             .map(value => Number(value))
-            .filter(Number.isFinite);
+            .filter(value => Number.isInteger(value) && value > 0);
 
     const preferredServiceMenuNo =
         page.dataset.preferredServiceMenuNo
@@ -83,6 +83,11 @@
     let selectedDate = "";
     let selectedStartTime = "";
     let selectedFiles = [];
+    let availabilitySequence = 0;
+    let availabilityController = null;
+    let isSubmitting = false;
+    let savedReservationNo = null;
+    let messageTimer = null;
 
     const categoryNames = {
         CUT: "커트",
@@ -254,8 +259,8 @@
 
             if (
                 requestedDate
-                && dateInput.max
-                && requestedDate > dateInput.max
+                && ((dateInput.min && requestedDate < dateInput.min)
+                    || (dateInput.max && requestedDate > dateInput.max))
             ) {
 
                 dateInput.value = "";
@@ -582,9 +587,20 @@
 
         selectedMenuNo = null;
         selectedMenuName = "";
+        clearSelectedTime();
+        timeSection.classList.add("hidden");
     }
 
     async function loadAvailableTimes() {
+        const sequence = ++availabilitySequence;
+        availabilityController?.abort();
+        availabilityController = new AbortController();
+        const signal = availabilityController.signal;
+        const requestedDate = selectedDate;
+        const requestedMenuNo = selectedMenuNo;
+        const isCurrent = () => sequence === availabilitySequence
+            && selectedDate === requestedDate && selectedMenuNo === requestedMenuNo;
+
         timeSlots.innerHTML =
             `<div class="loading-box">예약 가능 시간을 조회 중입니다.</div>`;
 
@@ -618,14 +634,15 @@
             ] =
                 await Promise.all([
                     fetch(
-                        `/api/reservations/available-times?${params}`
+                        `/api/reservations/available-times?${params}`, { signal }
                     ),
                     fetch(
                         `/api/reservations/availability-notices?`
                         + new URLSearchParams({
-                            date: selectedDate
-                        })
-                    )
+                            date: requestedDate
+                        }),
+                        { signal }
+                    ).catch(() => null)
                 ]);
 
             const timeBody =
@@ -633,10 +650,12 @@
                     timeResponse
                 );
 
-            const noticeBody =
-                await readJson(
-                    noticeResponse
-                );
+            const noticeBody = noticeResponse?.ok
+                ? await readJson(noticeResponse).catch(() => ({}))
+                : {};
+
+            // 날짜/메뉴 변경 또는 선택 취소 후 도착한 응답은 버린다.
+            if (!isCurrent()) return;
 
             if (!timeResponse.ok) {
                 timeSlots.innerHTML =
@@ -649,7 +668,7 @@
                 return;
             }
 
-            if (noticeResponse.ok) {
+            if (noticeResponse?.ok) {
                 renderAvailabilityNotice(
                     availabilityNotice,
                     noticeBody
@@ -695,6 +714,7 @@
                 button.addEventListener(
                     "click",
                     () => {
+                        if (!isCurrent() || isSubmitting || savedReservationNo) return;
                         document.querySelectorAll(
                             ".time-button"
                         )
@@ -722,6 +742,7 @@
                 );
             });
         } catch (error) {
+            if (error.name === "AbortError" || !isCurrent()) return;
             timeSlots.innerHTML =
                 `<div class="empty-box">예약 정보를 불러오지 못했습니다.</div>`;
         }
@@ -838,6 +859,7 @@
     }
 
     async function submitReservation() {
+        if (isSubmitting || savedReservationNo !== null) return;
         if (!selectedCategory
                 || !selectedMenuNo
                 || !selectedDate
@@ -887,9 +909,11 @@
             }
         }
 
+        isSubmitting = true;
+        const filesToUpload = [...selectedFiles];
+        const reservationGuestPhone = guestPhoneInput?.value.trim() || "";
         submitButton.disabled = true;
-        submitButton.textContent =
-            "예약 처리 중...";
+        submitButton.textContent = "예약 처리 중...";
 
         try {
             const requestBody = {
@@ -902,8 +926,7 @@
                 guestPhone:
                     isLoggedIn
                         ? null
-                        : guestPhoneInput.value
-                            .trim(),
+                        : reservationGuestPhone,
 
                 serviceMenuNo:
                     selectedMenuNo,
@@ -959,13 +982,29 @@
                 );
             }
 
-            for (const file
-                    of selectedFiles) {
+            if (!Number.isSafeInteger(body.reservationNo) || body.reservationNo <= 0) {
+                throw new Error("예약 결과를 확인할 수 없습니다. 예약 내역을 먼저 확인해주세요.");
+            }
+            savedReservationNo = body.reservationNo;
+            summary.textContent = `예약 완료 · 예약번호 ${savedReservationNo}`;
 
-                await uploadImage(
-                    body.reservationNo,
-                    file
-                );
+            let failedImages = 0;
+            for (const file of filesToUpload) {
+                try {
+                    await uploadImage(savedReservationNo, file, reservationGuestPhone);
+                } catch (error) {
+                    failedImages++;
+                }
+            }
+            if (failedImages > 0) {
+                const nextStep = isLoggedIn
+                    ? "내 예약에서 예약 내용을 확인해주세요."
+                    : "예약번호를 보관하고 비회원 예약 조회에서 확인해주세요.";
+                const message = `예약은 완료되었습니다. 예약번호: ${savedReservationNo}. `
+                    + `사진 ${failedImages}장 업로드에 실패했습니다. ${nextStep} 사진은 미용실에 별도로 전달해주세요.`;
+                summary.textContent = message;
+                showMessage(message, true, true);
+                return;
             }
 
             if (isLoggedIn) {
@@ -995,15 +1034,17 @@
                 true
             );
 
-            submitButton.disabled = false;
-            submitButton.textContent =
-                "예약 신청";
+        } finally {
+            isSubmitting = false;
+            submitButton.textContent = savedReservationNo ? "예약 완료" : "예약 신청";
+            updateSummary();
         }
     }
 
     async function uploadImage(
             reservationNo,
-            file
+            file,
+            reservationGuestPhone
     ) {
         const data =
             new FormData();
@@ -1021,8 +1062,7 @@
         } else {
             data.append(
                 "guestPhone",
-                guestPhoneInput.value
-                    .trim()
+                reservationGuestPhone
             );
 
             uploadUrl =
@@ -1054,6 +1094,10 @@
     }
 
     function updateSummary() {
+        if (isSubmitting || savedReservationNo !== null) {
+            submitButton.disabled = true;
+            return;
+        }
         if (!selectedCategory
                 || !selectedMenuNo
                 || !selectedDate
@@ -1062,6 +1106,7 @@
             summary.textContent =
                 "시술 카테고리, 상세 메뉴, 날짜, 시간을 선택해주세요.";
 
+            clearPricePreview();
             submitButton.disabled = true;
             return;
         }
@@ -1085,8 +1130,8 @@
         if (guestPhoneValue) params.set("guestPhone", guestPhoneValue);
         try {
             const response = await fetch(`/api/reservations/price-preview?${params}`);
-            if (!response.ok) return;
-            const body = await response.json();
+            if (!response.ok) throw new Error("가격 조회 실패");
+            const body = await readJson(response);
             if (sequence !== pricePreviewSequence) return;
             const money = value => Number(value || 0).toLocaleString("ko-KR") + "원";
             if (body.discountAmount > 0) {
@@ -1097,10 +1142,27 @@
                 pricePreview.innerHTML = `<div class="price-final"><span>예상 결제금액</span><strong>${money(body.finalPrice)}</strong></div>`;
             }
             pricePreview.classList.remove("hidden");
-        } catch (_) { pricePreview.classList.add("hidden"); }
+        } catch (_) {
+            if (sequence === pricePreviewSequence) pricePreview.classList.add("hidden");
+        }
+    }
+
+    function clearPricePreview() {
+        pricePreviewSequence++;
+        if (pricePreview) {
+            pricePreview.classList.add("hidden");
+            pricePreview.textContent = "";
+        }
     }
 
     function clearSelectedTime() {
+        availabilitySequence++;
+        availabilityController?.abort();
+        clearPricePreview();
+        if (availabilityNotice) {
+            availabilityNotice.classList.add("hidden");
+            availabilityNotice.textContent = "";
+        }
         selectedStartTime = "";
         timeSlots.innerHTML = "";
         submitButton.disabled = true;
@@ -1172,6 +1234,9 @@
     }
 
     async function readJson(response) {
+        if (response.redirected && response.url.includes("/member/login")) {
+            throw new Error("로그인이 만료되었습니다. 다시 로그인해주세요.");
+        }
         const text =
             await response.text();
 
@@ -1182,16 +1247,16 @@
         try {
             return JSON.parse(text);
         } catch {
-            return {
-                message: text
-            };
+            throw new Error("서버 응답을 확인할 수 없습니다. 잠시 후 다시 시도해주세요.");
         }
     }
 
     function showMessage(
             message,
-            error
+            error,
+            persistent = false
     ) {
+        clearTimeout(messageTimer);
         messageBox.textContent =
             message;
 
@@ -1204,7 +1269,8 @@
         messageBox.classList
             .remove("hidden");
 
-        setTimeout(
+        if (persistent) return;
+        messageTimer = setTimeout(
             () =>
                 messageBox.classList
                     .add("hidden"),

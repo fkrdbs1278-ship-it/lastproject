@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 public class AvailableTimeService {
 
     private static final int SLOT_UNIT_MINUTES = 30;
+    private static final int MAX_ONLINE_BOOKING_DAYS = 365;
     private static final List<ReservationStatus> ACTIVE_STATUSES =
             List.of(
                     ReservationStatus.REQUESTED,
@@ -34,11 +36,18 @@ public class AvailableTimeService {
     private final SalonHolidayRepository salonHolidayRepository;
     private final ReservationRepository reservationRepository;
     private final ServiceMenuReader serviceMenuReader;
+    private final Clock clock;
 
     public List<AvailableTimeResponse> getAvailableTimes(
             LocalDate date,
             Long serviceMenuNo
     ) {
+        LocalDateTime now = LocalDateTime.now(clock);
+        if (date.isBefore(now.toLocalDate())
+                || date.isAfter(now.toLocalDate().plusDays(MAX_ONLINE_BOOKING_DAYS))) {
+            return List.of();
+        }
+
         var menu =
                 serviceMenuReader.getActiveServiceMenu(serviceMenuNo);
 
@@ -92,7 +101,7 @@ public class AvailableTimeService {
             LocalDateTime slotEnd =
                     cursor.plusMinutes(menu.durationMin());
 
-            if (!overlapsHoliday(
+            if (cursor.isAfter(now) && !overlapsHoliday(
                     cursor,
                     slotEnd,
                     holidays
