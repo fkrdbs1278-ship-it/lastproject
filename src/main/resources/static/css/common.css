@@ -35,3 +35,24 @@ button {
 main {
     min-height: calc(100vh - 210px);
 }
+
+/* =========================================
+   User Page Common Layout
+   상단 SALON CRM 헤더와 동일한 본문 정렬 기준
+   - 컨테이너 전체 폭: 최대 1200px
+   - 컨테이너 내부 좌우 여백: 24px
+========================================= */
+
+:root {
+    --user-content-width: 1200px;
+    --user-side-padding: 24px;
+}
+
+.user-container {
+    width: 100%;
+    max-width: var(--user-content-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--user-side-padding);
+    padding-right: var(--user-side-padding);
+}

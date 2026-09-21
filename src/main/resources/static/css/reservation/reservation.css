@@ -26,9 +26,10 @@ a {
 }
 
 .reservation-page {
-    width: min(1180px, calc(100% - 32px));
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 48px 0 80px;
+    padding: 48px 24px 80px;
 }
 
 .page-heading {
@@ -401,8 +402,9 @@ select:focus {
 
 @media (max-width: 520px) {
     .reservation-page {
-        width: min(100% - 20px, 1180px);
-        padding-top: 24px;
+        width: 100%;
+        max-width: 1200px;
+        padding: 24px 12px 80px;
     }
 
     .panel,

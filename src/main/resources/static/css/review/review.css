@@ -5,7 +5,7 @@
 .review-page {
     min-height: 100vh;
 
-    padding: 60px 20px;
+    padding: 60px 0;
 
     background-color: #f7f7f7;
 }
@@ -13,9 +13,10 @@
 
 .review-container {
     width: 100%;
-    max-width: 1000px;
+    max-width: 1200px;
 
     margin: 0 auto;
+    padding: 0 24px;
 }
 
 
@@ -556,7 +557,11 @@
 @media (max-width: 700px) {
 
     .review-page {
-        padding: 40px 16px;
+        padding: 40px 0;
+    }
+
+    .review-container {
+        padding: 0 16px;
     }
 
 

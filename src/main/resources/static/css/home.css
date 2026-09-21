@@ -247,17 +247,15 @@
 ========================================= */
 
 .style-gallery-section {
-    padding: 60px 24px 100px;
-
+    padding: 60px 0 100px;
     background-color: #ffffff;
 }
-
 
 .style-gallery-inner {
     width: 100%;
     max-width: 1200px;
-
     margin: 0 auto;
+    padding: 0 24px;
 }
 
 
@@ -504,10 +502,11 @@
 
 
     .style-gallery-section {
-        padding:
-                40px
-                20px
-                70px;
+        padding: 40px 0 70px;
+    }
+
+    .style-gallery-inner {
+        padding: 0 16px;
     }
 
 

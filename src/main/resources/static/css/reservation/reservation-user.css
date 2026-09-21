@@ -24,18 +24,20 @@ body {
 /* reservation.css의 독립 페이지 여백을
    공통 header/footer가 있는 사용자 사이트 기준으로 재정렬 */
 .reservation-page {
-    width: min(1120px, calc(100% - 40px));
+    width: 100%;
+    max-width: 1200px;
     min-height: calc(100vh - 210px);
     margin: 0 auto;
-    padding: 56px 0 30px;
+    padding: 56px 24px 30px;
 }
 
 .reservation-user-page {
-    max-width: 1120px;
+    max-width: 1200px;
 }
 
 .my-reservation-page {
-    width: min(1000px, calc(100% - 40px));
+    width: 100%;
+    max-width: 1200px;
     padding-top: 60px;
 }
 
@@ -323,7 +325,7 @@ body {
    ========================================================= */
 
 .guest-reservation-page {
-    max-width: 1000px;
+    max-width: 1200px;
 }
 
 .guest-lookup-card {
@@ -387,8 +389,9 @@ body {
 @media (max-width: 820px) {
     .reservation-page,
     .my-reservation-page {
-        width: min(100% - 32px, 1120px);
-        padding-top: 40px;
+        width: 100%;
+        max-width: 1200px;
+        padding: 40px 16px 30px;
     }
 
     .reservation-user-heading {
@@ -413,8 +416,9 @@ body {
 @media (max-width: 520px) {
     .reservation-page,
     .my-reservation-page {
-        width: min(100% - 24px, 1120px);
-        padding-top: 30px;
+        width: 100%;
+        max-width: 1200px;
+        padding: 30px 12px 30px;
     }
 
     .reservation-user-heading h1,
