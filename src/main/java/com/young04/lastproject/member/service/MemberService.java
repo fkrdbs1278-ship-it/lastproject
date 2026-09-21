@@ -504,9 +504,7 @@ public class MemberService {
         /* 회원정보 수정 */
 
         member.updateProfile(
-                request
-                        .getName()
-                        .trim(),
+                member.getName(),   // 이름은 기존 값 유지
 
                 normalizeNullable(
                         request.getNickname()
@@ -517,14 +515,10 @@ public class MemberService {
                 request
                         .getPhone()
                         .trim()
-
-
-
-
         );
 
 
-        /* 회원 이름 / 전화번호 변경 내용을 CRM에도 동기화 */
+        /* 회원 정보 변경 내용을 CRM에도 동기화 */
 
         customerProfileService
                 .syncMemberCustomer(

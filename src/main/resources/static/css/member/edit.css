@@ -498,3 +498,11 @@
 .field-message.error {
     color: #d93025;
 }
+
+
+
+#name[readonly] {
+    background-color: #f5f5f5;
+    color: #666;
+    cursor: default;
+}
