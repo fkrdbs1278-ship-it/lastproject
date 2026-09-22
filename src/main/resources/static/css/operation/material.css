@@ -1130,3 +1130,52 @@ body {
         flex-wrap: wrap;
     }
 }
+
+/* =========================================================
+   자재 목록 - 좁은 데스크톱 화면 버튼 줄바꿈 방지
+   고정 관리자 사이드바 때문에 콘텐츠 폭이 줄어드는 구간에서는
+   상단 관리 버튼과 검색/필터를 자연스럽게 재배치한다.
+   ========================================================= */
+.material-list-page .history-button,
+.material-list-page .primary-button,
+.material-list-page .search-form button,
+.material-list-page .filter-buttons a {
+    flex-shrink: 0;
+    white-space: nowrap;
+    word-break: keep-all;
+}
+
+@media (max-width: 1180px) {
+    .material-list-page .material-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .material-list-page .material-header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .material-list-page .material-filter {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .material-list-page .material-search-area,
+    .material-list-page .search-form {
+        width: 100%;
+    }
+
+    .material-list-page .search-form input {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+    }
+
+    .material-list-page .filter-buttons {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+}
