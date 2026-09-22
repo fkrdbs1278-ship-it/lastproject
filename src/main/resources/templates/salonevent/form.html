@@ -2,6 +2,7 @@
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
 
     <title th:text="${formMode == 'create'
@@ -15,9 +16,11 @@
 
     <link rel="stylesheet"
           th:href="@{/css/admin/dashboard-sidebar.css}">
+    <!-- 화면 크기에 따른 공통 배치 보완: 기존 CSS 다음에 유지 -->
+    <link rel="stylesheet" th:href="@{/css/responsive.css(v=20260922)}">
 </head>
 
-<body>
+<body class="responsive-page responsive-admin">
 <div class="salonevent-admin-layout">
 
     <!-- 관리자 공통 사이드바 -->

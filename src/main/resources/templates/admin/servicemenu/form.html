@@ -9,8 +9,10 @@
     <link rel="stylesheet" th:href="@{/css/admin/dashboard-sidebar.css}">
     <link rel="stylesheet" th:href="@{/css/admin/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/admin/service-menu-admin.css}">
+    <!-- 화면 크기에 따른 공통 배치 보완: 기존 CSS 다음에 유지 -->
+    <link rel="stylesheet" th:href="@{/css/responsive.css(v=20260922)}">
 </head>
-<body>
+<body class="responsive-page responsive-admin">
 <div class="admin-layout">
     <aside th:replace="~{admin/dashboard-sidebar :: sidebar('service')}"></aside>
 

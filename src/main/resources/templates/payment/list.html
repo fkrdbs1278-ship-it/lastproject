@@ -16,9 +16,11 @@
     <!-- 매출 관리 CSS -->
     <link rel="stylesheet"
           th:href="@{/css/operation/payment.css}">
+    <!-- 화면 크기에 따른 공통 배치 보완: 기존 CSS 다음에 유지 -->
+    <link rel="stylesheet" th:href="@{/css/responsive.css(v=20260922)}">
 </head>
 
-<body>
+<body class="responsive-page responsive-admin">
 
 <div class="payment-admin-layout">
 
@@ -639,7 +641,7 @@
                 </div>
 
 
-                <div class="recent-payment-table-wrap">
+                <div class="recent-payment-table-wrap responsive-table" tabindex="0" role="region" aria-label="목록 표, 좌우로 스크롤">
 
                     <table class="recent-payment-table">
 

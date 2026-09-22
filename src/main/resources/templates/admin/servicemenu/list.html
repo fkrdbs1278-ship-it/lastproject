@@ -7,8 +7,10 @@
     <link rel="stylesheet" th:href="@{/css/admin/dashboard-sidebar.css}">
     <link rel="stylesheet" th:href="@{/css/admin/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/admin/service-menu-admin.css}">
+    <!-- 화면 크기에 따른 공통 배치 보완: 기존 CSS 다음에 유지 -->
+    <link rel="stylesheet" th:href="@{/css/responsive.css(v=20260922)}">
 </head>
-<body>
+<body class="responsive-page responsive-admin">
 <div class="admin-layout">
     <aside th:replace="~{admin/dashboard-sidebar :: sidebar('service')}"></aside>
 
@@ -105,7 +107,7 @@
                 <span class="result-count" th:text="${#lists.size(menus) + '개'}">0개</span>
             </div>
 
-            <div class="service-table-wrap">
+            <div class="service-table-wrap responsive-table" tabindex="0" role="region" aria-label="목록 표, 좌우로 스크롤">
                 <table class="service-table service-menu-table">
                     <thead>
                     <tr>

@@ -35,10 +35,12 @@
             th:href="@{/css/hairstyle/hairstyle.css}"
     >
 
+    <!-- 화면 크기에 따른 공통 배치 보완: 기존 CSS 다음에 유지 -->
+    <link rel="stylesheet" th:href="@{/css/responsive.css(v=20260922)}">
 </head>
 
 
-<body>
+<body class="responsive-page">
 
 
 <header th:replace="~{layout/header :: header}">

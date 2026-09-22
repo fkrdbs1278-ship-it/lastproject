@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <title>공급업체 발주 확인</title>
 
     <!-- 테스트 공급업체 화면 전용 CSS 연결 -->
     <link rel="stylesheet"
           th:href="@{/css/operation/testcompany.css}">
+    <!-- 화면 크기에 따른 공통 배치 보완: 기존 CSS 다음에 유지 -->
+    <link rel="stylesheet" th:href="@{/css/responsive.css(v=20260922)}">
 </head>
 
-<body>
+<body class="responsive-page">
 <main class="test-company-page">
 
     <!-- 테스트 공급업체 화면 제목 -->
@@ -52,7 +55,7 @@
             <p>발주서를 선택하면 요청 품목을 확인할 수 있습니다.</p>
         </div>
 
-        <div class="table-wrap">
+        <div class="table-wrap responsive-table" tabindex="0" role="region" aria-label="목록 표, 좌우로 스크롤">
             <table class="order-table">
                 <thead>
                 <tr>
