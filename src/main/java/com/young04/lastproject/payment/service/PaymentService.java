@@ -158,6 +158,30 @@ public class PaymentService {
     }
 
     /**
+     * 관리자 예약 화면에서 예약 번호 기준으로 환불 처리합니다.
+     */
+    @Transactional
+    public ReservationPaymentResponse refundPaymentByReservationNo(
+            Long reservationNo
+    ) {
+        Payment payment = paymentRepository
+                .findByReservationNoForUpdate(reservationNo)
+                .orElseThrow(
+                        () -> new IllegalStateException(
+                                "해당 예약의 결제 정보를 찾을 수 없습니다."
+                        )
+                );
+
+        payment.refund();
+
+        customerCrmSyncService.synchronizePayment(
+                payment
+        );
+
+        return ReservationPaymentResponse.from(payment);
+    }
+
+    /**
      * 관리자 환불 처리
      */
     @Transactional

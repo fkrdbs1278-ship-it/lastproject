@@ -817,6 +817,30 @@ body {
     font-weight: 800;
 }
 
+#detailOverlay .reservation-refund-action {
+    grid-template-columns: auto;
+}
+
+#detailOverlay .refund-button {
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid #d9a7ad;
+    border-radius: 9px;
+    background: #fff8f8;
+    color: #9f3f49;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+#detailOverlay .refund-button:hover {
+    background: #fcebed;
+}
+
+#detailOverlay .refund-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
 /* 반응형 */
 @media (max-width: 900px) {
     #detailOverlay {

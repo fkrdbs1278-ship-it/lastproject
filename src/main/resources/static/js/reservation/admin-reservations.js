@@ -1442,6 +1442,17 @@
                 )
                 : ""}
 
+
+                        ${payment.refundedAt
+                ? paymentItem(
+                    "환불일시",
+                    formatDateTime(
+                        payment.refundedAt
+                    ),
+                    iconCalendar
+                )
+                : ""}
+
                     </div>
 
 
@@ -1493,7 +1504,30 @@
 
                             </div>
                           `
-                : ""}
+                : status === "PAID"
+                    ? `
+
+                            <div class="
+                                reservation-payment-action
+                                reservation-refund-action
+                            ">
+
+                                <div class="modal-actions">
+
+                                    <button
+                                        id="refundReservationPayment"
+                                        type="button"
+                                        class="refund-button">
+
+                                        환불 처리
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+                          `
+                    : ""}
 
                 </section>
             `;
@@ -1534,7 +1568,7 @@
 
     function bindPaymentActions(reservationNo) {
 
-        const button =
+        const completeButton =
             document.getElementById(
                 "completeReservationPayment"
             );
@@ -1544,99 +1578,173 @@
                 "reservationPaymentMethod"
             );
 
-
-        if (!button || !methodSelect) {
-            return;
-        }
-
-
-        button.addEventListener(
-            "click",
-            async () => {
-
-                const paymentMethod =
-                    methodSelect.value;
+        const refundButton =
+            document.getElementById(
+                "refundReservationPayment"
+            );
 
 
-                if (!paymentMethod) {
+        if (completeButton && methodSelect) {
 
-                    showMessage(
-                        "결제 수단을 선택해주세요.",
-                        true
-                    );
+            completeButton.addEventListener(
+                "click",
+                async () => {
 
-                    return;
-                }
-
-
-                if (!confirm(
-                    `${paymentMethodText(
-                        paymentMethod
-                    )} 결제로 완료 처리하시겠습니까?`
-                )) {
-                    return;
-                }
+                    const paymentMethod =
+                        methodSelect.value;
 
 
-                button.disabled = true;
+                    if (!paymentMethod) {
 
-
-                try {
-
-                    const response =
-                        await fetch(
-                            `/admin/api/reservations/${reservationNo}/payment/complete?`
-                            +
-                            new URLSearchParams({
-                                paymentMethod
-                            }),
-                            {
-                                method: "POST",
-                                headers: csrfHeaders()
-                            }
+                        showMessage(
+                            "결제 수단을 선택해주세요.",
+                            true
                         );
 
-
-                    const body =
-                        await readJson(response);
-
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            body.message ||
-                            "결제 완료 처리에 실패했습니다."
-                        );
+                        return;
                     }
 
 
-                    showMessage(
-                        "결제가 완료되었습니다.",
-                        false
-                    );
+                    if (!confirm(
+                        `${paymentMethodText(
+                            paymentMethod
+                        )} 결제로 완료 처리하시겠습니까?`
+                    )) {
+                        return;
+                    }
 
 
-                    await loadReservations();
-
-                    await openDetail(
-                        reservationNo
-                    );
+                    completeButton.disabled = true;
 
 
-                } catch (error) {
+                    try {
 
-                    showMessage(
-                        error.message,
-                        true
-                    );
+                        const response =
+                            await fetch(
+                                `/admin/api/reservations/${reservationNo}/payment/complete?`
+                                +
+                                new URLSearchParams({
+                                    paymentMethod
+                                }),
+                                {
+                                    method: "POST",
+                                    headers: csrfHeaders()
+                                }
+                            );
 
 
-                } finally {
+                        const body =
+                            await readJson(response);
 
-                    button.disabled = false;
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                body.message ||
+                                "결제 완료 처리에 실패했습니다."
+                            );
+                        }
+
+
+                        showMessage(
+                            "결제가 완료되었습니다.",
+                            false
+                        );
+
+
+                        await loadReservations();
+
+                        await openDetail(
+                            reservationNo
+                        );
+
+
+                    } catch (error) {
+
+                        showMessage(
+                            error.message,
+                            true
+                        );
+
+
+                    } finally {
+
+                        completeButton.disabled = false;
+                    }
                 }
-            }
-        );
+            );
+        }
+
+
+        if (refundButton) {
+
+            refundButton.addEventListener(
+                "click",
+                async () => {
+
+                    if (!confirm(
+                        "결제 완료 건을 환불 처리하시겠습니까?\n환불 완료 후에는 다시 결제 완료 상태로 되돌릴 수 없습니다."
+                    )) {
+                        return;
+                    }
+
+
+                    refundButton.disabled = true;
+
+
+                    try {
+
+                        const response =
+                            await fetch(
+                                `/admin/api/reservations/${reservationNo}/payment/refund`,
+                                {
+                                    method: "POST",
+                                    headers: csrfHeaders()
+                                }
+                            );
+
+
+                        const body =
+                            await readJson(response);
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                body.message ||
+                                "환불 처리에 실패했습니다."
+                            );
+                        }
+
+
+                        showMessage(
+                            "환불 처리가 완료되었습니다.",
+                            false
+                        );
+
+
+                        await loadReservations();
+
+                        await openDetail(
+                            reservationNo
+                        );
+
+
+                    } catch (error) {
+
+                        showMessage(
+                            error.message,
+                            true
+                        );
+
+
+                    } finally {
+
+                        refundButton.disabled = false;
+                    }
+                }
+            );
+        }
     }
 
 

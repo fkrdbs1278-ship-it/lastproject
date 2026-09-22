@@ -101,6 +101,18 @@ public class AdminReservationController {
         );
     }
 
+    // 관리자 예약 상세에서 결제 완료 건을 환불 처리
+    @PostMapping("/{reservationNo}/payment/refund")
+    public ResponseEntity<ReservationPaymentResponse> refundPayment(
+            @PathVariable Long reservationNo
+    ) {
+        return ResponseEntity.ok(
+                paymentService.refundPaymentByReservationNo(
+                        reservationNo
+                )
+        );
+    }
+
     @PostMapping("/{reservationNo}/cancel")
     public ResponseEntity<ReservationResponse> cancel(
             @PathVariable Long reservationNo,
