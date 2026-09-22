@@ -275,44 +275,22 @@
                             </p>
 
 
-                            <div class="preview-style-grid">
+                            <div class="preview-style-grid"
+                                 th:unless="${#lists.isEmpty(previewHairStyles)}">
 
-                                <article>
-                                    <img src="/images/hairstyle/bob-curl.png"
-                                         th:src="@{/images/hairstyle/bob-curl.png}"
-                                         alt="보브 컬">
+                                <article th:each="style : ${previewHairStyles}">
+                                    <img th:src="${style.imageUrl}"
+                                         th:alt="${style.title}">
 
-                                    <span>보브 컬</span>
-                                </article>
-
-
-                                <article>
-                                    <img src="/images/hairstyle/c-curl-perm.png"
-                                         th:src="@{/images/hairstyle/c-curl-perm.png}"
-                                         alt="C컬 펌">
-
-                                    <span>C컬 펌</span>
-                                </article>
-
-
-                                <article>
-                                    <img src="/images/hairstyle/dandy-cut.png"
-                                         th:src="@{/images/hairstyle/dandy-cut.png}"
-                                         alt="댄디 컷">
-
-                                    <span>댄디 컷</span>
-                                </article>
-
-
-                                <article>
-                                    <img src="/images/hairstyle/part-perm.png"
-                                         th:src="@{/images/hairstyle/part-perm.png}"
-                                         alt="가르마 펌">
-
-                                    <span>가르마 펌</span>
+                                    <span th:text="${style.title}">헤어스타일 이름</span>
                                 </article>
 
                             </div>
+
+                            <p class="preview-style-description"
+                               th:if="${#lists.isEmpty(previewHairStyles)}">
+                                표시할 헤어스타일이 없습니다.
+                            </p>
 
                         </section>
 

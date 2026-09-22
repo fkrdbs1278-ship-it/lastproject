@@ -1,5 +1,6 @@
 package com.young04.lastproject.siteadmin.controller;
 
+import com.young04.lastproject.hairstyle.service.HairStyleService;
 import com.young04.lastproject.siteadmin.dto.SiteSettingRequest;
 import com.young04.lastproject.siteadmin.service.SiteSettingService;
 import jakarta.validation.Valid;
@@ -18,6 +19,8 @@ public class SiteAdminController {
 
     private final SiteSettingService siteSettingService;
 
+    private final HairStyleService hairStyleService;
+
 
     // 사용자 사이트 관리 화면 조회
     @GetMapping
@@ -25,11 +28,7 @@ public class SiteAdminController {
             Model model
     ) {
 
-        // 현재 사이트 설정값을 관리자 화면에 전달
-        model.addAttribute(
-                "siteSetting",
-                siteSettingService.getCurrentSetting()
-        );
+        addPreviewData(model);
 
 
         // 설정 저장용 DTO
@@ -58,10 +57,7 @@ public class SiteAdminController {
         // 입력값 검증 실패
         if (bindingResult.hasErrors()) {
 
-            model.addAttribute(
-                    "siteSetting",
-                    siteSettingService.getCurrentSetting()
-            );
+            addPreviewData(model);
 
             return "admin/siteadmin";
         }
@@ -113,6 +109,21 @@ public class SiteAdminController {
         return "redirect:/admin/siteadmin";
     }
 
+
+    // 조회와 저장 검증 실패 시 동일한 미리보기 데이터를 전달한다.
+    private void addPreviewData(Model model) {
+
+        model.addAttribute(
+                "siteSetting",
+                siteSettingService.getCurrentSetting()
+        );
+
+        // 메인 화면과 같은 활성 헤어스타일의 실제 이미지 URL을 사용한다.
+        model.addAttribute(
+                "previewHairStyles",
+                hairStyleService.getRandomHairStyles(4)
+        );
+    }
 
 
 }
