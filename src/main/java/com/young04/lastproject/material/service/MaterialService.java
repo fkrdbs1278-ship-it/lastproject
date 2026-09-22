@@ -150,6 +150,20 @@ public class MaterialService {
                 .toList();
     }
 
+    // 대시보드용 재고 부족 자재 조회
+    // 전체 목록을 메모리에 올린 뒤 limit 하지 않고 DB에서 필요한 수만 가져옵니다.
+    public List<MaterialResponse> getLowStockMaterials(int limit) {
+        int safeLimit = Math.max(limit, 1);
+
+        return materialRepository
+                .findLowStockMaterialsForDashboard(
+                        PageRequest.of(0, safeLimit)
+                )
+                .stream()
+                .map(MaterialResponse::from)
+                .toList();
+    }
+
     // 재고 부족 자재 개수 조회
     public long countLowStockMaterials() {
         return materialRepository.countLowStockMaterials();

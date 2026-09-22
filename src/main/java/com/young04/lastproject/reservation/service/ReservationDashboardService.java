@@ -6,7 +6,6 @@ import com.young04.lastproject.reservation.dto.DashboardCalendarBlock;
 import com.young04.lastproject.reservation.dto.DashboardCalendarDay;
 import com.young04.lastproject.reservation.dto.DashboardReservationItem;
 import com.young04.lastproject.reservation.dto.DashboardReservationSummary;
-import com.young04.lastproject.reservation.dto.MemberReservationInfo;
 import com.young04.lastproject.reservation.entity.CustomerType;
 import com.young04.lastproject.reservation.entity.Reservation;
 import com.young04.lastproject.reservation.entity.ReservationStatus;
@@ -28,6 +27,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -89,6 +89,23 @@ public class ReservationDashboardService {
                                 weekEndExclusive
                         );
 
+        // 주간 예약에 포함된 회원 번호를 모아 회원 이름을 한 번에 조회합니다.
+        // 기존에는 캘린더 블록을 만들 때 회원 예약마다 MEMBER를 1건씩 조회하여
+        // 예약 수에 비례해 SELECT가 늘어나는 N+1 문제가 있었습니다.
+        Map<Long, String> memberNames =
+                reservationMemberReader
+                        .findMemberNamesByMemberNos(
+                                weekEntities.stream()
+                                        .filter(r ->
+                                                r.getCustomerType()
+                                                        == CustomerType.MEMBER
+                                        )
+                                        .map(Reservation::getMemberNo)
+                                        .filter(Objects::nonNull)
+                                        .distinct()
+                                        .toList()
+                        );
+
         int calendarStartHour =
                 resolveCalendarStartHour(businessHours);
 
@@ -111,7 +128,8 @@ public class ReservationDashboardService {
                         weekEntities,
                         holidays,
                         calendarStartHour,
-                        calendarEndHour
+                        calendarEndHour,
+                        memberNames
                 );
 
         long todayRemainingCount =
@@ -249,7 +267,8 @@ public class ReservationDashboardService {
             List<Reservation> reservations,
             List<SalonHoliday> holidays,
             int calendarStartHour,
-            int calendarEndHour
+            int calendarEndHour,
+            Map<Long, String> memberNames
     ) {
         List<DashboardCalendarBlock> blocks =
                 new ArrayList<>();
@@ -319,7 +338,10 @@ public class ReservationDashboardService {
                                             - visibleStart
                             )
                             .title(
-                                    customerLabel(reservation)
+                                    customerLabel(
+                                            reservation,
+                                            memberNames
+                                    )
                             )
                             .subtitle(
                                     reservation.getServiceNameSnapshot()
@@ -539,27 +561,26 @@ public class ReservationDashboardService {
     }
 
     private String customerLabel(
-            Reservation reservation
+            Reservation reservation,
+            Map<Long, String> memberNames
     ) {
         String rawName;
 
         if (reservation.getCustomerType()
                 == CustomerType.GUEST) {
 
-            rawName =
-                    reservation.getGuestName();
+            rawName = reservation.getGuestName();
 
         } else {
 
-            rawName =
-                    reservationMemberReader
-                            .findMemberInfoByMemberNo(
-                                    reservation.getMemberNo()
-                            )
-                            .map(
-                                    MemberReservationInfo::getName
-                            )
-                            .orElse("회원");
+            Long memberNo = reservation.getMemberNo();
+
+            rawName = memberNo == null
+                    ? "회원"
+                    : memberNames.getOrDefault(
+                            memberNo,
+                            "회원"
+                    );
         }
 
         return maskName(rawName);

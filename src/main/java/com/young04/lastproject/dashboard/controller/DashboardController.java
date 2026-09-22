@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -169,10 +168,7 @@ public class DashboardController {
         // 재고 부족 자재 중 최대 5개를 대시보드에 표시
         model.addAttribute(
                 "lowStockMaterials",
-                materialService.getLowStockMaterials()
-                        .stream()
-                        .limit(5)
-                        .toList()
+                materialService.getLowStockMaterials(5)
         );
 
         // 발주 완료 후 아직 입고되지 않은 발주서 개수
@@ -189,18 +185,15 @@ public class DashboardController {
 
         model.addAttribute("pendingReceiptOrders", pendingReceiptOrders);
 
-        // 각 발주서에 포함된 대표 자재 이름을 화면으로 전달
+        // 입고 예정 발주서들의 자재 이름을 한 번의 쿼리로 조회합니다.
+        // 기존에는 발주서마다 품목 조회를 반복하여 N+1 형태로 DB 왕복이 늘어났습니다.
         Map<Long, List<String>> pendingReceiptMaterialNames =
-                new LinkedHashMap<>();
-
-        for (PurchaseOrder order : pendingReceiptOrders) {
-            pendingReceiptMaterialNames.put(
-                    order.getPurchaseOrderNo(),
-                    purchaseOrderItemService.getMaterialNames(
-                            order.getPurchaseOrderNo()
-                    )
-            );
-        }
+                purchaseOrderItemService
+                        .getMaterialNamesByPurchaseOrderNos(
+                                pendingReceiptOrders.stream()
+                                        .map(PurchaseOrder::getPurchaseOrderNo)
+                                        .toList()
+                        );
 
         model.addAttribute(
                 "pendingReceiptMaterialNames",

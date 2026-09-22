@@ -55,6 +55,17 @@ public interface MaterialRepository extends JpaRepository <Material, Long>{
             """)
     List<Material> findLowStockMaterials();
 
+    // 대시보드용 재고 부족 자재 조회. List + Pageable을 사용하여
+    // 별도의 COUNT 쿼리 없이 필요한 최대 건수만 가져옵니다.
+    @Query("""
+            SELECT m
+            FROM Material m
+            WHERE m.useYn = 'Y'
+              AND m.currentStock <= m.safetyStock
+            ORDER BY m.currentStock ASC, m.materialNo DESC
+            """)
+    List<Material> findLowStockMaterialsForDashboard(Pageable pageable);
+
     // 재고 부족 자재를 페이지 단위로 조회
     @Query("""
             SELECT m

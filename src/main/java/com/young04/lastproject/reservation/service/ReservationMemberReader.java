@@ -7,6 +7,9 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -52,6 +55,40 @@ public class ReservationMemberReader {
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    /**
+     * 대시보드처럼 여러 예약의 회원 이름이 한 번에 필요한 경우 사용합니다.
+     * 회원 예약마다 개별 SELECT를 실행하지 않고 한 번의 IN 조회로 가져옵니다.
+     */
+    public Map<Long, String> findMemberNamesByMemberNos(
+            Collection<Long> memberNos
+    ) {
+        if (memberNos == null || memberNos.isEmpty()) {
+            return Map.of();
+        }
+
+        var rows = entityManager.createQuery(
+                        """
+                        SELECT m.no, m.name
+                        FROM Member m
+                        WHERE m.no IN :memberNos
+                        """,
+                        Object[].class
+                )
+                .setParameter("memberNos", memberNos)
+                .getResultList();
+
+        Map<Long, String> memberNames = new HashMap<>();
+
+        for (Object[] row : rows) {
+            memberNames.put(
+                    ((Number) row[0]).longValue(),
+                    (String) row[1]
+            );
+        }
+
+        return memberNames;
     }
 
     public Optional<MemberReservationInfo> findMemberInfoByMemberNo(

@@ -15,7 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 // 발주 품목 등록과 조회 기능을 처리하는 Service
 @Service
@@ -110,6 +113,39 @@ public class PurchaseOrderItemService {
                 .stream()
                 .map(PurchaseOrderItemResponse::new)
                 .toList();
+    }
+
+    // 대시보드용: 여러 발주서의 품목 이름을 한 번에 조회
+    public Map<Long, List<String>> getMaterialNamesByPurchaseOrderNos(
+            List<Long> purchaseOrderNos
+    ) {
+        if (purchaseOrderNos == null || purchaseOrderNos.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<Long, List<String>> result = new LinkedHashMap<>();
+
+        // 품목이 없는 발주서도 화면에서 빈 목록으로 사용할 수 있도록 미리 생성
+        for (Long purchaseOrderNo : purchaseOrderNos) {
+            result.put(purchaseOrderNo, new ArrayList<>());
+        }
+
+        for (Object[] row : purchaseOrderItemRepository
+                .findMaterialNamesByPurchaseOrderNos(purchaseOrderNos)) {
+
+            Long purchaseOrderNo =
+                    ((Number) row[0]).longValue();
+
+            String materialName = (String) row[1];
+
+            result.computeIfAbsent(
+                            purchaseOrderNo,
+                            key -> new ArrayList<>()
+                    )
+                    .add(materialName);
+        }
+
+        return result;
     }
 
     // 대시보드에 표시할 발주 품목 이름 조회
