@@ -53,26 +53,15 @@ public class ReservationDashboardService {
         LocalDate weekEnd =
                 weekStart.plusDays(6);
 
-        LocalDateTime todayStart =
-                today.atStartOfDay();
-
-        LocalDateTime tomorrowStart =
-                today.plusDays(1).atStartOfDay();
-
         LocalDateTime weekStartAt =
                 weekStart.atStartOfDay();
 
         LocalDateTime weekEndExclusive =
                 weekEnd.plusDays(1).atStartOfDay();
 
-        List<Reservation> todayEntities =
-                reservationRepository
-                        .findByStartAtGreaterThanEqualAndStartAtLessThanAndStatusNotOrderByStartAtAsc(
-                                todayStart,
-                                tomorrowStart,
-                                ReservationStatus.CANCELED
-                        );
-
+        // 이번 주 예약을 한 번만 조회하고 오늘 예약은 메모리에서 분리합니다.
+        // 오늘은 항상 현재 주 범위에 포함되므로 동일한 예약 테이블을
+        // 두 번 조회할 필요가 없습니다.
         List<Reservation> weekEntities =
                 reservationRepository
                         .findByStartAtGreaterThanEqualAndStartAtLessThanAndStatusNotOrderByStartAtAsc(
@@ -80,6 +69,15 @@ public class ReservationDashboardService {
                                 weekEndExclusive,
                                 ReservationStatus.CANCELED
                         );
+
+        List<Reservation> todayEntities =
+                weekEntities.stream()
+                        .filter(reservation ->
+                                reservation.getStartAt()
+                                        .toLocalDate()
+                                        .equals(today)
+                        )
+                        .toList();
 
         List<BusinessHour> businessHours =
                 businessHourRepository.findAll();

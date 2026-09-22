@@ -144,15 +144,14 @@ public class DashboardController {
         model.addAttribute("salesTrendUnit", trendUnit.name());
 
         // 이번 달 결제 완료(PAID) 기준 인기 시술 TOP 5
-        var monthlyPaymentData = paymentService.getPaymentPage(
-                today.withDayOfMonth(1),
-                today,
-                PaymentTrendUnit.DAY
-        );
-
+        // 대시보드에서는 인기 시술만 필요하므로 전체 결제 페이지 데이터를
+        // 다시 만들지 않고, 해당 기간의 인기 시술만 조회합니다.
         model.addAttribute(
                 "popularServices",
-                monthlyPaymentData.getPopularServices()
+                paymentService.getPopularServices(
+                        today.withDayOfMonth(1),
+                        today
+                )
         );
 
         // 이번 달 방문 고객 수

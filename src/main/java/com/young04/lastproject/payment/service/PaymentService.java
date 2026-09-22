@@ -226,6 +226,32 @@ public class PaymentService {
     }
 
     /**
+     * 대시보드 인기 시술 TOP 5 전용 조회
+     * 전체 결제 관리 화면 데이터를 만들지 않고 필요한 기간의 결제만 조회합니다.
+     */
+    public List<PopularServiceDto> getPopularServices(
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        if (startDate == null || endDate == null) {
+            throw new IllegalArgumentException("조회 기간이 필요합니다.");
+        }
+
+        if (startDate.isAfter(endDate)) {
+            LocalDate temp = startDate;
+            startDate = endDate;
+            endDate = temp;
+        }
+
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime endExclusive = endDate.plusDays(1).atStartOfDay();
+
+        return buildPopularServices(
+                findPaidPayments(start, endExclusive)
+        );
+    }
+
+    /**
      * 상단 요약 카드
      */
     private PaymentSummaryDto getSummary() {
