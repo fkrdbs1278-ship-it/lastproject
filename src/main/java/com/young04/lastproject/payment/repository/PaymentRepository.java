@@ -37,6 +37,15 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     boolean existsByReservation_ReservationNo(Long reservationNo);
 
     /**
+     * 예약 목록 화면에서 결제 상태를 한 번에 조회합니다.
+     * COMPLETED 예약마다 결제 정보를 개별 조회하는 N+1을 피하기 위한 용도입니다.
+     */
+    @EntityGraph(attributePaths = {"reservation"})
+    List<Payment> findByReservation_ReservationNoIn(
+            Collection<Long> reservationNos
+    );
+
+    /**
      * 지정 기간의 결제 완료 내역 조회
      * 통계 계산은 Service에서 처리하여 Oracle/Hibernate 함수 의존성을 줄입니다.
      */

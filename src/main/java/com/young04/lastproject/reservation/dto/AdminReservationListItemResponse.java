@@ -1,5 +1,6 @@
 package com.young04.lastproject.reservation.dto;
 
+import com.young04.lastproject.payment.entity.PaymentStatus;
 import com.young04.lastproject.reservation.entity.CustomerType;
 import com.young04.lastproject.reservation.entity.Reservation;
 import lombok.Builder;
@@ -15,10 +16,13 @@ public class AdminReservationListItemResponse {
 
     private String maskedPhone;
 
+    private PaymentStatus paymentStatus;
+
 
     public static AdminReservationListItemResponse from(
             Reservation reservation,
-            MemberReservationInfo member
+            MemberReservationInfo member,
+            PaymentStatus paymentStatus
     ) {
 
         String customerName =
@@ -46,6 +50,9 @@ public class AdminReservationListItemResponse {
                 )
                 .maskedPhone(
                         maskedPhone
+                )
+                .paymentStatus(
+                        paymentStatus
                 )
                 .build();
     }

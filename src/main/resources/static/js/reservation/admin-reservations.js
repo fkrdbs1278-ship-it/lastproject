@@ -453,14 +453,33 @@
 
             if (r.status === "COMPLETED") {
 
-                addAction(
-                    actions,
-                    "결제",
-                    () =>
-                        openDetail(
-                            r.reservationNo
-                        )
-                );
+                if (item.paymentStatus === "PAID") {
+
+                    addPaymentStatusAction(
+                        actions,
+                        "결제 완료",
+                        "payment-complete-button"
+                    );
+
+                } else if (item.paymentStatus === "REFUNDED") {
+
+                    addPaymentStatusAction(
+                        actions,
+                        "환불 완료",
+                        "payment-refunded-button"
+                    );
+
+                } else {
+
+                    addAction(
+                        actions,
+                        "결제",
+                        () =>
+                            openDetail(
+                                r.reservationNo
+                            )
+                    );
+                }
             }
         });
     }
@@ -4019,6 +4038,40 @@
             "click",
             handler
         );
+
+
+        container.appendChild(
+            button
+        );
+    }
+
+
+    function addPaymentStatusAction(
+        container,
+        label,
+        className
+    ) {
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.type =
+            "button";
+
+
+        button.className =
+            `action-button ${className}`;
+
+
+        button.textContent =
+            label;
+
+
+        button.disabled =
+            true;
 
 
         container.appendChild(

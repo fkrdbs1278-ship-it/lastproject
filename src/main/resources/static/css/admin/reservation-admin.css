@@ -301,6 +301,23 @@
     color: var(--rose-dark);
 }
 
+/* 결제 완료/환불 완료 건은 다시 결제할 수 없는 상태 버튼으로 표시 */
+.reservation-admin-content .action-button.payment-complete-button:disabled {
+    opacity: 1;
+    cursor: default;
+    background: #edf8f0;
+    border-color: #cce7d3;
+    color: #2f7a46;
+}
+
+.reservation-admin-content .action-button.payment-refunded-button:disabled {
+    opacity: 1;
+    cursor: default;
+    background: #f3f4f6;
+    border-color: #d9dde3;
+    color: #68707c;
+}
+
 .reservation-admin-content .pagination {
     margin-top: 20px;
 }

@@ -1,8 +1,12 @@
 package com.young04.lastproject.reservation.service;
 
+import com.young04.lastproject.payment.entity.Payment;
+import com.young04.lastproject.payment.entity.PaymentStatus;
+import com.young04.lastproject.payment.repository.PaymentRepository;
 import com.young04.lastproject.reservation.dto.*;
 import com.young04.lastproject.reservation.entity.CustomerType;
 import com.young04.lastproject.reservation.entity.Reservation;
+import com.young04.lastproject.reservation.entity.ReservationStatus;
 import com.young04.lastproject.reservation.entity.ReservationSource;
 import com.young04.lastproject.reservation.exception.ReservationNotFoundException;
 import com.young04.lastproject.reservation.repository.ReservationRepository;
@@ -12,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +31,7 @@ public class AdminReservationService {
     private final ReservationMemberReader reservationMemberReader;
     private final HairStyleReader hairStyleReader;
     private final ReservationService reservationService;
+    private final PaymentRepository paymentRepository;
 
     public AdminReservationSearchResponse search(
             ReservationSearchCondition condition,
@@ -38,12 +47,24 @@ public class AdminReservationService {
         Page<Reservation> reservationPage =
                 reservationRepository.search(condition, pageable);
 
+        List<Reservation> reservations =
+                reservationPage.getContent();
+
+        Map<Long, PaymentStatus> paymentStatusByReservationNo =
+                getPaymentStatusByReservationNo(reservations);
+
         return AdminReservationSearchResponse.builder()
                 .content(
-                        reservationPage
-                                .getContent()
+                        reservations
                                 .stream()
-                                .map(this::toListItemResponse)
+                                .map(reservation ->
+                                        toListItemResponse(
+                                                reservation,
+                                                paymentStatusByReservationNo.get(
+                                                        reservation.getReservationNo()
+                                                )
+                                        )
+                                )
                                 .toList()
                 )
                 .page(reservationPage.getNumber())
@@ -54,7 +75,8 @@ public class AdminReservationService {
     }
 
     private AdminReservationListItemResponse toListItemResponse(
-            Reservation reservation
+            Reservation reservation,
+            PaymentStatus paymentStatus
     ) {
 
         MemberReservationInfo member =
@@ -77,8 +99,43 @@ public class AdminReservationService {
 
         return AdminReservationListItemResponse.from(
                 reservation,
-                member
+                member,
+                paymentStatus
         );
+    }
+
+
+    private Map<Long, PaymentStatus> getPaymentStatusByReservationNo(
+            List<Reservation> reservations
+    ) {
+
+        List<Long> completedReservationNos =
+                reservations.stream()
+                        .filter(reservation ->
+                                reservation.getStatus()
+                                        == ReservationStatus.COMPLETED
+                        )
+                        .map(Reservation::getReservationNo)
+                        .toList();
+
+        if (completedReservationNos.isEmpty()) {
+            return Map.of();
+        }
+
+        return paymentRepository
+                .findByReservation_ReservationNoIn(
+                        completedReservationNos
+                )
+                .stream()
+                .collect(
+                        Collectors.toMap(
+                                payment ->
+                                        payment.getReservation()
+                                                .getReservationNo(),
+                                Payment::getPaymentStatus,
+                                (first, ignored) -> first
+                        )
+                );
     }
 
 
